@@ -106,17 +106,17 @@
   <body onload="startTheGame()">
     <div id ='myHealthBar'>pikachu<br><div id = 'myHealthText'>300/300</div></div>
     <div id ='opponentHealthBar'>charizard<br><div id = 'opponentHealthText'>400/400</div></div>
-    <img id = 'charizard' src = 'file:///Users/xjin/djin/code/html/games/pokemon-game.htm/sprites/Charizard.gif' width = '200' alt = 'charizard'>
-    <img id = 'pikachu' src = 'file:///Users/xjin/djin/code/html/games/pokemon-game.htm/sprites/pikachu.gif' width = '200' alt = 'pikachu'>
+    <img id = 'charizard' src = '/sprites/Charizard.gif' width = '200' alt = 'charizard'>
+    <img id = 'pikachu' src = '/sprites/pikachu.gif' width = '200' alt = 'pikachu'>
     <img id = 'opponentMove' src = '' width = '200' alt = "opponent's move">
-    <img class = 'flame' src = 'file:///Users/xjin/djin/code/html/games/pokemon-game.htm/sprites/flamethrower.gif'>
+    <img class = 'flame' src = '/sprites/flamethrower.gif'>
     <img id = 'myMove' src = '' width = '200' alt = 'my move'>
     <button id = 'electro-ball' onclick = 'electroBall()'>electro ball</button>
     <button id = 'volt-tackle' onclick="voltTackle()">volt tackle</button>
     <button id = 'thunder-bolt' onclick="thunderbolt()">thunderbolt</button>
     <button id = 'Gigavolt-havoc' onclick="gigavoltHavoc()">Gigavolt Havoc</button>
-    <a id = 'return' href='file:///Users/xjin/djin/code/html/games/pokemon-game.htm/forest.htm'>go back to main route</a>
-    <script src = 'file:///Users/xjin/djin/code/jquery.js'></script>
+    <a id = 'return' href='forest.htm'>go back to main route</a>
+    <script src = 'jquery.js'></script>
     <script>
     $(".flame").hide();
     var opponentHealth = 400;
@@ -132,7 +132,7 @@
     };
       thunderbolt = function(){
         $('#myMove').fadeIn();
-        $('#myMove').attr('src','file:///Users/xjin/djin/code/html/games/pokemon-game.htm/sprites/lightning.gif');
+        $('#myMove').attr('src','/sprites/lightning.gif');
         $('#myMove').fadeOut(1000);
         opponentHealth-=10;
         OpponentMove();
@@ -141,11 +141,11 @@
               var r = Math.random();
               var ra = r*3;
               if(ra <= 1.5){
-              $('#charizard').attr('src','file:///Users/xjin/djin/code/html/games/pokemon-game.htm/sprites/mega%20charizard%20y.gif');
+              $('#charizard').attr('src','/sprites/mega%20charizard%20y.gif');
               $('#charizard').attr('width',300)
             }
             else{
-            $('#charizard').attr('src','file:///Users/xjin/djin/code/html/games/pokemon-game.htm/sprites/mega%20charizard%20x.gif')
+            $('#charizard').attr('src','/sprites/mega%20charizard%20x.gif')
             $('#charizard').attr('width',250)
           }
             isMegaEvolved = true;
@@ -157,7 +157,7 @@
                 if(randomNumber === 0){
                   $(".flame").hide();
                   $("#opponentMove").show();
-                  $('#opponentMove').attr('src', 'file:///Users/xjin/djin/code/html/games/pokemon-game.htm/sprites/wildfire.gif');
+                  $('#opponentMove').attr('src', '/sprites/wildfire.gif');
                 //myHealth-=20;
               }
                 else{
