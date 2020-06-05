@@ -5,4 +5,5 @@ if you hit the wall or yourself you die<br><br>
 how to play pokemon<br>
 battle the opponent<br>
 you might be able to catch it<br><br>
+tell me how high of a score you can get in the comments<br><br>
 game at https://danerjin.github.io
