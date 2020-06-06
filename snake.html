@@ -2,7 +2,7 @@
 <html lang = 'en'>
 <head>
   <title>Snake!!!!!!!!!</title>
-  <link rel = 'sortcut icon' type = 'image/png' href = 'https://rembound.com/files/creating-a-snake-game-tutorial-with-html5/snake-icon.png'></link>
+  <link rel = 'sortcut icon' type = 'image/png' href = 'snake-icon.png'></link>
   <style>
   html, body {
     height: 100%;
@@ -201,14 +201,8 @@ function loop() {
   // draw snake one cell at a time
   context.fillStyle = 'orange';
   snake.cells.forEach(function(cell, index) {
-if(index === 0){
-      context.fillStyle = 'blue'
-      context.fillRect(cell.x, cell.y, grid, grid);
-    }
-    else{
       context.fillStyle = 'orange'
       context.fillRect(cell.x, cell.y, grid, grid);
-    }
 
     // snake ate apple
     if (cell.x === apple.x && cell.y === apple.y) {
