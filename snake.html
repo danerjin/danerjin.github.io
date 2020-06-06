@@ -201,13 +201,14 @@ function loop() {
   // draw snake one cell at a time
   context.fillStyle = 'orange';
   snake.cells.forEach(function(cell, index) {
-    /*if(index === 0){
+if(index === 0){
       context.fillStyle = 'blue'
+      context.fillRect(cell.x, cell.y, grid, grid);
     }
     else{
       context.fillStyle = 'orange'
-    }*/
-    context.fillRect(cell.x, cell.y, grid, grid);
+      context.fillRect(cell.x, cell.y, grid, grid);
+    }
 
     // snake ate apple
     if (cell.x === apple.x && cell.y === apple.y) {
