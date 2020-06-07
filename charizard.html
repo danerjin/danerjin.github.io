@@ -137,6 +137,7 @@
     var isTyping = false;
     var type = function(typo){
       $("#typewriter").text('')
+      $("button").hide()
       for(let i = 0;i <= typo.length;i++){
         setTimeout(function(){
           $("#typewriter").append(typo[i])
