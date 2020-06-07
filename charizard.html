@@ -142,8 +142,10 @@
         setTimeout(function(){
           $("#typewriter").append(typo[i])
         },100 * i)
+        if(i===typo.length){
+          isTyping = false;
+        }
       }
-      isTyping = false;
     }
       startTheGame = function(){
       $('#return').hide();
