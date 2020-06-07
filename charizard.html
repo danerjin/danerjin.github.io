@@ -156,10 +156,10 @@
       $('#charizard').fadeIn(1000);
     };
       thunderbolt = function(){
+        opponentHealth-=10;
         $('#myMove').fadeIn();
         $('#myMove').attr('src','sprites/lightning.gif');
         $('#myMove').fadeOut(1000);
-        opponentHealth-=10;
         isTyping = true;
         type('you used thunderbolt')
         if(!isTyping){
