@@ -3,7 +3,7 @@
   <head>
     <meta charset = 'utf-8'>
     <title>charizard battle</title>
-    <link rel = 'shortcut icon' type = 'image.gif' href = 'sprites/mega%20charizard%20x.gif'></link>
+    <link rel = 'shortcut icon' type = 'image/gif' href = 'sprites/mega%20charizard%20x.gif'></link>
     <style>
     @keyframes pikaLand{
       0%{left:400px;}
@@ -21,7 +21,7 @@
       0%{left:500px;}
       100%{left:950px;}
     }
-     body{
+    body{
       background-color: black;
     }
     #myHealthBar{
@@ -153,9 +153,10 @@
     }
     </style>
   </head>
-  <body onload="startTheGame()">
+  <body onload = "startTheGame()">
     <div id ='myHealthBar'>pikachu<br><div id = 'myHealthText'>300/300</div></div>
     <div id ='opponentHealthBar'>charizard<br><div id = 'opponentHealthText'>400/400</div></div>
+    <img id = 'charizard' src = 'sprites/Charizard.gif' width = '200' alt = 'charizard'>
     <svg id="PikaLandSvg" width="264px" height="77px">
         <ellipse cx="135" cy="50" rx="100" ry="25"
                  style="stroke:#c18605;
@@ -168,22 +169,22 @@
                            stroke-width:6px;
                            fill:#ffbf0f;"></ellipse>
     </svg>
-    <img id = 'charizard' src = 'sprites/Charizard.gif' width = '200' alt = 'charizard'>
     <img id = 'pikachu' src = 'sprites/pikachu.gif' width = '200' alt = 'pikachu'>
-    <img id = 'opponentMove' src = '' width = '200'>
+    <img id = 'opponentMove' src = '' width = '200' alt = "opponent's move">
     <img class = 'flame' src = 'sprites/flamethrower.gif'>
-    <img id = 'myMove' src = '' width = '200'>
+    <img id = 'myMove' src = '' width = '200' alt = 'my move'>
     <div id = 'moves'>
-    <button id = 'electro-ball' onclick = 'electroBall()'>electro ball</button>
-    <button id = 'volt-tackle' onclick="voltTackle()">volt tackle</button>
-    <button id = 'thunder-bolt' onclick="thunderbolt()">thunderbolt</button>
-    <button id = 'Gigavolt-havoc' onclick="gigavoltHavoc()">Gigavolt Havoc</button>
+      <button id = 'electro-ball' onclick = 'electroBall()'>electro ball</button>
+      <button id = 'volt-tackle' onclick="voltTackle()">volt tackle</button>
+      <button id = 'thunder-bolt' onclick="thunderbolt()">thunderbolt</button>
+      <button id = 'Gigavolt-havoc' onclick="gigavoltHavoc()">Gigavolt Havoc</button>
     </div>
-    <!--<a id = 'return' href='forest.htm'>go back to main route</a>-->
+    <!--<a id = 'return' href='forest11.htm'>go back to main route</a>-->
     <div id = 'typewriter'></div>
     <script src = 'jquery.js'></script>
     <script>
     $(".flame").hide();
+    $("button").hide()
     var opponentHealth = 400;
     var myHealth = 300;
     var megaEvolve;
@@ -212,8 +213,8 @@
       }
     }
     setTimeout(function(){
-    type('get ready for battle!')
-    },3000)
+      type('get ready for battle!')
+      },3000)
       startTheGame = function(){
       $('#return').hide();
       $('#pikachu').hide();
@@ -224,18 +225,35 @@
       thunderbolt = function(){
         opponentAttacking = false;
         $('#myMove').fadeIn();
-        $('#myMove').attr('src','sprites/lightning.gif');
-        $('#myMove').fadeOut(1000);
-        isTyping = true;
+        $('#myMove').attr('src','sprites/lightning.png');
         type('you used thunderbolt')
+        setTimeout(function(){
+          $('#myMove').hide();
+        },5000)
         meAttacking = true;
         opponentHealth-=10;
         $('#myHealthText').text(myHealth + '/300');
         $('#opponentHealthText').text(opponentHealth + '/400');
         if(!isMegaEvolved && opponentHealth <= 100){
-              megaEvolve();
-            }
-     };
+          megaEvolve();
+        }
+      };
+      electroBall = function(){
+        opponentAttacking = false;
+        $('#myMove').fadeIn();
+        $('#myMove').attr('src','sprites/ball.png');
+        type('you used electro ball')
+        setTimeout(function(){
+          $('#myMove').hide();
+        },5000)
+        meAttacking = true;
+        opponentHealth-=50;
+        $('#myHealthText').text(myHealth + '/300');
+        $('#opponentHealthText').text(opponentHealth + '/400');
+        if(!isMegaEvolved && opponentHealth <= 100){
+          megaEvolve();
+        }
+      };
             var megaEvolve = function(){
               var r = Math.random();
               var ra = r*3;
@@ -248,6 +266,7 @@
             else{
             $('#charizard').attr('src','sprites/mega%20charizard%20x.gif')
             $('#charizard').attr('width',250)
+            $(".flame").attr('src','sprites/hot%20flame.gif')
             $('#myHealthText').text(myHealth + '/300');
             $('#opponentHealthText').text(opponentHealth + '/400');
           }
@@ -255,37 +274,43 @@
             opponentHealth = 400;
             $('#myHealthText').text(myHealth + '/300');
             $('#opponentHealthText').text(opponentHealth + '/400');
-              setTimeout(function(){
+            setTimeout(function(){
               type('charizard mega evolved!his health restored')
             },5000)
           };
-              var OpponentMove = function(){
+              var opponentMove = function(){
                 var moves = ['wildfire', 'flamethrower', 'fire punch', 'seismic toss'];
-                var randomNumber = Math.floor(Math.random()*moves.length);
-                if(randomNumber === 0){
+                var ran = Math.floor(Math.random()*moves.length);
+                if(ran === 0){
                   $(".flame").hide();
                   $("#opponentMove").show();
                   $('#opponentMove').attr('src', 'sprites/wildfire.gif');
                 //myHealth-=20;
               }
-                else{
+                else if(ran === 1){
                   $(".flame").show();
                   $("#opponentMove").hide();
                   //myHealth-=10;
+                }
+                else if(ran === 3){
+                  $("#opponentMove").attr('src','sprites/blast%20burn.gif')
+                }
+                else{
+
+                }
           };
-              if(myHealth<=0){
-                $("body").append('<h1>you lost</h1>')
-                $("button").hide();
-                $("#return").show();
-              }
-              if(opponentHealth<=0){
-                $("body").append('<h1>you won!!!!!!!!</h1>')
-                $("button").hide();
-                $("#return").show();
-              }
-              $('#myHealthText').text(myHealth + '/300');
-              $('#opponentHealthText').text(opponentHealth + '/400');
+            if(myHealth<=0){
+              $("body").append('<h1>you lost</h1>')
+              $("button").hide();
+              $("#return").show();
             }
+            if(opponentHealth<=0){
+              $("body").append('<h1>you won!!!!!!!!</h1>')
+              $("button").hide();
+              $("#return").show();
+            }
+            $('#myHealthText').text(myHealth + '/300');
+            $('#opponentHealthText').text(opponentHealth + '/400');
         </script>
       </body>
       </html>
