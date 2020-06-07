@@ -157,8 +157,12 @@
         $('#myMove').attr('src','sprites/lightning.gif');
         $('#myMove').fadeOut(1000);
         opponentHealth-=10;
-        OpponentMove();
-      };
+        isTyping = true;
+        type('you used thunderbolt')
+        if(!isTyping){
+          OpponentMove();
+        }
+     };
             var megaEvolve = function(){
               var r = Math.random();
               var ra = r*3;
