@@ -143,6 +143,7 @@
           $("#typewriter").append(typo[i])
           if(i === typo.length){
             isTyping = false;
+            $("button").show();
           }
         },100 * i)
       }
