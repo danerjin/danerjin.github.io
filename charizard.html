@@ -250,6 +250,8 @@
           }
             isMegaEvolved = true;
             opponentHealth = 400;
+            $('#myHealthText').text(myHealth + '/300');
+            $('#opponentHealthText').text(opponentHealth + '/400');
               setTimeout(function(){
               type('charizard mega evolved!')
             },5000)
