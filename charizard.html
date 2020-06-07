@@ -5,7 +5,23 @@
     <title>charizard battle</title>
     <link rel = 'shortcut icon' type = 'image.gif' href = 'sprites/mega%20charizard%20x.gif'></link>
     <style>
-   #myHealthBar{
+    @keyframes pikaLand{
+      0%{left:400px;}
+      100%{left:-25px;}
+    }
+    @keyframes pika{
+      0%{left:435px;}
+      100%{left:10px;}
+    }
+    @keyframes charizardLand{
+      0%{left:450px;}
+      100%{left:900px;}
+    }
+    @keyframes charizard{
+      0%{left:500px;}
+      100%{left:950px;}
+    }
+    #myHealthBar{
       position:absolute;
       left:70px;
       top:340px;
@@ -15,7 +31,7 @@
     #opponentHealthBar{
       position:absolute;
       left:1000px;
-      top:40px;
+      top:300px;
       border: 5px ridge;
       background-color: red;
     }
@@ -33,56 +49,64 @@
     #myMove{
       position:absolute;
       left:1025px;
-      top:100px;
+      top:0px;
       z-index: 3;
     }
     #charizard{
       position: absolute;
       left:950px;
-      top:100px;
+      top:0px;
       z-index: 2;
+      animation-name: charizard;
+      animation-duration: 3s;
     }
     #pikachu{
       position: absolute;
       left:10px;
       top:400px;
       z-index: 2;
+      animation-name: pika;
+      animation-duration: 3s;
     }
-      #PikaLandSvg{
+    #PikaLandSvg{
       z-index:1;
       position: absolute;
       left:-25px;
       top:450px;
+      animation-name: pikaLand;
+      animation-duration: 3s;
     }
     #CharizardLandSvg{
       z-index:1;
       position: absolute;
       left:900px;
       top:150px;
+      animation-name: charizardLand;
+      animation-duration: 3s;
     }
     #electro-ball{
       position: absolute;
       left:200px;
       top:350px;
-      z-index: 5;
+      z-index: 0;
     }
     #volt-tackle{
       position: absolute;
       left:200px;
       top:400px;
-      z-index: 5;
+      z-index: 0;
     }
     #thunder-bolt{
       position: absolute;
       left:300px;
       top:400px;
-      z-index: 5;
+      z-index: 0;
     }
     #Gigavolt-havoc{
       position: absolute;
       left:300px;
       top:350px;
-      z-index: 5;
+      z-index: 0;
     }
     .flame{
       transform: rotate(250deg);
@@ -92,6 +116,7 @@
     }
     #typewriter{
       color: white;
+      font-family: monospace;
       background-color: red;
       border: 10px solid black;
       width:100%;
@@ -145,10 +170,12 @@
     <img id = 'opponentMove' src = '' width = '200'>
     <img class = 'flame' src = 'sprites/flamethrower.gif'>
     <img id = 'myMove' src = '' width = '200'>
+    <div id = 'moves'>
     <button id = 'electro-ball' onclick = 'electroBall()'>electro ball</button>
     <button id = 'volt-tackle' onclick="voltTackle()">volt tackle</button>
     <button id = 'thunder-bolt' onclick="thunderbolt()">thunderbolt</button>
     <button id = 'Gigavolt-havoc' onclick="gigavoltHavoc()">Gigavolt Havoc</button>
+    </div>
     <!--<a id = 'return' href='forest.htm'>go back to main route</a>-->
     <div id = 'typewriter'></div>
     <script src = 'jquery.js'></script>
