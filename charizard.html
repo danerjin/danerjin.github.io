@@ -8,14 +8,14 @@
    #myHealthBar{
       position:absolute;
       left:70px;
-      top:240px;
+      top:340px;
       border: 5px ridge;
       background-color: yellow;
     }
     #opponentHealthBar{
       position:absolute;
       left:1000px;
-      top:140px;
+      top:40px;
       border: 5px ridge;
       background-color: red;
     }
@@ -27,25 +27,25 @@
     #opponentMove{
       position:absolute;
       left:20px;
-      top:200px;
+      top:300px;
       z-index: 1;
     }
     #myMove{
       position:absolute;
       left:1025px;
-      top:200px;
+      top:100px;
       z-index: 3;
     }
     #charizard{
       position: absolute;
       left:950px;
-      top:200px;
+      top:100px;
       z-index: 2;
     }
     #pikachu{
       position: absolute;
       left:10px;
-      top:300px;
+      top:400px;
       z-index: 2;
     }
     #electro-ball{
@@ -75,8 +75,17 @@
     .flame{
       transform: rotate(250deg);
       position:absolute;
-      top:150px;
+      top:250px;
       left:150px;
+    }
+    #typewriter{
+      color: white;
+      background-color: red;
+      border: 10px solid black;
+      width:100%;
+      height:50px;
+      position:absolute;
+      top:500px;
     }
     button {
       padding:10px;
@@ -117,13 +126,24 @@
     <button id = 'thunder-bolt' onclick="thunderbolt()">thunderbolt</button>
     <button id = 'Gigavolt-havoc' onclick="gigavoltHavoc()">Gigavolt Havoc</button>
     <!--<a id = 'return' href='forest.htm'>go back to main route</a>-->
+    <div id = 'typewriter'></div>
     <script src = 'jquery.js'></script>
     <script>
-    $(".flame").hide();
+    (".flame").hide();
     var opponentHealth = 400;
     var myHealth = 300;
     var megaEvolve;
     var isMegaEvolved = false;
+    var isTyping = false;
+    var type = function(typo){
+      $("#typewriter").text('')
+      for(let i = 0;i <= typo.length;i++){
+        setTimeout(function(){
+          $("#typewriter").append(typo[i])
+        },100 * i)
+      }
+      isTyping = false;
+    }
       startTheGame = function(){
       $('#return').hide();
       $('#pikachu').hide();
