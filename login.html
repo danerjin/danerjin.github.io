@@ -168,7 +168,7 @@ span.psw {
       <label for="psw"><b>Password</b></label>
       <input type="password" placeholder="Enter Password" name="psw" required>
       <div>
-      <input type="button" class = 'button' onclick="check(this.form)" value="Login"/>
+      <input type="button" class = 'button' value="Login"/>
       <p>or</p>
       <a href = 'home.html' class = 'button'>play as a guest</a>
       </div>
@@ -194,14 +194,6 @@ window.onclick = function(event) {
         modal.style.display = "none";
     }
 }
-function check(form) { /*function to check userid & password*/
-                if(form.uname.value == "lois" && form.psw.value == "danj1234") {
-                    window.open('file:///Users/xjin/djin/code/html/games/pokemon-game.htm/charizard.htm')/*opens the target page while Id & password matches*/
-                }
-                else {
-                    alert('wrong password or username')
-                }
-            }
 </script>
 
 </body>
