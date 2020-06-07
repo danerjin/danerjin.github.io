@@ -48,6 +48,18 @@
       top:400px;
       z-index: 2;
     }
+      #PikaLandSvg{
+      z-index:1;
+      position: absolute;
+      left:-25px;
+      top:450px;
+    }
+    #CharizardLandSvg{
+      z-index:1;
+      position: absolute;
+      left:900px;
+      top:150px;
+    }
     #electro-ball{
       position: absolute;
       left:200px;
@@ -116,6 +128,18 @@
   <body onload="startTheGame()">
     <div id ='myHealthBar'>pikachu<br><div id = 'myHealthText'>300/300</div></div>
     <div id ='opponentHealthBar'>charizard<br><div id = 'opponentHealthText'>400/400</div></div>
+    <svg id="PikaLandSvg" width="264px" height="77px">
+        <ellipse cx="135" cy="50" rx="100" ry="25"
+                 style="stroke:#c18605;
+                           stroke-width:6px;
+                           fill:#ffbf0f;"></ellipse>
+    </svg>
+    <svg id="CharizardLandSvg" width="264px" height="77px">
+        <ellipse cx="135" cy="50" rx="100" ry="25"
+                 style="stroke:#c18605;
+                           stroke-width:6px;
+                           fill:#ffbf0f;"></ellipse>
+    </svg>
     <img id = 'charizard' src = 'sprites/Charizard.gif' width = '200' alt = 'charizard'>
     <img id = 'pikachu' src = 'sprites/pikachu.gif' width = '200' alt = 'pikachu'>
     <img id = 'opponentMove' src = '' width = '200'>
