@@ -156,12 +156,14 @@
       $('#charizard').fadeIn(1000);
     };
       thunderbolt = function(){
-        opponentHealth-=10;
         $('#myMove').fadeIn();
         $('#myMove').attr('src','sprites/lightning.gif');
         $('#myMove').fadeOut(1000);
         isTyping = true;
         type('you used thunderbolt')
+        opponentHealth-=10;
+        $('#myHealthText').text(myHealth + '/300');
+        $('#opponentHealthText').text(opponentHealth + '/400');
         if(!isTyping){
           OpponentMove();
         }
@@ -172,10 +174,14 @@
               if(ra <= 1.5){
               $('#charizard').attr('src','sprites/mega%20charizard%20y.gif');
               $('#charizard').attr('width',300)
+              $('#myHealthText').text(myHealth + '/300');
+              $('#opponentHealthText').text(opponentHealth + '/400');
             }
             else{
             $('#charizard').attr('src','sprites/mega%20charizard%20x.gif')
             $('#charizard').attr('width',250)
+            $('#myHealthText').text(myHealth + '/300');
+            $('#opponentHealthText').text(opponentHealth + '/400');
           }
             isMegaEvolved = true;
             opponentHealth = 400;
