@@ -135,7 +135,12 @@
     var megaEvolve;
     var isMegaEvolved = false;
     var isTyping = false;
+    var meAttacking = false;
+    var opponentAttacking = false;
     var type = function(typo){
+      isTyping = true;
+      opponentAttacking = false;
+      meAttacking = false;
       $("#typewriter").text('')
       $("button").hide()
       for(let i = 0;i <= typo.length;i++){
@@ -147,6 +152,10 @@
           }
         },100 * i)
       }
+      if(!meAttacking && !isTyping){
+        opponentAttacking = true;
+        opponentMove();
+      }
     }
       startTheGame = function(){
       $('#return').hide();
@@ -156,17 +165,16 @@
       $('#charizard').fadeIn(1000);
     };
       thunderbolt = function(){
+        opponentAttacking = false;
         $('#myMove').fadeIn();
         $('#myMove').attr('src','sprites/lightning.gif');
         $('#myMove').fadeOut(1000);
         isTyping = true;
         type('you used thunderbolt')
+        meAttacking = true;
         opponentHealth-=10;
         $('#myHealthText').text(myHealth + '/300');
         $('#opponentHealthText').text(opponentHealth + '/400');
-        if(!isTyping){
-          OpponentMove();
-        }
      };
             var megaEvolve = function(){
               var r = Math.random();
