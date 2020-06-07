@@ -175,6 +175,9 @@
         opponentHealth-=10;
         $('#myHealthText').text(myHealth + '/300');
         $('#opponentHealthText').text(opponentHealth + '/400');
+        if(!isMegaEvolved && opponentHealth <= 100){
+              megaEvolve();
+            }
      };
             var megaEvolve = function(){
               var r = Math.random();
@@ -208,22 +211,16 @@
                   $("#opponentMove").hide();
                   //myHealth-=10;
           };
-              if(!isMegaEvolved && opponentHealth <= 100){
-                megaEvolve();
-              }
-              else if(myHealth<=0){
+              if(myHealth<=0){
                 $("body").append('<h1>you lost</h1>')
                 $("button").hide();
                 $("#return").show();
               }
-              else if(opponentHealth<=0){
+              if(opponentHealth<=0){
                 $("body").append('<h1>you won!!!!!!!!</h1>')
                 $("button").hide();
                 $("#return").show();
               }
-                else if(!isTyping){
-                  $("button").show()
-                }
               $('#myHealthText').text(myHealth + '/300');
               $('#opponentHealthText').text(opponentHealth + '/400');
             }
