@@ -204,6 +204,9 @@
                 $("button").hide();
                 $("#return").show();
               }
+                else if(!isTyping){
+                  $("button").show()
+                }
               $('#myHealthText').text(myHealth + '/300');
               $('#opponentHealthText').text(opponentHealth + '/400');
             }
