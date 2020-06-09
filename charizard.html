@@ -216,7 +216,6 @@
       <button id = 'Gigavolt-havoc' onclick="tackle()">tackle</button>
     </div>
   </div>
-    <!--<a id = 'return' href='forest11.htm'>go back to main route</a>-->
     <div id = 'typewriter'></div>
     <script src = 'jquery.js'></script>
     <script>
@@ -297,21 +296,19 @@
           $("#return").show();
         }
         if(opponentHealth<=0){
-          $("img").hide();
+          $("#charizard").fadeOut(5000);
 $("#menu").hide();
 $("#myHealthBar").hide();
 $("#opponentHealthBar").hide();
 $("svg").hide();
-type('you won!!!!!')
+type('you won!!!!!!')
 $("#return").show();
         }
           if(!isMegaEvolved && opponentHealth <= 100){
             megaEvolve();
             return
           }
-            setTimeout(function(){
               opponentMove();
-          },3000)
       };
       electroBall = function(){
         $("#opponentMove").hide();
@@ -331,7 +328,8 @@ $("#return").show();
           $('#myMove').hide();
           $("#menu").hide();
           if(myHealth<=0){
-            $("img").hide();
+            $("#pikachu").hide();
+            $("#charizard").hide();
 $("#menu").hide();
 $("#myHealthBar").hide();
 $("#opponentHealthBar").hide();
@@ -340,22 +338,20 @@ type('you lost')
 $("#return").show();
           }
           if(opponentHealth<=0){
-            $("img").hide();
+            $("#charizard").fadeOut(5000);
 $("#menu").hide();
 $("#myHealthBar").hide();
 $("#opponentHealthBar").hide();
 $("svg").hide();
-type('you won!!!!!')
+type('you won!!!!!!')
 $("#return").show();
           }
           if(!isMegaEvolved && opponentHealth <= 100){
             megaEvolve();
             return
           }
-            setTimeout(function(){
               opponentMove();
-          },7000)
-    },3000);
+      },3000);
   };
     voltTackle = function(){
       opponentAttacking = false;
@@ -376,30 +372,30 @@ $("#return").show();
         $("#pikachu").css("animation-name",null);
         $("#menu").hide();
         if(myHealth<=0){
-          $("img").hide();
+          $("#pikachu").fadeOut(5000);
 $("#menu").hide();
 $("#myHealthBar").hide();
 $("#opponentHealthBar").hide();
 $("svg").hide();
 type('you lost')
 $("#return").show();
+
+
         }
         if(opponentHealth<=0){
-          $("img").hide();
+          $("#charizard").fadeOut(5000);
 $("#menu").hide();
 $("#myHealthBar").hide();
 $("#opponentHealthBar").hide();
 $("svg").hide();
-type('you won!!!!!')
+type('you won!!!!!!')
 $("#return").show();
         }
         if(!isMegaEvolved && opponentHealth <= 100){
           megaEvolve();
           return
         }
-        setTimeout(function(){
             opponentMove();
-        },5000)
       },5000)
   };
   tackle = function(){
@@ -420,21 +416,23 @@ $("#return").show();
       $("#pikachu").css("animation-name",null);
       $("#menu").hide();
       if(myHealth<=0){
-        $("img").hide();
+        $("#pikachu").fadeOut(5000);
 $("#menu").hide();
 $("#myHealthBar").hide();
 $("#opponentHealthBar").hide();
 $("svg").hide();
 type('you lost')
 $("#return").show();
+
+
       }
       if(opponentHealth<=0){
-        $("img").hide();
+        $("#charizard").fadeOut(5000);
 $("#menu").hide();
 $("#myHealthBar").hide();
 $("#opponentHealthBar").hide();
 $("svg").hide();
-type('you won!!!!!')
+type('you won!!!!!!')
 $("#return").show();
       }
       if(!isMegaEvolved && opponentHealth <= 100){
@@ -486,21 +484,23 @@ $("#return").show();
                 type('charizard used wildfire');
                 decreaseMyHp(20);
                 if(myHealth<=0){
-                  $("img").hide();
+                  $("#pikachu").fadeOut(5000);
 $("#menu").hide();
 $("#myHealthBar").hide();
 $("#opponentHealthBar").hide();
 $("svg").hide();
 type('you lost')
 $("#return").show();
+
+
                 }
                 if(opponentHealth<=0){
-                  $("img").hide();
+                  $("#charizard").fadeOut(5000);
 $("#menu").hide();
 $("#myHealthBar").hide();
 $("#opponentHealthBar").hide();
 $("svg").hide();
-type('you won!!!!!')
+type('you won!!!!!!')
 $("#return").show();
                 }
                 myTurn();
@@ -511,21 +511,23 @@ $("#return").show();
                   $("#opponentMove").hide();
                   decreaseMyHp(10);
                   if(myHealth<=0){
-                    $("img").hide();
+                    $("#pikachu").fadeOut(5000);
 $("#menu").hide();
 $("#myHealthBar").hide();
 $("#opponentHealthBar").hide();
 $("svg").hide();
 type('you lost')
 $("#return").show();
+
+
                   }
                   if(opponentHealth<=0){
-                    $("img").hide();
+                    $("#charizard").fadeOut(5000);
 $("#menu").hide();
 $("#myHealthBar").hide();
 $("#opponentHealthBar").hide();
 $("svg").hide();
-type('you won!!!!!')
+type('you won!!!!!!')
 $("#return").show();
                   }
                   myTurn();
@@ -537,26 +539,28 @@ $("#return").show();
                   decreaseMyHp(100);
                   decreaseOpponentHp(10);
                   if(myHealth<=0){
-                    $("img").hide();
+                    $("#pikachu").fadeOut(5000);
 $("#menu").hide();
 $("#myHealthBar").hide();
 $("#opponentHealthBar").hide();
 $("svg").hide();
 type('you lost')
 $("#return").show();
+
+
                   }
                   if(opponentHealth<=0){
-                    $("img").hide();
+                    $("#charizard").fadeOut(5000);
 $("#menu").hide();
 $("#myHealthBar").hide();
 $("#opponentHealthBar").hide();
 $("svg").hide();
-type('you won!!!!!')
+type('you won!!!!!!')
 $("#return").show();
                   }
                   setTimeout(function(){
                     myTurn();
-                  },8000)
+                  },10000)
                 }
                 else{
                   $("#opponentMove").hide();
@@ -564,29 +568,29 @@ $("#return").show();
                   decreaseMyHp(100);
                   $("#pikachu").css('animation-name','jump')
                   $("#pikachu").css('animation-duration','3s')
-                  setTimeout(function(){
-                    $("#pikachu").css('animation-name',null)
-                    myTurn();
-                  },8000)
                   if(myHealth<=0){
-                    $("img").hide();
-$("#menu").hide();
-$("#myHealthBar").hide();
-$("#opponentHealthBar").hide();
-$("svg").hide();
-type('you lost')
-$("#return").show();
+                    $("#pikachu").fadeOut(5000);
+                    $("#menu").hide();
+                    $("#myHealthBar").hide();
+                    $("#opponentHealthBar").hide();
+                    $("svg").hide();
+                    type('you lost')
+                    $("#return").show();
                   }
                   if(opponentHealth<=0){
-                    $("img").hide();
-$("#menu").hide();
-$("#myHealthBar").hide();
-$("#opponentHealthBar").hide();
-$("svg").hide();
-type('you won!!!!!')
-$("#return").show();
+                    $("#charizard").fadeOut(5000);
+                    $("#menu").hide();
+                    $("#myHealthBar").hide();
+                    $("#opponentHealthBar").hide();
+                    $("svg").hide();
+                    type('you won!!!!!!')
+                    $("#return").show();
                   }
                 }
+                setTimeout(function(){
+                  $("#pikachu").css('animation-name',null)
+                  myTurn();
+                },10000)
           };
         </script>
       </body>
