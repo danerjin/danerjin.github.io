@@ -45,6 +45,7 @@
       border: 5px ridge;
       background-color: yellow;
       z-index:5;
+      align-items: center;
     }
     #opponentHealthBar{
       position:absolute;
@@ -53,15 +54,22 @@
       border: 5px ridge;
       background-color: red;
       z-index:5;
+      align-items: center;
     }
-    /*.container{
-      width:100px;
+    .container{
+      width:50px;
       background-color: black;
+      color: black;
+      border-radius: 5px;
+      height:10px;
     }
     .bar{
-      width:100px;
-      background-color: green;
-    }*/
+      width:50px;
+      color: lightgreen;
+      background-color: lightgreen;
+      border-radius: 5px;
+      height:10px;
+    }
     #return{
       position: absolute;
       top: 425px;
@@ -180,8 +188,8 @@
     </style>
   </head>
   <body onload = "startTheGame()">
-    <div id ='myHealthBar'>pikachu<br><div id = 'myHealthText'>300/300</div><!--<br><div class = 'container'><div id = 'myHealthGraphic' class = 'bar'></div></div>--></div>
-    <div id ='opponentHealthBar'>charizard<br><div id = 'opponentHealthText'>400/400</div><!--<br><div class = 'container'><div id = 'opponentHealthGraphic' class = 'bar'></div></div>--></div>
+    <div id ='myHealthBar'><div>pikachu<br><div id = 'myHealthText'>300/300</div><div class = 'container'><div id = 'myHealthGraphic' class = 'bar'>  </div></div></div></div>
+    <div id ='opponentHealthBar'><div>charizard<br><div id = 'opponentHealthText'>400/400</div><div class = 'container'><div id = 'opponentHealthGraphic' class = 'bar'>  </div></div></div></div>
     <img id = 'charizard' src = 'sprites/Charizard.gif' width = '200' alt = 'charizard'>
     <img id= 'mega' src = 'sprites/mega%20stone.png' width = '25'>
     <svg id="PikaLandSvg" width="264px" height="77px">
@@ -208,6 +216,7 @@
       <button id = 'Gigavolt-havoc' onclick="tackle()">tackle</button>
     </div>
   </div>
+    <!--<a id = 'return' href='forest11.htm'>go back to main route</a>-->
     <div id = 'typewriter'></div>
     <script src = 'jquery.js'></script>
     <script>
@@ -222,7 +231,6 @@
     var meAttacking = false;
     var opponentAttacking = false;
     var gameOver = function(lost){
-      setTimeout(function(){
         $("img").hide();
         $("#menu").hide();
         $("#myHealthBar").hide();
@@ -236,7 +244,6 @@
         type('you won!')
         $("#return").show();
       }
-  },7000)
 };
     var type = function(typo){
       isTyping = true;
@@ -251,6 +258,24 @@
             isTyping = false;
             $("button").show();
           }
+        },100 * i)
+      }
+    }
+    var decreaseMyHp = function(Hp){
+      for(let i = 0;i < Hp;i++){
+        setTimeout(function(){
+          myHealth--;
+          $('#myHealthText').text(myHealth + '/300');
+          $("#myHealthGraphic").css("width",myHealth/6 + "px");
+        },100 * i)
+      }
+    }
+    var decreaseOpponentHp = function(Hp){
+      for(let i = 0;i < Hp;i++){
+        setTimeout(function(){
+          opponentHealth--;
+          $('#opponentHealthText').text(opponentHealth + '/400');
+          $("#opponentHealthGraphic").css("width",opponentHealth/8 + "px");
         },100 * i)
       }
     }
@@ -274,9 +299,7 @@
         $("#menu").hide();
         type('you used thunderbolt')
         meAttacking = true;
-        opponentHealth-=10;
-        $('#myHealthText').text(myHealth + '/300');
-        $('#opponentHealthText').text(opponentHealth + '/400');
+        decreaseOpponentHp(10);
         $('#myMove').hide();
         $("#menu").hide();
         if(myHealth<=0){
@@ -305,9 +328,7 @@
         $("#menu").hide();
         type('you used electro ball.')
         meAttacking = true;
-        opponentHealth-=50;
-        $('#myHealthText').text(myHealth + '/300');
-        $('#opponentHealthText').text(opponentHealth + '/400');
+        decreaseOpponentHp(50);
         setTimeout(function(){
           $("#myMove").css("animation-name",null);
           $('#myMove').hide();
@@ -338,10 +359,8 @@
       $("#menu").hide();
       type('you used volt tackle. it also damages pikachu')
       meAttacking = true;
-      opponentHealth-=100;
-      myHealth-=10;
-      $('#myHealthText').text(myHealth + '/300');
-      $('#opponentHealthText').text(opponentHealth + '/400');
+      decreaseOpponentHp(100);
+      decreaseMyHp(10);
       setTimeout(function(){
         $('#pikachu').attr('src','sprites/pikachu.gif');
         $('#pikachu').attr('width','200')
@@ -373,9 +392,7 @@
     $("#menu").hide();
     type('you used tackle')
     meAttacking = true;
-    opponentHealth-=10;
-    $('#myHealthText').text(myHealth + '/300');
-    $('#opponentHealthText').text(opponentHealth + '/400');
+    decreaseOpponentHp(10);
     setTimeout(function(){
       $('#pikachu').attr('src','sprites/pikachu.gif');
       $('#pikachu').attr('width','200')
@@ -406,20 +423,15 @@
               if(ra <= 1.5){
               $('#charizard').attr('src','sprites/mega%20charizard%20y.gif');
               $('#charizard').attr('width',300)
-              $('#myHealthText').text(myHealth + '/300');
-              $('#opponentHealthText').text(opponentHealth + '/400');
             }
             else{
             $('#charizard').attr('src','sprites/mega%20charizard%20x.gif')
             $('#charizard').attr('width',250)
             $(".flame").attr('src','sprites/hot%20flame.gif')
-            $('#myHealthText').text(myHealth + '/300');
-            $('#opponentHealthText').text(opponentHealth + '/400');
           }
             isMegaEvolved = true;
             opponentHealth = 400;
-            $('#myHealthText').text(myHealth + '/300');
-            $('#opponentHealthText').text(opponentHealth + '/400');
+            decreaseOpponentHp((400 - opponentHealth) * -1);
               type('charizard mega evolved!his health restored')
             setTimeout(function(){
               opponentMove();
@@ -432,10 +444,8 @@
                   $(".flame").hide();
                   $("#opponentMove").show();
                   $('#opponentMove').attr('src', 'sprites/wildfire.gif');
-                myHealth-=20;
                 type('charizard used wildfire');
-                $('#myHealthText').text(myHealth + '/300');
-                $('#opponentHealthText').text(opponentHealth + '/400');
+                decreaseMyHp(20);
                 if(myHealth<=0){
                   gameOver(true)
                 }
@@ -447,9 +457,7 @@
                   type('charizard used flamethrower');
                   $(".flame").show();
                   $("#opponentMove").hide();
-                  myHealth-=10;
-                  $('#myHealthText').text(myHealth + '/300');
-                  $('#opponentHealthText').text(opponentHealth + '/400');
+                  decreaseMyHp(10);
                   if(myHealth<=0){
                     gameOver(true)
                   }
@@ -461,10 +469,8 @@
                   type('charizard used blast burn');
                   $("#opponentMove").show();
                   $("#opponentMove").attr('src','sprites/blast%20burn.gif')
-                  myHealth-=100;
-                  opponentHealth-=50;
-                  $('#myHealthText').text(myHealth + '/300');
-                  $('#opponentHealthText').text(opponentHealth + '/400');
+                  decreaseMyHp(100);
+                  decreaseOpponentHp(10);
                   if(myHealth<=0){
                     gameOver(true)
                   }
@@ -475,9 +481,7 @@
                 else{
                   $("#opponentMove").hide();
                   type('charizard used seismic toss');
-                  myHealth-=100;
-                  $('#myHealthText').text(myHealth + '/300');
-                  $('#opponentHealthText').text(opponentHealth + '/400');
+                  decreaseMyHp(100);
                   $("#pikachu").css('animation-name','jump')
                   $("#pikachu").css('animation-duration','3s')
                   setTimeout(function(){
