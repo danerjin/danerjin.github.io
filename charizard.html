@@ -215,8 +215,9 @@
       <button id = 'thunder-bolt' onclick="thunderbolt()">thunderbolt</button>
       <button id = 'Gigavolt-havoc' onclick="tackle()">tackle</button>
     </div>
-  </div>
-    <div id = 'typewriter'></div>
+ 
+ </div>
+   <div id = 'typewriter'></div>
     <script src = 'jquery.js'></script>
     <script>
     $(".flame").hide();
@@ -251,6 +252,15 @@
           myHealth--;
           $('#myHealthText').text(myHealth + '/300');
           $("#myHealthGraphic").css("width",myHealth/6 + "px");
+          if(myHealth<=0){
+            $("#pikachu").fadeOut(5000);
+            $("#menu").hide();
+            $("#myHealthBar").hide();
+            $("#opponentHealthBar").hide();
+            $("svg").hide();
+            type('you lost')
+            $("#return").show();
+          }
         },100 * i)
       }
     }
@@ -260,6 +270,15 @@
           opponentHealth--;
           $('#opponentHealthText').text(opponentHealth + '/400');
           $("#opponentHealthGraphic").css("width",opponentHealth/8 + "px");
+          if(opponentHealth<=0){
+            $("#charizard").fadeOut(5000);
+            $("#menu").hide();
+            $("#myHealthBar").hide();
+            $("#opponentHealthBar").hide();
+            $("svg").hide();
+            type('you won!!!!!!')
+            $("#return").show();
+          }
         },100 * i)
       }
     }
@@ -595,4 +614,5 @@ $("#return").show();
         </script>
       </body>
       </html>
+
 
