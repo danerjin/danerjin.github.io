@@ -218,7 +218,7 @@
   </div>
     <!--<a id = 'return' href='forest11.htm'>go back to main route</a>-->
     <div id = 'typewriter'></div>
-    <script src = 'jquery.js'></script>
+    <script src = 'file:///Users/xjin/djin/code/js/jquery.js'></script>
     <script>
     $(".flame").hide();
     $("#menu").hide()
@@ -296,7 +296,7 @@
         $("#flame").hide();
         $('#myMove').show();
         $('#myMove').attr('src','sprites/lightning.png');
-        $("#menu").hide();
+        //$("#menu").hide();
         type('you used thunderbolt')
         meAttacking = true;
         decreaseOpponentHp(10);
@@ -325,7 +325,7 @@
         $('#myMove').attr('width','150')
         $("#myMove").css("animation-name","ram");
         $("#myMove").css("animation-duration","3s");
-        $("#menu").hide();
+        //$("#menu").hide();
         type('you used electro ball.')
         meAttacking = true;
         decreaseOpponentHp(50);
@@ -356,7 +356,7 @@
       $('#pikachu').attr('width','150')
       $("#pikachu").css("animation-name","ram");
       $("#pikachu").css("animation-duration","3s");
-      $("#menu").hide();
+      //$("#menu").hide();
       type('you used volt tackle. it also damages pikachu')
       meAttacking = true;
       decreaseOpponentHp(100);
@@ -437,6 +437,12 @@
               opponentMove();
             },8000)
           };
+          var myTurn = function(){
+            $("#menu").show()
+            $("button").on('click',function(){
+              $("#menu").hide();
+            })
+          }
               var opponentMove = function(){
                 var moves = ['wildfire', 'flamethrower', 'fire punch', 'seismic toss'];
                 var ran = Math.floor(Math.random()*moves.length);
@@ -452,6 +458,7 @@
                 if(opponentHealth<=0){
                   gameOver(false)
                 }
+                myTurn();
               }
                 else if(ran === 1){
                   type('charizard used flamethrower');
@@ -464,6 +471,7 @@
                   if(opponentHealth<=0){
                     gameOver(false)
                   }
+                  myTurn();
                 }
                 else if(ran === 2){
                   type('charizard used blast burn');
@@ -477,6 +485,9 @@
                   if(opponentHealth<=0){
                     gameOver(false)
                   }
+                  setTimeout(function(){
+                    myTurn();
+                  },4000)
                 }
                 else{
                   $("#opponentMove").hide();
@@ -486,6 +497,7 @@
                   $("#pikachu").css('animation-duration','3s')
                   setTimeout(function(){
                     $("#pikachu").css('animation-name',null)
+                    myTurn();
                   },4000)
                   if(myHealth<=0){
                     gameOver(true)
@@ -494,9 +506,7 @@
                     gameOver(false)
                   }
                 }
-                $("#menu").show();
           };
         </script>
       </body>
       </html>
-
