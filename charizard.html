@@ -215,9 +215,8 @@
       <button id = 'thunder-bolt' onclick="thunderbolt()">thunderbolt</button>
       <button id = 'Gigavolt-havoc' onclick="tackle()">tackle</button>
     </div>
- 
- </div>
-   <div id = 'typewriter'></div>
+  </div>
+    <div id = 'typewriter'></div>
     <script src = 'jquery.js'></script>
     <script>
     $(".flame").hide();
@@ -260,6 +259,7 @@
             $("svg").hide();
             type('you lost')
             $("#return").show();
+            return
           }
         },100 * i)
       }
@@ -278,6 +278,7 @@
             $("svg").hide();
             type('you won!!!!!!')
             $("#return").show();
+            return
           }
         },100 * i)
       }
@@ -614,5 +615,6 @@ $("#return").show();
         </script>
       </body>
       </html>
+
 
 
