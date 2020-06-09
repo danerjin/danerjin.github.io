@@ -216,8 +216,9 @@
       <button id = 'Gigavolt-havoc' onclick="tackle()">tackle</button>
     </div>
   </div>
+    <!--<a id = 'return' href='forest11.htm'>go back to main route</a>-->
     <div id = 'typewriter'></div>
-    <script src = 'jquery.js'></script>
+    <script src = 'file:///Users/xjin/djin/code/js/jquery.js'></script>
     <script>
     $(".flame").hide();
     $("#menu").hide()
@@ -229,21 +230,6 @@
     var isTyping = false;
     var meAttacking = false;
     var opponentAttacking = false;
-    var gameOver = function(lost){
-        $("img").hide();
-        $("#menu").hide();
-        $("#myHealthBar").hide();
-        $("#opponentHealthBar").hide();
-        $("svg").hide();
-      if(lost){
-        type('you lost')
-        $("#return").show();
-      }
-      else{
-        type('you won!')
-        $("#return").show();
-      }
-};
     var type = function(typo){
       isTyping = true;
       opponentAttacking = false;
@@ -302,10 +288,22 @@
         $('#myMove').hide();
         $("#menu").hide();
         if(myHealth<=0){
-          gameOver(true)
+          $("img").hide();
+          $("#menu").hide();
+          $("#myHealthBar").hide();
+          $("#opponentHealthBar").hide();
+          $("svg").hide();
+          type('you lost')
+          $("#return").show();
         }
         if(opponentHealth<=0){
-          gameOver(false)
+          $("img").hide();
+$("#menu").hide();
+$("#myHealthBar").hide();
+$("#opponentHealthBar").hide();
+$("svg").hide();
+type('you won!!!!!')
+$("#return").show();
         }
           if(!isMegaEvolved && opponentHealth <= 100){
             megaEvolve();
@@ -333,10 +331,22 @@
           $('#myMove').hide();
           $("#menu").hide();
           if(myHealth<=0){
-            gameOver(true)
+            $("img").hide();
+$("#menu").hide();
+$("#myHealthBar").hide();
+$("#opponentHealthBar").hide();
+$("svg").hide();
+type('you lost')
+$("#return").show();
           }
           if(opponentHealth<=0){
-            gameOver(false)
+            $("img").hide();
+$("#menu").hide();
+$("#myHealthBar").hide();
+$("#opponentHealthBar").hide();
+$("svg").hide();
+type('you won!!!!!')
+$("#return").show();
           }
           if(!isMegaEvolved && opponentHealth <= 100){
             megaEvolve();
@@ -366,10 +376,22 @@
         $("#pikachu").css("animation-name",null);
         $("#menu").hide();
         if(myHealth<=0){
-          gameOver(true)
+          $("img").hide();
+$("#menu").hide();
+$("#myHealthBar").hide();
+$("#opponentHealthBar").hide();
+$("svg").hide();
+type('you lost')
+$("#return").show();
         }
         if(opponentHealth<=0){
-          gameOver(false)
+          $("img").hide();
+$("#menu").hide();
+$("#myHealthBar").hide();
+$("#opponentHealthBar").hide();
+$("svg").hide();
+type('you won!!!!!')
+$("#return").show();
         }
         if(!isMegaEvolved && opponentHealth <= 100){
           megaEvolve();
@@ -398,10 +420,22 @@
       $("#pikachu").css("animation-name",null);
       $("#menu").hide();
       if(myHealth<=0){
-        gameOver(true)
+        $("img").hide();
+$("#menu").hide();
+$("#myHealthBar").hide();
+$("#opponentHealthBar").hide();
+$("svg").hide();
+type('you lost')
+$("#return").show();
       }
       if(opponentHealth<=0){
-        gameOver(false)
+        $("img").hide();
+$("#menu").hide();
+$("#myHealthBar").hide();
+$("#opponentHealthBar").hide();
+$("svg").hide();
+type('you won!!!!!')
+$("#return").show();
       }
       if(!isMegaEvolved && opponentHealth <= 100){
         megaEvolve();
@@ -452,10 +486,22 @@
                 type('charizard used wildfire');
                 decreaseMyHp(20);
                 if(myHealth<=0){
-                  gameOver(true)
+                  $("img").hide();
+$("#menu").hide();
+$("#myHealthBar").hide();
+$("#opponentHealthBar").hide();
+$("svg").hide();
+type('you lost')
+$("#return").show();
                 }
                 if(opponentHealth<=0){
-                  gameOver(false)
+                  $("img").hide();
+$("#menu").hide();
+$("#myHealthBar").hide();
+$("#opponentHealthBar").hide();
+$("svg").hide();
+type('you won!!!!!')
+$("#return").show();
                 }
                 myTurn();
               }
@@ -465,10 +511,22 @@
                   $("#opponentMove").hide();
                   decreaseMyHp(10);
                   if(myHealth<=0){
-                    gameOver(true)
+                    $("img").hide();
+$("#menu").hide();
+$("#myHealthBar").hide();
+$("#opponentHealthBar").hide();
+$("svg").hide();
+type('you lost')
+$("#return").show();
                   }
                   if(opponentHealth<=0){
-                    gameOver(false)
+                    $("img").hide();
+$("#menu").hide();
+$("#myHealthBar").hide();
+$("#opponentHealthBar").hide();
+$("svg").hide();
+type('you won!!!!!')
+$("#return").show();
                   }
                   myTurn();
                 }
@@ -479,10 +537,22 @@
                   decreaseMyHp(100);
                   decreaseOpponentHp(10);
                   if(myHealth<=0){
-                    gameOver(true)
+                    $("img").hide();
+$("#menu").hide();
+$("#myHealthBar").hide();
+$("#opponentHealthBar").hide();
+$("svg").hide();
+type('you lost')
+$("#return").show();
                   }
                   if(opponentHealth<=0){
-                    gameOver(false)
+                    $("img").hide();
+$("#menu").hide();
+$("#myHealthBar").hide();
+$("#opponentHealthBar").hide();
+$("svg").hide();
+type('you won!!!!!')
+$("#return").show();
                   }
                   setTimeout(function(){
                     myTurn();
@@ -499,13 +569,26 @@
                     myTurn();
                   },8000)
                   if(myHealth<=0){
-                    gameOver(true)
+                    $("img").hide();
+$("#menu").hide();
+$("#myHealthBar").hide();
+$("#opponentHealthBar").hide();
+$("svg").hide();
+type('you lost')
+$("#return").show();
                   }
                   if(opponentHealth<=0){
-                    gameOver(false)
+                    $("img").hide();
+$("#menu").hide();
+$("#myHealthBar").hide();
+$("#opponentHealthBar").hide();
+$("svg").hide();
+type('you won!!!!!')
+$("#return").show();
                   }
                 }
           };
         </script>
       </body>
       </html>
+
