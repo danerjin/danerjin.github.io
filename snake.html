@@ -2,7 +2,7 @@
 <html lang = 'en'>
 <head>
   <title>Snake!!!!!!!!!</title>
-  <link rel = 'sortcut icon' type = 'image/png' href = 'snake-icon.png'></link>
+  <link rel = 'sortcut icon' type = 'image/png' href = 'file:///Users/xjin/djin/snake-icon.png'></link>
   <style>
   html, body {
     height: 100%;
@@ -76,7 +76,7 @@
 <!--<button onclick = 'menu()' id = 'home'>home</button>-->
 <canvas width="400" height="400" id="game"></canvas>
 <!--<button onclick = 'instructions()'>how</button>-->
-<script src = 'jquery.js'></script>
+<script src = 'file:///Users/xjin/djin/code/js/jquery.js'></script>
 <script>
 var canvas = document.getElementById('game');
 var context = canvas.getContext('2d');
@@ -85,11 +85,28 @@ $("button").hide();
 $("h1").hide();
 $("h2").hide();
 var gameIsOver = false;
+function sound(src) {
+this.sound = document.createElement("audio");
+this.sound.src = src;
+this.sound.setAttribute("preload", "auto");
+this.sound.setAttribute("controls", "none");
+this.sound.style.display = "none";
+document.body.appendChild(this.sound);
+this.play = function(){
+    this.sound.play();
+}
+this.stop = function(){
+    this.sound.pause();
+}
+}
+var sound2 = new sound('untitled.m4a')
+var sound3 = new sound('eat.m4a')
 var gameOver = function(){
   gameIsOver = true;
   $('#play-again').show();
   $('body').delay(5000);
   $('#game-over').fadeIn(5000);
+  sound2.play();
 };
 var playScene = function(){
     context.clearRect(0,0,400,400)
@@ -117,7 +134,7 @@ var introScene = function(){
     context.clearRect(0,0,400,400)
     i += 1/2;
     context.font = i*1.5+""+'px courier'
-    context.fillText('danerjin presents...',200,200-i/5)
+    context.fillText('Daniel Jin presents...',200,200-i/5)
     if(i === 15){
         clearInterval(j)
         menu();
@@ -199,7 +216,6 @@ function loop() {
   context.fillStyle = 'brown';
   context.fillRect(apple.x+grid/4,apple.y - grid/2,grid/4,grid/2);
   // draw snake one cell at a time
-  context.fillStyle = 'orange';
   snake.cells.forEach(function(cell, index) {
       context.fillStyle = 'orange'
       context.fillRect(cell.x, cell.y, grid, grid);
@@ -208,6 +224,7 @@ function loop() {
     if (cell.x === apple.x && cell.y === apple.y) {
       snake.maxCells++;
       score++;
+      sound3.play();
       // canvas is 400x400 which is 25x25 grids
           apple.x = getRandomInt(0, 25) * grid;
           apple.y = getRandomInt(0, 25) * grid;
@@ -285,3 +302,4 @@ introScene();
 </script>
 </body>
 </html>
+
