@@ -17,18 +17,6 @@
     border: 15px solid grey;
     z-index: 1;
   }
-  #game-over{
-    position: absolute;
-    top: 300px;
-    left:600px;
-    z-index:2;
-  }
-  #score-text{
-    position:absolute;
-    top:0px;
-    right:600px;
-    z-index:3;
-  }
   #play-again{
   cursor: pointer;
   position:absolute;
@@ -69,7 +57,6 @@
   </style>
 </head>
 <body>
-<h1 id = 'game-over'>Game Over</h1>
 <h2 id = 'score-text'></h2>
 <button onclick = 'startTheGame()' id = 'play-again'> play again</button>
 <button onclick = 'startTheGame()' id  = 'start-playing'>start playing</button>
@@ -80,9 +67,7 @@
 <script>
 var canvas = document.getElementById('game');
 var context = canvas.getContext('2d');
-$('#game-over').hide();
 $("button").hide();
-$("h1").hide();
 $("h2").hide();
 var gameIsOver = false;
 function sound(src) {
@@ -103,10 +88,12 @@ var sound2 = new sound('untitled.m4a')
 var sound3 = new sound('eat.m4a')
 var gameOver = function(){
   gameIsOver = true;
-  $('#play-again').show();
-  $('body').delay(5000);
-  $('#game-over').fadeIn(5000);
-  sound2.play();
+  context.font = '60px Courier'
+  context.fillStyle = 'Black'
+  context.textAlign = 'center'
+  context.baseLine = 'middle'
+  context.fillText('Game Over',200,200)
+  sound2.play()
 };
 var playScene = function(){
     context.clearRect(0,0,400,400)
@@ -122,7 +109,7 @@ var menu = function(){
     context.clearRect(0,0,400,400)
     context.font = '40px courier'
     $('button').show();
-    $("h1").hide();
+    $("game-over").hide();
     $("h2").hide();
     $("#play-again").hide()
     context.fillText('Snake!!!!!!',200,200)
@@ -218,6 +205,7 @@ function loop() {
   // draw snake one cell at a time
   snake.cells.forEach(function(cell, index) {
       context.fillStyle = 'orange'
+      //context.fillStyle = 'rgb(140, 94, 33)'
       context.fillRect(cell.x, cell.y, grid, grid);
 
     // snake ate apple
@@ -270,7 +258,11 @@ function loop() {
     snake.dy = grid;
     snake.dx = 0;
   }})
-  $('#score-text').text('Score: '+score)
+  context.font = '20px Courier'
+  context.fillStyle = 'Black'
+  context.textAlign = 'left'
+  context.baseLine = 'top'
+  context.fillText('Score:' + score,16,16)
 }
 startTheGame = function(){
   playScene();
@@ -302,4 +294,5 @@ introScene();
 </script>
 </body>
 </html>
+
 
