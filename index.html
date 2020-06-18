@@ -32,7 +32,105 @@
   </head>
   <body>
   <h1>welcome, guest user</h1>
-  <a target = '_blank' href = 'snake.html'><button>play snake</button></a>
-  <a target = '_blank' href = 'login.html'><button>play pokemon</button></a>
+  <!DOCTYPE html>
+<html>
+<head>
+<title>search</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+#myInput {
+  background-image: url('file:///Users/xjin/djin/search.png');
+  background-position: 10px 12px;
+  background-repeat: no-repeat;
+  width: 100%;
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+#myUL {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position:absolute;
+  top:150px;
+}
+
+#myUL li a {
+  border: 1px solid #ddd;
+  margin-top: -1px; /* Prevent double borders */
+  background-color: #f6f6f6;
+  padding: 12px;
+  text-decoration: none;
+  font-size: 18px;
+  color: black;
+  display: block
+}
+
+#myUL li a:hover:not(.header) {
+  background-color: #eee;
+}
+#myInput{
+  width: 130px;
+  transition-duration: 0.8s;
+  transition-timing-function: ease-in-out;
+  position:absolute;
+  top:70px;
+}
+#myInput:hover {
+   box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+/* When the input field gets focus, change its width to 100% */
+#myInput:focus {
+  width: 800px;
+}
+#img{
+  position:absolute;
+  top:80px;
+  left:20px;
+}
+</style>
+</head>
+<body>
+
+<img src = 'google.png' width = '150'><br>
+<input type="text" id="myInput" onkeyup ="myFunction()" placeholder="Search for stuff..." title="seach">
+<img id = 'img' src = 'search.png' width = '25'>
+</div>
+<ul id="myUL">
+  <li><a<a target = '_blank' href="snake.html">snake</a></li>
+  <li><<a target = '_blank' href="pong.htm">pong</a></li>
+
+  <li><a target = '_blank' href="log%20in.htm">pokemon</a></li>
+  <li><a target = '_blank' href="PARKOUR.htm">parkour</a></li>
+
+  <li><a <a target = '_blank' href="hangman.htm">hangman</a></li>
+  <li><a href="#">Christina</a></li>
+  <li><a href="#">Cindy</a></li>
+</ul>
+
+<script>
+function myFunction() {
+    var input, filter, ul, li, a, i, txtValue;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("myUL");
+    li = ul.getElementsByTagName("li");
+    for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        txtValue = a.textContent || a.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+    }
+}
+</script>
+
+</body>
+</html>
+
   </body>
 </html>
