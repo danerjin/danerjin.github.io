@@ -94,6 +94,7 @@ var gameOver = function(){
   context.baseLine = 'middle'
   context.fillText('Game Over',200,200)
   sound2.play()
+  $("#play-again").hide()
 };
 var playScene = function(){
     context.clearRect(0,0,400,400)
