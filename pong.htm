@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang = 'en'>
+    <head>
+        <meta charset="utf-8">
+        <title>Pong!!!!!!</title>
+        <style>
+        canvas{
+          border:10px solid grey;
+        }
+        </style>
+    </head>
+    <body>
+      <canvas id = 'canvas' width = '400' height = '400'></canvas>
+      <script>
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var a = 0.1;
+        var gameIsOver = false;
+        var gameOver = function(){
+          gameIsOver = true;
+          ctx.font = '60px Courier'
+          ctx.fillStyle = 'Black'
+          ctx.textAlign = 'middle'
+          ctx.fillText('Game Over',50,100)
+        }
+        var paddle = function(x,y,w,h){
+          this.x = x;
+          this.y = y;
+          this.w = w;
+          this.h = h;
+        }
+        paddle.prototype.draw = function(){
+          ctx.fillStyle = 'blue';
+          ctx.fillRect(this.x,this.y,this.w,this.h);
+        }
+        paddle.prototype.right = function(){
+          this.x=this.x+a;
+        }
+        paddle.prototype.left = function(){
+          this.x=this.x-a;
+        }
+        var ball = function(x,y,xSpeed,ySpeed){
+          this.x = x;
+          this.y = y;
+          this.xSpeed = xSpeed;
+          this.ySpeed = ySpeed;
+        }
+        ball.prototype.draw = function(){
+          ctx.fillStyle = 'green';
+          ctx.fillRect(this.x,this.y,10,10);
+        }
+        ball.prototype.move = function(){
+          this.x+=this.xSpeed;
+          this.y+=this.ySpeed;
+        }
+        ball.prototype.bounce = function(){
+          if(this.x === 0 || this.x === 400){
+            this.xSpeed = -this.xSpeed;
+          }
+          else if(this.y === 0 || this.y === 400){
+            this.ySpeed = -this.ySpeed;
+          }
+          else if(this.x > player.x && this.x < player.x +player.w && this.y >= player.y-player.h){
+            this.ySpeed = -this.ySpeed;
+          }
+        }
+        var player = new paddle(200,375,50,10);
+        var cube = new ball(200,100,4,1);
+        var id = function(){
+          ctx.clearRect(0,0,400,400);
+          if(!gameIsOver){
+          requestAnimationFrame(id)
+        }
+          document.addEventListener('keydown', function(e) {
+            if (e.which === 37) {
+              player.left();
+            }
+              else if (e.which === 39) {
+                player.right();
+              }
+          })
+          player.draw();
+          cube.draw();
+          cube.move();
+          cube.bounce();
+            if(cube.y > 390){
+              gameOver();
+            }
+        }
+        requestAnimationFrame(id)
+      </script>
+    </body>
+</html>
