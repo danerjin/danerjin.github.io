@@ -205,7 +205,7 @@
     <!--<a id = 'return' href='forest11.htm'>go back to main route</a>-->
     <div id = 'typewriter'></div>
   </div>
-    <script src = 'jquery.js'></script>
+    <script src = 'file:///Users/xjin/djin/code/js/jquery.js'></script>
     <script>
     var theme = document.getElementById('theme')
     $(".flame").hide();
@@ -268,7 +268,7 @@
         /*else{
           i++
         }*/
-      },100 * i)
+      },50 * i)
     }
   }
     var decreaseOpponentHp = function(Hp){
@@ -290,9 +290,24 @@
           /*else{
             j++;
           }*/
-        },100 * j)
+        },50 * j)
         }
       }
+      var increaseOpponentHp = function(Hp){
+        for(let j = 0;j < Hp;j++){
+            setTimeout(function(){
+            opponentHealth+=1;
+            $('#opponentHealthText').text(opponentHealth + '/400');
+            $("#opponentHealthGraphic").css("width",opponentHealth/8 + "px");
+            if(opponentHealth>=400){
+              opponentHealth = 399;
+            }
+            /*else{
+              j++;
+            }*/
+          },10 * j)
+          }
+        }
       startTheGame = function(){
       $('#return').hide();
       $('#pikachu').hide();
@@ -338,7 +353,7 @@
             $(".flame").attr('src','sprites/hot%20flame.gif')
           }
             isMegaEvolved = true;
-            opponentHealth = 411;
+            increaseOpponentHp(399);
               type('charizard mega evolved!his health restored')
             setTimeout(function(){
               opponentMove();
@@ -500,3 +515,4 @@ $("#return").show();
         </script>
       </body>
       </html>
+
