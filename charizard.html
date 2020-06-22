@@ -265,11 +265,11 @@
           i = Hp;
           return
         }
-        else if(myHealth >= 75){
+        else if(myHealth <= 75){
           $("#myHealthGraphic").css('background-color','red')
           $("#myHealthGraphic").css('color','red')
         }
-        else if(myHealth >= 150){
+        else if(myHealth <= 150){
           $("#myHealthGraphic").css('background-color','yellow')
           $("#myHealthGraphic").css('color','yellow')
         }
@@ -292,11 +292,11 @@
             $("#return").show();
             j = Hp;
           }
-          else if(opponentHealth >= 100){
+          else if(opponentHealth <= 100){
             $("#opponenHealthGraphic").css('background-color','red')
             $("#opponenHealthGraphic").css('color','red')
           }
-          else if(myHealth >= 200){
+          else if(opponentHealth <= 200){
             $("#opponentHealthGraphic").css('background-color','yellow')
             $("#opponenHealthGraphic").css('color','yellow')
           }
