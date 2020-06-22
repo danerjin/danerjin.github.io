@@ -265,9 +265,14 @@
           i = Hp;
           return
         }
-        /*else{
-          i++
-        }*/
+        else if(myHealth >= 75){
+          $("#myHealthGraphic").css('background-color','red')
+          $("#myHealthGraphic").css('color','red')
+        }
+        else if(myHealth >= 150){
+          $("#myHealthGraphic").css('background-color','yellow')
+          $("#myHealthGraphic").css('color','yellow')
+        }
       },50 * i)
     }
   }
@@ -287,9 +292,14 @@
             $("#return").show();
             j = Hp;
           }
-          /*else{
-            j++;
-          }*/
+          else if(opponentHealth >= 100){
+            $("#opponenHealthGraphic").css('background-color','red')
+            $("#opponenHealthGraphic").css('color','red')
+          }
+          else if(myHealth >= 200){
+            $("#opponentHealthGraphic").css('background-color','yellow')
+            $("#opponenHealthGraphic").css('color','yellow')
+          }
         },50 * j)
         }
       }
@@ -302,9 +312,6 @@
             if(opponentHealth > 400){
               opponentHealth = 400;
             }
-            /*else{
-              j++;
-            }*/
           },10 * j)
           }
         }
