@@ -3,42 +3,16 @@
   <head>
     <title>games website</title>
     <link rel = 'shortcut icon' type = 'image/png' href = 'game.png'></link>
-    <style>
-    button {
-      padding:10px;
-      display: inline-block;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      outline: none;
-      color: #fff;
-      background-color: #4CAF50;
-      border: none;
-      border-radius: 15px;
-      box-shadow: 0 5px #999;
-      transition-duration: 0.4s;
-    }
-
-    button:hover {
-      background-color: #f44336;
-    }
-
-    button:active {
-      background-color: #3e8e41;
+    
       box-shadow: 0 2px #666;
       transform: translateY(4px);
     }
-    </style>
-  </head>
-  <body>
-  <h1>welcome, guest user</h1>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
+    <style>
 #myInput {
   background-image: url('search.png');
   background-position: 10px 12px;
+  background-size: 20px 20px;
   background-repeat: no-repeat;
-  background-size:10px 10px;
   width: 100%;
   font-size: 16px;
   padding: 12px 20px 12px 40px;
@@ -51,7 +25,7 @@
   padding: 0;
   margin: 0;
   position:absolute;
-  top:250px;
+  top:150px;
 }
 
 #myUL li a {
@@ -73,7 +47,7 @@
   transition-duration: 0.8s;
   transition-timing-function: ease-in-out;
   position:absolute;
-  top:170px;
+  top:70px;
 }
 #myInput:hover {
    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
@@ -82,18 +56,11 @@
 #myInput:focus {
   width: 800px;
 }
-#img{
-  position:absolute;
-  top:180px;
-  left:20px;
-}
 </style>
 </head>
 <body>
-
-<img src = 'Google.png' width = '150'><br>
+  <img src = 'Google.png' width = '150'><br>
 <input type="text" id="myInput" onkeyup ="myFunction()" placeholder="Search for stuff..." title="seach">
-<img id = 'img' src = 'search.png' width = '25'>
 </div>
 <ul id="myUL">
   <li><a href="snake.html">snake</a></li>
