@@ -405,6 +405,7 @@
             },3000);
             }
             else if(num === 2){
+              $("#pikachu").css("animation-name","none");
               $("#opponentMove").hide();
               $(".flame").hide();
               $('#pikachu').attr('src','sprites/volt.png');
@@ -429,6 +430,7 @@
                   },5000);
             }
             else if(num === 3){
+              $("#pikachu").css("animation-name","none");
               $("#opponentMove").hide();
               $("#flame").hide();
               $('#pikachu').attr('src','sprites/tackle.png');
@@ -506,6 +508,7 @@ $("#return").show();
                   },5000)
                 }
                 else{
+                  $("#pikachu").css("animation-name","none");
                   $("#opponentMove").hide();
                   type('charizard used seismic toss');
                   decreaseMyHp(100);
