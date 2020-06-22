@@ -206,7 +206,7 @@
     <!--<a id = 'return' href='forest11.htm'>go back to main route</a>-->
     <div id = 'typewriter'></div>
   </div>
-    <script src = 'file:///Users/xjin/djin/code/js/jquery.js'></script>
+    <script src = 'jquery.js'></script>
     <script>
     var theme = document.getElementById('theme')
     $("#menu").hide()
@@ -364,6 +364,7 @@
             if(num === 0){
               $("#opponentMove").hide();
               $("#flame").hide();
+              $("#myMove").css("animation-name","none");
               $('#myMove').show();
               $('#myMove').attr('src','sprites/lightning.png');
               //$("#menu").hide();
@@ -393,7 +394,7 @@
               meAttacking = true;
               decreaseOpponentHp(50);
               setTimeout(function(){
-                $("#myMove").css("animation-name",null);
+                $("#myMove").css("animation-name","none");
                 $('#myMove').hide();
                 $("#menu").hide();
                 if(!isMegaEvolved && opponentHealth <= 100){
@@ -418,7 +419,7 @@
               setTimeout(function(){
                 $('#pikachu').attr('src','sprites/pikachu.gif');
                 $('#pikachu').attr('width','200')
-                $("#pikachu").css("animation-name",null);
+                $("#pikachu").css("animation-name","none");
                 $("#menu").hide();
                 if(!isMegaEvolved && opponentHealth <= 100){
                   megaEvolve();
@@ -441,7 +442,7 @@
               setTimeout(function(){
                 $('#pikachu').attr('src','sprites/pikachu.gif');
                 $('#pikachu').attr('width','200')
-                $("#pikachu").css("animation-name",null);
+                $("#pikachu").css("animation-name","none");
                 $("#menu").hide();
                 if(!isMegaEvolved && opponentHealth <= 100){
                   megaEvolve();
@@ -519,6 +520,3 @@ $("#return").show();
         </script>
       </body>
       </html>
-
-
-
