@@ -206,7 +206,7 @@
     <!--<a id = 'return' href='forest11.htm'>go back to main route</a>-->
     <div id = 'typewriter'></div>
   </div>
-    <script src = 'jquery.js'></script>
+    <script src = 'file:///Users/xjin/djin/code/js/jquery.js'></script>
     <script>
     var theme = document.getElementById('theme')
     $("#menu").hide()
@@ -311,6 +311,18 @@
             $("#opponentHealthGraphic").css("width",opponentHealth/8 + "px");
             if(opponentHealth > 400){
               opponentHealth = 400;
+            }
+            else if(opponentHealth <= 100){
+              $("#opponenHealthGraphic").css('background-color','red')
+              $("#opponenHealthGraphic").css('color','red')
+            }
+            else if(opponentHealth <= 200){
+              $("#opponentHealthGraphic").css('background-color','yellow')
+              $("#opponenHealthGraphic").css('color','yellow')
+            }
+            else if(opponentHealth > 200){
+              $("#opponentHealthGraphic").css('background-color','lightgreen')
+              $("#opponenHealthGraphic").css('color','lightgreen')
             }
           },10 * j)
           }
