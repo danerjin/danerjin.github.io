@@ -370,7 +370,7 @@
           var myTurn = function(num){
             if(num === 0){
               $("#opponentMove").hide();
-              $("#flame").hide();
+              $(".flame").hide();
               $("#myMove").css("animation-name","none");
               $('#myMove').show();
               $('#myMove').attr('src','sprites/lightning.png');
@@ -485,6 +485,7 @@
                   $("#menu").show()
                 }
                 else if(ran === 2){
+                  $(".flame").hide()
                   type('charizard used blast burn');
                   $("#opponentMove").show();
                   $("#opponentMove").attr('src','sprites/blast%20burn.gif')
