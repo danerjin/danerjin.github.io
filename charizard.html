@@ -20,10 +20,6 @@
       50%{top:10px}
       100%{top:400px}
     }
-    /*body{
-      background-image: url('sprites/background.png');
-      background-repeat: no-repeat;
-    }*/
     .game{
       background-image: url('sprites/background.png');
       background-size: 100% 100%;
@@ -142,6 +138,7 @@
       position:absolute;
       left:350px;
       top:350px;
+      display:none;
     }
     #typewriter{
       color: white;
@@ -202,13 +199,11 @@
     </div>
     <audio id="theme" src="" preload="auto">
   </div>
-    <!--<a id = 'return' href='forest11.htm'>go back to main route</a>-->
     <div id = 'typewriter'></div>
   </div>
-    <script src = 'file:///Users/xjin/djin/code/js/jquery.js'></script>
+    <script src = 'jquery.js'></script>
     <script>
     var theme = document.getElementById('theme')
-    $(".flame").hide();
     $("#menu").hide()
     $("#mega").hide()
     var opponentHealth = 400;
@@ -357,7 +352,7 @@
               type('charizard mega evolved!his health restored')
             setTimeout(function(){
               opponentMove();
-            },5000)
+            },6000)
       };
           var myTurn = function(num){
             if(num === 0){
@@ -515,4 +510,5 @@ $("#return").show();
         </script>
       </body>
       </html>
+
 
