@@ -20,6 +20,10 @@
       50%{top:10px}
       100%{top:400px}
     }
+    /*body{
+      background-image: url('sprites/background.png');
+      background-repeat: no-repeat;
+    }*/
     .game{
       background-image: url('sprites/background.png');
       background-size: 100% 100%;
@@ -199,9 +203,10 @@
     </div>
     <audio id="theme" src="" preload="auto">
   </div>
+    <!--<a id = 'return' href='forest11.htm'>go back to main route</a>-->
     <div id = 'typewriter'></div>
   </div>
-    <script src = 'jquery.js'></script>
+    <script src = 'file:///Users/xjin/djin/code/js/jquery.js'></script>
     <script>
     var theme = document.getElementById('theme')
     $("#menu").hide()
@@ -291,11 +296,11 @@
       var increaseOpponentHp = function(Hp){
         for(let j = 0;j < Hp;j++){
             setTimeout(function(){
-            opponentHealth+=1;
+            opponentHealth++;
             $('#opponentHealthText').text(opponentHealth + '/400');
             $("#opponentHealthGraphic").css("width",opponentHealth/8 + "px");
-            if(opponentHealth>=400){
-              opponentHealth = 399;
+            if(opponentHealth > 400){
+              opponentHealth = 400;
             }
             /*else{
               j++;
@@ -348,11 +353,12 @@
             $(".flame").attr('src','sprites/hot%20flame.gif')
           }
             isMegaEvolved = true;
-            increaseOpponentHp(399);
+            increaseOpponentHp(400 - opponentHealth);
               type('charizard mega evolved!his health restored')
+              $("#menu").hide()
             setTimeout(function(){
               opponentMove();
-            },6000)
+            },5000)
       };
           var myTurn = function(num){
             if(num === 0){
@@ -364,12 +370,15 @@
               type('you used thunderbolt')
               meAttacking = true;
               decreaseOpponentHp(10);
-              $('#myMove').hide();
               $("#menu").hide();
                 if(!isMegaEvolved && opponentHealth <= 100){
                   megaEvolve();
                   return
                 }
+                setTimeout(function(){
+                  $('#myMove').hide();
+                  opponentMove()
+                },3000);
             }
             else if(num === 1){
               $("#opponentMove").hide();
@@ -493,7 +502,7 @@ $("#return").show();
                   }
                   setTimeout(function(){
                     $("#menu").show()
-                  },10000)
+                  },5000)
                 }
                 else{
                   $("#opponentMove").hide();
@@ -505,10 +514,11 @@ $("#return").show();
                 setTimeout(function(){
                   $("#pikachu").css('animation-name',null)
                   $("#menu").show()
-                },10000)
+                },5000)
               }
         </script>
       </body>
       </html>
+
 
 
