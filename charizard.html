@@ -213,7 +213,7 @@
     <!--<a id = 'return' href='forest11.htm'>go back to main route</a>-->
     <div id = 'typewriter'></div>
   </div>
-    <script src = 'jquery.js'></script>
+    <script src = 'file:///Users/xjin/djin/code/js/jquery.js'></script>
     <script>
     var theme = document.getElementById('theme')
     $("#menu").hide()
@@ -265,7 +265,9 @@
             $("#opponentHealthBar").hide();
             $("svg").hide();
             if(!gameIsOver){
-              type('you lost')
+              setTimeout(function(){
+                type('you lost')
+              },1000);
             }
             gameIsOver = true;
             $("#return").show();
@@ -301,9 +303,9 @@
             $("#myHealthBar").hide();
             $("#opponentHealthBar").hide();
             $("svg").hide();
-            if(!gameIsOver){
-              type('you won!!!!!!')
-            }
+            setTimeout(function(){
+              type('you won!!!!!!!!!!!!!!')
+            },1000);
             gameIsOver = true;
             $("#return").show();
             clearTimeout(id)
@@ -559,4 +561,5 @@ $("#return").show();
         </script>
       </body>
       </html>
+
 
