@@ -30,6 +30,7 @@
       background-repeat: no-repeat;
       height: 600px;
       width: 1250px;
+      /*display: none;*/
     }
     #moves{
       z-index: 6;
@@ -223,6 +224,7 @@
     var isTyping = false;
     var meAttacking = false;
     var opponentAttacking = false;
+    var gameIsOver = false;
     function sound(src) {
     this.sound = document.createElement("audio");
     this.sound.src = src;
@@ -255,50 +257,63 @@
     }
     var decreaseMyHp = function(Hp){
       for(let i = 0;i < Hp;i ++){
-        setTimeout(function(){
+        var id = setTimeout(function(){
+          if(myHealth<=0){
+            $("#pikachu").fadeOut(5000);
+            $("#menu").hide();
+            $("#myHealthBar").hide();
+            $("#opponentHealthBar").hide();
+            $("svg").hide();
+            if(!gameIsOver){
+              type('you lost')
+            }
+            gameIsOver = true;
+            $("#return").show();
+            clearTimeout(id)
+            $("#menu").hide()
+            return
+          }
           myHealth--;
           $('#myHealthText').text(myHealth + '/300');
           $("#myHealthGraphic").css("width",myHealth/6 + "px");
-          if(myHealth<=0){
-          $("#pikachu").fadeOut(5000);
-          $("#menu").hide();
-          $("#myHealthBar").hide();
-          $("#opponentHealthBar").hide();
-          $("svg").hide();
-          type('you lost')
-          $("#return").show();
-          i = Hp;
-          return
-        }
-        else if(myHealth <= 75){
-          $("#myHealthGraphic").css('background-color','red')
-          $("#myHealthGraphic").css('color','red')
-        }
-        else if(myHealth <= 150){
-          $("#myHealthGraphic").css('background-color','yellow')
-          $("#myHealthGraphic").css('color','yellow')
-        }
+          if(myHealth <= 75){
+            $("#myHealthGraphic").css('background-color','red')
+            $("#myHealthGraphic").css('color','red')
+          }
+          else if(myHealth <= 150){
+            $("#myHealthGraphic").css('background-color','yellow')
+            $("#myHealthGraphic").css('color','yellow')
+          }
       },50 * i)
+    }
+    if(!gameIsOver){
+      setTimeout(function(){
+        $("#menu").show()
+      },3000)
     }
   }
     var decreaseOpponentHp = function(Hp){
       for(let j = 0;j < Hp;j++){
-          setTimeout(function(){
-          opponentHealth--;
-          $('#opponentHealthText').text(opponentHealth + '/400');
-          $("#opponentHealthGraphic").css("width",opponentHealth/8 + "px");
+          var id = setTimeout(function(){
           if(opponentHealth<=0){
             $("#charizard").fadeOut(5000);
             $("#menu").hide();
             $("#myHealthBar").hide();
             $("#opponentHealthBar").hide();
             $("svg").hide();
-            type('you won!!!!!!')
+            if(!gameIsOver){
+              type('you won!!!!!!')
+            }
+            gameIsOver = true;
             $("#return").show();
-            j = Hp;
+            clearTimeout(id)
+            $("#menu").hide()
             return
           }
-          else if(opponentHealth <= 100){
+          opponentHealth--;
+          $('#opponentHealthText').text(opponentHealth + '/400');
+          $("#opponentHealthGraphic").css("width",opponentHealth/8 + "px");
+          if(opponentHealth <= 100){
             $("#opponenHealthGraphic").css('background-color','red')
             $("#opponenHealthGraphic").css('color','red')
           }
@@ -307,6 +322,11 @@
             $("#opponenHealthGraphic").css('color','yellow')
           }
         },50 * j)
+        }
+        if(!gameIsOver){
+          setTimeout(function(){
+            $("#menu").show()
+          },3000)
         }
       }
       var increaseOpponentHp = function(Hp){
@@ -489,14 +509,12 @@
                   $('#opponentMove').attr('src', 'sprites/wildfire.gif');
                 type('charizard used wildfire');
                 decreaseMyHp(20);
-                $("#menu").show()
               }
                 else if(ran === 1){
                   type('charizard used flamethrower');
                   $(".flame").show();
                   $("#opponentMove").hide();
                   decreaseMyHp(10);
-                  $("#menu").show()
                 }
                 else if(ran === 2){
                   $(".flame").hide()
@@ -525,9 +543,6 @@ $("svg").hide();
 type('you won!!!!!!')
 $("#return").show();
                   }
-                  setTimeout(function(){
-                    $("#menu").show()
-                  },5000)
                 }
                 else{
                   $("#pikachu").css("animation-name","none");
@@ -539,9 +554,9 @@ $("#return").show();
                 }
                 setTimeout(function(){
                   $("#pikachu").css('animation-name',null)
-                  $("#menu").show()
                 },5000)
               }
         </script>
       </body>
       </html>
+
