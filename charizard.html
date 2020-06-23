@@ -182,6 +182,12 @@
     #theme{
       display: none;
     }
+    #mega{
+      position: absolute;
+      top:300px;
+      left:500px;
+      display: none;
+    }
     </style>
   </head>
   <body onload = 'startTheGame()'>
@@ -189,7 +195,7 @@
     <div id ='myHealthBar'><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div>pikachu<br><div id = 'myHealthText'>300/300</div><div class = 'container'><div id = 'myHealthGraphic' class = 'bar'>  </div></div></div></div>
     <div id ='opponentHealthBar'><div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div></div><div>charizard<br><div id = 'opponentHealthText'>400/400</div><div class = 'container'><div id = 'opponentHealthGraphic' class = 'bar'>  </div></div></div></div>
     <img id = 'charizard' src = 'sprites/Charizard.gif' width = '200' alt = 'charizard'>
-    <img id= 'mega' src = 'sprites/mega%20stone.png' width = '25'>
+    <img id= 'mega' src = 'sprites/mega%20stone.png' width = '100'>
     <img id = 'pikachu' src = 'sprites/pikachu.gif' width = '200' alt = 'pikachu'>
     <img id = 'opponentMove' src = '' width = '200'>
     <img class = 'flame' src = 'sprites/flamethrower.gif'>
@@ -210,7 +216,6 @@
     <script>
     var theme = document.getElementById('theme')
     $("#menu").hide()
-    $("#mega").hide()
     var opponentHealth = 400;
     var myHealth = 300;
     var megaEvolve;
@@ -355,12 +360,7 @@
     myTurn(3)
 };
             var megaEvolve = function(){
-              for(var i = 0;i < 50;i++){
               $("#mega").show()
-              setTimeout(function(){
-              $("#mega").hide()
-            },i*50);
-            }
               var r = Math.random();
               var ra = r*3;
               if(ra <= 1.5){
@@ -377,6 +377,7 @@
               type('charizard mega evolved!his health restored')
               $("#menu").hide()
             setTimeout(function(){
+              $("#mega").hide()
               opponentMove();
             },5000)
       };
