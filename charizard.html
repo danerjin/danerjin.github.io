@@ -264,11 +264,11 @@
               $("#myHealthBar").hide();
               $("#opponentHealthBar").hide();
               $("svg").hide();
-              setTimeout(function(){
               if(!gameIsOver){
-                type('you lost')
+                setTimeout(function(){
+                  type('you lost')
+                },750);
               }
-            },750);
             gameIsOver = true;
             $("#return").show();
             clearTimeout(id)
@@ -303,11 +303,11 @@
             $("#myHealthBar").hide();
             $("#opponentHealthBar").hide();
             $("svg").hide();
-            setTimeout(function(){
               if(!gameIsOver){
-                type('you won!!!!!!!!!!!!!!')
+                setTimeout(function(){
+                  type('you won!!!!!!!!!!!!!!')
+                },750);
               }
-            },750);
             gameIsOver = true;
             $("#return").show();
             clearTimeout(id)
@@ -569,6 +569,7 @@ $("#return").show();
         </script>
       </body>
       </html>
+
 
 
 
