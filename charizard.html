@@ -259,16 +259,16 @@
       for(let i = 0;i < Hp;i ++){
         var id = setTimeout(function(){
           if(myHealth<=0){
-            $("#pikachu").fadeOut(5000);
-            $("#menu").hide();
-            $("#myHealthBar").hide();
-            $("#opponentHealthBar").hide();
-            $("svg").hide();
-            if(!gameIsOver){
+              $("#pikachu").fadeOut(5000);
+              $("#menu").hide();
+              $("#myHealthBar").hide();
+              $("#opponentHealthBar").hide();
+              $("svg").hide();
               setTimeout(function(){
+              if(!gameIsOver){
                 type('you lost')
-              },500);
-            }
+              }
+            },750);
             gameIsOver = true;
             $("#return").show();
             clearTimeout(id)
@@ -304,8 +304,10 @@
             $("#opponentHealthBar").hide();
             $("svg").hide();
             setTimeout(function(){
-              type('you won!!!!!!!!!!!!!!')
-            },500);
+              if(!gameIsOver){
+                type('you won!!!!!!!!!!!!!!')
+              }
+            },750);
             gameIsOver = true;
             $("#return").show();
             clearTimeout(id)
@@ -421,7 +423,9 @@
                 }
                 setTimeout(function(){
                   $('#myMove').hide();
-                  opponentMove()
+                  if(!gameIsOver){
+                    opponentMove()
+                  }
                 },3000);
             }
             else if(num === 1){
@@ -444,7 +448,9 @@
                   megaEvolve();
                   return
                 }
-                    opponentMove();
+                if(!gameIsOver){
+                  opponentMove();
+                }
             },3000);
             }
             else if(num === 2){
@@ -469,7 +475,9 @@
                   megaEvolve();
                   return
                 }
-                    opponentMove();
+                if(!gameIsOver){
+                  opponentMove()
+                }
                   },5000);
             }
             else if(num === 3){
@@ -493,9 +501,9 @@
                   megaEvolve();
                   return
                 }
-                setTimeout(function(){
-                    opponentMove();
-                },3000)
+                  if(!gameIsOver){
+                    opponentMove()
+                  }
               },3000)
             }
             $("button").on('click',function(){
@@ -561,5 +569,6 @@ $("#return").show();
         </script>
       </body>
       </html>
+
 
 
