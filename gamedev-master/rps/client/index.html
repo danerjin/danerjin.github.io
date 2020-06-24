@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>RPS</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+    #say {
+      padding:5px;
+      display: inline-block;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      outline: none;
+      color: #fff;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 5px #999;
+      transition-duration: 0.4s;
+    }
+
+    #say:hover {
+      background-color: #f44336;
+    }
+
+    #say:active {
+      background-color: #3e8e41;
+      box-shadow: 0 2px #666;
+      transform: translateY(4px);
+    }
+    </style>
+  </head>
+  <body>
+    <div class="rps-wrapper">
+      <ul id="events"></ul>
+      <div class="controls">
+        <div class="chat-wrapper">
+          <form id="chat-form">
+            <input id="chat" autocomplete="off" title="chat"/>
+            <button id="say">Say</button>
+          </form>
+        </div>
+
+        <div class="button-wrapper">
+          <button id="rock" class="turn">Rock</button>
+          <button id="paper" class="turn">Paper</button>
+          <button id="scissors" class="turn">Scissors</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="src/client.js"></script>
+  </body>
+</html>
