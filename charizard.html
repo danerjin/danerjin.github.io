@@ -107,7 +107,7 @@
     }
     #mega{
       position: absolute;
-      left:950px;
+      right:20%;
       top:100px;
       z-index: 2;
     }
@@ -165,7 +165,7 @@
     }
     #mega{
       position: absolute;
-      top:300px;
+      top:10%;
       right:20%;
       display: none;
     }
@@ -197,7 +197,7 @@
     <div id ='myHealthBar'><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div><div id = 'myName'>pikachu</div><div id = 'myHealthText'>300/300</div><div class = 'container'><div id = 'myHealthGraphic' class = 'bar'>  </div></div><span class = 'mega2 mega'></span></div></div>
     <div id ='opponentHealthBar'><div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div></div><div><div id = 'opponentName'>charizard</div><div id = 'opponentHealthText'>400/400</div><div class = 'container'><div id = 'opponentHealthGraphic' class = 'bar'>  </div></div><span class = 'mega1 mega'></span></div></div>
     <img id = 'opponentPokemon' src = 'sprites/Charizard.gif' width = '200' alt = "opponent's pokemon">
-    <img id= 'mega' src = 'sprites/mega%20stone.png' width = '100'>
+    <img id = 'mega' src = 'sprites/megaEffect2.gif' width = '25'>
     <img id = 'myPokemon' src = 'sprites/pikachu.gif' width = '200' alt = 'my pokemon'>
     <img id = 'opponentMove' src = '' width = '200'>
     <img class = 'flame' src = 'sprites/flamethrower.gif'>
@@ -412,7 +412,7 @@ var charizard = {
                   $("#menu").hide()
                   $("#mega").hide()
                   charizard.opponentMove();
-                },4010);
+                },4100);
             };
           pikachu.myTurn = function(num){
             $("#menu").hide()
@@ -576,3 +576,4 @@ $("#return").show();
         </script>
       </body>
       </html>
+
