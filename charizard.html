@@ -474,7 +474,7 @@ var charizard = {
               decreaseMyHp(10);
               setTimeout(function(){
                 $('#myPokemon').attr('src','sprites/pikachu.gif');
-                $('#myPokemon').attr('width','200')
+                $('#myPokemon').attr('width','100')
                 $("#myPokemon").css("animation-name","none");
                 if(!charizard.isMegaEvolved && opponentHealth <= 100){
                   charizard.megaEvolve();
@@ -500,7 +500,7 @@ var charizard = {
               decreaseOpponentHp(10);
               setTimeout(function(){
                 $('#myPokemon').attr('src','sprites/pikachu.gif');
-                $('#myPokemon').attr('width','200')
+                $('#myPokemon').attr('width','100')
                 $("#myPokemon").css("animation-name","none");
                 if(!charizard.isMegaEvolved && opponentHealth <= 100){
                   charizard.megaEvolve();
