@@ -24,8 +24,13 @@
       background-image: url('sprites/background.png');
       background-size: 100% 100%;
       background-repeat: no-repeat;
-      height: 600px;
-      width: 100%;
+      /*height: 600px;
+      width: 100%;*/
+      position:absolute;
+      top:0px;
+      left:0px;
+      right:0px;
+      bottom:70px;
       /*display: none;*/
     }
     #moves{
@@ -34,7 +39,7 @@
     #myHealthBar{
       position:absolute;
       left:20%;
-      top:445px;
+      bottom: 125px;
       z-index:5;
       color:white;
       font-smooth: never;
@@ -87,7 +92,7 @@
     #opponentMove{
       position:absolute;
       left:15%;
-      top:400px;
+      bottom:0px;
       z-index: 1;
     }
     #myMove{
@@ -111,34 +116,14 @@
     #myPokemon{
       position: absolute;
       left:15%;
-      top:500px;
+      bottom: 0px;
       z-index: 2;
     }
-    /*#electro-ball{
-      position: absolute;
-      left:200px;
-      top:350px;
-    }
-    #volt-tackle{
-      position: absolute;
-      left:200px;
-      top:400px;
-    }
-    #thunder-bolt{
-      position: absolute;
-      left:300px;
-      top:400px;
-    }
-    #Gigavolt-havoc{
-      position: absolute;
-      left:300px;
-      top:350px;
-    }*/
     .flame{
       transform: rotate(250deg);
       position:absolute;
       left:25%;
-      top:350px;
+      bottom: -100px;
       display:none;
     }
     #typewriter{
@@ -150,6 +135,7 @@
       height:50px;
       position:absolute;
       left:0px;
+      bottom: 0px;
     }
     button {
       padding:10px;
@@ -309,11 +295,6 @@
           }
       },50 * i)
     }
-    if(!gameIsOver){
-      setTimeout(function(){
-        $("#menu").show()
-      },3000)
-    }
   }
     var decreaseOpponentHp = function(Hp){
       for(let j = 0;j < Hp;j++){
@@ -346,11 +327,6 @@
             $("#opponenHealthGraphic").css('color','yellow')
           }
         },50 * j)
-        }
-        if(!gameIsOver){
-          setTimeout(function(){
-            $("#menu").show()
-          },3000)
         }
       }
       var increaseOpponentHp = function(Hp){
@@ -441,6 +417,7 @@ var charizard = {
                 },4000);
             };
           pikachu.myTurn = function(num){
+            $("#menu").hide()
             if(num === 0){
               $("#opponentMove").hide();
               $(".flame").hide();
@@ -451,13 +428,11 @@ var charizard = {
               type('you used thunderbolt')
               meAttacking = true;
               decreaseOpponentHp(10);
-              $("#menu").hide();
                 if(!charizard.isMegaEvolved && opponentHealth <= 100){
                   charizard.megaEvolve();
                   return
                 }
                 setTimeout(function(){
-                  $('#myMove').hide();
                   if(!gameIsOver){
                     charizard.opponentMove()
                   }
@@ -478,7 +453,6 @@ var charizard = {
               setTimeout(function(){
                 $("#myMove").css("animation-name","none");
                 $('#myMove').hide();
-                $("#menu").hide();
                 if(!charizard.isMegaEvolved && opponentHealth <= 100){
                   charizard.megaEvolve();
                   return
@@ -489,7 +463,6 @@ var charizard = {
             },3000);
             }
             else if(num === 2){
-              $("#menu").hide()
               $("#myPokemon").css("animation-name","none");
               $("#opponentMove").hide();
               $(".flame").hide();
@@ -497,7 +470,6 @@ var charizard = {
               $('#myPokemon').attr('width','150')
               $("#myPokemon").css("animation-name","ram");
               $("#myPokemon").css("animation-duration","3s");
-              //$("#menu").hide();
               type('you used volt tackle. it also damages pikachu')
               meAttacking = true;
               decreaseOpponentHp(100);
@@ -525,7 +497,6 @@ var charizard = {
               $('#myPokemon').attr('width','150')
               $("#myPokemon").css("animation-name","ram");
               $("#myPokemon").css("animation-duration","3s");
-              $("#menu").hide();
               type('you used tackle')
               meAttacking = true;
               decreaseOpponentHp(10);
@@ -533,7 +504,6 @@ var charizard = {
                 $('#myPokemon').attr('src','sprites/pikachu.gif');
                 $('#myPokemon').attr('width','200')
                 $("#myPokemon").css("animation-name","none");
-                $("#menu").hide();
                 if(!charizard.isMegaEvolved && opponentHealth <= 100){
                   charizard.megaEvolve();
                   return
@@ -543,16 +513,13 @@ var charizard = {
                   }
               },3000)
             }
-            $("button").on('click',function(){
-              $("#menu").hide();
-            })
           }
               charizard.opponentMove = function(){
+                $("#myMove").hide()
                 var moves = ['wildfire', 'flamethrower', 'fire punch', 'seismic toss'];
                 var ran = Math.floor(Math.random()*moves.length);
                 if(ran === 0){
                   $(".flame").hide();
-                  $("#opponentMove").show();
                   $('#opponentMove').attr('src', 'sprites/wildfire.gif');
                 type('charizard used wildfire');
                 decreaseMyHp(20);
@@ -560,7 +527,6 @@ var charizard = {
                 else if(ran === 1){
                   type('charizard used flamethrower');
                   $(".flame").show();
-                  $("#opponentMove").hide();
                   decreaseMyHp(10);
                 }
                 else if(ran === 2){
@@ -602,6 +568,11 @@ $("#return").show();
                 setTimeout(function(){
                   $("#myPokemon").css('animation-name',null)
                 },5000)
+                if(!gameIsOver){
+                  setTimeout(function(){
+                    $("#menu").show()
+                  },3000)
+                }
               }
         </script>
       </body>
