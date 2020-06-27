@@ -3,7 +3,7 @@
   <head>
     <meta charset = 'utf-8'>
     <title>charizard battle</title>
-    <link rel = 'shortcut icon' type = 'image/gif' href = 'sprites/mega%20charizard%20x.gif'></link>
+    <link rel = 'shortcut icon' type = 'image/gif' href = 'sprites/mega%20charizard%20x.gif'>
     <style>
     @keyframes ram{
       from{
@@ -12,20 +12,18 @@
       }
       to{
         left:70%;
-        top:200px;
+        bottom:40%;
       }
     }
     @keyframes jump{
-      0%{bottom:100px}
-      50%{top:10px}
-      100%{bottom:100px}
+      0%{bottom:10%}
+      50%{bottom:75%}
+      100%{bottom:10%}
     }
     .game{
       background-image: url('sprites/background.png');
       background-size: 100% 100%;
       background-repeat: no-repeat;
-      /*height: 600px;
-      width: 100%;*/
       position:absolute;
       top:0px;
       left:0px;
@@ -39,7 +37,7 @@
     #myHealthBar{
       position:absolute;
       left:20%;
-      bottom: 125px;
+      bottom: 20%;
       z-index:5;
       color:white;
       font-smooth: never;
@@ -48,7 +46,7 @@
     #opponentHealthBar{
       position:absolute;
       right:23%;
-      top:100px;
+      top:15%;
       z-index:5;
       color:white;
       font-smooth: never;
@@ -98,13 +96,13 @@
     #myMove{
       position:absolute;
       right:15%;
-      top:200px;
+      bottom:50%;
       z-index: 3;
     }
     #opponentPokemon{
       position: absolute;
       right:15%;
-      top:150px;
+      top:25%;
       z-index: 2;
     }
     #mega{
@@ -216,7 +214,7 @@
     <!--<a id = 'return' href='forest11.htm'>go back to main route</a>-->
     </div>
     <div id = 'typewriter'></div>
-    <script src = 'jquery.js'></script>
+    <script src = 'file:///Users/xjin/djin/code/js/jquery.js'></script>
     <script>
     var theme = document.getElementById('theme')
     var opponentHealth = 400;
@@ -414,7 +412,7 @@ var charizard = {
                   $("#menu").hide()
                   $("#mega").hide()
                   charizard.opponentMove();
-                },4000);
+                },4010);
             };
           pikachu.myTurn = function(num){
             $("#menu").hide()
@@ -520,6 +518,7 @@ var charizard = {
                 var ran = Math.floor(Math.random()*moves.length);
                 if(ran === 0){
                   $(".flame").hide();
+                  $("#opponentMove").show()
                   $('#opponentMove').attr('src', 'sprites/wildfire.gif');
                 type('charizard used wildfire');
                 decreaseMyHp(20);
