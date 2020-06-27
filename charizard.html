@@ -236,11 +236,11 @@
     var opponentHealth = 400;
     var myHealth = 300;
     var megaEvolve;
-    var isMegaEvolved = false;
     var isTyping = false;
     var meAttacking = false;
     var opponentAttacking = false;
     var gameIsOver = false;
+    var effect = 'sprites/megaEffect.gif'
     function sound(src) {
     this.sound = document.createElement("audio");
     this.sound.src = src;
@@ -266,6 +266,17 @@
         },100 * i)
       }
     }
+    startTheGame = function(){
+      theme.play();
+      $('#myPokemon').hide();
+      $('#myPokemon').fadeIn(1000);
+      $('#opponentPokemon').hide();
+      $('#opponentPokemon').fadeIn(1000);
+      type('get ready for battle!')
+      setTimeout(function(){
+        $("#menu").show();
+      },2000);
+    };
     var decreaseMyHp = function(Hp){
       for(let i = 0;i < Hp;i ++){
         var id = setTimeout(function(){
@@ -366,16 +377,6 @@
           },10 * j)
           }
         }
-      startTheGame = function(){
-      $('#return').hide();
-      $('#myPokemon').hide();
-      $('#myPokemon').fadeIn(1000);
-      $('#opponentPokemon').hide();
-      $('#opponentPokemon').fadeIn(1000);
-      type('get ready for battle!')
-      $("#menu").show();
-      theme.play();
-    };
       thunderbolt = function(){
         opponentAttacking = false;
         pikachu.myTurn(0)
@@ -405,35 +406,40 @@ var charizard = {
   health:400,
   canMegaEvove:true,
   forms:2,
+  form:'normal',
   images:{
     normal:'sprites/Charizard.gif',
     x:'sprites/mega%20charizard%20x.gif',
     y:'sprites/mega%20charizard%20y.gif'
-  }
+  },
+  isMegaEvolved:false
 }
             charizard.megaEvolve = function(){
               $("#mega").show()
               $(".mega1").show()
-              var r = Math.random();
-              var ra = r*3;
-              if(ra <= 1.5){
-              $('#opponentPokemon').attr('src',charizard.images.y);
-              $('#opponentPokemon').attr('width',300);
-              }
-              else{
-              $('#opponentPokemon').attr('src',charizard.images.x);
-              $('#opponentPokemon').attr('width',250);
-              $(".flame").attr('src','sprites/hot%20flame.gif');
-            }
-            isMegaEvolved = true;
-            increaseOpponentHp(400 - opponentHealth);
-              type('charizard mega evolved!his health restored')
-              $("#menu").hide()
-            setTimeout(function(){
-              $("#mega").hide()
-              charizard.opponentMove();
-            },5000)
-      };
+              $("#opponentPokemon").attr('src',effect)
+              setTimeout(function(){
+                var r = Math.random();
+                var ra = r*3;
+                if(ra <= 1.5){
+                  $('#opponentPokemon').attr('src',charizard.images.y);
+                  $('#opponentPokemon').attr('width',300);
+                }
+                else{
+                  $('#opponentPokemon').attr('src',charizard.images.x);
+                  $('#opponentPokemon').attr('width',250);
+                  $(".flame").attr('src','sprites/hot%20flame.gif');
+                }
+              },1500);
+              charizard.isMegaEvolved = true;
+              increaseOpponentHp(400 - opponentHealth);
+                type('charizard mega evolved!his health restored')
+                setTimeout(function(){
+                  $("#menu").hide()
+                  $("#mega").hide()
+                  charizard.opponentMove();
+                },4000);
+            };
           pikachu.myTurn = function(num){
             if(num === 0){
               $("#opponentMove").hide();
@@ -446,7 +452,7 @@ var charizard = {
               meAttacking = true;
               decreaseOpponentHp(10);
               $("#menu").hide();
-                if(!isMegaEvolved && opponentHealth <= 100){
+                if(!charizard.isMegaEvolved && opponentHealth <= 100){
                   charizard.megaEvolve();
                   return
                 }
@@ -473,7 +479,7 @@ var charizard = {
                 $("#myMove").css("animation-name","none");
                 $('#myMove').hide();
                 $("#menu").hide();
-                if(!isMegaEvolved && opponentHealth <= 100){
+                if(!charizard.isMegaEvolved && opponentHealth <= 100){
                   charizard.megaEvolve();
                   return
                 }
@@ -483,6 +489,7 @@ var charizard = {
             },3000);
             }
             else if(num === 2){
+              $("#menu").hide()
               $("#myPokemon").css("animation-name","none");
               $("#opponentMove").hide();
               $(".flame").hide();
@@ -499,15 +506,14 @@ var charizard = {
                 $('#myPokemon').attr('src','sprites/pikachu.gif');
                 $('#myPokemon').attr('width','200')
                 $("#myPokemon").css("animation-name","none");
-                $("#menu").hide();
-                if(!isMegaEvolved && opponentHealth <= 100){
+                if(!charizard.isMegaEvolved && opponentHealth <= 100){
                   charizard.megaEvolve();
                   return
                 }
                 if(!gameIsOver){
                   charizard.opponentMove()
                 }
-                  },5000);
+              },5000);
             }
             else if(num === 3){
               $(".flame").hide()
@@ -528,7 +534,7 @@ var charizard = {
                 $('#myPokemon').attr('width','200')
                 $("#myPokemon").css("animation-name","none");
                 $("#menu").hide();
-                if(!isMegaEvolved && opponentHealth <= 100){
+                if(!charizard.isMegaEvolved && opponentHealth <= 100){
                   charizard.megaEvolve();
                   return
                 }
@@ -600,4 +606,3 @@ $("#return").show();
         </script>
       </body>
       </html>
-
