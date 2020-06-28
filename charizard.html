@@ -113,7 +113,7 @@
     }
     #myPokemon{
       position: absolute;
-      left:20%;
+      left:15%;
       bottom: 0px;
       z-index: 2;
     }
@@ -198,7 +198,7 @@
     <div id ='opponentHealthBar'><div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div></div><div><div id = 'opponentName'>charizard</div><div id = 'opponentHealthText'>400/400</div><div class = 'container'><div id = 'opponentHealthGraphic' class = 'bar'>  </div></div><span class = 'mega1 mega'></span></div></div>
     <img id = 'opponentPokemon' src = 'sprites/Charizard.gif' width = '200' alt = "opponent's pokemon">
     <img id = 'mega' src = 'sprites/megaEffect2.gif' width = '25'>
-    <img id = 'myPokemon' src = 'sprites/pikachu.gif' width = '100' alt = 'my pokemon'>
+    <img id = 'myPokemon' src = 'sprites/pikachu.gif' width = '200' alt = 'my pokemon'>
     <img id = 'opponentMove' src = '' width = '200'>
     <img class = 'flame' src = 'sprites/flamethrower.gif'>
     <img id = 'myMove' src = '' width = '200'>
@@ -389,7 +389,9 @@ var charizard = {
   isMegaEvolved:false
 }
             charizard.megaEvolve = function(){
-              $("#mega").show()
+              setTimeout(function(){
+                $("#mega").fadeIn(100)
+              },100);
               $(".mega1").show()
               $("#opponentPokemon").attr('src',effect)
               setTimeout(function(){
@@ -474,7 +476,7 @@ var charizard = {
               decreaseMyHp(10);
               setTimeout(function(){
                 $('#myPokemon').attr('src','sprites/pikachu.gif');
-                $('#myPokemon').attr('width','100')
+                $('#myPokemon').attr('width','200')
                 $("#myPokemon").css("animation-name","none");
                 if(!charizard.isMegaEvolved && opponentHealth <= 100){
                   charizard.megaEvolve();
@@ -500,7 +502,7 @@ var charizard = {
               decreaseOpponentHp(10);
               setTimeout(function(){
                 $('#myPokemon').attr('src','sprites/pikachu.gif');
-                $('#myPokemon').attr('width','100')
+                $('#myPokemon').attr('width','200')
                 $("#myPokemon").css("animation-name","none");
                 if(!charizard.isMegaEvolved && opponentHealth <= 100){
                   charizard.megaEvolve();
@@ -576,6 +578,7 @@ $("#return").show();
         </script>
       </body>
       </html>
+
 
 
 
