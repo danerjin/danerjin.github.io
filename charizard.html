@@ -372,7 +372,8 @@ var pikachu = {
   maxHealth:300,
   health:300,
   canMegaEvolve:false,
-  image:'sprites/picachu.gif'
+  image:'sprites/picachu.gif',
+  width:'200'
 }
 var charizard = {
   name:charizard,
@@ -380,11 +381,14 @@ var charizard = {
   health:400,
   canMegaEvove:true,
   forms:2,
-  form:'normal',
+  width:'200',
   images:{
     normal:'sprites/Charizard.gif',
     x:'sprites/mega%20charizard%20x.gif',
-    y:'sprites/mega%20charizard%20y.gif'
+    y:'sprites/mega%20charizard%20y.gif',
+    attack1:'sprites/charizard2.gif',
+    attack2:'sprites/charizard3.gif',
+    attack3:'sprites/charizard4.gif'
   },
   isMegaEvolved:false
 }
@@ -400,11 +404,13 @@ var charizard = {
                 if(ra <= 1.5){
                   $('#opponentPokemon').attr('src',charizard.images.y);
                   $('#opponentPokemon').attr('width',300);
+                  charizard.images.normal = charizard.images.y
                 }
                 else{
                   $('#opponentPokemon').attr('src',charizard.images.x);
                   $('#opponentPokemon').attr('width',250);
                   $(".flame").attr('src','sprites/hot%20flame.gif');
+                  charizard.images.normal = charizard.images.x
                 }
               },1500);
               charizard.isMegaEvolved = true;
@@ -526,12 +532,30 @@ var charizard = {
                 decreaseMyHp(20);
               }
                 else if(ran === 1){
+                  if(!charizard.isMegaEvolved){
+                    $("#opponentPokemon").attr('src',charizard.images.attack1)
+                    setTimeout(function(){
+                        $("#opponentPokemon").attr('src',charizard.images.normal)
+                    },1000)
+                  }
                   type('charizard used flamethrower');
                   $(".flame").show();
                   decreaseMyHp(10);
                 }
                 else if(ran === 2){
                   $(".flame").hide()
+                  if(!charizard.isMegaEvolved){
+                    $("#opponentPokemon").attr('src',charizard.images.attack3)
+                    setTimeout(function(){
+                      $("#opponentPokemon").attr('src',charizard.images.normal)
+                    },1000)
+                    type('charizard used dragon tail')
+                    decreaseMyHp(50)
+                    setTimeout(function(){
+                      $("#menu").show()
+                    },3000)
+                    return;
+                  }
                   type('charizard used blast burn');
                   $("#opponentMove").show();
                   $("#opponentMove").attr('src','sprites/blast%20burn.gif')
@@ -578,7 +602,3 @@ $("#return").show();
         </script>
       </body>
       </html>
-
-
-
-
