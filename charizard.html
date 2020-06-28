@@ -216,7 +216,6 @@
       <button id = 'thunder-bolt' onclick="thunderbolt()">thunderbolt</button>
       <button id = 'Gigavolt-havoc' onclick="tackle()">tackle</button>
     </div>
-    <audio id="theme" src="" preload="auto">
   </div>
     <!--<a id = 'return' href='forest11.htm'>go back to main route</a>-->
     </div>
@@ -224,7 +223,7 @@
     <div id = 'typewriter'></div>
     <script src = 'jquery.js'></script>
     <script>
-    var theme = document.getElementById('theme')
+    var theme = new sound('theme.mp3')
     var opponentHealth = 400;
     var myHealth = 300;
     var megaEvolve;
