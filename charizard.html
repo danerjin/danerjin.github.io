@@ -29,7 +29,7 @@
       left:0px;
       right:0px;
       bottom:70px;
-      /*display: none;*/
+      display: none;
     }
     #moves{
       z-index: 6;
@@ -104,6 +104,7 @@
       right:15%;
       top:25%;
       z-index: 2;
+      display:none;
     }
     #mega{
       position: absolute;
@@ -116,6 +117,7 @@
       left:15%;
       bottom: 0px;
       z-index: 2;
+      display:none;
     }
     .flame{
       transform: rotate(250deg);
@@ -190,9 +192,13 @@
     .mega2{
       float: right;
     }
+    #start_button{
+      position: absolute;
+
+    }
     </style>
   </head>
-  <body onload = 'startTheGame()'>
+  <body>
     <div class = 'game'>
     <div id ='myHealthBar'><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div><div id = 'myName'>pikachu</div><div id = 'myHealthText'>300/300</div><div class = 'container'><div id = 'myHealthGraphic' class = 'bar'>  </div></div><span class = 'mega2 mega'></span></div></div>
     <div id ='opponentHealthBar'><div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div></div><div><div id = 'opponentName'>charizard</div><div id = 'opponentHealthText'>400/400</div><div class = 'container'><div id = 'opponentHealthGraphic' class = 'bar'>  </div></div><span class = 'mega1 mega'></span></div></div>
@@ -213,6 +219,7 @@
   </div>
     <!--<a id = 'return' href='forest11.htm'>go back to main route</a>-->
     </div>
+    <button onclick = 'startTheGame()' id = 'start_button'>start</button>
     <div id = 'typewriter'></div>
     <script src = 'jquery.js'></script>
     <script>
@@ -252,13 +259,16 @@
     }
     startTheGame = function(){
       theme.play();
-      charizard.sounds.normal.play()
+      $("#start_button").hide();
+      setTimeout(function(){
+        charizard.sounds.normal.play()
+        $('#opponentPokemon').fadeIn(1000);
+        type('go, charizard!')
+      },1500);
       pikachu.sound.play()
-      $('#myPokemon').hide();
+      $(".game").show();
       $('#myPokemon').fadeIn(1000);
-      $('#opponentPokemon').hide();
-      $('#opponentPokemon').fadeIn(1000);
-      type('get ready for battle!')
+      type('go, pikachu!')
       setTimeout(function(){
         $("#menu").show();
       },2000);
@@ -424,6 +434,7 @@ var charizard = {
                   charizard.form = 'x';
                   charizard.sounds.normal = charizard.sounds.x;
                 }
+                charizard.sounds.normal.play();
               },1500);
               charizard.isMegaEvolved = true;
               increaseOpponentHp(400 - opponentHealth);
@@ -614,3 +625,4 @@ $("#return").show();
         </script>
       </body>
       </html>
+
