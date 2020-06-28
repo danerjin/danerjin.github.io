@@ -223,7 +223,10 @@
     <div id = 'typewriter'></div>
     <script src = 'jquery.js'></script>
     <script>
-    var theme = new sound('theme.mp3')
+    var wantsTheme = confirm('do you want background music?')
+    if(wantsTheme){
+      var theme = new sound('theme.mp3')
+    }
     var opponentHealth = 400;
     var myHealth = 300;
     var megaEvolve;
@@ -258,7 +261,9 @@
       }
     }
     startTheGame = function(){
-      theme.play();
+      if(wantsTheme){
+        theme.play();
+      }
       $("#start_button").hide();
       setTimeout(function(){
         charizard.sounds.normal.play()
@@ -625,4 +630,3 @@ $("#return").show();
         </script>
       </body>
       </html>
-
