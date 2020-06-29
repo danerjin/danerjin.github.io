@@ -560,6 +560,11 @@ sounds:{
                 $('#opponentMove').attr('src', 'sprites/wildfire.gif');
               type('charizard used wildfire');
               decreaseMyHp(20);
+              if(!gameIsOver){
+                setTimeout(function(){
+                  $("#menu").show()
+                },1000)
+              }
             }
               else if(ran === 1){
                 if(!charizard.isMegaEvolved){
@@ -571,6 +576,11 @@ sounds:{
                 type('charizard used flamethrower');
                 $(".flame").show();
                 decreaseMyHp(10);
+                if(!gameIsOver){
+                  setTimeout(function(){
+                    $("#menu").show()
+                  },1000)
+                }
               }
               else if(ran === 2){
                 $(".flame").hide()
@@ -591,25 +601,10 @@ sounds:{
                 $("#opponentMove").attr('src','sprites/blast%20burn.gif')
                 decreaseMyHp(100);
                 decreaseOpponentHp(10);
-                if(myHealth<=0){
-                  $("#myPokemon").fadeOut(5000);
-$("#menu").hide();
-$("#myHealthBar").hide();
-$("#opponentHealthBar").hide();
-$("svg").hide();
-type('you lost')
-$("#return").show();
-
-
-                }
-                if(opponentHealth<=0){
-                  $("#opponentPokemon").fadeOut(5000);
-$("#menu").hide();
-$("#myHealthBar").hide();
-$("#opponentHealthBar").hide();
-$("svg").hide();
-type('you won!!!!!!')
-$("#return").show();
+                if(!gameIsOver){
+                  setTimeout(function(){
+                    $("#menu").show()
+                  },4000)
                 }
               }
               else{
@@ -619,15 +614,15 @@ $("#return").show();
                 decreaseMyHp(100);
                 $("#myPokemon").css('animation-name','jump')
                 $("#myPokemon").css('animation-duration','3s')
+                if(!gameIsOver){
+                  setTimeout(function(){
+                    $("#menu").show()
+                  },4000)
+                }
               }
               setTimeout(function(){
                 $("#myPokemon").css('animation-name',null)
               },5000)
-              if(!gameIsOver){
-                setTimeout(function(){
-                  $("#menu").show()
-                },4000)
-              }
             }
       </script>
     </body>
