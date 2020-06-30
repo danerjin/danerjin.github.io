@@ -302,19 +302,19 @@
               this.x += this.xSpeed;
               this.y += this.ySpeed;
               ctx.translate((this.xSpeed) * -1,0)
-              //ctx.translate(0,(this.ySpeed) * -1/10)
-              //ctx.translate(0,(this.grav) * -1/9)
+              ctx.translate(0,(this.ySpeed) * -1/5)
+              ctx.translate(0,(this.grav) * -1/5)
               if(this.ySpeed < 0){
                 this.grav += this.speed/12;
               }
               this.y += this.grav;
-              if(this.y > 580){
-                  this.grav = 0;
-                  this.ySpeed = 0;
-                  this.y = 580;
-              }
               if(this.xSpeed === 0){
                 this.i = 0;
+              }
+              if(this.y > 510){
+                this.grav = 0;
+                this.ySpeed = 0;
+                this.y = 510;
               }
               if(this.side === 'left' && this.xSpeed === 0){
                 this.i = 0;
@@ -351,7 +351,7 @@
             }
             player.prototype.reset = function(){
               this.x = 50;
-              this.y = 580;
+              this.y = 520;
               this.i = 0;
             }
             player.prototype.turnLeft = function(){
@@ -456,21 +456,33 @@
             }
             block.prototype.checkCollision = function(){
               if(this.type === 'grass' || this.type === 'dirt'){
-                if(me.x >= this.x - 30 && me.x <= this.x - 10 && me.y >= this.y && me.y <= this.y + 20 && me.rightDown){
+                if(me.x >= this.x - 30 && me.x < this.x - 10 && me.y > this.y && me.y < this.y + 20 && me.rightDown){
                   me.xSpeed = 0;
-                  me.x = this.x - 30;
                   me.walkTimer = 0;
                 }
+                if(me.x > this.x - 30 && me.x < this.x - 10 && me.y >= this.y - 25 && !me.upDown){
+                  me.grav = 0;
+                  me.ySpeed = 0;
+                  me.walkTimer = 0;
+                }
+                /*else if(me.y > 500){
+                  me.grav = 0;
+                  me.ySpeed = 0;
+                  me.y = 500;
+                }
+                else{
+                  me.grav += 0.1;
+                }*/
               }
             }
-            var me = new player(50,505);
+            var me = new player(50,510);
             var levels = [
               {
                 start: {
                     x: 0,
                     y: 0
                 },
-                name:'Training Camp',
+                name:'a',
                 array: [
                  '----------------------------------------------',
                  '----------------------------------------------',
@@ -534,18 +546,18 @@
             ]
             type('welcome')
             var drawBackground = function(){
-              ctx.fillStyle = 'rgba(81, 99, 214,0.25)'
-              ctx.fillStyle = 'rgb(81, 99, 214)'
+              ctx.fillStyle = 'rgba(81, 99, 214,0.50)'
+              //ctx.fillStyle = 'rgb(81, 99, 214)'
               ctx.fillRect(-400,0,1600,1600);
-              //ctx.clearRect(-400,0,1600,1600);
-              for(var i = 0;i < levels[me.level].blocks.length;i++){
-                levels[me.level].blocks[i].draw()
-                levels[me.level].blocks[i].checkCollision()
-              }
+              //ctx.clearRect(-400,0,1600,1600)
             }
             levels[me.level].setup()
             function animate(){
                 drawBackground()
+                for(var i = 0;i < levels[me.level].blocks.length;i++){
+                  levels[me.level].blocks[i].draw()
+                  levels[me.level].blocks[i].checkCollision()
+                }
                 window.requestAnimationFrame(animate)
                 me.keys()
                 me.draw();
