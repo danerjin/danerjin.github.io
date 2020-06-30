@@ -560,11 +560,11 @@
                 $('#opponentMove').attr('src', 'sprites/wildfire.gif');
               type('charizard used wildfire');
               decreaseMyHp(20);
-              if(!gameIsOver){
-                setTimeout(function(){
+              setTimeout(function(){
+                  if(!gameIsOver){
                   $("#menu").show()
-                },2000)
-              }
+                }
+              },2000)
             }
               else if(ran === 1){
                 if(!charizard.isMegaEvolved){
@@ -576,11 +576,11 @@
                 type('charizard used flamethrower');
                 $(".flame").show();
                 decreaseMyHp(10);
-                if(!gameIsOver){
-                  setTimeout(function(){
+                setTimeout(function(){
+                    if(!gameIsOver){
                     $("#menu").show()
-                  },2000)
-                }
+                  }
+                },2000)
               }
               else if(ran === 2){
                 $(".flame").hide()
@@ -592,7 +592,9 @@
                   type('charizard used dragon tail')
                   decreaseMyHp(50)
                   setTimeout(function(){
-                    $("#menu").show()
+                      if(!gameIsOver){
+                      $("#menu").show()
+                    }
                   },3000)
                   return;
                 }
@@ -601,11 +603,11 @@
                 $("#opponentMove").attr('src','sprites/blast%20burn.gif')
                 decreaseMyHp(100);
                 decreaseOpponentHp(10);
-                if(!gameIsOver){
-                  setTimeout(function(){
+                setTimeout(function(){
+                    if(!gameIsOver){
                     $("#menu").show()
-                  },4000)
-                }
+                  }
+                },4000)
               }
               else{
                 $("#myPokemon").css("animation-name","none");
@@ -614,11 +616,11 @@
                 decreaseMyHp(100);
                 $("#myPokemon").css('animation-name','jump')
                 $("#myPokemon").css('animation-duration','3s')
-                if(!gameIsOver){
-                  setTimeout(function(){
+                setTimeout(function(){
+                    if(!gameIsOver){
                     $("#menu").show()
-                  },4000)
-                }
+                  }
+                },4000)
               }
               setTimeout(function(){
                 $("#myPokemon").css('animation-name',null)
@@ -626,5 +628,4 @@
             }
       </script>
     </body>
-    </html>
     </html>
