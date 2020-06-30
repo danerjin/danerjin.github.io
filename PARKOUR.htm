@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8">
+        <meta charset='utf-8'>
         <title>PARKOUR</title>
         <style>
         canvas{
@@ -23,13 +23,13 @@
         </style>
     </head>
     <body>
-        <canvas id = 'canvas' width = '400' height = '400'></canvas>
-        <div id = 'typewriter'></div>
+        <canvas id ='canvas' width ='600' height ='600'></canvas>
+        <div id ='typewriter'></div>
         <script>
             var canvas = document.getElementById('canvas')
             var ctx = canvas.getContext('2d')
             var type = function(typo){
-              document.getElementById('typewriter').innerHTML = '';
+              document.getElementById('typewriter').innerHTML ='';
               for(let i = 0;i < typo.length;i++){
                 setTimeout(function(){
                   document.getElementById('typewriter').innerHTML += typo[i];
@@ -41,146 +41,146 @@
             };
             var pimgs = {
               right3:[
-                  '--------111---------',
-                  '--------111---------',
-                  '----111--1----11----',
-                  '---11-11111--11-----',
-                  '--11----111111------',
-                  '--------11----------',
-                  '-------111111-------',
-                  '------11----11------',
-                  '---1111------11-----',
-                  '-------------11-----'
+                 '--------111---------',
+                 '--------111---------',
+                 '----111--1----11----',
+                 '---11-11111--11-----',
+                 '--11----111111------',
+                 '--------11----------',
+                 '-------111111-------',
+                 '------11----11------',
+                 '---1111------11-----',
+                 '-------------11-----'
               ],
               right2:[
-                  '--------111---------',
-                  '--------111---------',
-                  '---------1----------',
-                  '-----111111--11-----',
-                  '----11--111111------',
-                  '-----11-11----------',
-                  '-------11111--------',
-                  '------11---11-------',
-                  '-----11-----11------',
-                  '----11-------11-----'
+                 '--------111---------',
+                 '--------111---------',
+                 '---------1----------',
+                 '-----111111--11-----',
+                 '----11--111111------',
+                 '-----11-11----------',
+                 '-------11111--------',
+                 '------11---11-------',
+                 '-----11-----11------',
+                 '----11-------11-----'
               ],
               right1:[
-                  '--------111---------',
-                  '--------111---------',
-                  '---------1----------',
-                  '------11111---------',
-                  '-----11-1111--------',
-                  '-----11-11-11-------',
-                  '-------11111--------',
-                  '---11111--11--------',
-                  '---------11---------',
-                  '--------11----------'
+                 '--------111---------',
+                 '--------111---------',
+                 '---------1----------',
+                 '------11111---------',
+                 '-----11-1111--------',
+                 '-----11-11-11-------',
+                 '-------11111--------',
+                 '---11111--11--------',
+                 '---------11---------',
+                 '--------11----------'
               ],
               left3:[
-                  '---------111--------',
-                  '---------111--------',
-                  '-----11---1-111----',
-                  '-----11-11111-11----',
-                  '-----1111111--11----',
-                  '---------11---------',
-                  '------111111--------',
-                  '----11-----11-------',
-                  '----11------1111----',
-                  '----11--------------'
+                 '---------111--------',
+                 '---------111--------',
+                 '-----11---1-111----',
+                 '-----11-11111-11----',
+                 '-----1111111--11----',
+                 '---------11---------',
+                 '------111111--------',
+                 '----11-----11-------',
+                 '----11------1111----',
+                 '----11--------------'
               ],
               left2:[
-                  '--------111---------',
-                  '--------111---------',
-                  '---------1----------',
-                  '---11---111111------',
-                  '----111111---11-----',
-                  '--------11--11------',
-                  '-------11111--------',
-                  '------11---11-------',
-                  '------11----11------',
-                  '-----11------11-----'
+                 '--------111---------',
+                 '--------111---------',
+                 '---------1----------',
+                 '---11---111111------',
+                 '----111111---11-----',
+                 '--------11--11------',
+                 '-------11111--------',
+                 '------11---11-------',
+                 '------11----11------',
+                 '-----11------11-----'
               ],
               left1:[
-                  '--------111---------',
-                  '--------111---------',
-                  '---------1----------',
-                  '------1111111-------',
-                  '-----11-11--11------',
-                  '----11--11--11------',
-                  '-------11111--------',
-                  '-------11--11111----',
-                  '--------11----------',
-                  '---------11---------'
+                 '--------111---------',
+                 '--------111---------',
+                 '---------1----------',
+                 '------1111111-------',
+                 '-----11-11--11------',
+                 '----11--11--11------',
+                 '-------11111--------',
+                 '-------11--11111----',
+                 '--------11----------',
+                 '---------11---------'
               ]
             }
             var blockimgs = {
                     grass: [
-                        "llllllllllllllllllll",
-                        "gggllllglgglllggllgl",
-                        "gggggggggggggggggggg",
-                        "gggggggggggggggggggg",
-                        "GGGggggGGGGGgGGGggGG",
-                        "GGGGggGGGGGGGGGGGgGG",
-                        "GGGGGGGGGGGGGGGGGGGG",
-                        "GGGLLLGLLLGGGGLLGLLG",
-                        "LGGLLGGLLBLGGLLGGLLG",
-                        "LLLLLLLLLBBLLLLLLLLL",
-                        "BBBBBBLLLBBBLLLBLBBB",
-                        "BBBBBBBBBBBBBBBBBBBB",
-                        "BBBBBBBBBBbBBBbBBBBB",
-                        "BBBbbBBBBBbBBBbbBBBB",
-                        "BbbbbbBBBbbBBBbbbBbB",
-                        "bbbbbbbbbbbbbbbbbbbb",
-                        "bbbbbbbbbbbbbbbbbbbb",
-                        "bbbbbbbbbbbbbbbbbbbb",
-                        "bbbbbbbbbbbbbbbbbbbb",
-                        "bbbbbbbbbbbbbbbbbbbb",
+                      'llllllllllllllllllll',
+                      'gggllllglgglllggllgl',
+                      'gggggggggggggggggggg',
+                      'gggggggggggggggggggg',
+                      'GGGggggGGGGGgGGGggGG',
+                      'GGGGggGGGGGGGGGGGgGG',
+                      'GGGGGGGGGGGGGGGGGGGG',
+                      'GGGLLLGLLLGGGGLLGLLG',
+                      'LGGLLGGLLBLGGLLGGLLG',
+                      'LLLLLLLLLBBLLLLLLLLL',
+                      'BBBBBBLLLBBBLLLBLBBB',
+                      'BBBBBBBBBBBBBBBBBBBB',
+                      'BBBBBBBBBBbBBBbBBBBB',
+                      'BBBbbBBBBBbBBBbbBBBB',
+                      'BbbbbbBBBbbBBBbbbBbB',
+                      'bbbbbbbbbbbbbbbbbbbb',
+                      'bbbbbbbbbbbbbbbbbbbb',
+                      'bbbbbbbbbbbbbbbbbbbb',
+                      'bbbbbbbbbbbbbbbbbbbb',
+                      'bbbbbbbbbbbbbbbbbbbb',
                     ],
 
                     dirt: [
-                        "bbbbbbbdbbbbbbbbbbbb",
-                        "bbbbbbbbdbbbbbbBbbbb",
-                        "bbBBBBbbdbbbbbbBbbbb",
-                        "bbbbbbBbbbbbbbbBbbbb",
-                        "bbbbbbbbbbbbbbbbBbbb",
-                        "bbbbbbbbbbbbbbbbBbbb",
-                        "bbbbbbbbBdbbbbbbbbbb",
-                        "bbbbbbbbdbdbbbBbbbbb",
-                        "bbbbbbbbbbbbbbBbbbbb",
-                        "bbbbbbbbbbbbbbbbbbbb",
-                        "bbbbbbbbbbbbbbbbbbbb",
-                        "bbbbbbbbLbbbbbbbbbbb",
-                        "bbbbbbbbbbbbbbbbbbbb",
-                        "bbbbLbbbbbbbBbbbbbbb",
-                        "bbbbLbbbbbbbbBbbbbbb",
-                        "bbbLbbbbbbBbbbbbbbbb",
-                        "bbbLbbbbbbbbbbbbbbbb",
-                        "bbbbbbbbBbbbbbbbbbbb",
-                        "bbbbbbbbbbbbbbbbbbbb",
-                        "bbbbbbbbbbbbbbbbbbbb",
+                      'bbbbbbbdbbbbbbbbbbbb',
+                      'bbbbbbbbdbbbbbbBbbbb',
+                      'bbBBBBbbdbbbbbbBbbbb',
+                      'bbbbbbBbbbbbbbbBbbbb',
+                      'bbbbbbbbbbbbbbbbBbbb',
+                      'bbbbbbbbbbbbbbbbBbbb',
+                      'bbbbbbbbBdbbbbbbbbbb',
+                      'bbbbbbbbdbdbbbBbbbbb',
+                      'bbbbbbbbbbbbbbBbbbbb',
+                      'bbbbbbbbbbbbbbbbbbbb',
+                      'bbbbbbbbbbbbbbbbbbbb',
+                      'bbbbbbbbLbbbbbbbbbbb',
+                      'bbbbbbbbbbbbbbbbbbbb',
+                      'bbbbLbbbbbbbBbbbbbbb',
+                      'bbbbLbbbbbbbbBbbbbbb',
+                      'bbbLbbbbbbBbbbbbbbbb',
+                      'bbbLbbbbbbbbbbbbbbbb',
+                      'bbbbbbbbBbbbbbbbbbbb',
+                      'bbbbbbbbbbbbbbbbbbbb',
+                      'bbbbbbbbbbbbbbbbbbbb',
                     ],
 
                     electric: [
-                        "dddddddddddddddddddd",
-                        "dgggggggggggggggggGd",
-                        "dggglggggggggggggGGd",
-                        "dgglggggwwwwwwggGGGd",
-                        "dglgggggwYYYYwgGGGGd",
-                        "dggggggwYYYYwgGGGGGd",
-                        "dggggggwYYYwgGGGGGGd",
-                        "dgggggwYYYwgGGGGGGGd",
-                        "dgggggwYYwwwwwwGGGGd",
-                        "dggggwYYYYYYYYwGGGGd",
-                        "dggggwwwwYYYYwGGGGGd",
-                        "dgggggggwYYYwGGGGGGd",
-                        "dggggggwYYYwGGGGGGGd",
-                        "dgggggGwYYwGGGGGGGGd",
-                        "dggggGwYYwGGGGGGGGGd",
-                        "dgggGGwYwGGGGGGGGlGd",
-                        "dggGGwYwGGGGGGGGlGGd",
-                        "dgGGGwwGGGGGGGGlGGGd",
-                        "dGGGGGGGGGGGGGGGGGGd",
-                        "dddddddddddddddddddd",
+                      'dddddddddddddddddddd',
+                      'dgggggggggggggggggGd',
+                      'dggglggggggggggggGGd',
+                      'dgglggggwwwwwwggGGGd',
+                      'dglgggggwYYYYwgGGGGd',
+                      'dggggggwYYYYwgGGGGGd',
+                      'dggggggwYYYwgGGGGGGd',
+                      'dgggggwYYYwgGGGGGGGd',
+                      'dgggggwYYwwwwwwGGGGd',
+                      'dggggwYYYYYYYYwGGGGd',
+                      'dggggwwwwYYYYwGGGGGd',
+                      'dgggggggwYYYwGGGGGGd',
+                      'dggggggwYYYwGGGGGGGd',
+                      'dgggggGwYYwGGGGGGGGd',
+                      'dggggGwYYwGGGGGGGGGd',
+                      'dgggGGwYwGGGGGGGGlGd',
+                      'dggGGwYwGGGGGGGGlGGd',
+                      'dgGGGwwGGGGGGGGlGGGd',
+                      'dGGGGGGGGGGGGGGGGGGd',
+                      'dddddddddddddddddddd',
                     ]
                 };
             var playerimage = function(array,rectSize,x,y){
@@ -189,54 +189,46 @@
                   for(var c = 0;c < arrayColors.length;c++){
                       px = arrayColors[c];
                       switch(px){
-                          case "-":
+                          case '-':
                           break;
-                          case "1":
+                          case '1':
                           ctx.fillStyle = 'limegreen';
-                          ctx.fillRect ((c * rectSize) + x, (i * rectSize) + y, rectSize, rectSize);
-                          break;
-                          case "2":
-                          ctx.fillStyle = 'silver';
-                          ctx.fillRect ((c * rectSize) + x, (i * rectSize) + y, rectSize, rectSize);
-                          break;
-                          case "3":
-                          ctx.fillStyle = 'brown';
                           ctx.fillRect ((c * rectSize) + x, (i * rectSize) + y, rectSize, rectSize);
                           break;
                         }
                     }
                 }
             }
-            var drawBlock = function(block, X, Y, s) {
+            var drawblock = function(block, X, Y, s) {
                 for (var y = 0; y < block.length; y++) {
                     for (var x = 0; x < block[y].length; x++) {
                         switch (block[y][x]) {
                             case 'l':
-                                ctx.fillStyle = 'rgb(0,255,55)'
+                                ctx.fillStyle ='rgb(0,255,55)';
                             break;
 
                             case 'g':
-                                ctx.fillStyle = 'rgb(12, 207, 67)'
+                                ctx.fillStyle ='rgb(12, 207, 67)';
                             break;
 
                             case 'G':
-                                ctx.fillStyle = 'rgb(3, 138, 43)';
+                                ctx.fillStyle ='rgb(3, 138, 43)';
                             break;
 
                             case 'L':
-                                ctx.fillStyle = 'rgb(204, 174, 55)';
+                                ctx.fillStyle ='rgb(204, 174, 55)';
                             break;
 
                             case 'b':
-                                ctx.fillStyle = 'rgb(166, 134, 36)'
+                                ctx.fillStyle ='rgb(166, 134, 36)'
                             break;
 
                             case 'B':
-                                ctx.fillStyle = 'rgb(191, 151, 49)'
+                                ctx.fillStyle ='rgb(191, 151, 49)'
                             break;
 
                             case 'd':
-                                ctx.fillStyle = 'rgb(120, 93, 4)'
+                                ctx.fillStyle ='rgb(120, 93, 4)'
                             break;
 
                             case '-':
@@ -254,31 +246,31 @@
                             break;
 
                             case 'g':
-                                ctx.fillStyle = 'rgb(200,200,200)'
+                                ctx.fillStyle ='rgb(200,200,200)'
                             break;
 
                             case 'G':
-                                ctx.fillStyle = 'rgb(150,150,150)';
+                                ctx.fillStyle ='rgb(150,150,150)';
                             break;
 
                             case 'l':
-                                ctx.fillStyle = 'rgb(220,220,220)';
+                                ctx.fillStyle ='rgb(220,220,220)';
                             break;
 
                             case 'd':
-                                ctx.fillStyle = 'rgb(100,100,100)';
+                                ctx.fillStyle ='rgb(100,100,100)';
                             break;
 
                             case 'y':
-                                ctx.fillStyle = 'rgb(255,255,0)';
+                                ctx.fillStyle ='rgb(255,255,0)';
                             break;
 
                             case 'Y':
-                                ctx.fillStyle = 'rgb(230,230,0)';
+                                ctx.fillStyle ='rgb(230,230,0)';
                             break;
 
                             case 'w':
-                                ctx.fillStyle = 'rgb(255)';
+                              ctx.fillStyle ='rgb(255)';
                             break;
                         }
                         ctx.fillRect(X+x*s, Y+y*s-10, s, s);
@@ -292,44 +284,44 @@
               this.y = y;
               this.xSpeed = 0;
               this.ySpeed = 0;
-              this.currRightEl = 1;
-              this.prevRightEl = 2;
               this.grav = 0;
-              this.canJump = true;
               this.i = 0;
               this.upDown = false;
               this.rightDown = false;
               this.leftDown = false;
               this.fric = 0.9;
               this.walkTimer = 0;
-              this.side = 'right'
+              this.side ='right';
               this.add = 1;
               this.leftimgs = [pimgs.left1,pimgs.left2,pimgs.left3,pimgs.leftshovel]
               this.rightimgs = [pimgs.right1,pimgs.right2,pimgs.right3,pimgs.rightshovel]
               this.currImage = this.rightimgs[this.i];
+              this.level = 0;
             };
             player.prototype.update = function(){
               this.x += this.xSpeed;
               this.y += this.ySpeed;
-              //ctx.translate((this.xSpeed) * -1,0)
+              ctx.translate((this.xSpeed) * -1,0)
               //ctx.translate(0,(this.ySpeed) * -1/10)
               //ctx.translate(0,(this.grav) * -1/9)
               if(this.ySpeed < 0){
                 this.grav += 0.1;
               }
               this.y += this.grav;
-              if(this.y > 380){
+              if(this.y > 580){
                   this.grav = 0;
                   this.ySpeed = 0;
-                  this.y = 380;
+                  this.y = 580;
               }
               if(this.xSpeed === 0){
                 this.i = 0;
               }
-              if(this.xSpeed < 0){
+              if(this.side === 'left' && this.xSpeed === 0){
+                this.i = 0;
                 this.currImage = this.leftimgs[this.i]
               }
-              if(this.xSpeed >= 0){
+              if(this.side === 'right' && this.xSpeed === 0){
+                this.i = 0;
                 this.currImage = this.rightimgs[this.i]
               }
               if(this.leftDown){
@@ -348,18 +340,18 @@
               if(this.y === 0){
                 this.ySpeed = 0;
               }
-              if(this.x <= 0 && this.leftDown){
+              if(this.x <= 100 && this.leftDown){
                 this.xSpeed = 0;
                 this.walkTimer = 0;
               }
-              if(this.x >= 380 && this.rightDown){
+              if(this.x >= 960 && this.rightDown){
                 this.xSpeed = 0;
                 this.walkTimer = 0;
               }
             }
             player.prototype.reset = function(){
               this.x = 50;
-              this.y = 390;
+              this.y = 580;
               this.i = 0;
             }
             player.prototype.turnLeft = function(){
@@ -383,7 +375,7 @@
               me.animate();
             }
             player.prototype.animate = function(){
-              if(this.walkTimer > 2){
+              if(this.walkTimer > 4){
                 if(this.i >= 2){
                   this.add = -1;
                 }
@@ -444,30 +436,122 @@
             player.prototype.draw = function(){
               playerimage(this.currImage,this.rectSize,Math.round(this.x),Math.round(this.y))
             }
-            var block = function(x,y,type){
+            var block = function(type,x,y){
               this.x = x;
               this.y = y;
               this.type = type;
             }
             block.prototype.draw = function(){
+              switch(this.type){
+                case 'grass':
+                  drawblock(blockimgs.grass,this.x,this.y+10,1.2)
+                break;
+                case 'dirt':
+                  drawblock(blockimgs.dirt,this.x,this.y+10,1.2)
+                break;
+                case 'electric':
+                  drawElectric(blockimgs.electric,this.x,this.y+10,1.2)
+                break;
+              }
             }
             block.prototype.checkCollision = function(){
-
+              if(this.type === 'grass' || this.type === 'dirt'){
+                if(me.x >= this.x - 30 && me.x <= this.x && me.y >= this.y && me.y <= this.y + 20 && me.rightDown){
+                  me.xSpeed = 0;
+                  me.x = this.x - 30;
+                  me.walkTimer = 0;
+                }
+              }
             }
-            var me = new player(50,380);
+            var me = new player(50,505);
+            var levels = [
+              {
+                start: {
+                    x: 0,
+                    y: 0
+                },
+                name:'Training Camp',
+                array: [
+                 '----------------------------------------------',
+                 '----------------------------------------------',
+                 '----------------------------------------------',
+                 '----------------------------------------------',
+                 '----------------------------------------------',
+                 '----------------------------------------------',
+                 '----------------------------------------------',
+                 '----------------------------------------------',
+                '--------------------e--------------------------',
+                '-------------------g------g--------------------',
+                '-------------------dggggggdg-------------------',
+                '-----------------------------------------------',
+                '-----------------------------------------------',
+                '------------------------------gg---------------',
+                '-----------------------------------------------',
+                '----------------------------------x------------',
+                '----------------------g-----------dgg----------',
+                '----------------------dg-gggg-----------------',
+                '----------------------------------------------',
+                '----------------g---------------------gg------',
+                '---------------gdg------------------------c---',
+                '--------------gdddg----------------------------',
+                'ggggggggggggggggggggggggggggggggggggggggggggggggdddddggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg',
+                'ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd',
+                'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd',
+                ],
+                blocks: [],
+                checkpoints: [],
+                setup: function() {
+                    for (var y = 0; y < this.array.length; y++) {
+                    for (var x = 0; x < this.array[y].length; x++) {
+                        switch (this.array[y][x]) {
+                            case 'g':
+                                this.blocks.push(new block('grass', x*20*1.2, y*20*1.2));
+                            break;
+                            case 'd':
+                                this.blocks.push(new block('dirt', x*20*1.2, y*20*1.2));
+                            break;
+                            case 'x':
+                                this.blocks.push(new block('electric', x*20*1.2, y*20*1.2));
+                            break;
+                            case 'p':
+                                //this.start.x = x*20*1.2;
+                                //this.start.y = y*20*1.2;
+                            break;
+                            case 'e':
+                                //endFlag.x = x*20*1.2;
+                                //endFlag.y = y*20*1.2;
+                            break;
+                            case 'c':
+                                //this.checkpoints.push(new Checkpoint(x*20*1.2, y*20*1.2));
+                            break;
+                            case '-':
+                            break;
+                        }
+                    }
+                  }
+                }
+              }
+            ]
             type('welcome')
+            var drawBackground = function(){
+              ctx.fillStyle = 'rgba(81, 99, 214,0.25)'
+              ctx.fillStyle = 'rgb(81, 99, 214)'
+              ctx.fillRect(-400,0,1600,1600);
+              //ctx.clearRect(-400,0,1600,1600);
+              for(var i = 0;i < levels[me.level].blocks.length;i++){
+                levels[me.level].blocks[i].draw()
+                levels[me.level].blocks[i].checkCollision()
+              }
+            }
+            levels[me.level].setup()
             function animate(){
-                ctx.fillStyle = 'rgba(50,50,50)'
-                ctx.fillStyle = 'rgba(81, 99, 214,0.25)'
-                ctx.fillStyle = 'rgb(81, 99, 214)'
-                ctx.fillRect(0,0,400,400);
-                //ctx.clearRect(0,0,400,400)
-                requestAnimationFrame(animate);
+                drawBackground()
+                window.requestAnimationFrame(animate)
                 me.keys()
                 me.draw();
                 me.update();
             }
-            requestAnimationFrame(animate)
+            window.requestAnimationFrame(animate)
         </script>
     </body>
 </html>
