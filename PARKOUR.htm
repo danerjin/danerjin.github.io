@@ -279,7 +279,7 @@
             };
             var player = function(x,y){
               this.rectSize = 2;
-              this.speed = 12;
+              this.speed = 8;
               this.x = x;
               this.y = y;
               this.xSpeed = 0;
@@ -305,7 +305,7 @@
               //ctx.translate(0,(this.ySpeed) * -1/10)
               //ctx.translate(0,(this.grav) * -1/9)
               if(this.ySpeed < 0){
-                this.grav += this.speed/15;
+                this.grav += this.speed/12;
               }
               this.y += this.grav;
               if(this.y > 580){
@@ -456,7 +456,7 @@
             }
             block.prototype.checkCollision = function(){
               if(this.type === 'grass' || this.type === 'dirt'){
-                if(me.x >= this.x - 30 && me.x <= this.x && me.y >= this.y && me.y <= this.y + 20 && me.rightDown){
+                if(me.x >= this.x - 30 && me.x <= this.x - 10 && me.y >= this.y && me.y <= this.y + 20 && me.rightDown){
                   me.xSpeed = 0;
                   me.x = this.x - 30;
                   me.walkTimer = 0;
