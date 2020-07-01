@@ -11,7 +11,6 @@
         }
         #typewriter{
           color: white;
-          font-family: monospace;
           background-color: red;
           border: 10px solid grey;
           position:absolute;
@@ -19,6 +18,15 @@
           height:100px;
           left:10px;
           width:400px;
+          font-family:'ArcadeClassic',Arial, sans-serif;
+        }
+        @font-face {
+            font-family: 'arcadeclassicregular';
+            src: url('arcadeclassic-webfont.woff2') format('woff2'),
+                 url('arcadeclassic-webfont.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+
         }
         </style>
     </head>
@@ -311,11 +319,6 @@
               if(this.xSpeed === 0){
                 this.i = 0;
               }
-              if(this.y > 510){
-                this.grav = 0;
-                this.ySpeed = 0;
-                this.y = 510;
-              }
               if(this.side === 'left' && this.xSpeed === 0){
                 this.i = 0;
                 this.currImage = this.leftimgs[this.i]
@@ -351,7 +354,7 @@
             }
             player.prototype.reset = function(){
               this.x = 50;
-              this.y = 520;
+              this.y = 580;
               this.i = 0;
             }
             player.prototype.turnLeft = function(){
@@ -460,19 +463,16 @@
                   me.xSpeed = 0;
                   me.walkTimer = 0;
                 }
-                if(me.x > this.x - 30 && me.x < this.x - 10 && me.y >= this.y - 25 && !me.upDown){
+                if(me.x > this.x - 30 && me.x < this.x && me.y >= this.y - 25 && !me.upDown){
                   me.grav = 0;
                   me.ySpeed = 0;
-                  me.walkTimer = 0;
                 }
-                /*else if(me.y > 500){
+                if(me.y >= 510){
                   me.grav = 0;
-                  me.ySpeed = 0;
-                  me.y = 500;
+                  if(!me.upDown){
+                    me.ySpeed = 0;
+                  }
                 }
-                else{
-                  me.grav += 0.1;
-                }*/
               }
             }
             var me = new player(50,510);
@@ -547,9 +547,9 @@
             type('welcome')
             var drawBackground = function(){
               ctx.fillStyle = 'rgba(81, 99, 214,0.50)'
-              //ctx.fillStyle = 'rgb(81, 99, 214)'
-              ctx.fillRect(-400,0,1600,1600);
-              //ctx.clearRect(-400,0,1600,1600)
+              ctx.fillStyle = 'rgb(81, 99, 214)'
+              ctx.fillRect(-400,0,1600,2400);
+              //ctx.clearRect(-400,0,1600,2400)
             }
             levels[me.level].setup()
             function animate(){
