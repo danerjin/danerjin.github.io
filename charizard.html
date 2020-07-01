@@ -268,6 +268,14 @@
       },100 * i)
     }
   }
+  var flash = function(){
+    for(let i = 0;i < 50;i++){
+      setTimeout(function(){
+        i++;
+        $("#myMove").css("opacity", i % 2 == 0 ? 1 : 0.4);
+      },50 * i);
+    }
+  }
   startTheGame = function(){
     if(wantsTheme){
         theme.play();
@@ -468,8 +476,8 @@
             $(".flame").hide();
             $("#myMove").css("animation-name","none");
             $('#myMove').show();
+            flash();
             $('#myMove').attr('src','sprites/lightning.png');
-            //$("#menu").hide();
             type('you used thunderbolt')
             meAttacking = true;
             decreaseOpponentHp(10);
