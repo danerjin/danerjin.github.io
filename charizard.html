@@ -21,9 +21,9 @@
       100%{bottom:10%}
     }
     @font-face {
-        font-family: 'arcadeclassicregular';
-        src: url('arcadeclassic-webfont.woff2') format('woff2'),
-             url('arcadeclassic-webfont.woff') format('woff');
+        font-family: '.../arcadeclassicregular';
+        src: url('.../arcadeclassic-webfont.woff2') format('woff2'),
+             url('.../arcadeclassic-webfont.woff') format('woff');
         font-weight: normal;
         font-style: normal;
 
@@ -206,6 +206,38 @@
     left:40%;
     top:50%;
   }
+  .button {
+    padding:10px;
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px #999;
+    transition-duration: 0.4s;
+    margin: 10px;
+    display:none;
+  }
+
+  .button:hover {
+    background-color: #f44336;
+  }
+
+  .button:active {
+    background-color: #3e8e41;
+    box-shadow: 0 2px #666;
+    transform: translateY(4px);
+  }
+  #try_again{
+    position: absolute;
+    left:40%;
+    top:50%;
+    display: none;
+  }
   </style>
 </head>
 <body>
@@ -226,16 +258,17 @@
     <button id = 'attack_4' onclick="attack4()">tackle</button>
   </div>
 </div>
-  <!--<a id = 'return' href='forest11.htm'>go back to main route</a>-->
+  <a class = 'button' href='forest11.htm' id = 'return>go back to main route</a>
+  <button id = 'try_again' onclick = 'startTheGame()'>try again</button>
   </div>
   <button onclick = 'startTheGame()' id = 'start_button'>start</button>
   <div id = 'typewriter'></div>
   <script src = 'jquery.js'></script>
   <script>
-  /*var wantsTheme = confirm('do you want background music?')
+  var wantsTheme = confirm('do you want background music?')
   if(wantsTheme){
     //var theme = new sound('sprites/raid%20battle.mp3')
-  }*/
+  }
   var opponentHealth = 400;
   var myHealth = 300;
   var megaEvolve;
@@ -278,9 +311,9 @@
     }
   }
   startTheGame = function(){
-    /*if(wantsTheme){
+    if(wantsTheme){
       //theme.play();
-    }*/
+    }
     $("#start_button").hide();
     setTimeout(function(){
       charizard.sounds.normal.play()
@@ -319,6 +352,7 @@
             if(!gameIsOver){
               setTimeout(function(){
                 type('you lost')
+                $("#try_again").show()
               },2750);
             }
           gameIsOver = true;
@@ -351,6 +385,7 @@
             if(!gameIsOver){
               setTimeout(function(){
                 type('you won!!!!!!!!!!!!!!')
+                $("#try_again").show()
               },2000);
             }
           gameIsOver = true;
