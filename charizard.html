@@ -38,6 +38,7 @@
     right:0px;
     bottom:10%;
     display: none;
+    text-shadow: 1px 1px #000000;
     /*font-family:'ArcadeClassic',arial,sans-serif;*/
   }
   #moves{
@@ -231,10 +232,10 @@
   <div id = 'typewriter'></div>
   <script src = 'jquery.js'></script>
   <script>
-  var wantsTheme = confirm('do you want background music?')
+  /*var wantsTheme = confirm('do you want background music?')
   if(wantsTheme){
-    var theme = new sound('sprites/raid%20battle.mp3')
-  }
+    //var theme = new sound('sprites/raid%20battle.mp3')
+  }*/
   var opponentHealth = 400;
   var myHealth = 300;
   var megaEvolve;
@@ -269,17 +270,17 @@
     }
   }
   var flash = function(){
-    for(let i = 0;i < 50;i++){
+    for(let i = 0;i < 30;i++){
       setTimeout(function(){
         i++;
         $("#myMove").css("opacity", i % 2 == 0 ? 1 : 0.4);
-      },50 * i);
+      },100 * i);
     }
   }
   startTheGame = function(){
-    if(wantsTheme){
-        theme.play();
-    }
+    /*if(wantsTheme){
+      //theme.play();
+    }*/
     $("#start_button").hide();
     setTimeout(function(){
       charizard.sounds.normal.play()
@@ -315,7 +316,6 @@
             $("#myPokemon").fadeOut(5000);
             $("#menu").hide();
             $("#myHealthBar").hide();
-            $("#opponentHealthBar").hide();
             if(!gameIsOver){
               setTimeout(function(){
                 type('you lost')
@@ -347,7 +347,6 @@
         if(opponentHealth<=0){
           $("#opponentPokemon").fadeOut(5000);
           $("#menu").hide();
-          $("#myHealthBar").hide();
           $("#opponentHealthBar").hide();
             if(!gameIsOver){
               setTimeout(function(){
@@ -410,7 +409,8 @@
       canMegaEvolve:false,
       image:'sprites/pikachu_1.gif',
       width:'150',
-      sound:new sound('sprites/pikachu.ogg')
+      sound:new sound('sprites/pikachu.ogg'),
+      status:'available'
     }
     var charizard = {
       name:charizard,
@@ -432,7 +432,8 @@
         normal:new sound('sprites/charizard.ogg'),
         x:new sound('sprites/mega%20charizard%20x.ogg'),
         y:new sound('sprites/mega%20charizard%20y.ogg'),
-      }
+      },
+      status:'available'
     }
       charizard.megaEvolve = function(){
         setTimeout(function(){
@@ -446,6 +447,7 @@
           if(ra <= 1.5){
             $('#opponentPokemon').attr('src',charizard.images.y);
             $('#opponentPokemon').attr('width',300);
+            charizard.width = '300'
             charizard.images.normal = charizard.images.y;
             charizard.form = 'y';
             charizard.sounds.normal = charizard.sounds.y;
@@ -454,6 +456,7 @@
             $('#opponentPokemon').attr('src',charizard.images.x);
             $('#opponentPokemon').attr('width',250);
             $(".flame").attr('src','sprites/hot%20flame.gif');
+            charizard.width = '250'
             charizard.images.normal = charizard.images.x;
             charizard.form = 'x';
             charizard.sounds.normal = charizard.sounds.x;
