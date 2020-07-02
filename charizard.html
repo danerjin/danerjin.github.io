@@ -21,12 +21,11 @@
       100%{bottom:10%}
     }
     @font-face {
-        font-family: '.../arcadeclassicregular';
-        src: url('.../arcadeclassic-webfont.woff2') format('woff2'),
-             url('.../arcadeclassic-webfont.woff') format('woff');
+        font-family: 'silkscreennormal';
+        src: url('slkscr-webfont.woff2') format('woff2'),
+             url('slkscr-webfont.woff') format('woff');
         font-weight: normal;
         font-style: normal;
-
     }
   .game{
     background-image: url('sprites/background.png');
@@ -39,7 +38,7 @@
     bottom:10%;
     display: none;
     text-shadow: 1px 1px #000000;
-    /*font-family:'ArcadeClassic',arial,sans-serif;*/
+    font-family:'silkscreennormal',arial,sans-serif;
   }
   #moves{
     z-index: 6;
@@ -50,8 +49,6 @@
     bottom: 20%;
     z-index:5;
     color:white;
-    font-smooth: never;
-    -webkit-font-smoothing : none;
   }
   #opponentHealthBar{
     position:absolute;
@@ -59,8 +56,6 @@
     bottom:70%;
     z-index:5;
     color:white;
-    font-smooth: never;
-    -webkit-font-smoothing : none;
   }
   .container{
     width:50px;
@@ -144,7 +139,7 @@
     position:absolute;
     left:0px;
     bottom: 0px;
-    font-family: monospace;
+    font-family:'silkscreennormal',Arial,sans-serif;
   }
   button {
     padding:10px;
@@ -258,7 +253,7 @@
     <button id = 'attack_4' onclick="attack4()">tackle</button>
   </div>
 </div>
-  <a class = 'button' href='forest11.htm' id = 'return>go back to main route</a>
+  <a class = 'button' href='forest11.htm' id = 'return'>go back to main route</a>
   <button id = 'try_again' onclick = 'startTheGame()'>try again</button>
   </div>
   <button onclick = 'startTheGame()' id = 'start_button'>start</button>
