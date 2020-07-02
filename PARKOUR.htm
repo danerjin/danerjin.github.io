@@ -18,15 +18,14 @@
           height:100px;
           left:10px;
           width:400px;
-          font-family:'ArcadeClassic',Arial, sans-serif;
+          font-family:'silkscreennormal',Arial, sans-serif;
         }
         @font-face {
-            font-family: 'arcadeclassicregular';
-            src: url('arcadeclassic-webfont.woff2') format('woff2'),
-                 url('arcadeclassic-webfont.woff') format('woff');
+            font-family: 'silkscreennormal';
+            src: url('slkscr-webfont.woff2') format('woff2'),
+                 url('slkscr-webfont.woff') format('woff');
             font-weight: normal;
             font-style: normal;
-
         }
         </style>
     </head>
@@ -548,7 +547,7 @@
             var drawBackground = function(){
               ctx.fillStyle = 'rgba(81, 99, 214,0.50)'
               ctx.fillStyle = 'rgb(81, 99, 214)'
-              ctx.fillRect(-400,0,1600,2400);
+              ctx.fillRect(-400,0,1600,2800);
               //ctx.clearRect(-400,0,1600,2400)
             }
             levels[me.level].setup()
