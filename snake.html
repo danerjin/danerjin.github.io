@@ -213,6 +213,7 @@ function loop() {
     if (cell.x === apple.x && cell.y === apple.y) {
       snake.maxCells++;
       score++;
+      sound3.stop();
       sound3.play();
       // canvas is 400x400 which is 25x25 grids
           apple.x = getRandomInt(0, 25) * grid;
