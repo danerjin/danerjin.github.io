@@ -69,7 +69,7 @@ var canvas = document.getElementById('game');
 var context = canvas.getContext('2d');
 $("button").hide();
 $("h2").hide();
-$('#play-again+#start-playing').on('click',startTheGame)
+$('#play-again+#start-playing').on('click',startTheGame())
 var gameIsOver = false;
 function sound(src) {
 this.sound = document.createElement("audio");
