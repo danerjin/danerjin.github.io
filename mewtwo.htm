@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- saved from url=(0074)https://keithclark.co.uk/articles/3d-models-in-html-documents/demos/truck/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>#x-model-renderLayer{position:fixed;top:0;left:0;pointer-events:none}x-model{display:inline-block;width:250px;height:250px}</style><style>body {transition: opacity ease-in 0.2s; } 
+body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
+</style>
+
+<meta name="viewport" content="width=device-width">
+<title>3D models in HTML: CSS Animation Demo </title>
+<meta name="description" content="A 3D model spinning on it&#39;s Y axis. Built using the x-model custom element and CSS transforms">
+<style>
+  html, body {
+    margin: 0;
+    padding: 0
+  }
+  body {
+    height: 100vh;
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+  .wrap {
+    perspective: 700px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80vmin;
+    height: 80vmin;
+    max-width: 500px;
+    max-height: 500px;
+    transform: translate(-50%, -50%);
+  }
+  x-model {
+    width: 100%;
+    height: 100%;
+    animation: 10s spin linear infinite;
+      transform:rotateX(90deg);
+  }
+
+  @keyframes spin {
+    to {
+      transform:rotateX(90deg) rotateZ(1turn);
+    }
+  }
+</style>
+</head>
+
+<body>
+  <div class="wrap">
+    <x-model src="https://danerjin.github.io/Mewtwo_ColladaMax.glb"></x-model>
+  </div>
+  <script async="" src="./mewtwo_files/analytics.js"></script><script src="./mewtwo_files/3d-model-bundle.js"></script>
+  <script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-10812217-1', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+</body><canvas id="x-model-renderLayer" width="1233" height="619" style="width: 1233px; height: 619px;"></canvas></html>
