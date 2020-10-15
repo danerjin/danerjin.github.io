@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>mytypingthing</title>
+</head>
+<style>
+#typewriter{
+      color: white;
+      background-image: linear-gradient(#98989e 0%,#19191a 10%,#19191a 100%);
+      width:100%;
+      height:20%;
+      position:absolute;
+      left:0%;
+      bottom: 0%;
+      font-size: 25px;
+      font-family:Arial,sans-serif;
+      /*font-family:'power_clearregular',Arial,sans-serif;*/
+      text-shadow: 1px 1px #000000;
+      z-index: 11;
+      opacity:0.7;
+      display:none;
+    }
+    #typewriter_text{
+      position: absolute;
+      top:25px;
+      left:25px;
+      right:25px;
+      bottom:25px;
+    }
+</style>
+<body>
+<div id = 'typewriter'><div id = 'typewriter_text'></div></div>
+	<script>
+var type = function(whatToType){
+        $("#typewriter_text").text("");
+        $("#typewriter").show();
+        var i = 0;
+        var id = setInterval(function(){
+          if(whatToType[i] === '~'){
+            $("#typewriter_text").append('<br>');
+          }
+          else if(whatToType[i] === 'ø'){
+            $("#typewriter_text").append('<img id = \'wait\' src = \'sprites/wait.png\'>');
+            }
+          else{
+            $("#typewriter_text").append(whatToType[i]);
+          }
+          if(i > whatToType.length){
+            clearInterval(id)
+            setTimeout(function(){
+              $("#typewriter").hide();
+            },1000)
+          }
+          i++;
+        },50)
+      };
+	</script>
+</body>
+</html>
