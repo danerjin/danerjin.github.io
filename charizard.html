@@ -303,7 +303,7 @@
       </div>
     </div>
     <audio id='theme' autoplay loop>
-      <source src="sprites/raid%20battle 2.mp3">
+      <source src="sprites/raid%20battle.mp3">
     </audio>
     <a id = 'try_again' href = 'charizard.htm'>try again</a>
     <div id = 'typewriter'><div id = 'typewriter_text'></div></div>
@@ -628,8 +628,8 @@
                 setTimeout(function(){
                   if(!gameIsOver){
                     type('you lost')
+                    gameIsOver = true;
                   }
-                  $("#try_again").show()
                 },2750);
               gameIsOver = true;
               $("#return").show();
@@ -665,10 +665,10 @@
                 if(!gameIsOver){
                   type('you won!!!!!!!!')
                   console.log('bruh')
+                  gameIsOver = true;
                 }
                 $("#try_again").show()
               },2000);
-              gameIsOver = true;
               $("#return").show();
               clearTimeout(id)
               $("#menu").hide()
