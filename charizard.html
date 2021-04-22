@@ -1,683 +1,748 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset = 'utf-8'>
-  <title>charizard battle</title>
-  <link rel = 'shortcut icon' type = 'image/gif' href = 'sprites/mega%20charizard%20x.gif'>
-  <style>
-    @keyframes ram{
-      from{
-        left:20%;
-        bottom:0px;
-      }
-      to{
-        left:70%;
-        bottom:40%;
-      }
-    }
-    @keyframes jump{
-      0%{bottom:10%}
-      50%{bottom:75%}
-      100%{bottom:10%}
-    }
-    @font-face {
-        font-family: 'silkscreennormal';
-        src: url('slkscr-webfont.woff2') format('woff2'),
-             url('slkscr-webfont.woff') format('woff');
-        font-weight: normal;
-        font-style: normal;
-    }
-  .game{
-    background-image: url('sprites/background.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    position:absolute;
-    top:0px;
-    left:0px;
-    right:0px;
-    bottom:10%;
-    display: none;
-    text-shadow: 1px 1px #000000;
-    font-family:'silkscreennormal',arial,sans-serif;
-  }
-  #moves{
-    z-index: 6;
-  }
-  #myHealthBar{
-    position:absolute;
-    left:20%;
-    bottom: 20%;
-    z-index:5;
-    color:white;
-    font-size:12px;
-  }
-  #opponentHealthBar{
-    position:absolute;
-    right:23%;
-    bottom:70%;
-    z-index:5;
-    color:white;
-    font-size:12px;
-  }
-  .container{
-    width:50px;
-    background-color: black;
-    color: black;
-    border-radius: 5px;
-    height:10px;
-  }
-  .bar{
-    width:50px;
-    color: lightgreen;
-    background-color: lightgreen;
-    border-radius: 5px;
-    height:10px;
-  }
-  .pokeball{
-    background-image: url('sprites/pokeball.png');
-    background-size: 100% 100%;
-    width:11px;
-    height:11px;
-    position: relative;
-    float: left;
-  }
-  .pokeball2{
-    background-image: url('sprites/pokeball.png');
-    background-size: 100% 100%;
-    width:11px;
-    height:11px;
-    position: relative;
-    float: right;
-  }
-  #return{
-    position: absolute;
-    top: 425px;
-    left:500px;
-  }
-  #opponentMove{
-    position:absolute;
-    left:15%;
-    bottom:0px;
-    z-index: 1;
-  }
-  #myMove{
-    position:absolute;
-    right:15%;
-    bottom:50%;
-    z-index: 3;
-  }
-  #opponentPokemon{
-    position: absolute;
-    right:15%;
-    bottom:40%;
-    z-index: 2;
-    display:none;
-  }
-  #mega{
-    position: absolute;
-    right:20%;
-    top:100px;
-    z-index: 2;
-  }
-  #myPokemon{
-    position: absolute;
-    left:15%;
-    bottom: 0px;
-    z-index: 2;
-    display:none;
-  }
-  .flame{
-    transform: rotate(250deg);
-    position:absolute;
-    left:25%;
-    bottom: -100px;
-    display:none;
-  }
-  #typewriter{
-    color: white;
-    background-image: linear-gradient(141deg, #9fb8ad 0%, #1fc8db 51%, #2cb5e8 75%);
-    width:100%;
-    height:10%;
-    position:absolute;
-    left:0px;
-    bottom: 0px;
-    font-family:'silkscreennormal',Arial,sans-serif;
-  }
-  button {
-    padding:10px;
-    display: inline-block;
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;
-    outline: none;
-    color: #fff;
-    background-color: #4CAF50;
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 5px #999;
-    transition-duration: 0.4s;
-    margin: 10px;
-  }
-
-  button:hover {
-    background-color: #f44336;
-  }
-
-  button:active {
-    background-color: #3e8e41;
-    box-shadow: 0 2px #666;
-    transform: translateY(4px);
-  }
-  #theme{
-    display: none;
-  }
-  #mega{
-    position: absolute;
-    top:10%;
-    right:20%;
-    display: none;
-  }
-  #menu{
-    width:300px;
-    height:100px;
-    position: absolute;
-    top:400px;
-    left:30%;
-    display:none;
-  }
-  .mega{
-    background-image: url('sprites/mega%20stone.png');
-    background-size: 100% 100%;
-    width:10px;
-    height:10px;
-    display:none;
-  }
-  .mega1{
-    float: left;
-  }
-  .mega2{
-    float: right;
-  }
-  #start_button{
-    position: absolute;
-    left:40%;
-    top:50%;
-  }
-  .button {
-    padding:10px;
-    display: inline-block;
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;
-    outline: none;
-    color: #fff;
-    background-color: #4CAF50;
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 5px #999;
-    transition-duration: 0.4s;
-    margin: 10px;
-    display:none;
-  }
-
-  .button:hover {
-    background-color: #f44336;
-  }
-
-  .button:active {
-    background-color: #3e8e41;
-    box-shadow: 0 2px #666;
-    transform: translateY(4px);
-  }
-  #try_again{
-    position: absolute;
-    left:40%;
-    top:50%;
-    display: none;
-  }
-  </style>
-</head>
-<body>
-  <div class = 'game'>
-  <div id ='myHealthBar'><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div><div id = 'myName'>pikachu</div><div id = 'myHealthText'>300/300</div><div class = 'container'><div id = 'myHealthGraphic' class = 'bar'>  </div></div><span class = 'mega2 mega'></span></div></div>
-  <div id ='opponentHealthBar'><div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div></div><div><div id = 'opponentName'>charizard</div><div id = 'opponentHealthText'>400/400</div><div class = 'container'><div id = 'opponentHealthGraphic' class = 'bar'>  </div></div><span class = 'mega1 mega'></span></div></div>
-  <img id = 'opponentPokemon' src = 'sprites/Charizard.gif' width = '200' alt = "opponent's pokemon">
-  <img id = 'mega' src = 'sprites/megaEffect2.gif' width = '25'>
-  <img id = 'myPokemon' src = 'sprites/pikachu_1.gif' width = '125' alt = 'my pokemon'>
-  <img id = 'opponentMove' src = '' width = '200'>
-  <img class = 'flame' src = 'sprites/flamethrower.gif'>
-  <img id = 'myMove' src = '' width = '200'>
-  <div id = 'menu'>
-  <div id = 'moves'>
-    <button id = 'attack_1' onclick="attack1()">thunderbolt</button>
-    <button id = 'attack_2' onclick = 'attack2()'>electro ball</button>
-    <button id = 'attack_3' onclick="attack3()">volt tackle</button>
-    <button id = 'attack_4' onclick="attack4()">tackle</button>
-  </div>
-</div>
-  <a class = 'button' href='forest11.htm' id = 'return'>go back to main route</a>
-  <button id = 'try_again' onclick = 'startTheGame()'>try again</button>
-  </div>
-  <button onclick = 'startTheGame()' id = 'start_button'>start</button>
-  <div id = 'typewriter'></div>
-  <script src = 'jquery.js'></script>
-  <script>
-  var wantsTheme = confirm('do you want background music?')
-  if(wantsTheme){
-    //var theme = new sound('sprites/raid%20battle.mp3')
-  }
-  var opponentHealth = 400;
-  var myHealth = 300;
-  var megaEvolve;
-  var isTyping = false;
-  var meAttacking = false;
-  var opponentAttacking = false;
-  var gameIsOver = false;
-  var effect = 'sprites/megaEffect.gif'
-  function sound(src) {
-  this.sound = document.createElement("audio");
-  this.sound.src = src;
-  this.sound.setAttribute("preload", "auto");
-  this.sound.setAttribute("controls", "none");
-  this.sound.style.display = "none";
-  document.body.appendChild(this.sound);
-  this.play = function(){
-      this.sound.play();
-  }
-  this.stop = function(){
-      this.sound.pause();
-  }
-}
-  var type = function(typo){
-    isTyping = true;
-    opponentAttacking = false;
-    meAttacking = false;
-    $("#typewriter").text('')
-    for(let i = 0;i < typo.length;i++){
-      setTimeout(function(){
-        $("#typewriter").append(typo[i])
-      },100 * i)
-    }
-  }
-  var flash = function(){
-    for(let i = 0;i < 30;i++){
-      setTimeout(function(){
-        i++;
-        $("#myMove").css("opacity", i % 2 == 0 ? 1 : 0.4);
-      },100 * i);
-    }
-  }
-  startTheGame = function(){
-    if(wantsTheme){
-      //theme.play();
-    }
-    $("#start_button").hide();
-    setTimeout(function(){
-      charizard.sounds.normal.play()
-      $('#opponentPokemon').fadeIn(1000);
-      type('go, charizard!')
-      setTimeout(function(){
-        type('What will pikachu do?')
-        setTimeout(function(){
-          $("#menu").show();
-        },2000);
-      },2000)
-    },1500);
-    pikachu.sound.play()
-    $(".game").show();
-    $('#myPokemon').fadeIn(1000);
-    type('go, pikachu!')
-  };
-  var decreaseMyHp = function(Hp){
-    for(let i = 0;i < Hp;i ++){
-      var id = setTimeout(function(){
-        myHealth--;
-        $('#myHealthText').text(myHealth + '/300');
-        $("#myHealthGraphic").css("width",myHealth/6 + "px");
-        if(myHealth <= 75){
-          $("#myHealthGraphic").css('background-color','red')
-          $("#myHealthGraphic").css('color','red')
+  <head>
+    <meta charset = 'utf-8'>
+    <title>charizard battle</title>
+    <link rel = 'sortcut icon' type = 'image/gif' href = 'sprites/pokemon/battle/mega%20charizard%20x.gif'></link>
+    <meta name="viewport" content="width=device-width">
+    <style>
+      @keyframes ram{
+        from{
+          left:20%;
+          bottom:0px;
+          width:200px;
         }
-        else if(myHealth <= 150){
-          $("#myHealthGraphic").css('background-color','yellow')
-          $("#myHealthGraphic").css('color','yellow')
-        }
-        if(myHealth<=0){
-            $("#myPokemon").fadeOut(5000);
-            $("#menu").hide();
-            $("#myHealthBar").hide();
-            if(!gameIsOver){
-              setTimeout(function(){
-                type('you lost')
-                $("#try_again").show()
-              },2750);
-            }
-          gameIsOver = true;
-          $("#return").show();
-          clearTimeout(id)
-          $("#menu").hide()
-          return
-        }
-    },50 * i)
-  }
-}
-  var decreaseOpponentHp = function(Hp){
-    for(let j = 0;j < Hp;j++){
-        var id = setTimeout(function(){
-        opponentHealth--;
-        $('#opponentHealthText').text(opponentHealth + '/400');
-        $("#opponentHealthGraphic").css("width",opponentHealth/8 + "px");
-        if(opponentHealth <= 100){
-          $("#opponenHealthGraphic").css('background-color','red')
-          $("#opponenHealthGraphic").css('color','red')
-        }
-        else if(opponentHealth <= 200){
-          $("#opponentHealthGraphic").css('background-color','yellow')
-          $("#opponenHealthGraphic").css('color','yellow')
-        }
-        if(opponentHealth<=0){
-          $("#opponentPokemon").fadeOut(5000);
-          $("#menu").hide();
-          $("#opponentHealthBar").hide();
-            if(!gameIsOver){
-              setTimeout(function(){
-                type('you won!!!!!!!!!!!!!!')
-                $("#try_again").show()
-              },2000);
-            }
-          gameIsOver = true;
-          $("#return").show();
-          clearTimeout(id)
-          $("#menu").hide()
-          return
-        }
-      },50 * j)
-      }
-    }
-    var increaseOpponentHp = function(Hp){
-      for(let j = 0;j < Hp;j++){
-          setTimeout(function(){
-          opponentHealth++;
-          $('#opponentHealthText').text(opponentHealth + '/400');
-          $("#opponentHealthGraphic").css("width",opponentHealth/8 + "px");
-          if(opponentHealth > 400){
-            opponentHealth = 400;
-          }
-          else if(opponentHealth <= 100){
-            $("#opponenHealthGraphic").css('background-color','red')
-            $("#opponenHealthGraphic").css('color','red')
-          }
-          else if(opponentHealth <= 200){
-            $("#opponentHealthGraphic").css('background-color','yellow')
-            $("#opponenHealthGraphic").css('color','yellow')
-          }
-          else if(opponentHealth > 200){
-            $("#opponentHealthGraphic").css('background-color','lightgreen')
-            $("#opponenHealthGraphic").css('color','lightgreen')
-          }
-        },10 * j)
+        to{
+          left:70%;
+          bottom:40%;
+          width:100px;
         }
       }
-    attack1 = function(){
-      opponentAttacking = false;
-      pikachu.myTurn(0)
-    };
-    attack2 = function(){
-      opponentAttacking = false;
-      pikachu.myTurn(1)
-    };
-      attack3 = function(){
-        opponentAttacking = false;
-        pikachu.myTurn(2)
-    };
-    attack4 = function(){
-      opponentAttacking = false;
-      pikachu.myTurn(3)
-    };
-    var pikachu = {
-      name:pikachu,
-      maxHealth:300,
-      health:300,
-      canMegaEvolve:false,
-      image:'sprites/pikachu_1.gif',
-      width:'150',
-      sound:new sound('sprites/pikachu.ogg'),
-      status:'available'
+      @keyframes jump{
+        0%{bottom:10%}
+        50%{bottom:75%}
+        100%{bottom:10%}
+      }@keyframes idle2{
+        from{}
+        to{transform: scale(1.4) rotate(10deg);}
+      }
+      body{
+        overflow:hidden;
+      }
+    .game{
+      background-image: url('sprites/backgrounds/battlebg/field.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      position:absolute;
+      top:0px;
+      left:0px;
+      right:0px;
+      bottom:0px;
+      text-shadow: 1px 1px #000000;
+      font-family:arial,sans-serif;
     }
-    var charizard = {
-      name:charizard,
-      maxHealth:400,
-      health:400,
-      canMegaEvove:true,
-      forms:2,
-      width:'200',
-      images:{
-        normal:'sprites/Charizard.gif',
-        x:'sprites/mega%20charizard%20x.gif',
-        y:'sprites/mega%20charizard%20y.gif',
-        attack1:'sprites/charizard2.gif',
-        attack2:'sprites/Charizard3.gif',
-        attack3:'sprites/Charizard4.gif'
-      },
-      isMegaEvolved:false,
-      sounds:{
-        normal:new sound('sprites/charizard.ogg'),
-        x:new sound('sprites/mega%20charizard%20x.ogg'),
-        y:new sound('sprites/mega%20charizard%20y.ogg'),
-      },
-      status:'available'
+    #game1{
+      /*display:none;*/
     }
-      charizard.megaEvolve = function(){
-        setTimeout(function(){
-          $("#mega").fadeIn(100)
-        },100);
-        $(".mega1").show()
-        $("#opponentPokemon").attr('src',effect)
-        setTimeout(function(){
-          var r = Math.random();
-          var ra = r*3;
-          if(ra <= 1.5){
-            $('#opponentPokemon').attr('src',charizard.images.y);
-            $('#opponentPokemon').attr('width',300);
-            charizard.width = '300'
-            charizard.images.normal = charizard.images.y;
-            charizard.form = 'y';
-            charizard.sounds.normal = charizard.sounds.y;
-          }
-          else{
-            $('#opponentPokemon').attr('src',charizard.images.x);
-            $('#opponentPokemon').attr('width',250);
-            $(".flame").attr('src','sprites/hot%20flame.gif');
-            charizard.width = '250'
-            charizard.images.normal = charizard.images.x;
-            charizard.form = 'x';
-            charizard.sounds.normal = charizard.sounds.x;
-          }
-          charizard.sounds.normal.play();
-          },1500);
-          charizard.isMegaEvolved = true;
-          increaseOpponentHp(400 - opponentHealth);
-          type('charizard mega evolved!his health restored')
-          setTimeout(function(){
-            $("#menu").hide()
-            $("#mega").hide()
-            charizard.opponentMove();
-          },4100);
-        };
-        pikachu.myTurn = function(num){
-          $("#menu").hide()
-          if(num === 0){
-            $("#opponentMove").hide();
-            $(".flame").hide();
-            $("#myMove").css("animation-name","none");
-            $('#myMove').show();
-            flash();
-            $('#myMove').attr('src','sprites/lightning.png');
-            type('you used thunderbolt')
-            meAttacking = true;
-            decreaseOpponentHp(10);
-              if(!charizard.isMegaEvolved && opponentHealth <= 100){
-                charizard.megaEvolve();
-                return
-              }
-              setTimeout(function(){
-                if(!gameIsOver){
-                  charizard.opponentMove()
-                }
-              },3000);
-          }
-          else if(num === 1){
-            $("#opponentMove").hide();
-            $(".flame").hide();
-            $("#myMove").show();
-            $('#myMove').attr('src','sprites/ball.png');
-            $('#myMove').attr('width','150')
-            $("#myMove").css("animation-name","ram");
-            $("#myMove").css("animation-duration","3s");
-            //$("#menu").hide();
-            type('you used electro ball.')
-            meAttacking = true;
-            decreaseOpponentHp(50);
-            setTimeout(function(){
-              $("#myMove").css("animation-name","none");
-              $('#myMove').hide();
-              if(!charizard.isMegaEvolved && opponentHealth <= 100){
-                charizard.megaEvolve();
-                return
-              }
-              if(!gameIsOver){
-                charizard.opponentMove();
-              }
-          },3000);
-          }
-          else if(num === 2){
-            $("#myPokemon").css("animation-name","none");
-            $("#opponentMove").hide();
-            $(".flame").hide();
-            $('#myPokemon').attr('src','sprites/volt.png');
-            $('#myPokemon').attr('width','150')
-            $("#myPokemon").css("animation-name","ram");
-            $("#myPokemon").css("animation-duration","3s");
-            type('you used volt tackle.')
-            meAttacking = true;
-            decreaseOpponentHp(100);
-            decreaseMyHp(10);
-            setTimeout(function(){
-              $('#myPokemon').attr('src',pikachu.image);
-              $('#myPokemon').attr('width',pikachu.width)
-              $("#myPokemon").css("animation-name","none");
-              if(!charizard.isMegaEvolved && opponentHealth <= 100){
-                charizard.megaEvolve();
-                return
-              }
-              if(!gameIsOver){
-                charizard.opponentMove()
-              }
-            },4000);
-          }
-          else if(num === 3){
-            $(".flame").hide()
-            $("#opponentMove").hide()
-            $("#myPokemon").css("animation-name","none");
-            $("#opponentMove").hide();
-            $("#flame").hide();
-            $('#myPokemon').attr('src','sprites/tackle.png');
-            $('#myPokemon').attr('width','150')
-            $("#myPokemon").css("animation-name","ram");
-            $("#myPokemon").css("animation-duration","3s");
-            type('you used tackle')
-            meAttacking = true;
-            decreaseOpponentHp(10);
-            setTimeout(function(){
-              $('#myPokemon').attr('src',pikachu.image);
-              $('#myPokemon').attr('width',pikachu.width)
-              $("#myPokemon").css("animation-name","none");
-              if(!charizard.isMegaEvolved && opponentHealth <= 100){
-                charizard.megaEvolve();
-                return
-              }
-                if(!gameIsOver){
-                  charizard.opponentMove()
-                }
-            },3000)
-          }
-        }
-            charizard.opponentMove = function(){
-              $("#myMove").hide()
-              var moves = ['wildfire', 'flamethrower', 'fire punch', 'seismic toss'];
-              var ran = Math.floor(Math.random() * moves.length);
-              if(ran === 0){
+    #game2{
+      transition:transform 2s;
+      display:none;
+      z-index:9;
+    }
+    .myPokemon{
+      position: absolute;
+      left:350px;
+      bottom:100px;
+    }
+    #game3{
+      transition:transform 2s;
+      display:none;
+      z-index:9;
+    }
+    .opponentPokemon{
+      position: absolute;
+      left:350px;
+      bottom:100px;
+    }
+    #moves{
+      z-index: 6;
+    }
+    #myHealthBar{
+      position:absolute;
+      left:20%;
+      bottom: 30%;
+      z-index:5;
+      color:white;
+      text-align: center;
+      font-size: 12px;
+    }
+    #opponentHealthBar{
+      position:absolute;
+      right:23%;
+      bottom:70%;
+      z-index:5;
+      color:white;
+      text-align: center;
+      font-size: 12px;
+    }
+    .container{
+      width:50px;
+      background-color: black;
+      color: black;
+      border-radius: 5px;
+      height:10px;
+    }
+    .bar{
+      width:50px;
+      color: lightgreen;
+      background-color: lightgreen;
+      border-radius: 5px;
+      height:10px;
+    }
+    .pokeball{
+      background-image: url('pokeballs/pokeball.png');
+      background-size: 100% 100%;
+      width:11px;
+      height:11px;
+      position: relative;
+      float: left;
+    }
+    .pokeball2{
+      background-image: url('pokeballs/pokeball.png');
+      background-size: 100% 100%;
+      width:11px;
+      height:11px;
+      position: relative;
+      float: right;
+    }
+    #return{
+      position: absolute;
+      top: 425px;
+      left:500px;
+    }
+    #opponentMove{
+      position:absolute;
+      left:15%;
+      bottom:0px;
+      z-index: 1;
+    }
+    #myMove{
+      position:absolute;
+      right:15%;
+      bottom:50%;
+      z-index: 3;
+    }
+    #opponentPokemon{
+      position: absolute;
+      right:15%;
+      bottom:40%;
+      z-index: 2;
+    }
+    #mega{
+      position: absolute;
+      right:20%;
+      top:100px;
+      z-index: 2;
+    }
+    #myPokemon{
+      position: absolute;
+      left:15%;
+      bottom: 0px;
+      width:200px;
+      z-index: 2;
+    }
+    .flame{
+      position:absolute;
+      left:25%;
+      bottom: -100px;
+      display:none;
+    }
+    #typewriter{
+      color: white;
+      background-image: linear-gradient(#98989e 0%,#19191a 10%,#19191a 100%);
+      width:100%;
+      height:20%;
+      position:absolute;
+      left:0%;
+      bottom: 0%;
+      font-size: 25px;
+      font-family:Arial,sans-serif;
+      /*font-family:'power_clearregular',Arial,sans-serif;*/
+      text-shadow: 1px 1px #000000;
+      z-index: 11;
+      opacity:0.7;
+      display:none;
+    }
+    #typewriter_text{
+      position: absolute;
+      top:25px;
+      left:25px;
+      right:25px;
+      bottom:25px;
+    }
+    button {
+      padding:10px;
+      display: inline-block;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      outline: none;
+      color: #fff;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 5px #999;
+      transition-duration: 0.4s;
+      margin: 10px;
+    }
+
+    button:hover {
+      background-color: #f44336;
+    }
+
+    button:active {
+      background-color: #3e8e41;
+      box-shadow: 0 2px #666;
+      transform: translateY(4px);
+    }
+    #mega{
+      position: absolute;
+      top:10%;
+      right:20%;
+      display: none;
+    }
+    #menu{
+      width:250px;
+      height:100px;
+      position: absolute;
+      top:400px;
+      left:30%;
+      display:none;
+      background-color: white;
+      border-radius: 10px;
+      border:10px ridge grey;
+      z-index:10;
+    }
+    .mega{
+      background-image: url('sprites/mega effects/mega%20stone.png');
+      background-size: 100% 100%;
+      width:10px;
+      height:10px;
+      display:none;
+    }
+    .mega1{
+      float: left;
+    }
+    .mega2{
+      float: right;
+    }
+    #start_button{
+      position: absolute;
+      left:40%;
+      top:50%;
+    }
+    .button {
+      padding:10px;
+      display: inline-block;
+      cursor: pointer;
+      text-align: center;
+      outline: none;
+      color: #fff;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 5px #999;
+      transition-duration: 0.4s;
+      margin: 10px;
+      display:none;
+    }
+
+    .button:hover {
+      background-color: #f44336;
+    }
+
+    .button:active {
+      background-color: #3e8e41;
+      box-shadow: 0 2px #666;
+      transform: translateY(4px);
+    }
+    #try_again{
+      position: absolute;
+      left:40%;
+      top:50%;
+      display: none;
+    }
+    #theme{
+      display: none;
+    }
+    </style>
+  </head>
+  <body onload = 'startTheGame()'>
+    <div id = 'game1' class = 'game'>
+    <div id ='myHealthBar'><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div class = 'pokeball2'></div><div><div id = 'myName'>pikachu</div><div id = 'myHealthText'>300/300</div><div class = 'container'><div id = 'myHealthGraphic' class = 'bar'>  </div></div><span class = 'mega2 mega'></span></div></div>
+    <div id ='opponentHealthBar'><div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div><div class = 'pokeball'></div></div><div><div id = 'opponentName'>charizard</div><div id = 'opponentHealthText'>400/400</div><div class = 'container'><div id = 'opponentHealthGraphic' class = 'bar'>  </div></div><span class = 'mega1 mega'></span></div></div>
+    <img id = 'opponentPokemon' src = 'sprites/charizard.gif' width = '200px' alt = "opponent's pokemon">
+    <img id = 'mega' src = 'sprites/megaEffect2.gif' width = '25'>
+    <img id = 'myPokemon' src = 'sprites/pikachu_1.gif' alt = 'my pokemon'>
+    <img id = 'myMove' src = '' width = '200'>
+    <img class = 'flame' src = 'sprites/flamethrower.gif'>
+    <img id = 'opponentMove' src = '' width = '200'>
+    </div>
+    <div id = 'game2' class = 'game'>
+          <img class = 'myPokemon'  src = 'sprites/pikachu.gif'>
+    </div>
+    <div id = 'game3' class = 'game'>
+          <img class = 'opponentPokemon' src = 'sprites/charizard.gif'>
+    </div>
+    <div id = 'menu'>
+      <div id = 'moves'>
+        <button id = 'attack_1' onclick="attack1()">thunderbolt</button>
+        <button id = 'attack_2' onclick = 'attack2()'>electro ball</button>
+        <button id = 'attack_3' onclick="attack3()">volt tackle</button>
+        <button id = 'attack_4' onclick="attack4()">tackle</button>
+      </div>
+    </div>
+    <audio id='theme' autoplay loop>
+      <source src="sounds/trainer%20battle 2.mp3">
+    </audio>
+    <a id = 'try_again' href = 'charizard.htm'>try again</a>
+    <div id = 'typewriter'><div id = 'typewriter_text'></div></div>
+    <script src = 'jquery.js'></script>
+    <script>
+      var theme = document.getElementById('theme')
+      var opponentHealth = 400;
+      var myHealth = 300;
+      var myPokemon = {
+        'pikachu':{
+            name:'pikachu',
+            maxHealth:300,
+            health:300,
+            canMegaEvolve:false,
+            images:{
+              normal:'sprites/pikachu_1.gif'
+            },
+            sound:new sound('sounds/cries/pikachu.wav'),
+            move:function(num){
+              $("#menu").hide()
+              if(num === 0){
                 $(".flame").hide();
-                $("#opponentMove").show()
-                $('#opponentMove').attr('src', 'sprites/wildfire.gif');
-              type('charizard used wildfire');
-              decreaseMyHp(20);
-              setTimeout(function(){
-                  if(!gameIsOver){
-                  $("#menu").show()
-                }
-              },2000)
-            }
-              else if(ran === 1){
-                if(!charizard.isMegaEvolved){
-                  $("#opponentPokemon").attr('src',charizard.images.attack1)
+                $("#opponentMove").hide()
+                $("#myMove").css("animation-name","none");
+                $('#myMove').show();
+                flash();
+                $('#myMove').attr('src','sprites/thunderbolt.png');
+                type('you used thunderbolt')
+                meAttacking = true;
+                decreaseOpponentHp(10);
                   setTimeout(function(){
-                      $("#opponentPokemon").attr('src',charizard.images.normal)
-                  },1000)
-                }
-                type('charizard used flamethrower');
-                $(".flame").show();
+                    setTimeout(function(){
+                      if(!gameIsOver && !opponentCurrPokemon.isMegaEvolving){
+                        opponentCurrPokemon.move()
+                      }
+                    },1750);
+                  },3000);
+              }
+              else if(num === 1){
+                $(".flame").hide();
+                $("#myMove").show();
+                $("#opponentMove").hide()
+                $('#myMove').attr('src','sprites/electro ball.png');
+                $("#myMove").css("animation-name","ram");
+                $("#myMove").css("animation-duration","3s");
+                //$("#menu").hide();
+                type('you used electro ball.')
+                meAttacking = true;
+                decreaseOpponentHp(50);
+                setTimeout(function(){
+                  $("#myMove").css("animation-name","none");
+                  $('#myMove').hide();
+                  setTimeout(function(){
+                    if(!gameIsOver && !opponentCurrPokemon.isMegaEvolved){
+                      opponentCurrPokemon.move()
+                    }
+                  },1750);
+              },3000);
+              }
+              else if(num === 2){
+                $("#opponentMove").hide()
+                $("#myPokemon").css("animation-name","none");
+                $("#myMove").hide();
+                $(".flame").hide();
+                $("#myPokemon").css("animation-name","ram");
+                $("#myPokemon").css("animation-duration","3s");
+                type('you used volt tackle.')
+                meAttacking = true;
+                decreaseOpponentHp(100);
                 decreaseMyHp(10);
                 setTimeout(function(){
-                    if(!gameIsOver){
+                  $('#myPokemon').attr('src',myCurrPokemon.images.normal);
+                  $("#myPokemon").css("animation-name","none");
+                  setTimeout(function(){
+                    if(!gameIsOver && !opponentCurrPokemon.isMegaEvolving){
+                      opponentCurrPokemon.move()
+                    }
+                  },1750);
+                },4000);
+              }
+              else if(num === 3){
+                $(".flame").hide()
+                $("#opponentMove").hide()
+                $("#myPokemon").css("animation-name","none");
+                $("#myMove").hide();
+                $("#flame").hide();
+                $("#myPokemon").css("animation-name","ram");
+                $("#myPokemon").css("animation-duration","3s");
+                type('you used tackle')
+                meAttacking = true;
+                decreaseOpponentHp(10);
+                setTimeout(function(){
+                  $('#myPokemon').attr('src',myCurrPokemon.images.normal);
+                  $("#myPokemon").css("animation-name","none");
+                  setTimeout(function(){
+                    if(!gameIsOver && !opponentCurrPokemon.isMegaEvolving){
+                      opponentCurrPokemon.move()
+                    }
+                  },1750);
+                },3000)
+              }
+            }
+          }
+      }
+      var opponentPokemon = {
+        'charizard':{
+          name:'charizard',
+          maxHealth:400,
+          health:400,
+          canMegaEvove:true,
+          forms:2,
+          images:{
+              normal:'sprites/charizard.gif',
+              x:'sprites/mega%20charizard%20x.gif',
+              y:'sprites/mega%20charizard%20y.gif',
+              attack1:'sprites/charizard2.gif',
+              attack2:'sprites/charizard3.gif',
+              attack3:'sprites/charizard4.gif'
+            },
+          isMegaEvolved:false,
+          isMegaEvolving:false,
+          sounds:{
+              normal:new sound('sounds/charizard.wav'),
+              x:new sound('sounds/mega%20charizard%20x.wav'),
+              y:new sound('sounds/mega%20charizard%20y.wav'),
+            },
+          megaEvolve:function(){
+              opponentCurrPokemon.isMegaEvolved = true;
+              opponentCurrPokemon.isMegaEvolving = true;
+              setTimeout(function(){
+                $("#mega").fadeIn(100)
+              },100);
+              $(".mega1").show()
+              $("#opponentPokemon").attr('src',effect)
+              setTimeout(function(){
+                var r = Math.random();
+                var ra = r*3;
+                if(ra <= 1.5){
+                  $('#opponentPokemon').attr('src',opponentCurrPokemon.images.y);
+                  opponentCurrPokemon.images.normal = opponentCurrPokemon.images.y;
+                  opponentCurrPokemon.sounds.normal = opponentCurrPokemon.sounds.y;
+                }
+                else{
+                  $('#opponentPokemon').attr('src',opponentCurrPokemon.images.x);
+                  opponentCurrPokemon.images.normal = opponentCurrPokemon.images.x;
+                  opponentCurrPokemon.sounds.normal = opponentCurrPokemon.sounds.x;
+                }
+                opponentCurrPokemon.sounds.normal.play();
+                },1750);
+                increaseOpponentHp(400 - opponentHealth);
+                type('charizard mega evolved!his health restored')
+                setTimeout(function(){
+                  $("#menu").hide()
+                  $("#mega").hide()
+                  opponentCurrPokemon.move();
+                  opponentCurrPokemon.isMegaEvolving = false;
+                },4100);
+              },
+              move:function(){
+                $("#myMove").hide()
+                var moves = ['wildfire', 'flamethrower', 'fire punch', 'seismic toss'];
+                var ran = Math.floor(Math.random() * moves.length);
+                if(ran === 0){
+                  $(".flame").hide();
+                  $("#opponentMove").show()
+                  $('#opponentMove').attr('src', 'sprites/wildfire.gif');
+                type('charizard used wildfire');
+                decreaseMyHp(20);
+                setTimeout(function(){
+                  if(!gameIsOver){
                     $("#menu").show()
                   }
-                },2000)
+                },2500)
               }
-              else if(ran === 2){
-                $(".flame").hide()
-                if(!charizard.isMegaEvolved){
-                  $("#opponentPokemon").attr('src',charizard.images.attack3)
-                  setTimeout(function(){
-                    $("#opponentPokemon").attr('src',charizard.images.normal)
-                  },1000)
-                  type('charizard used dragon tail')
-                  decreaseMyHp(50)
+                else if(ran === 1){
+                  if(!opponentCurrPokemon.isMegaEvolved){
+                    $("#opponentPokemon").attr('src',opponentCurrPokemon.images.attack1)
+                    setTimeout(function(){
+                        $("#opponentPokemon").attr('src',opponentCurrPokemon.images.normal)
+                    },1000)
+                  }
+                  type('charizard used flamethrower');
+                  $(".flame").show();
+                  decreaseMyHp(10);
                   setTimeout(function(){
                       if(!gameIsOver){
                       $("#menu").show()
                     }
-                  },3000)
-                  return;
+                  },2500)
                 }
-                type('charizard used blast burn');
-                $("#opponentMove").show();
-                $("#opponentMove").attr('src','sprites/blast%20burn.gif')
-                decreaseMyHp(100);
-                decreaseOpponentHp(10);
-                setTimeout(function(){
-                    if(!gameIsOver){
-                    $("#menu").show()
+                else if(ran === 2){
+                  $(".flame").hide()
+                  if(!opponentCurrPokemon.isMegaEvolved){
+                    $("#opponentPokemon").attr('src',opponentCurrPokemon.images.attack3)
+                    setTimeout(function(){
+                      $("#opponentPokemon").attr('src',opponentCurrPokemon.images.normal)
+                    },1000)
+                    type('charizard used dragon tail')
+                    decreaseMyHp(50)
+                    setTimeout(function(){
+                        if(!gameIsOver){
+                        $("#menu").show()
+                      }
+                    },3000)
+                    return;
                   }
-                },4000)
-              }
-              else{
-                $("#myPokemon").css("animation-name","none");
-                $("#opponentMove").hide();
-                type('charizard used seismic toss');
-                decreaseMyHp(100);
-                $("#myPokemon").css('animation-name','jump')
-                $("#myPokemon").css('animation-duration','3s')
+                  type('charizard used blast burn');
+                  $("#opponentMove").show();
+                  $("#opponentMove").attr('src','sprites/blast%20burn.gif')
+                  decreaseMyHp(100);
+                  decreaseOpponentHp(10);
+                  setTimeout(function(){
+                      if(!gameIsOver){
+                      $("#menu").show()
+                    }
+                  },4000)
+                }
+                else{
+                  $("#myPokemon").css("animation-name","none");
+                  $("#opponentMove").hide();
+                  type('charizard used seismic toss');
+                  decreaseMyHp(100);
+                  $("#myPokemon").css('animation-name','jump')
+                  $("#myPokemon").css('animation-duration','3s')
+                  setTimeout(function(){
+                      if(!gameIsOver){
+                      $("#menu").show()
+                    }
+                  },4000)
+                }
                 setTimeout(function(){
-                    if(!gameIsOver){
-                    $("#menu").show()
-                  }
-                },4000)
+                  $("#myPokemon").css('animation-name',null)
+                },5000)
               }
-              setTimeout(function(){
-                $("#myPokemon").css('animation-name',null)
-              },5000)
+        }
+      }
+      var myCurrPokemon = myPokemon.pikachu;
+      var opponentCurrPokemon = opponentPokemon.charizard;
+      var meAttacking = false;
+      var opponentAttacking = false;
+      var gameIsOver = false;
+      var effect = 'sprites/megaEffect.gif'
+      function sound(src) {
+        this.sound = document.createElement("audio");
+        this.sound.src = src;
+        this.sound.setAttribute("preload", "auto");
+        this.sound.setAttribute("controls", "none");
+        this.sound.style.display = "none";
+        document.body.appendChild(this.sound);
+        this.play = function(){
+            this.sound.play();
+        }
+        this.stop = function(){
+            this.sound.pause();
+        }
+      }
+      var type = function(whatToType){
+        $("#typewriter_text").text("");
+        $("#typewriter").show();
+        var i = 0;
+        var id = setInterval(function(){
+          if(whatToType[i] === '~'){
+            $("#typewriter_text").append('<br>');
+          }
+          else if(whatToType[i] === 'ø'){
+            $("#typewriter_text").append('<img id = \'wait\' src = \'sprites/wait.png\'>');
             }
+          else{
+            $("#typewriter_text").append(whatToType[i]);
+          }
+          if(i > whatToType.length){
+            clearInterval(id)
+            setTimeout(function(){
+              $("#typewriter").hide();
+            },1000)
+          }
+          i++;
+        },50)
+      };
+      var flash = function(){
+        for(let i = 0;i < 30;i++){
+          setTimeout(function(){
+            i++;
+            $("#myMove").css("opacity", i % 2 == 0 ? 1 : 0.4);
+          },100 * i);
+        }
+      }
+      startTheGame = function(){
+        setTimeout(function(){
+          opponentCurrPokemon.sounds.normal.play()
+          $('#opponentPokemon').fadeIn(1000);
+          type('go, charizard!')
+          setTimeout(function(){
+            type('What will pikachu do?')
+            setTimeout(function(){
+              $("#menu").show();
+            },2000);
+          },2000)
+        },1750);
+        myCurrPokemon.sound.play()
+        $('#myPokemon').fadeIn(1000);
+        type('go, pikachu!')
+      };
+      var decreaseMyHp = function(Hp){
+        for(let i = 0;i < Hp;i ++){
+          var id = setTimeout(function(){
+            myHealth--;
+            $('#myHealthText').text(myHealth + '/300');
+            $("#myHealthGraphic").css("width",myHealth/(myCurrPokemon.maxHealth/50) + "px");
+            if(myHealth <= 75){
+              $("#myHealthGraphic").css('background-color','red')
+              $("#myHealthGraphic").css('color','red')
+            }
+            else if(myHealth <= 150){
+              $("#myHealthGraphic").css('background-color','yellow')
+              $("#myHealthGraphic").css('color','yellow')
+            }
+            if(myHealth<=0){
+                $("#myPokemon").fadeOut(5000);
+                $("#menu").hide();
+                $("#myHealthBar").hide();
+                setTimeout(function(){
+                  if(!gameIsOver){
+                    type('you lost')
+                  }
+                  $("#try_again").show()
+                },2750);
+              gameIsOver = true;
+              $("#return").show();
+              clearTimeout(id)
+              $("#menu").hide()
+              return
+            }
+          },50 * i)
+        }
+      }
+      var decreaseOpponentHp = function(Hp){
+        for(let j = 0;j < Hp && opponentHealth > 0;j++){
+            var id = setTimeout(function(){
+            opponentHealth--;
+            $('#opponentHealthText').text(opponentHealth + '/400');
+            $("#opponentHealthGraphic").css("width",opponentHealth/(opponentCurrPokemon.maxHealth/50) + "px");
+            if(opponentHealth <= 100){
+              $("#opponenHealthGraphic").css('background-color','red')
+              $("#opponenHealthGraphic").css('color','red')
+              if(!opponentCurrPokemon.isMegaEvolved && opponentHealth <= 100){
+                opponentCurrPokemon.megaEvolve();
+              }
+            }
+            else if(opponentHealth <= 200){
+              $("#opponentHealthGraphic").css('background-color','yellow')
+              $("#opponenHealthGraphic").css('color','yellow')
+            }
+            if(opponentHealth<=0){
+              $("#opponentPokemon").fadeOut(5000);
+              $("#menu").hide();
+              $("#opponentHealthBar").hide();
+              setTimeout(function(){
+                if(!gameIsOver){
+                  type('you won!!!!!!!!')
+                  console.log('bruh')
+                }
+                $("#try_again").show()
+              },2000);
+              gameIsOver = true;
+              $("#return").show();
+              clearTimeout(id)
+              $("#menu").hide()
+              return
+            }
+          },50 * j)
+          }
+        }
+      var increaseOpponentHp = function(Hp){
+          for(let j = 0;j < Hp;j++){
+              var id = setTimeout(function(){
+              opponentHealth++;
+              $('#opponentHealthText').text(opponentHealth + '/400');
+              $("#opponentHealthGraphic").css("width",opponentHealth/8 + "px");
+              if(opponentHealth > 400){
+                opponentHealth = 400;
+              }
+              else if(opponentHealth <= 100){
+                $("#opponenHealthGraphic").css('background-color','red')
+                $("#opponenHealthGraphic").css('color','red')
+              }
+              else if(opponentHealth <= 200){
+                $("#opponentHealthGraphic").css('background-color','yellow')
+                $("#opponenHealthGraphic").css('color','yellow')
+              }
+              else if(opponentHealth > 200){
+                $("#opponentHealthGraphic").css('background-color','lightgreen')
+                $("#opponenHealthGraphic").css('color','lightgreen')
+              }
+            },10 * j)
+            }
+          }
+      attack1 = function(){
+          opponentAttacking = false;
+          myCurrPokemon.move(0)
+        };
+      attack2 = function(){
+          opponentAttacking = false;
+          myCurrPokemon.move(1)
+        };
+      attack3 = function(){
+            opponentAttacking = false;
+            myCurrPokemon.move(2)
+        };
+      attack4 = function(){
+          opponentAttacking = false;
+          myCurrPokemon.move(3)
+        };
+        var idle_anim = function(type){
+          if(type === 1){
+            $("#game2").css('transform','rotate(0deg) scale(1)')
+            $("#game2").show();
+            setTimeout(function(){
+              $("#game2").css('animation-name','idle2')
+              $("#game2").css('animation-duration','2s')
+              $("#game2").css('animation-fill-mode','forwards')
+            },500);
+            setTimeout(function(){
+              $("#game2").hide();
+            },3000)
+          }
+          else{
+            $("#game3").css('transform','rotate(0deg) scale(1)')
+            $("#game3").show();
+            setTimeout(function(){
+              $("#game3").css('animation-name','idle2')
+              $("#game3").css('animation-duration','2s')
+              $("#game3").css('animation-fill-mode','forwards')
+            },500);
+            setTimeout(function(){
+              $("#game3").hide();
+            },3000)
+          }
+        }
       </script>
     </body>
-    </html>
+  </html>
