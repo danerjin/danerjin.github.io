@@ -30,7 +30,7 @@
         overflow:hidden;
       }
     .game{
-      background-image: url('sprites/backgrounds/battlebg/field.png');
+      background-image: url('sprites/background.png');
       background-size: 100% 100%;
       background-repeat: no-repeat;
       position:absolute;
@@ -303,7 +303,7 @@
       </div>
     </div>
     <audio id='theme' autoplay loop>
-      <source src="sounds/trainer%20battle 2.mp3">
+      <source src="sprites/raid%20battle 2.mp3">
     </audio>
     <a id = 'try_again' href = 'charizard.htm'>try again</a>
     <div id = 'typewriter'><div id = 'typewriter_text'></div></div>
@@ -321,7 +321,7 @@
             images:{
               normal:'sprites/pikachu_1.gif'
             },
-            sound:new sound('sounds/cries/pikachu.wav'),
+            sound:new sound('sprites/pikachu.ogg'),
             move:function(num){
               $("#menu").hide()
               if(num === 0){
@@ -426,9 +426,9 @@
           isMegaEvolved:false,
           isMegaEvolving:false,
           sounds:{
-              normal:new sound('sounds/charizard.wav'),
-              x:new sound('sounds/mega%20charizard%20x.wav'),
-              y:new sound('sounds/mega%20charizard%20y.wav'),
+              normal:new sound('sprites/charizard.ogg'),
+              x:new sound('sprites/mega%20charizard%20x.ogg'),
+              y:new sound('sprites/mega%20charizard%20y.ogg'),
             },
           megaEvolve:function(){
               opponentCurrPokemon.isMegaEvolved = true;
