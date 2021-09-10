@@ -34,10 +34,10 @@
           ctx.fillRect(this.x,this.y,this.w,this.h);
         }
         paddle.prototype.right = function(){
-          this.x=a;
+          this.x+=a;
         }
         paddle.prototype.left = function(){
-          this.x=-a;
+          this.x-=a;
         }
         var ball = function(x,y,xSpeed,ySpeed){
           this.x = x;
