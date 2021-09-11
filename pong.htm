@@ -26,6 +26,7 @@
         var paddle = function(x,y,w,h){
           this.x = x;
           this.y = y;
+          this.xSpeed = 0;
           this.w = w;
           this.h = h;
         }
@@ -34,10 +35,13 @@
           ctx.fillRect(this.x,this.y,this.w,this.h);
         }
         paddle.prototype.right = function(){
-          this.x+=a;
+          this.xSpeed=a;
         }
         paddle.prototype.left = function(){
-          this.x-=a;
+          this.xSpeed=-a;
+        }
+        paddle.prototype.stop = function(){
+          this.xSpeed=0;
         }
         var ball = function(x,y,xSpeed,ySpeed){
           this.x = x;
@@ -75,11 +79,20 @@
             if (e.which === 37) {
               player.left();
             }
-              else if (e.which === 39) {
-                player.right();
-              }
+            else if (e.which === 39) {
+               player.right();
+            }
+          })
+            document.addEventListener('keyup', function(e) {
+            if (e.which === 37) {
+              player.stop();
+            }
+            else if (e.which === 39) {
+               player.stop();
+            }
           })
           player.draw();
+          player.x+=player.xSpeed
           cube.draw();
           cube.move();
           cube.bounce();
