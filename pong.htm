@@ -95,6 +95,12 @@
           player.x+=player.xSpeed
           cube.draw();
           cube.move();
+            if(player.x >== 400){
+                player.x = 400;
+            }
+            elif(player.x <== 0){
+                player.x = 0;
+            }
           cube.bounce();
             if(cube.y > 390){
               gameOver();
