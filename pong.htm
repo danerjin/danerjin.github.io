@@ -14,7 +14,7 @@
       <script>
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
-        var a = 10;
+        var a = 5;
         var gameIsOver = false;
         var gameOver = function(){
           gameIsOver = true;
@@ -95,8 +95,8 @@
           player.x+=player.xSpeed
           cube.draw();
           cube.move();
-            if(player.x >= 400){
-                player.x = 400;
+            if(player.x >= 350){
+                player.x = 350;
             }
             else if(player.x <= 0){
                 player.x = 0;
