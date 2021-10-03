@@ -58,10 +58,10 @@
           this.y+=this.ySpeed;
         }
         ball.prototype.bounce = function(){
-          if(this.x === 0 || this.x === 400){
+          if(this.x <= 0 || this.x >= 400){
             this.xSpeed = -this.xSpeed;
           }
-          else if(this.y === 0 || this.y === 400){
+          else if(this.y <= 0 || this.y >= 400){
             this.ySpeed = -this.ySpeed;
           }
           else if(this.x > player.x && this.x < player.x +player.w && this.y >= player.y-player.h){
