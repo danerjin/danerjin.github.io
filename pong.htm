@@ -71,7 +71,8 @@
         var player = new paddle(200,375,75,10);
         var cube = new ball(200,100,4,1);
         var id = function(){
-          ctx.clearRect(0,0,400,400);
+            ctx.fillStyle = 'black';
+          ctx.fillRect(0,0,400,400);
           if(!gameIsOver){
           requestAnimationFrame(id)
         }
