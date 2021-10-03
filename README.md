@@ -10,5 +10,5 @@
 <li>you might be able to catch it</li>
  </ul>
  <br><br>
-tell me how high of a score you can get in a google doc(share with me at dj43365@pausd.us)<br><br>
+tell me how high of a score you can get by commenting on this repository
 game at https://danerjin.github.io
