@@ -68,7 +68,7 @@
             this.ySpeed = -this.ySpeed;
           }
         }
-        var player = new paddle(200,375,50,10);
+        var player = new paddle(200,375,75,10);
         var cube = new ball(200,100,4,1);
         var id = function(){
           ctx.clearRect(0,0,400,400);
@@ -95,8 +95,8 @@
           player.x+=player.xSpeed
           cube.draw();
           cube.move();
-            if(player.x >= 350){
-                player.x = 350;
+            if(player.x >= 325){
+                player.x = 325;
             }
             else if(player.x <= 0){
                 player.x = 0;
