@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<!-- saved from url=(0032)http://127.0.0.1:8000/groups/12/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="sortcut icon" type="image/png" href="http://127.0.0.1:8000/static/chats/favicon.ico">
+        <title>Danerjin's Chat</title>
+        <link rel="stylesheet" href="./Danerjin&#39;s Chat_files/nav.css">
+        <link rel="stylesheet" href="./Danerjin&#39;s Chat_files/bootstrap5.min.css">
+        <link rel="stylesheet" href="./Danerjin&#39;s Chat_files/bootstrap.min.css">
+        <link rel="stylesheet" href="./Danerjin&#39;s Chat_files/bootstrap-icons.css">
+        <script src="./Danerjin&#39;s Chat_files/jquery-3.5.1.min.js"></script>
+        <script src="./Danerjin&#39;s Chat_files/bootstrap.bundle.min.js"></script>
+        <style>
+            .profile-pic{
+                width: 30px;
+            }
+            .no-caret::after {
+              display: none;
+            }
+            .dropdown-menu {
+              margin-top: 0;
+            }
+            .bell-notifs{
+                width: 24px;
+                height: 30px;
+            }
+            .notif-count{
+                font-size: 10px;
+            }
+            .message-caption{
+                border-radius: 20px;
+                width: 80%;
+                text-align: center;
+            }
+            .group-icon{
+                height: 200px;
+            }
+            .message-owner-link{
+                color: black;
+            }
+            .message-owner-link:hover{
+                color: black;
+                text-decoration: none;
+            }
+            .message-owner-link:active{
+                color: black;
+                text-decoration: none;
+            }
+            .more-actions{
+                float: right
+            }
+            .more-actions::after{
+                display: none;
+            }
+            .joingplink{
+                float: right;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-light bg-light mb-4 border fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="http://127.0.0.1:8000/">
+                    <img src="./Danerjin&#39;s Chat_files/logo.png" height="50" alt="" class="logo horizontal-logo">
+                </a>
+                <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <div class="hamburger-toggle">
+                        <div class="hamburger">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="http://127.0.0.1:8000/groups/" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Groups
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                
+                                    
+                                
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="http://127.0.0.1:8000/groups/">See All</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="http://127.0.0.1:8000/directmessagethreads/" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Dms
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                
+                                    
+                                
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="http://127.0.0.1:8000/directmessagethreads/">See All</a>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav ml-auto">
+                        
+                            <li class="nav-item ml-2 mr-2 dropdown">
+                                <div class="nav-link no-caret dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="navbar-text mr-1">DanielJ1249</span>
+                                    <img src="./Danerjin&#39;s Chat_files/Screen_Shot_2021-09-15_at_9.30.32_PM.png" class="rounded-circle profile-pic" style="transform:scale(1.25);">
+                                </div>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a href="http://127.0.0.1:8000/accounts/" class="dropdown-item">My Profile</a>
+                                </div>
+                            </li>
+                            <li class="nav-item ml-2 mr-2">
+                                <div class="notifs-toggle no-caret dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img src="./Danerjin&#39;s Chat_files/notifications.png" class="bell-notifs">
+                                    <sup><span class="badge badge-pill badge-danger notif-count">10</span></sup>
+                                </div>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="http://127.0.0.1:8000/groups/12/#">Action</a>
+                                    <a class="dropdown-item" href="http://127.0.0.1:8000/groups/12/#">Another action</a>
+                                    <a class="dropdown-item" href="http://127.0.0.1:8000/groups/12/#">Something else here</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="http://127.0.0.1:8000/groups/12/#">Separated link</a>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="http://127.0.0.1:8000/users/logout/">Log Out</a>
+                            </li>
+                            
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <main role="main" class="container mt-5">
+            <br>
+            <br>
+            <div class="pb2 mb-2 border-bottom">
+                
+
+<style>
+    #groupinfo .new-dm{
+        height: 20px;
+    }
+</style>
+<h1>
+    <span data-toggle="modal" data-target="#groupinfo" type="button">Messages in aname</span><br><img src="./Danerjin&#39;s Chat_files/default.png" class="rounded-circle group-icon">
+</h1>
+
+    <span data-toggle="modal" data-target="#editgroup" type="button">
+        <img alt="" src="./Danerjin&#39;s Chat_files/icon-changelink.svg" class="ml-1">
+        <span>change</span>
+    </span>
+    <span data-toggle="modal" data-target="#delgroup" type="button">
+        <img alt="" src="./Danerjin&#39;s Chat_files/inline-delete.svg" class="ml-1">
+        <span>delete</span>
+    </span>
+
+
+            </div>
+            <div>
+                
+
+    <div id="editgroup" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit the Group aname</h4>
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
+                <div class="modal-body">
+                    <form action="http://127.0.0.1:8000/groups/12/" method="post" class="form" enctype="multipart/form-data">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="ikCebQ4vLUCFrBUyYS4vK1LgQKH64VM61iWxKgfcqBjfFazSgXK6pVhInHrsHGuU">
+                        <input type="hidden" name="joinbylink" value="False">
+                        <div class="form-group"><input type="text" name="name" value="aname" placeholder="Enter a valid group name here..." maxlength="50" class="form-control" title="" required="" id="id_name"></div>
+<div class="form-group"><input type="text" name="code" value="acode" placeholder="Enter the groups&#39;s code here..." maxlength="30" class="form-control" title="" required="" id="id_code"></div>
+<div class="form-group"><div class="form-check custom-control custom-switch"><input type="checkbox" name="joinbylink" class="form-check-input custom-control-input" id="id_joinbylink" checked=""><label class="form-check-label custom-control-label" for="id_joinbylink">Join by link</label></div></div>
+<div class="form-group custom-file"><br><input type="file" name="thumbnail" accept="image/*" class="form-control-file custom-file-input" title="" id="id_thumbnail"><label class="custom-file-label" for="customFile">Choose file</label></div>
+                        <input type="hidden" name="type" value="groupedit">
+                        <div class="form-group">
+                            <button name="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="delgroup" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Group aname</h4>
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
+                <div class="modal-body">
+                    <form action="http://127.0.0.1:8000/groups/12/" method="post" class="form" enctype="multipart/form-data">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="ikCebQ4vLUCFrBUyYS4vK1LgQKH64VM61iWxKgfcqBjfFazSgXK6pVhInHrsHGuU">
+                        <h4 class="text-danger">Are you sure you want to delete this group?(This action is irreversible)</h4><br>
+                        <div class="form-group">
+                            <label for="id_delete">Name of Group</label>
+                            <input type="text" name="name" maxlength="200" class="form-control" placeholder="Name of group" id="id_delete" required="">
+                        </div>
+                        <input type="hidden" name="type" value="delete">
+                        <div class="form-group">
+                            <button name="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div id="groupinfo" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Group aname</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="accordion">
+                    <div class="card">
+                        <div class="card-header">
+                            <a class="collapsed card-link" data-toggle="collapse" href="http://127.0.0.1:8000/groups/12/#members">
+                                Members
+                            </a>
+                        </div>
+                        <div id="members" class="collapse" data-parent="#accordion">
+                            <div class="card-body">
+                                <ul class="list-group">
+                                
+                                    
+                                        <li class="list-group-item">
+                                        
+                                            <img class="rounded-circle profile-pic" src="./Danerjin&#39;s Chat_files/Screen_Shot_2021-09-15_at_9.30.32_PM.png">
+                                            <b class="text-danger">DanielJ1249</b>
+                                            <i class="bi bi-three-dots-vertical more-actions dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
+                                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                            </div>
+                                        
+                                    </li>
+                                    
+                                
+                                    
+                                        <li class="list-group-item">
+                                        
+                                            <form class="form" method="post" action="http://127.0.0.1:8000/groups/12/">
+                                                <a class="message-owner-link" href="http://127.0.0.1:8000/accounts/chat_admin">
+                                                    <img class="rounded-circle profile-pic" src="./Danerjin&#39;s Chat_files/transparent_copy_4_wN80kD1.png"> chat_admin
+                                                </a>
+                                                <input type="hidden" name="csrfmiddlewaretoken" value="ikCebQ4vLUCFrBUyYS4vK1LgQKH64VM61iWxKgfcqBjfFazSgXK6pVhInHrsHGuU">
+                                                <input type="hidden" name="target" value="chat_admin">
+                                                <input type="hidden" name="type" value="remove">
+                                                <input type="image" src="./Danerjin&#39;s Chat_files/new_dm.png" name="submit" class="new-dm">
+                                                <i class="bi bi-three-dots-vertical more-actions dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
+                                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                                    
+                                                    
+                                                        <input type="hidden" name="csrfmiddlewaretoken" value="ikCebQ4vLUCFrBUyYS4vK1LgQKH64VM61iWxKgfcqBjfFazSgXK6pVhInHrsHGuU">
+                                                        <input type="hidden" name="name" value="chat_admin">
+                                                        <button class="dropdown-item" name="submit">
+                                                            Remove
+                                                        </button>
+                                                    
+                                                    
+                                                </div></form>
+                                            
+                                        
+                                    </li>
+                                    
+                                
+                                    
+                                        <li class="list-group-item">
+                                        
+                                            <form class="form" method="post" action="http://127.0.0.1:8000/groups/12/">
+                                                <a class="message-owner-link" href="http://127.0.0.1:8000/accounts/test12">
+                                                    <img class="rounded-circle profile-pic" src="./Danerjin&#39;s Chat_files/default_profpic.png"> test12
+                                                </a>
+                                                <input type="hidden" name="csrfmiddlewaretoken" value="ikCebQ4vLUCFrBUyYS4vK1LgQKH64VM61iWxKgfcqBjfFazSgXK6pVhInHrsHGuU">
+                                                <input type="hidden" name="target" value="test12">
+                                                <input type="hidden" name="type" value="remove">
+                                                <input type="image" src="./Danerjin&#39;s Chat_files/new_dm.png" name="submit" class="new-dm">
+                                                <i class="bi bi-three-dots-vertical more-actions dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
+                                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                                    
+                                                    
+                                                        <input type="hidden" name="csrfmiddlewaretoken" value="ikCebQ4vLUCFrBUyYS4vK1LgQKH64VM61iWxKgfcqBjfFazSgXK6pVhInHrsHGuU">
+                                                        <input type="hidden" name="name" value="test12">
+                                                        <button class="dropdown-item" name="submit">
+                                                            Remove
+                                                        </button>
+                                                    
+                                                    
+                                                </div></form>
+                                            
+                                        
+                                    </li>
+                                    
+                                
+                            </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <a class="collapsed card-link" data-toggle="collapse" href="http://127.0.0.1:8000/groups/12/#info">
+                                Info
+                            </a>
+                        </div>
+                        <div id="info" class="collapse" data-parent="#accordion">
+                            <div class="card-body">
+                                <h5>
+                                    group name: aname
+                                </h5>
+                                <h5 class="mb-1">
+                                    code: acode
+                                </h5>
+                                
+                                    <div>
+                                        <input id="join-link" class="form-control mb-2" type="text" placeholder="http://127.0.0.1:8000/invite/12/lGHt662jMEm0wwEpOVtcZbqNFlGAqhco6rZBrpaBfgJmyJhFRXkEwsB7it0WkdQ4T279cNZ81NUHkOQx2NgrIfq3YiOWqdX6hZa2/" readonly="" value="http://127.0.0.1:8000/invite/12/lGHt662jMEm0wwEpOVtcZbqNFlGAqhco6rZBrpaBfgJmyJhFRXkEwsB7it0WkdQ4T279cNZ81NUHkOQx2NgrIfq3YiOWqdX6hZa2/">
+                                        <button class="btn btn-primary" onclick="copyjoingplink()">
+                                            <i class="bi bi-clipboard"></i> Copy to Clipboard
+                                        </button>
+                                    </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="messages">
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/chat_admin" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/transparent_copy_4_wN80kD1.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span>chat_admin</span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>hi</p>
+                
+                
+            </div>
+            <div class="card-footer">
+                Oct 17, 2021 20:55
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/chat_admin" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/transparent_copy_4_wN80kD1.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span>chat_admin</span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>ewsiuherw</p>
+                
+                
+                    
+                        <hr>
+                        <img src="./Danerjin&#39;s Chat_files/arcanine_hIlEAJC.png" class="card-img-bottom message-caption" alt="">
+                    
+                
+            </div>
+            <div class="card-footer">
+                Oct 17, 2021 20:56
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/chat_admin" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/transparent_copy_4_wN80kD1.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span>chat_admin</span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>d</p>
+                
+                
+                    
+                        <hr>
+                        <img src="./Danerjin&#39;s Chat_files/charizard.png" class="card-img-bottom message-caption" alt="">
+                    
+                
+            </div>
+            <div class="card-footer">
+                Oct 17, 2021 20:58
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/chat_admin" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/transparent_copy_4_wN80kD1.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span>chat_admin</span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>d</p>
+                
+                
+                    
+                        <hr>
+                        <img src="./Danerjin&#39;s Chat_files/charizardmegax.png" class="card-img-bottom message-caption" alt="">
+                    
+                
+            </div>
+            <div class="card-footer">
+                Oct 17, 2021 20:59
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/chat_admin" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/transparent_copy_4_wN80kD1.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span>chat_admin</span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>i</p>
+                
+                
+                    
+                        <hr>
+                        <img src="./Danerjin&#39;s Chat_files/haunter.png" class="card-img-bottom message-caption" alt="">
+                    
+                
+            </div>
+            <div class="card-footer">
+                Oct 17, 2021 21:00
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/chat_admin" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/transparent_copy_4_wN80kD1.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span>chat_admin</span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>lol</p>
+                
+                
+                    
+                        <hr>
+                        <img src="./Danerjin&#39;s Chat_files/kangaskhanmega.png" class="card-img-bottom message-caption" alt="">
+                    
+                
+            </div>
+            <div class="card-footer">
+                Oct 17, 2021 22:33
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/chat_admin" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/transparent_copy_4_wN80kD1.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span>chat_admin</span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>rrewr</p>
+                
+                
+                    
+                        <hr>
+                        <img src="./Danerjin&#39;s Chat_files/blaziken.png" class="card-img-bottom message-caption" alt="">
+                    
+                
+            </div>
+            <div class="card-footer">
+                Oct 17, 2021 22:34
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/chat_admin" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/transparent_copy_4_wN80kD1.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span>chat_admin</span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>haw haw</p>
+                
+                
+                    
+                        <hr>
+                        <img src="./Danerjin&#39;s Chat_files/charizardmegax_copy_3.png" class="card-img-bottom message-caption" alt="">
+                    
+                
+            </div>
+            <div class="card-footer">
+                Oct 17, 2021 22:35
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/chat_admin" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/transparent_copy_4_wN80kD1.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span>chat_admin</span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>lol</p>
+                
+                
+            </div>
+            <div class="card-footer">
+                Oct 17, 2021 22:35
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/chat_admin" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/transparent_copy_4_wN80kD1.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span>chat_admin</span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>haha</p>
+                
+                
+                    
+                        <hr>
+                        <img src="./Danerjin&#39;s Chat_files/charizardmegax_copy.png" class="card-img-bottom message-caption" alt="">
+                    
+                
+            </div>
+            <div class="card-footer">
+                Oct 17, 2021 22:36
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/chat_admin" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/transparent_copy_4_wN80kD1.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span>chat_admin</span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>BURNED YOU!</p>
+                
+                
+                    
+                        <hr>
+                        <img src="./Danerjin&#39;s Chat_files/wailord.png" class="card-img-bottom message-caption" alt="">
+                    
+                
+            </div>
+            <div class="card-footer">
+                Oct 17, 2021 22:36
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/chat_admin" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/transparent_copy_4_wN80kD1.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span>chat_admin</span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>hi</p>
+                
+                
+                    
+                        <div class="card">
+                            <a href="http://127.0.0.1:8000/media/uploads/attachments/messages/settings.js" download="" class="btn btn-primary">Download <i class="bi bi-paperclip"></i>settings.js</a>
+                        </div>
+                    
+                
+            </div>
+            <div class="card-footer">
+                Oct 20, 2021 02:46
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/DanielJ1249" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/Screen_Shot_2021-09-15_at_9.30.32_PM.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span class=""><strong class="text-danger">DanielJ1249</strong></span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>lol</p>
+                
+                
+                    
+                        <div class="card">
+                            <a href="http://127.0.0.1:8000/media/uploads/attachments/messages/evolution.mp3" download="" class="btn btn-primary">Download <i class="bi bi-paperclip"></i>evolution.mp3</a>
+                        </div>
+                    
+                
+            </div>
+            <div class="card-footer">
+                Oct 21, 2021 01:38
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/DanielJ1249" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/Screen_Shot_2021-09-15_at_9.30.32_PM.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span class=""><strong class="text-danger">DanielJ1249</strong></span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>haw haw</p>
+                
+                
+                    
+                        <div class="card">
+                            <a href="http://127.0.0.1:8000/media/uploads/attachments/messages/raid_timer.mp3" download="" class="btn btn-primary">Download <i class="bi bi-paperclip"></i>raid_timer.mp3</a>
+                        </div>
+                    
+                
+            </div>
+            <div class="card-footer">
+                Oct 21, 2021 01:42
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/DanielJ1249" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/Screen_Shot_2021-09-15_at_9.30.32_PM.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span class=""><strong class="text-danger">DanielJ1249</strong></span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>llol</p>
+                
+                
+                    
+                        <div class="card">
+                            <a href="http://127.0.0.1:8000/media/uploads/attachments/messages/new_pokemon.mp3" download="" class="btn btn-primary">Download <i class="bi bi-paperclip"></i>new_pokemon.mp3</a>
+                        </div>
+                    
+                
+            </div>
+            <div class="card-footer">
+                Oct 21, 2021 01:44
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/DanielJ1249" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/Screen_Shot_2021-09-15_at_9.30.32_PM.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span class=""><strong class="text-danger">DanielJ1249</strong></span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>rever</p>
+                
+                
+                    
+                        <div class="card">
+                            <a href="http://127.0.0.1:8000/media/uploads/attachments/messages/Professor.mp3" download="" class="btn btn-primary">Download <i class="bi bi-paperclip"></i>Professor.mp3</a>
+                        </div>
+                    
+                
+            </div>
+            <div class="card-footer">
+                Oct 21, 2021 01:45
+            </div>
+        </div>
+    
+        <div class="card mb-3">
+            <h4 class="card-header">
+                <a href="http://127.0.0.1:8000/accounts/DanielJ1249" class="message-owner-link">
+                    <img src="./Danerjin&#39;s Chat_files/Screen_Shot_2021-09-15_at_9.30.32_PM.png" class="rounded-circle profile-pic">
+                    
+                        
+                            <span class=""><strong class="text-danger">DanielJ1249</strong></span>
+                        
+                    
+                </a>
+            </h4>
+            <div class="card-body">
+                
+                    <p>ieuwsywg</p>
+                
+                
+                    
+                        <div class="card">
+                            <a href="http://127.0.0.1:8000/media/uploads/attachments/messages/Professor_1aO7DiL.mp3" download="" class="btn btn-primary">Download <i class="bi bi-paperclip"></i>Professor_1aO7DiL.mp3</a>
+                        </div>
+                    
+                
+            </div>
+            <div class="card-footer">
+                Oct 21, 2021 01:47
+            </div>
+        </div>
+    
+<div class="card mb-3"><h4 class="card-header"><img class="rounded-circle profile-pic" src="./Danerjin&#39;s Chat_files/transparent_copy_4_wN80kD1.png" width="30"><a class="message-owner-link" href="http://127.0.0.1:8000/accounts/chat_admin"> chat_admin</a></h4><div class="card-body">lol<hr><div class="card"><a download="true" href="http://127.0.0.1:8000/groups/12/uploads/attachments/messages/charizard2.htm" class="btn btn-primary">Download charizard2.htm</a></div></div><div class="card-footer">Oct 20, 2021 18:59</div></div></div>
+<form action="http://127.0.0.1:8000/groups/12/" method="post" id="newMessageForm" enctype="multipart/form-data" class="form">
+    <input type="hidden" name="csrfmiddlewaretoken" value="ikCebQ4vLUCFrBUyYS4vK1LgQKH64VM61iWxKgfcqBjfFazSgXK6pVhInHrsHGuU">
+    <div class="form-group"><input type="text" name="text" placeholder="Write a message here..." class="form-control" title="" required="" id="id_text"></div>
+<div class="form-group custom-file"><br><input type="file" name="img" class="form-control-file custom-file-input" title="" id="id_img"><label class="custom-file-label" for="customFile">Choose file</label></div>
+    <input type="hidden" name="type" value="newmessage">
+    <div class="form-group">
+        <button name="submit" class="btn btn-primary">Send Message</button>
+    </div>
+</form>
+<script>
+    const go = "DanielJ1249";
+    const ru = "DanielJ1249";
+    const groupName = "aname";
+    const groupChatSocket = new WebSocket(`ws://${window.location.host}/ws/groups/12/`);
+    groupChatSocket.onmessage = function(e) {
+        x = document.querySelectorAll("#intro");
+        if(x.length > 0){
+            x[0].parentNode.removeChild(x[0]);
+        }
+        document.querySelector("#messages").innerHtml = '';
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+          if(xhr.status === 200){
+            responseObject = JSON.parse(xhr.responseText);
+            var groupMessages = responseObject;
+            var moObj;
+            for(var i = 0; i < groupMessages.length; i++){
+              message = groupMessages[i];
+              var ajax = new XMLHttpRequest();
+              ajax.onload = function(){
+                if(ajax.status === 200){
+                    responseObj = JSON.parse(ajax.responseText);
+                    moObj = {
+                        'name': responseObj.un,
+                        'profpicurl': responseObj.response,
+                    }
+                    var noname = new XMLHttpRequest();
+                    noname.onload = function(){
+                        if(noname.status === 200){
+                            responseo = JSON.parse(noname.responseText);
+                            let newmessage = document.createElement('div');
+                            newmessage.classList.add('card');
+                            newmessage.classList.add('mb-3');
+                            let header = document.createElement('h4');
+                            header.classList.add('card-header');
+                            let pp = document.createElement('img');
+                            pp.classList.add("rounded-circle");
+                            pp.classList.add("profile-pic");
+                            pp.src = moObj.profpicurl;
+                            pp.width = 30;
+                            var mo = moObj.name;
+                            let cont = document.createElement('a');
+                            cont.classList.add('message-owner-link');
+                            cont.href = `/accounts/${mo}`;
+                            header.appendChild(pp);
+                            cont.innerText += ' ';
+                            if(mo === go){
+                                let h = document.createElement('strong');
+                                h.classList.add('text-danger');
+                                h.innerText = mo;
+                                cont.appendChild(h);
+                            }else{
+                                cont.innerText += mo;
+                            }
+                            const d = new Date(message.fields.date_added);
+                            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                            var datestring = months[d.getMonth()]  + " " + d.getDate() + ", " + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes();
+                            let time = document.createElement('div');
+                            time.innerText = datestring;
+                            time.classList.add('card-footer');
+                            header.appendChild(cont);
+                            let cardbody = document.createElement('div');
+                            cardbody.classList.add('card-body');
+                            cardbody.innerText = message.fields.text;
+                            if(message.fields.img !== ""){
+                                var divider = document.createElement('hr');
+                                cardbody.appendChild(divider);
+                                if(responseo.response === "TRUE"){
+                                    var attachment = document.createElement('img');
+                                    attachment.classList.add('card-image-bottom');
+                                    attachment.classList.add('message-caption');
+                                    attachment.src = '/media/' + message.fields.img;
+                                    cardbody.appendChild(attachment);
+                                }else{
+                                    contforat = document.createElement('div');
+                                    contforat.classList.add('card');
+                                    var attachment = document.createElement('a');
+                                    attachment.download = true;
+                                    attachment.href = message.fields.img;
+                                    attachment.classList.add('btn');
+                                    attachment.classList.add('btn-primary');
+                                    var paperclip = document.createElement('i');
+                                    paperclip.classList.add('bi');
+                                    paperclip.classList.add('bi-paperclip');
+                                    attachment.innerText = 'Download ';
+                                    attachment.appendChild(paperclip);
+                                    xylophone = message.fields.img.split('/')
+                                    attachment.innerText += (xylophone[(xylophone.length) - 1]);
+                                    contforat.appendChild(attachment);
+                                    cardbody.appendChild(contforat);
+                                }
+                            }
+                            newmessage.appendChild(header);
+                            newmessage.appendChild(cardbody);
+                            newmessage.appendChild(time);
+                            document.querySelector('#messages').appendChild(newmessage);
+                            $("[data-toggle=popover]").popover();
+                        }
+                    }
+                    if(message.fields.img !== ""){
+                        noname.open('GET', `/json/isimg/?url=${message.fields.img}`, true);
+                        noname.send(null);
+                    }else{
+                        let newmessage = document.createElement('div');
+                        newmessage.classList.add('card');
+                        newmessage.classList.add('mb-3');
+                        let header = document.createElement('h4');
+                        header.classList.add('card-header');
+                        let pp = document.createElement('img');
+                        pp.classList.add("rounded-circle");
+                        pp.classList.add("profile-pic");
+                        pp.src = moObj.profpicurl;
+                        pp.width = 30;
+                        var mo = moObj.name;
+                        let cont = document.createElement('a');
+                        cont.classList.add('message-owner-link');
+                        cont.href = `/accounts/${mo}`;
+                        header.appendChild(pp);
+                        cont.innerText += ' ';
+                        if(mo === go){
+                           let h = document.createElement('strong');
+                            h.classList.add('text-danger');
+                            h.innerText = mo;
+                            cont.appendChild(h);
+                        }else{
+                            cont.innerText += mo;
+                        }
+                        const d = new Date(message.fields.date_added);
+                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                        var datestring = months[d.getMonth()]  + " " + d.getDate() + ", " + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes();
+                        let time = document.createElement('div');
+                        time.innerText = datestring;
+                        time.classList.add('card-footer');
+                        header.appendChild(cont);
+                        let cardbody = document.createElement('div');
+                        cardbody.classList.add('card-body');
+                        cardbody.innerText = message.fields.text;
+                        newmessage.appendChild(header);
+                        newmessage.appendChild(cardbody);
+                        newmessage.appendChild(time);
+                        document.querySelector('#messages').appendChild(newmessage);
+                        $("[data-toggle=popover]").popover();
+                    }
+                }
+              }
+              ajax.open('GET', `/json/userInfoFromId/?id=${message.fields.owner.toString()}`, true);
+              ajax.send(null);
+            }
+          }
+        };
+        setTimeout(function(e){
+            xhr.open('GET', `/json/groupchathist/?name=aname`, true);
+            xhr.send(null);
+        }, 100);
+    };
+    groupChatSocket.onclose = function(e) {
+        console.error('Websocket closed unexpectedly');
+    };
+    var newmessageform = document.querySelector('#newMessageForm');
+    newmessageform.addEventListener('submit',function(e) {
+        groupChatSocket.send(null);
+    });
+    function copyjoingplink() {
+        var copyText = document.getElementById("join-link");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); /* For mobile devices */
+
+        /* Copy the text inside the text field */
+        navigator.clipboard.writeText(copyText.value);
+    }
+</script>
+
+            </div>
+        </main>
+        <script>
+            function isFileImage(file) {
+                return file && file['type'].split('/')[0] === 'image';
+            }
+            $("[data-toggle=popover]").popover();
+            x = $("input[type=file]").parent();
+            x.addClass('custom-file');
+            x.append($("<label class=\"custom-file-label\" for=\"customFile\">Choose file</label>"))
+            $("input[type=file]").addClass('custom-file-input');
+            $(".custom-file-input").on("change", function() {
+              var fileName = $(this).val().split("\\").pop();
+              $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            });
+            y = $("input[type=checkbox]").parent();
+            y.addClass("custom-control")
+            y.addClass("custom-switch")
+            z = $("input[type=checkbox]")
+            z.addClass('custom-control-input');
+            z.siblings("[for="+z.attr('id')+"]").addClass("custom-control-label")
+            const $dropdown = $(".dropdown");
+            const $dropdownToggle = $(".dropdown-toggle");
+            const $dropdownMenu = $(".dropdown-menu");
+            const showClass = "show";
+            $(window).on("load resize", function() {
+              if (this.matchMedia("(min-width: 768px)").matches) {
+                $dropdown.hover(
+                  function() {
+                    const $this = $(this);
+                    $this.addClass(showClass);
+                    $this.find($dropdownToggle).attr("aria-expanded", "true");
+                    $this.find($dropdownMenu).addClass(showClass);
+                  },
+                  function() {
+                    const $this = $(this);
+                    $this.removeClass(showClass);
+                    $this.find($dropdownToggle).attr("aria-expanded", "false");
+                    $this.find($dropdownMenu).removeClass(showClass);
+                  }
+                );
+              } else {
+                $dropdown.off("mouseenter mouseleave");
+              }
+            });
+            document.addEventListener('click',function(e){
+              // Hamburger menu
+              if(e.target.classList.contains('hamburger-toggle')){
+                e.target.children[0].classList.toggle('active');
+              }
+            })
+        </script>
+    
+</body></html>
