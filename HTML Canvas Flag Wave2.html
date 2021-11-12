@@ -10,7 +10,7 @@
 var h = new Image;
 h.onload = function(){
 	var flag = document.getElementById('flag');
-	var amp = 20;
+	var amp = 50;
 	flag.width  = h.width;
 	flag.height = h.height + amp*2;
 	flag.getContext('2d').drawImage(h,0,amp,h.width,h.height);
