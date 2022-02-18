@@ -1,3 +1,4 @@
+
 <html>
 <head>
 <title>JavaScript Wolfenstein 3D Engine - Textured walls</title>
@@ -5,7 +6,7 @@
 /*
  * Example code from the article at: http://dev.opera.com/articles/view/creating-pseudo-3d-games-with-html-5-can-1/
  * Copyright (c) 2008 Jacob Seidelin, cupboy@gmail.com, http://blog.nihilogic.dk/
- * The code is available to use under the terms of the MIT License 
+ * The code is available to use under the terms of the MIT License
  * [http://www.opensource.org/licenses/mit-license.php]
  */
 -->
@@ -26,21 +27,21 @@ div#floor {
  position : absolute;
  width : 100%;
  height : 100%;
- background-color : rgb(128,128,128);
+ background-color : #4a322c;
 }
 
 div#ceiling {
  position : absolute;
  width : 100%;
  height : 50%;
- background-color : rgb(96,96,96);
+ background-color : #429bf5;
 }
 
 
 #screen {
  position : relative;
- width : 320px;
- height : 200px;
+ width : 1080px;
+ height : 540px;
  border : 1px solid black;
  overflow : hidden;
 }
@@ -109,8 +110,8 @@ var mapHeight = 0;
 
 var miniMapScale = 8;
 
-var screenWidth = 320;
-var screenHeight = 200;
+var screenWidth = 1080;
+var screenHeight = 540;
 
 var stripWidth = 2;
 var fov = 60 * Math.PI / 180;
@@ -310,7 +311,7 @@ function castSingleRay(rayAngle, stripIdx) {
 
 
 	// now check against horizontal lines. It's basically the same, just "turned around".
-	// the only difference here is that once we hit a map block, 
+	// the only difference here is that once we hit a map block,
 	// we check if there we also found one in the earlier, vertical run. We'll know that if dist != 0.
 	// If so, we only register this hit if this distance is smaller.
 
@@ -428,7 +429,7 @@ function isBlocking(x,y) {
 		return true;
 
 	// return true if the map block is not 0, ie. if there is a blocking wall.
-	return (map[Math.floor(y)][Math.floor(x)] != 0); 
+	return (map[Math.floor(y)][Math.floor(x)] != 0);
 }
 
 function updateMiniMap() {
@@ -441,7 +442,7 @@ function updateMiniMap() {
 
 	objectCtx.fillStyle = "red";
 	objectCtx.fillRect(		// draw a dot at the current player position
-		player.x * miniMapScale - 2, 
+		player.x * miniMapScale - 2,
 		player.y * miniMapScale - 2,
 		4, 4
 	);
@@ -465,7 +466,7 @@ function drawMiniMap() {
 	var miniMapCtr = $("minimapcontainer");		// the container div element
 	var miniMapObjects = $("minimapobjects");	// the canvas used for drawing the objects on the map (player character, etc)
 
-	miniMap.width = mapWidth * miniMapScale;	// resize the internal canvas dimensions 
+	miniMap.width = mapWidth * miniMapScale;	// resize the internal canvas dimensions
 	miniMap.height = mapHeight * miniMapScale;	// of both the map canvas and the object canvas
 	miniMapObjects.width = miniMap.width;
 	miniMapObjects.height = miniMap.height;
