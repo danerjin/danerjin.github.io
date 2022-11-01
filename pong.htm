@@ -12,6 +12,7 @@
     <body>
       <canvas id = 'canvas' width = '400' height = '400'></canvas>
       <script>
+        var count = 0;
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
         var a = 5;
@@ -66,16 +67,17 @@
           }
           else if(this.x > player.x && this.x < player.x +player.w && this.y >= player.y-player.h){
             this.ySpeed = -this.ySpeed;
+            count += 1;
           }
         }
         var player = new paddle(200,375,75,10);
         var cube = new ball(200,100,4,1);
         var id = function(){
-            ctx.fillStyle = 'rgba(225,225,225,0.25)'
+          ctx.fillStyle = 'rgba(225,225,225,0.25)'
           ctx.fillRect(0,0,400,400);
           if(!gameIsOver){
           requestAnimationFrame(id)
-        }
+          }
           document.addEventListener('keydown', function(e) {
             if (e.which === 37) {
               player.left();
@@ -106,6 +108,10 @@
             if(cube.y > 390){
               gameOver();
             }
+            ctx.font = '10px Courier'
+            ctx.fillStyle = 'Black'
+            ctx.textAlign = 'middle'
+            ctx.fillText('Score: '+ count,340,20)
         }
         requestAnimationFrame(id)
       </script>
