@@ -66,7 +66,8 @@
             this.ySpeed = -this.ySpeed;
           }
           else if(this.x > player.x && this.x < player.x +player.w && this.y >= player.y-player.h){
-            this.ySpeed = -this.ySpeed;
+            this.ySpeed = -this.ySpeed + 1;
+            this.xSpeed = this.xSpeed * 1.1;
             count += 1;
           }
         }
