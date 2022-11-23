@@ -7,16 +7,63 @@
         canvas{
           border:10px solid grey;
         }
+        button {
+          padding:10px;
+          display: inline-block;
+          margin:10px;
+          cursor: pointer;
+          text-align: center;
+          text-decoration: none;
+          outline: none;
+          color: #fff;
+          background-color: #4CAF50;
+          border: none;
+          border-radius: 15px;
+          box-shadow: 0 5px #999;
+          transition-duration: 0.4s;
+        }
+
+        button:hover {
+          background-color: #f44336;
+        }
+
+        button:active {
+          background-color: #3e8e41;
+          box-shadow: 0 2px #666;
+          transform: translateY(4px);
+        }
         </style>
     </head>
     <body>
       <canvas id = 'canvas' width = '400' height = '400'></canvas>
+      <button id = 'playagain' onclick='start()'>Start</button>
+      <button id = 'singleplayer' onclick='singleplayer()'>1 Player Against Computer</button>
+      <button id  = 'multiplayer' onclick='multiplayer()'>2 Players</button>
+      <script src = 'file:///Users/xjin/djin/code/js/jquery.js'></script>
       <script>
-        var count = 0;
+        var gameMode;
+        var singleplayer = function(){
+          gameMode = 1;
+        }
+        var multiplayer = function(){
+          gameMode = 0;
+        }
+        var countMe = 0;
+		    var countOpponent = 0;
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
         var a = 5;
         var gameIsOver = false;
+        var circle = function(x,y,radius,fillCircle){
+          ctx.beginPath();
+          ctx.arc(x,y,radius,0,Math.PI * 2, false);
+          if(fillCircle){
+            ctx.fill();
+          }
+          else{
+            ctx.stroke();
+          }
+        };
         var gameOver = function(){
           gameIsOver = true;
           ctx.font = '60px Courier'
@@ -24,15 +71,16 @@
           ctx.textAlign = 'middle'
           ctx.fillText('Game Over',50,100)
         }
-        var paddle = function(x,y,w,h){
+        var paddle = function(x,y,w,h,color){
           this.x = x;
           this.y = y;
           this.xSpeed = 0;
           this.w = w;
           this.h = h;
+          this.color=color;
         }
         paddle.prototype.draw = function(){
-          ctx.fillStyle = 'blue';
+          ctx.fillStyle = this.color;
           ctx.fillRect(this.x,this.y,this.w,this.h);
         }
         paddle.prototype.right = function(){
@@ -44,40 +92,50 @@
         paddle.prototype.stop = function(){
           this.xSpeed=0;
         }
-        var ball = function(x,y,xSpeed,ySpeed){
+        var Ball = function(x,y,xSpeed,ySpeed){
           this.x = x;
           this.y = y;
           this.xSpeed = xSpeed;
           this.ySpeed = ySpeed;
         }
-        ball.prototype.draw = function(){
+        Ball.prototype.draw = function(){
           ctx.fillStyle = 'black';
-          ctx.fillRect(this.x,this.y,10,10);
+          circle(this.x+5,this.y+5,5,true);
         }
-        ball.prototype.move = function(){
+        Ball.prototype.move = function(){
           this.x+=this.xSpeed;
           this.y+=this.ySpeed;
         }
-        ball.prototype.bounce = function(){
+        Ball.prototype.bounce = function(){
           if(this.x <= 0 || this.x >= 400){
             this.xSpeed = -this.xSpeed;
           }
-          else if(this.y <= 0 || this.y >= 400){
-            this.ySpeed = -this.ySpeed;
+          else if(this.y <= 0){
+            gameOver();
+            countMe += 1;
           }
-          else if(this.x > player.x && this.x < player.x +player.w && this.y >= player.y-player.h){
-            this.ySpeed = -this.ySpeed + 1;
-            this.xSpeed = this.xSpeed * 1.1;
-            count += 1;
+          else if(this.y >= 400){
+            gameOver();
+            countOpponent += 1;
+          }
+          else if(this.x > opponent.x && this.x < opponent.x+opponent.w && this.y <= opponent.y+opponent.h && this.y >= opponent.y){
+            this.ySpeed = -this.ySpeed*1.05;
+            this.xSpeed = this.xSpeed*1.05;
+          }
+          else if(this.x > player.x && this.x < player.x+player.w && this.y >= player.y-player.h && this.y <= player.y){
+            this.ySpeed = -this.ySpeed*1.05;
+            this.xSpeed = this.xSpeed*1.05;
           }
         }
-        var player = new paddle(200,375,75,10);
-        var cube = new ball(200,100,4,1);
+        var num;
+        var player;
+        var opponent;
+        var ball;
         var id = function(){
-          ctx.fillStyle = 'rgba(225,225,225,0.25)'
+            ctx.fillStyle = 'rgba(225,225,225,0.25)'
           ctx.fillRect(0,0,400,400);
           if(!gameIsOver){
-          requestAnimationFrame(id)
+            requestAnimationFrame(id)
           }
           document.addEventListener('keydown', function(e) {
             if (e.which === 37) {
@@ -95,26 +153,65 @@
                player.stop();
             }
           })
+          if(!gameMode){
+            document.addEventListener('keydown', function(e) {
+              if (e.which === 65) {
+                opponent.left();
+              }
+              else if (e.which === 68) {
+                 opponent.right();
+              }
+            })
+              document.addEventListener('keyup', function(e) {
+              if (e.which === 65) {
+                opponent.stop();
+              }
+              else if (e.which === 68) {
+                 opponent.stop();
+              }
+            })
+          }else{
+            num = opponent.x+(opponent.w/2)-ball.x;
+            if(num > 0){
+              opponent.left();
+            }else if(num === 0){
+              opponent.stop();
+            }else{
+              opponent.right();
+            }
+          }
+          opponent.draw();
+          opponent.x+=opponent.xSpeed;
           player.draw();
-          player.x+=player.xSpeed
-          cube.draw();
-          cube.move();
+          player.x+=player.xSpeed;
+          ball.draw();
+          ball.move();
             if(player.x >= 325){
                 player.x = 325;
             }
             else if(player.x <= 0){
                 player.x = 0;
             }
-          cube.bounce();
-            if(cube.y > 390){
-              gameOver();
+            if(opponent.x >= 325){
+                opponent.x = 325;
             }
-            ctx.font = '10px Courier'
-            ctx.fillStyle = 'Black'
-            ctx.textAlign = 'middle'
-            ctx.fillText('Score: '+ count,340,20)
+            else if(opponent.x <= 0){
+                opponent.x = 0;
+            }
+          ball.bounce();
+			    ctx.font = '10px Courier'
+          ctx.fillStyle = 'black'
+			    ctx.textAlign = 'middle'
+			    ctx.fillText(countMe/2 + " : " + countOpponent/2,325,20)
         }
-        requestAnimationFrame(id)
+        var start = function(){
+          player = new paddle(200,375,75,10,'#32A852');
+          opponent = new paddle(200,25,75,10,'#E38239');
+          ball = new Ball(200,100,4*Math.random()+2,2*Math.random()+1);
+          gameIsOver=false;
+          $("#playagain").text('Play Again');
+          requestAnimationFrame(id)
+        }
       </script>
     </body>
 </html>
