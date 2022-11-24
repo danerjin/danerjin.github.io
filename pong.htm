@@ -118,11 +118,11 @@
             gameOver();
             countOpponent += 1;
           }
-          else if(this.x > opponent.x && this.x < opponent.x+opponent.w && this.y <= opponent.y+opponent.h){
+          else if(this.x > opponent.x && this.x < opponent.x+opponent.w && this.y <= opponent.y+opponent.h && this.y >= opponent.y){
             this.ySpeed = (Math.abs(this.ySpeed))*1.05;
             this.xSpeed = this.xSpeed*1.05+(opponent.xSpeed/4);
           }
-          else if(this.x > player.x && this.x < player.x+player.w && this.y >= player.y-player.h){
+          else if(this.x > player.x && this.x < player.x+player.w && this.y >= player.y-player.h && this.y <= player.y){
             this.ySpeed = -(Math.abs(this.ySpeed))*1.05;
             this.xSpeed = this.xSpeed*1.05+(player.xSpeed/4);
           }
