@@ -6,22 +6,17 @@
 </head>
 <body>
   <h1>Hangman!</h1>
-  <form>
-    <input type 'text' id = 'input' name = 'input'>
-  </form>
   <script>
-  var box = document.querySelectorAll('#input')
-  var playerGuesses = 10;
-  var words = ['javascript','monkey','amazing','snake','pancake'];
+  var playerGuesses = 100;
+  var words = ['javascript','monkey','amazing','snake','pancake','cool','watch','laptop','reduced','computing','you','practice'];
   var word = words[Math.floor(Math.random() * words.length)]
   var answerArray = [];
   for(var i = 0;i<word.length;i++){
     answerArray[i] = '_';
   }
   var remainingLetters = word.length;
-  while(remainingLetters>0&&playerGuesses>0){
+  while(remainingLetters>0&&playerGuesses>=0){
     alert(answerArray.join(' '));
-    var input = box.value;
     var input = prompt('Enter a letter, or click cancel to stop playing');
     var guess = input.toLowerCase();
     if(guess === null){
@@ -32,12 +27,11 @@
     }
     else{
       for(var j = 0;j<word.length;j++){
-      if(guess===word[j]&&answerArray[j]==='_'){
-        answerArray[j]=guess;
-        remainingLetters--;
-        }
-        else{
-          playerGuesses--;
+        if(guess===word[j]&&answerArray[j]==='_'){
+          answerArray[j]=guess;
+          remainingLetters--;
+        }else{
+          playerGuesses=playerGuesses-1;
         }
       }
     }
@@ -47,7 +41,7 @@ if(playerGuesses<=0){
 }
 else{
   alert(answerArray.join(' '));
-  alert('Good job!The word was '+word)
+  alert('Good job! The word was '+word)
 }
 </script>
 </body>
