@@ -7,17 +7,19 @@
 <body>
   <h1>Hangman!</h1>
   <script>
-  var playerGuesses = 100;
+  var playerGuesses = 7;
   var words = ['javascript','monkey','amazing','snake','pancake','cool','watch','laptop','reduced','computing','you','practice'];
   var word = words[Math.floor(Math.random() * words.length)]
   var answerArray = [];
+  var wrongLetters = [];
   for(var i = 0;i<word.length;i++){
     answerArray[i] = '_';
   }
   var remainingLetters = word.length;
   while(remainingLetters>0&&playerGuesses>=0){
+    var original=remainingLetters;
     alert(answerArray.join(' '));
-    var input = prompt('Enter a letter, or click cancel to stop playing');
+    var input = prompt('Enter a letter, or click cancel to stop playing. You have ' + playerGuesses + ' guesses left.\nYou have already wrongly guessed: ' + wrongLetters.join(', '));
     var guess = input.toLowerCase();
     if(guess === null){
       break;
@@ -30,8 +32,18 @@
         if(guess===word[j]&&answerArray[j]==='_'){
           answerArray[j]=guess;
           remainingLetters--;
-        }else{
-          playerGuesses=playerGuesses-1;
+        }
+      }
+      if(remainingLetters===original){
+        var alreadyGuessed;
+        for(var j = 0;j<wrongLetters.length;j++){
+          if(guess===wrongLetters[j]){
+            alreadyGuessed=true;
+          }
+        }
+        if(!alreadyGuessed){
+            wrongLetters.push(guess);
+            playerGuesses=playerGuesses-1;
         }
       }
     }
