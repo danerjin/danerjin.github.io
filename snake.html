@@ -59,7 +59,10 @@
   </style>
 </head>
 <body>
-<h2 id = 'score-text'></h2>
+<em><button id = 'w' onclick="up()> W</button><br>
+<button id = 'a' onclick="left()"> A</button>
+<em><button id = 's' onclick="right()"> S</button><br>
+<em><button id = 'd' onclick="down()"> D</button>
 <button id = 'play-again'> play again</button>
 <button id  = 'start-playing'>start playing</button>
 <!--<button onclick = 'menu()' id = 'home'>home</button>-->
@@ -269,6 +272,22 @@ function loop() {
   context.textAlign = 'left'
   context.baseLine = 'top'
   context.fillText('Score:' + score,16,16)
+}
+var down = function(){
+    snake.dy = grid;
+    snake.dx = 0;
+}
+var up = function(){
+    snake.dy = -grid;
+    snake.dx = 0;
+}
+var left = function(){
+    snake.dx = -grid;
+    snake.dy = 0;
+}
+var right = function(){
+    snake.dx = grid;
+    snake.dy = 0;
 }
 startTheGame = function(){
   playScene();
