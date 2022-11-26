@@ -62,17 +62,19 @@
     }
     #w{
       top:10%;
+      left:calc(50%-2em);
     }
     #a{
       top:20%;
-      left:30%
+      left:calc(30%-2em);
     }
     #s{
       top:20%;
-      right:30%
+      left:calc(70%-2em);
     }
     #d{
       top:30%;
+      left:calc(50%-2em);
     }
   </style>
 </head>
@@ -292,22 +294,22 @@ function loop() {
   context.fillText('Score:' + score,16,16)
 }
 var down = function(){
-    if(|snake.dx|){
+    if(snake.dx!==0){
     snake.dy = grid;
     snake.dx = 0;}
 }
 var up = function(){
-    if(|snake.dx|){
+    if(snake.dx!==0){
     snake.dy = -grid;
     snake.dx = 0;}
 }
 var left = function(){
-    if(|snake.dy|){
+    if(snake.dy!==0){
     snake.dx = -grid;
     snake.dy = 0;}
 }
 var right = function(){
-    if(|snake.dy|){
+    if(snake.dy!==0){
     snake.dx = grid;
     snake.dy = 0;}
 }
