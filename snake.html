@@ -28,7 +28,7 @@
     cursor: pointer;
     position:absolute;
     left:40%;
-    top:20%;
+    top:30%;
     z-index: 5;
   }
   button {
@@ -57,7 +57,20 @@
     transform: translateY(4px);
   }
    .dirbuttons{
-     padding: 1em;
+     padding: 2em;
+     position:absolute;
+    }
+    #w{
+      top:10%;
+    }
+    #a{
+     top:20%;
+    }
+    #s{
+      top:20%;
+    }
+    #d{
+      top:30%;
     }
   </style>
 </head>
@@ -65,7 +78,7 @@
 <em><em><button id = 'w' onclick="up()" class="dirbuttons">W</button><br>
 <button id = 'a' onclick="left()" class="dirbuttons">A</button>
 <em><button id = 's' onclick="right()" class="dirbuttons">S</button><br>
-<em><button id = 'd' onclick="down()" class="dirbuttons">D</button><br>
+<em><button id = 'd' onclick="down()" class="dirbuttons">D</button><br><br>
 <button id = 'play-again'> play again</button>
 <button id  = 'start-playing'>start playing</button>
 <!--<button onclick = 'menu()' id = 'home'>home</button>-->
