@@ -69,8 +69,8 @@
       <button id = 'playagain' onclick='start()'>Start</button>
       <button id = 'singleplayer' onclick='singleplayer()'>1 Player Against Computer</button>
       <button id  = 'multiplayer' onclick='multiplayer()'>2 Players</button><br>
-      <button id = 'right' onmousedown='player.left()' onmouseup='player.stop()'>Left</button>
-      <button id = 'left' onmousedown='player.right()' onmouseup='player.stop()'>Right</button>
+      <button id = 'right' ontouchstart="player.left()" onmousedown='player.left()' ontouchend='player.stop()' onmouseup='player.stop()'>Left</button>
+      <button id = 'left' ontouchstart="player.right()" onmousedown='player.right()' ontouchend='player.stop()' onmouseup='player.stop()'>Right</button>
       <!-- The Modal -->
       <div id="myModal" class="modal">
         <!-- Modal content -->
