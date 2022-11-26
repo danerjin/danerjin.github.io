@@ -59,10 +59,10 @@
   </style>
 </head>
 <body>
-<em><button id = 'w' onclick="up()> W</button><br>
-<button id = 'a' onclick="left()"> A</button>
-<em><button id = 's' onclick="right()"> S</button><br>
-<em><button id = 'd' onclick="down()"> D</button>
+<em><button id = 'w' onclick="up()>W</button><br>
+<button id = 'a' onclick="left()">A</button>
+<em><button id = 's' onclick="right()">S</button><br>
+<em><button id = 'd' onclick="down()">D</button>
 <button id = 'play-again'> play again</button>
 <button id  = 'start-playing'>start playing</button>
 <!--<button onclick = 'menu()' id = 'home'>home</button>-->
@@ -313,13 +313,14 @@ score = 0;
 $('#game-over').hide();
 gameIsOver = false;
 $('button').hide();
-requestAnimationFrame(loop)
-}
-introScene();
+  
  $('#w').show()
  $('#a').show()
  $('#s').show()
  $('#d').show()
+requestAnimationFrame(loop)
+}
+introScene();
 </script>
 </body>
 </html>
