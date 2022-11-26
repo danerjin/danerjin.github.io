@@ -277,20 +277,24 @@ function loop() {
   context.fillText('Score:' + score,16,16)
 }
 var down = function(){
+    if(|snake.dx|){
     snake.dy = grid;
-    snake.dx = 0;
+    snake.dx = 0;}
 }
 var up = function(){
+    if(|snake.dx|){
     snake.dy = -grid;
-    snake.dx = 0;
+    snake.dx = 0;}
 }
 var left = function(){
+    if(|snake.dy|){
     snake.dx = -grid;
-    snake.dy = 0;
+    snake.dy = 0;}
 }
 var right = function(){
+    if(|snake.dy|){
     snake.dx = grid;
-    snake.dy = 0;
+    snake.dy = 0;}
 }
 startTheGame = function(){
   playScene();
