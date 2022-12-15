@@ -126,12 +126,17 @@
             ctx.stroke();
           }
         };
-        var gameOver = function(){
+        var gameOver = function(who){
           gameIsOver = true;
           ctx.font = '60px Courier'
-          ctx.fillStyle = 'Red'
           ctx.textAlign = 'middle'
-          ctx.fillText('Game Over',50,100)
+          if(who){
+            ctx.fillStyle = 'Green'
+            ctx.fillText('You win!',50,100)
+          }else{
+            ctx.fillStyle = 'Red'
+            ctx.fillText('You lose!',50,100)
+          }
         }
         var paddle = function(x,y,w,h,color){
           this.x = x;
@@ -173,11 +178,11 @@
             this.xSpeed = -this.xSpeed;
           }
           else if(this.y <= 0){
-            gameOver();
+            gameOver(1);
             countMe += 1;
           }
           else if(this.y >= 400){
-            gameOver();
+            gameOver(0);
             countOpponent += 1;
           }
           else if(this.x > opponent.x && this.x < opponent.x+opponent.w && this.y <= opponent.y+opponent.h && this.y >= opponent.y){
@@ -194,7 +199,7 @@
         var opponent;
         var ball;
         var id = function(){
-            ctx.fillStyle = 'rgba(225,225,225,0.25)'
+          ctx.fillStyle = 'rgba(225,225,225,1)'
           ctx.fillRect(0,0,400,400);
           if(!gameIsOver){
             requestAnimationFrame(id)
@@ -233,13 +238,16 @@
               }
             })
           }else{
-            num = opponent.x+(opponent.w/2)-ball.x;
-            if(num > 0){
+            num = ball.x-ball.xSpeed/ball.ySpeed*(ball.y-35);
+            num = num%780;
+            num = opponent.x+opponent.w/2-num;
+            console.log(num)
+            if(num > 0.1){
               opponent.left();
-            }else if(num === 0){
-              opponent.stop();
-            }else{
+            }else if(num < -0.1){
               opponent.right();
+            }else{
+              opponent.stop();
             }
           }
           opponent.draw();
