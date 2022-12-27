@@ -240,6 +240,8 @@
           }else{
             num = ball.x-ball.xSpeed/ball.ySpeed*(ball.y-35);
             num = num%780;
+	    if(num > 390){num = 390-(num-390)}
+	    else if(num < 0){num = num*(-1)}
             num = opponent.x+opponent.w/2-num;
             console.log(num)
             if(num > 10){
