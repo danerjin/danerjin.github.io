@@ -259,7 +259,7 @@
             num = num%780;
 	    if(num > 390){num = 390-(num-390)}
 	    else if(num < 0){num = num*(-1)}
-            num = opponent.x+opponent.w/2-num;
+            num = opponent.x+opponent.w/2-num-5;
             console.log(num)}
             if(num > 0){
               opponent.left();
