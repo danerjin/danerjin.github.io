@@ -204,12 +204,19 @@
         var player;
         var opponent;
         var ball;
+        var now = new Date().getTime();
+        lastRenderCycleTime = now;
         var id = function(){
           ctx.fillStyle = 'rgba(225,225,225,1)'
           ctx.fillRect(0,0,400,400);
           if(!gameIsOver){
             requestAnimationFrame(id)
           }
+        	var now = new Date().getTime();
+        	var timeDelta = now - lastRenderCycleTime;
+        	lastRenderCycleTime = now;
+        	fps = 1000 / timeDelta;
+          console.log('FPS: ' + fps)
           document.addEventListener('keydown', function(e) {
             if (e.which === 37) {
               player.left();
