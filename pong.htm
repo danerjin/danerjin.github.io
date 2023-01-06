@@ -216,7 +216,10 @@
         	var timeDelta = now - lastRenderCycleTime;
         	lastRenderCycleTime = now;
         	fps = 1000 / timeDelta;
-          console.log('FPS: ' + fps)
+			    ctx.font = '10px Courier'
+          ctx.fillStyle = 'black'
+			    ctx.textAlign = 'middle'
+			    ctx.fillText('FPS: ' + fps, 10, 20)
           document.addEventListener('keydown', function(e) {
             if (e.which === 37) {
               player.left();
@@ -251,12 +254,13 @@
               }
             })
           }else{
+		if(ball.y > 300){
             num = ball.x-ball.xSpeed/ball.ySpeed*(ball.y-35);
             num = num%780;
 	    if(num > 390){num = 390-(num-390)}
 	    else if(num < 0){num = num*(-1)}
             num = opponent.x+opponent.w/2-num;
-            console.log(num)
+            console.log(num)}
             if(num > 10){
               opponent.left();
             }else if(num < -10){
