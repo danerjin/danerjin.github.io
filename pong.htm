@@ -261,9 +261,9 @@
 	    else if(num < 0){num = num*(-1)}
             num = opponent.x+opponent.w/2-num;
             console.log(num)}
-            if(num > 10){
+            if(num > 0){
               opponent.left();
-            }else if(num < -10){
+            }else if(num < 0){
               opponent.right();
             }else{
               opponent.stop();
