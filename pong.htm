@@ -261,9 +261,9 @@
 	    else if(num < 0){num = num*(-1)}
             num = opponent.x+opponent.w/2-num-5;
             console.log(num)}
-            if(num > 0){
+            if(num > 10){
               opponent.left();
-            }else if(num < 0){
+            }else if(num < -10){
               opponent.right();
             }else{
               opponent.stop();
@@ -276,15 +276,19 @@
           ball.draw();
           ball.move();
             if(player.x >= 325){
+                player.xSpeed = 0;
                 player.x = 325;
             }
             else if(player.x <= 0){
-                player.x = 0;
+                player.xSpeed = 0;
+		player.x = 0;
             }
             if(opponent.x >= 325){
+                opponent.xSpeed = 0;
                 opponent.x = 325;
             }
             else if(opponent.x <= 0){
+                opponent.xSpeed = 0;
                 opponent.x = 0;
             }
           ball.bounce();
