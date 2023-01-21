@@ -12,3 +12,10 @@
  <br><br>
 tell me how high of a score you can get by commenting on this repository
 game at https://danerjin.github.io
+<h1>how to play pong</h1>
+<ul>
+<li>its just pong do i really need to explain</li>
+ </ul>
+ <br><br>
+tell me how high of a score you can get by commenting on this repository
+game at https://danerjin.github.io
