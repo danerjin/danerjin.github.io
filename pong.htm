@@ -63,19 +63,11 @@
         }
 		#left{
 			padding: 100px;
-			background-image:url("data:image/svg+xml;utf8,
-  <svg xmlns='http://www.w3.org/2000/svg' version='1.1'
-       height='50px' width='120px'>
-    <text x='0' y='15' fill='white' font-size='20'>Left</text>
-  </svg>");
+
+       
 		}
 		#right{
 			padding: 100px;
-			background-image:url("data:image/svg+xml;utf8,
-  <svg xmlns='http://www.w3.org/2000/svg' version='1.1'
-       height='50px' width='120px'>
-    <text x='0' y='15' fill='white' font-size='20'>Right</text>
-  </svg>");
 		}
         </style>
     </head>
@@ -85,8 +77,8 @@
       <button id = 'playagain' onclick='start()'>Start</button>
       <button id = 'singleplayer' onclick='singleplayer()'>1 Player Against Computer</button>
       <button id  = 'multiplayer' onclick='multiplayer()'>2 Players</button><br>
-      <button id = 'right' ontouchstart="player.left()" onmousedown='player.left()' ontouchend='player.stop()' onmouseup='player.stop()'></button>
-      <button id = 'left' ontouchstart="player.right()" onmousedown='player.right()' ontouchend='player.stop()' onmouseup='player.stop()'></button>
+      <button id = 'right' ontouchstart="player.left()" onmousedown='player.left()' ontouchend='player.stop()' onmouseup='player.stop()'>Left</button>
+      <button id = 'left' ontouchstart="player.right()" onmousedown='player.right()' ontouchend='player.stop()' onmouseup='player.stop()'>Right</button>
       <!-- The Modal -->
       <div id="myModal" class="modal">
         <!-- Modal content -->
