@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Polar grapher with animation</title>
+</head>
+<body>
+    <canvas width="400" height="400" id="canvas"></canvas>
+    <script>
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        /*FUNCTION BELOW*/
+        function func(theta){
+            return 2*Math.sin(4*theta)
+        }
+        /*FUNCTION ABOVE*/
+        theta = 0
+        function loop(){
+            ctx.fillStyle = 'rgba(225,225,225,0.01)'
+            ctx.fillRect(0,0,400,400);
+            ctx.fillStyle = 'rgba(0,0,0,0.5)'
+            ctx.fillRect(0,195,400,10)
+            ctx.fillRect(195,0,10,400)
+            theta+=0.01
+            r = func(theta)
+            ctx.fillStyle="#32A852"
+            ctx.fillRect(200+20*r*Math.cos(theta),200-20*r*Math.sin(theta),5,5)
+        }
+        setInterval(loop,1)
+    </script>
+</body>
+</html>
