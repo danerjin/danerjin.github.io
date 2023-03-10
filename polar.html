@@ -20,6 +20,10 @@
             return 2*Math.sin(4*theta)
         }
         /*FUNCTION ABOVE*/
+        function plot(a,b){
+            ctx.fillStyle="rgb(255,0,0)"
+            ctx.fillRect(200+20*a*Math.cos(b),200-20*a*Math.sin(b),1,1)
+        }
         theta = 0
         function loop(){
             ctx.fillStyle = 'rgba(225,225,225,0.01)'
@@ -29,8 +33,7 @@
             ctx.fillRect(199,0,2,400)
             theta+=0.01
             r = func(theta)
-            ctx.fillStyle="rgb(255,0,0)"
-            ctx.fillRect(200+20*r*Math.cos(theta),200-20*r*Math.sin(theta),1,1)
+            plot(r,theta)
         }
         setInterval(loop,1)
     </script>
