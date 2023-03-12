@@ -16,8 +16,17 @@
 <script>
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
+        def sin(x){
+            return Math.sin(x)
+        }
+        def cos(x){
+            return Math.cos(x)
+        }
+        def tan(x){
+            return Math.tan(x)
+        }
         /*FUNCTION BELOW*/
-        functionThing = prompt("Enter a Function in terms of x(sin(x) is Math.sin(), use \"*\" for multiplication.)")
+        functionThing = prompt("Enter a Function in terms of x(use \"*\" for multiplication.)")
         function func(x){
             return eval(functionThing)
         }
