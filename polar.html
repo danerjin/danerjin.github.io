@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,17 +12,18 @@
     </style>
 </head>
 <body>
-    <canvas width="400" height="400" id="canvas"></canvas>
-    <script>
+<canvas width="400" height="400" id="canvas"></canvas>
+<script>
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
         /*FUNCTION BELOW*/
-        function func(theta){
-            return 2*Math.sin(4*theta)
+        functionThing = prompt("Enter a Function in terms of x(sin(x) is Math.sin())")
+        function func(x){
+            return eval(functionThing)
         }
         /*FUNCTION ABOVE*/
-        function plot(a,b){
-            ctx.fillStyle="rgb(255,0,0)"
+        function plot(a,b, color){
+            ctx.fillStyle=color
             ctx.fillRect(200+20*a*Math.cos(b),200-20*a*Math.sin(b),1,1)
         }
         theta = 0
@@ -31,9 +33,13 @@
             ctx.fillStyle = 'rgba(0,0,0,0.5)'
             ctx.fillRect(0,199,400,2)
             ctx.fillRect(199,0,2,400)
+            ctx.fillRect(220,195,2,10)
+            ctx.fillRect(180,195,2,10)
+            ctx.fillRect(195,220,10,2)
+            ctx.fillRect(195,180,10,2)
             theta+=0.01
             r = func(theta)
-            plot(r,theta)
+            plot(r,theta,"rgb(255,0,0)")
         }
         setInterval(loop,1)
     </script>
