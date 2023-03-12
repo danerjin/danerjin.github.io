@@ -16,15 +16,6 @@
 <script>
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
-        def sin(x){
-            return Math.sin(x)
-        }
-        def cos(x){
-            return Math.cos(x)
-        }
-        def tan(x){
-            return Math.tan(x)
-        }
         /*FUNCTION BELOW*/
         functionThing = prompt("Enter a Function in terms of x(use \"*\" for multiplication.)")
         function func(x){
@@ -34,6 +25,15 @@
         function plot(a,b, color){
             ctx.fillStyle=color
             ctx.fillRect(200+20*a*Math.cos(b),200-20*a*Math.sin(b),1,1)
+        }
+        function sin(x){
+            return Math.sin(x)
+        }
+        function cos(x){
+            return Math.cos(x)
+        }
+        function tan(x){
+            return Math.tan(x)
         }
         theta = 0
         function loop(){
