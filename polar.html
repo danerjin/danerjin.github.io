@@ -17,7 +17,7 @@
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
         /*FUNCTION BELOW*/
-        functionThing = prompt("Enter a Function in terms of x(use \"*\" for multiplication.)")
+        functionThing = prompt("Enter a Function in terms of x(use \"*\" for multiplication, use sqrt() for square root, use pow(a,b) for a^b)")
         function func(x){
             return eval(functionThing)
         }
@@ -34,6 +34,12 @@
         }
         function tan(x){
             return Math.tan(x)
+        }
+        function sqrt(x){
+            return Math.sqrt(x)
+        }
+        function pow(x){
+            return Math.pow(x)
         }
         theta = 0
         function loop(){
