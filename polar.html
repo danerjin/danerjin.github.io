@@ -37,7 +37,7 @@
         }
         theta = 0
         function loop(){
-            ctx.fillStyle = 'rgba(225,225,225,0.01)'
+            ctx.fillStyle = 'rgba(225,225,225,0.075)'
             ctx.fillRect(0,0,400,400);
             ctx.fillStyle = 'rgba(0,0,0,0.5)'
             ctx.fillRect(0,199,400,2)
@@ -48,7 +48,7 @@
             ctx.fillRect(195,180,10,2)
             theta+=0.01
             r = func(theta)
-            plot(r,theta,"rgb(255/3,0,0)")
+            plot(r,theta,"rgb(255,0,0)")
         }
         setInterval(loop,1)
     </script>
