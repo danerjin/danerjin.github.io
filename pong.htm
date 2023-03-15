@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang = 'en'>
-    <head>
-        <meta charset="utf-8">
-        <title>Pong!!!!!!</title>
-        <style>
+<head>
+    <meta charset="utf-8">
+    <title>Pong!!!!!!</title>
+    <style>
         /* The Modal (background) */
         .modal {
           display: none; /* Hidden by default */
@@ -65,7 +65,7 @@
 			padding: 100px;
 margin:0px;
 
-       
+
 		}
 		#right{
 			padding: 100px;
@@ -73,27 +73,27 @@ margin:0px;
 
 		}
         </style>
-    </head>
-    <body>
-      <canvas id = 'canvas' width = '400' height = '400'></canvas>
-      <button id="howTo">How to play</button>
-      <button id = 'playagain' onclick='start()'>Start</button>
-      <button id = 'singleplayer' onclick='singleplayer()'>1 Player Against Computer</button>
-      <button id  = 'multiplayer' onclick='multiplayer()'>2 Players</button><br>
-      <button id = 'right' ontouchstart="player.left()" onmousedown='player.left()' ontouchend='player.stop()' onmouseup='player.stop()'>Left</button>
-      <button id = 'left' ontouchstart="player.right()" onmousedown='player.right()' ontouchend='player.stop()' onmouseup='player.stop()'>Right</button>
-      <!-- The Modal -->
-      <div id="myModal" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-          <span class="close">&times;</span>
-          <p>For the singleplayer, use arrow left and right keys</p>
-          <p>For multiplayer, use arrow left and right keys for one person and A and D keys for the other</p>
-        </div>
+</head>
+<body>
+<canvas id = 'canvas' width = '400' height = '400'></canvas>
+<button id="howTo">How to play</button>
+<button id = 'playagain' onclick='start()'>Start</button>
+<button id = 'singleplayer' onclick='singleplayer()'>1 Player Against Computer</button>
+<button id  = 'multiplayer' onclick='multiplayer()'>2 Players</button><br>
+<button id = 'right' ontouchstart="player.left()" onmousedown='player.left()' ontouchend='player.stop()' onmouseup='player.stop()'>Left</button>
+<button id = 'left' ontouchstart="player.right()" onmousedown='player.right()' ontouchend='player.stop()' onmouseup='player.stop()'>Right</button>
+<!-- The Modal -->
+<div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>For the singleplayer, use arrow left and right keys</p>
+        <p>For multiplayer, use arrow left and right keys for one person and A and D keys for the other</p>
+    </div>
 
-      </div>
-      <script src = 'jquery.js'></script>
-      <script>
+</div>
+<script src = 'jquery.js'></script>
+<script>
         // Get the modal
         var modal = document.getElementById("myModal");
         // Get the button that opens the modal
@@ -311,5 +311,5 @@ margin:0px;
           requestAnimationFrame(id)
         }
       </script>
-    </body>
+</body>
 </html>
