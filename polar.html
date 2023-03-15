@@ -12,18 +12,14 @@
     </style>
 </head>
 <body>
-<h1>
-    Polar Equation Grapher with animation
-</h1>
 <canvas width="400" height="400" id="canvas"></canvas>
 <script>
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
-        /*FUNCTION BELOW*/
-        functionThing = prompt("Polar Equation Grapher with animation: Enter a Function in terms of theta(use \"*\" for multiplication, use sqrt() for square root, use pow(a,b) for a^b)")
+        color = prompt("Enter a color in RGB( rgb(#,#,#))")
+        functionThing = prompt("Enter a Function in terms of theta(use \"*\" for multiplication, use sqrt() for square root, use pow(a,b) for a^b)")
         function func(theta){
             return eval(functionThing)
-        }
         /*FUNCTION ABOVE*/
         function plot(a,b, color){
             ctx.fillStyle=color
@@ -57,7 +53,7 @@
             ctx.fillRect(195,180,10,2)
             theta+=0.01
             r = func(theta)
-            plot(r,theta,"rgb(255,0,0)")
+            plot(r,theta,color)
         }
         setInterval(loop,1)
     </script>
