@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,14 +11,18 @@
     </style>
 </head>
 <body>
+<h1>Polar grapher with animation</h1>
 <canvas width="400" height="400" id="canvas"></canvas>
 <script>
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
         color = prompt("Enter a color in RGB( rgb(#,#,#))")
-        functionThing = prompt("Enter a Function in terms of theta(use \"*\" for multiplication, use sqrt() for square root, use pow(a,b) for a^b)")
-        function func(theta){
+        /*FUNCTION BELOW*/
+        functionThing = prompt("Enter a Function in terms of x(use \"*\" for multiplication, use sqrt() for square root, use pow(a,b) for a^b)")
+        function func(x){
             return eval(functionThing)
+        }
+        /*FUNCTION ABOVE*/
         function plot(a,b, color){
             ctx.fillStyle=color
             ctx.fillRect(200+20*a*Math.cos(b),200-20*a*Math.sin(b),1,1)
