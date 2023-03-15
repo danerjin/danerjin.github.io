@@ -1,315 +1,63 @@
 <!DOCTYPE html>
-<html lang = 'en'>
-    <head>
-        <meta charset="utf-8">
-        <title>Pong!!!!!!</title>
-        <style>
-        /* The Modal (background) */
-        .modal {
-          display: none; /* Hidden by default */
-          position: fixed; /* Stay in place */
-          z-index: 1; /* Sit on top */
-          padding-top: 100px; /* Location of the box */
-          left: 0;
-          top: 0;
-          width: 100%; /* Full width */
-          height: 100%; /* Full height */
-          overflow: auto; /* Enable scroll if needed */
-          background-color: rgb(0,0,0); /* Fallback color */
-          background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Polar grapher with animation</title>
+    <style>
+        #canvas{
+        width:800px;
+        height:800px;
         }
-        /* Modal Content */
-        .modal-content {
-          background-color: #fefefe;
-          margin: auto;
-          padding: 20px;
-          border: 1px solid #888;
-          width: 80%;
-        }
-        /* The Close Button */
-        .close {
-          color: #aaaaaa;
-          float: right;
-          font-size: 28px;
-          font-weight: bold;
-        }
-        canvas{
-          border:10px solid grey;
-        }
-        button {
-          padding:10px;
-          display: inline-block;
-          margin:10px;
-          cursor: pointer;
-          text-align: center;
-          text-decoration: none;
-          outline: none;
-          color: #fff;
-          background-color: #4CAF50;
-          border: none;
-          border-radius: 15px;
-          box-shadow: 0 5px #999;
-          transition-duration: 0.4s;
-        }
-
-        button:hover {
-          background-color: #f44336;
-        }
-
-        button:active {
-          background-color: #3e8e41;
-          box-shadow: 0 2px #666;
-          transform: translateY(4px);
-        }
-		#left{
-			padding: 100px;
-margin:0px;
-
-       
-		}
-		#right{
-			padding: 100px;
-margin:0px;
-
-		}
-        </style>
-    </head>
-    <body>
-      <canvas id = 'canvas' width = '400' height = '400'></canvas>
-      <button id="howTo">How to play</button>
-      <button id = 'playagain' onclick='start()'>Start</button>
-      <button id = 'singleplayer' onclick='singleplayer()'>1 Player Against Computer</button>
-      <button id  = 'multiplayer' onclick='multiplayer()'>2 Players</button><br>
-      <button id = 'right' ontouchstart="player.left()" onmousedown='player.left()' ontouchend='player.stop()' onmouseup='player.stop()'>Left</button>
-      <button id = 'left' ontouchstart="player.right()" onmousedown='player.right()' ontouchend='player.stop()' onmouseup='player.stop()'>Right</button>
-      <!-- The Modal -->
-      <div id="myModal" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-          <span class="close">&times;</span>
-          <p>For the singleplayer, use arrow left and right keys</p>
-          <p>For multiplayer, use arrow left and right keys for one person and A and D keys for the other</p>
-        </div>
-
-      </div>
-      <script src = 'jquery.js'></script>
-      <script>
-        // Get the modal
-        var modal = document.getElementById("myModal");
-        // Get the button that opens the modal
-        var btn = document.getElementById("howTo");
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-        // When the user clicks the button, open the modal
-        btn.onclick = function() {
-          modal.style.display = "block";
-        }
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function() {
-          modal.style.display = "none";
-        }
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-          if (event.target == modal) {
-            modal.style.display = "none";
-          }
-        }
-        var gameMode = 1
-        var singleplayer = function(){
-          gameMode = 1;
-        }
-        var multiplayer = function(){
-          gameMode = 0;
-        }
-        var countMe = 0;
-		    var countOpponent = 0;
+    </style>
+</head>
+<body>
+<h1>Polar grapher with animation</h1>
+<canvas width="400" height="400" id="canvas"></canvas>
+<script>
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
-        var a = 5;
-        var gameIsOver = false;
-        var circle = function(x,y,radius,fillCircle){
-          ctx.beginPath();
-          ctx.arc(x,y,radius,0,Math.PI * 2, false);
-          if(fillCircle){
-            ctx.fill();
-          }
-          else{
-            ctx.stroke();
-          }
-        };
-        var gameOver = function(who){
-          gameIsOver = true;
-          ctx.font = '60px Courier'
-          ctx.textAlign = 'middle'
-          if(who){
-            ctx.fillStyle = 'Green'
-            ctx.fillText('You win!',50,100)
-          }else{
-            ctx.fillStyle = 'Red'
-            ctx.fillText('You lose!',50,100)
-          }
+        color = prompt("Enter a color in RGB( rgb(#,#,#))")
+        /*FUNCTION BELOW*/
+        functionThing = prompt("Enter a Function in terms of x(use \"*\" for multiplication, use sqrt() for square root, use pow(a,b) for a^b)")
+        function func(x){
+            return eval(functionThing)
         }
-        var paddle = function(x,y,w,h,color){
-          this.x = x;
-          this.y = y;
-          this.xSpeed = 0;
-          this.w = w;
-          this.h = h;
-          this.color=color;
+        /*FUNCTION ABOVE*/
+        function plot(a,b, color){
+            ctx.fillStyle=color
+            ctx.fillRect(200+20*a*Math.cos(b),200-20*a*Math.sin(b),1,1)
         }
-        paddle.prototype.draw = function(){
-          ctx.fillStyle = this.color;
-          ctx.fillRect(this.x,this.y,this.w,this.h);
+        function sin(x){
+            return Math.sin(x)
         }
-        paddle.prototype.right = function(){
-          this.xSpeed=a;
+        function cos(x){
+            return Math.cos(x)
         }
-        paddle.prototype.left = function(){
-          this.xSpeed=-a;
+        function tan(x){
+            return Math.tan(x)
         }
-        paddle.prototype.stop = function(){
-          this.xSpeed=0;
+        function sqrt(x){
+            return Math.sqrt(x)
         }
-        var Ball = function(x,y,xSpeed,ySpeed){
-          this.x = x;
-          this.y = y;
-          this.xSpeed = xSpeed;
-          this.ySpeed = ySpeed;
+        function pow(x,a){
+            return Math.pow(x,a)
         }
-        Ball.prototype.draw = function(){
-          ctx.fillStyle = 'black';
-          circle(this.x+5,this.y+5,5,true);
+        theta = 0
+        function loop(){
+            ctx.fillStyle = 'rgba(225,225,225,0.0075)'
+            ctx.fillRect(0,0,400,400);
+            ctx.fillStyle = 'rgba(0,0,0,0.5)'
+            ctx.fillRect(0,199,400,2)
+            ctx.fillRect(199,0,2,400)
+            ctx.fillRect(220,195,2,10)
+            ctx.fillRect(180,195,2,10)
+            ctx.fillRect(195,220,10,2)
+            ctx.fillRect(195,180,10,2)
+            theta+=0.01
+            r = func(theta)
+            plot(r,theta,color)
         }
-        Ball.prototype.move = function(){
-          this.x+=this.xSpeed;
-          this.y+=this.ySpeed;
-        }
-        Ball.prototype.bounce = function(){
-          if(this.x <= 0 || this.x >= 390){
-            this.xSpeed = -this.xSpeed;
-          }
-          else if(this.y <= 0){
-            gameOver(1);
-            countMe += 1;
-          }
-          else if(this.y >= 390){
-            gameOver(0);
-            countOpponent += 1;
-          }
-          else if(this.x > opponent.x && this.x < opponent.x+opponent.w && this.y <= opponent.y+opponent.h && this.y >= opponent.y){
-            this.ySpeed = (Math.abs(this.ySpeed))*1.05;
-            this.xSpeed = this.xSpeed*1.05+(opponent.xSpeed/4);
-          }
-          else if(this.x > player.x && this.x < player.x+player.w && this.y >= player.y-player.h && this.y <= player.y){
-            this.ySpeed = -(Math.abs(this.ySpeed))*1.05;
-            this.xSpeed = this.xSpeed*1.05+(player.xSpeed/4);
-          }
-        }
-        var num;
-        var player;
-        var opponent;
-        var ball;
-        var now = new Date().getTime();
-        lastRenderCycleTime = now;
-        var id = function(){
-          ctx.fillStyle = 'rgba(225,225,225,1)'
-          ctx.fillRect(0,0,400,400);
-          if(!gameIsOver){
-            requestAnimationFrame(id)
-          }
-        	var now = new Date().getTime();
-        	var timeDelta = now - lastRenderCycleTime;
-        	lastRenderCycleTime = now;
-        	fps = 1000 / timeDelta;
-			    ctx.font = '10px Courier'
-          ctx.fillStyle = 'black'
-			    ctx.textAlign = 'middle'
-			    ctx.fillText('FPS: ' + fps, 10, 20)
-          document.addEventListener('keydown', function(e) {
-            if (e.which === 37) {
-              player.left();
-            }
-            else if (e.which === 39) {
-               player.right();
-            }
-          })
-            document.addEventListener('keyup', function(e) {
-            if (e.which === 37) {
-              player.stop();
-            }
-            else if (e.which === 39) {
-               player.stop();
-            }
-          })
-          if(!gameMode){
-            document.addEventListener('keydown', function(e) {
-              if (e.which === 65) {
-                opponent.left();
-              }
-              else if (e.which === 68) {
-                 opponent.right();
-              }
-            })
-              document.addEventListener('keyup', function(e) {
-              if (e.which === 65) {
-                opponent.stop();
-              }
-              else if (e.which === 68) {
-                 opponent.stop();
-              }
-            })
-          }else{
-		if(ball.y > 0){
-            num = ball.x-ball.xSpeed/ball.ySpeed*(ball.y-35);
-            num = num%780;
-	    if(num > 390){num = 390-(num-390)}
-	    else if(num < 0){num = num*(-1)}
-            num = opponent.x+opponent.w/2-num-5;
-            console.log(num)}
-            if(num > 10){
-              opponent.left();
-            }else if(num < -10){
-              opponent.right();
-            }else{
-              opponent.stop();
-            }
-          }
-          opponent.draw();
-          opponent.x+=opponent.xSpeed;
-          player.draw();
-          player.x+=player.xSpeed;
-          ball.draw();
-          ball.move();
-            if(player.x >= 325){
-                player.xSpeed = 0;
-                player.x = 325;
-            }
-            else if(player.x <= 0){
-                player.xSpeed = 0;
-		player.x = 0;
-            }
-            if(opponent.x >= 325){
-                opponent.xSpeed = 0;
-                opponent.x = 325;
-            }
-            else if(opponent.x <= 0){
-                opponent.xSpeed = 0;
-                opponent.x = 0;
-            }
-          ball.bounce();
-			    ctx.font = '10px Courier'
-          ctx.fillStyle = 'black'
-			    ctx.textAlign = 'middle'
-			    ctx.fillText(countMe/2 + " : " + countOpponent/2,325,20)
-        }
-        var start = function(){
-          player = new paddle(200,375,75,10,'#32A852');
-          opponent = new paddle(200,25,75,10,'#E38239');
-          ball = new Ball(200,100,4*Math.random()+2,2*Math.random()+1);
-          gameIsOver=false;
-          $("#playagain").text('Play Again');
-          requestAnimationFrame(id)
-        }
-      </script>
-    </body>
+        setInterval(loop,1)
+    </script>
+</body>
 </html>
