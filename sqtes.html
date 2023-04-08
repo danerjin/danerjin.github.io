@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Square tesselation</title>
+</head>
+<body>
+
+<h1>Square Tesselation</h1>
+<canvas width="800" height="800" id="canvas"></canvas>
+<button onclick="update()">Click</button>
+<script>
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        x = parseInt(prompt("x-coord of top left corner"))
+        y = parseInt(prompt("y-coord of top left corner"))
+        w = parseInt(prompt("width"))
+        h = parseInt(prompt("height"))
+        n = 0
+        ctx.strokeStyle="rgb(0,0,0)"
+        ctx.rect(x,y,w,h)
+        ctx.stroke()
+        function update(){
+            n+=1
+            if(n===4){n=0};
+            if(n===0){
+                w = w+h
+            }
+            else if(n===1){
+                y = y-w
+                h = h+w
+            }
+            else if(n===2){
+                x = x-h
+                w = w+h
+            }
+            else{
+                h = h+w
+            }
+            ctx.rect(x,y,w,h)
+            ctx.stroke()
+        }
+    </script>
+</body>
+</html>
