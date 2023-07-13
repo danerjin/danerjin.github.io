@@ -261,7 +261,7 @@ margin:0px;
             })
           }else{
 		if(ball.y > 0){
-			if(ball.y<200){
+			if(ball.y<200 and ball.ySpeed<0){
             num = ball.x-ball.xSpeed/ball.ySpeed*(ball.y-35);
             num = num%780;
 	    if(num > 390){num = 390-(num-390)}
