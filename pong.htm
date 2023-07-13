@@ -74,10 +74,11 @@ margin:0px;
 margin:0px;
 
 		}
-	    body{margin:auto{
+	    #center{margin:auto}
         </style>
 </head>
 <body>
+<div id="center">
 <canvas id = 'canvas' width = '400' height = '400'></canvas>
 	<br>
 <button id="howTo">How to play</button>
@@ -86,6 +87,7 @@ margin:0px;
 <button id  = 'multiplayer' onclick='multiplayer()'>2 Players</button><br>
 <button id = 'right' ontouchstart="player.left()" onmousedown='player.left()' ontouchend='player.stop()' onmouseup='player.stop()'>Left</button>
 <button id = 'left' ontouchstart="player.right()" onmousedown='player.right()' ontouchend='player.stop()' onmouseup='player.stop()'>Right</button>
+</div>
 <!-- The Modal -->
 <div id="myModal" class="modal">
     <!-- Modal content -->
