@@ -137,7 +137,7 @@ var canvas = $("screen");
 var ctx = canvas.getContext('2d');
 var bufferScreen = $("buffer");
 var overlay;
-
+gravity = 0.015
 var player = {
 	x : 2,		// current x, y position
 	y : 2,
@@ -146,10 +146,13 @@ var player = {
 	rot : 0,		// rotation in radians
 	speed : 0,		// is the playing moving forward (speed = 1) or backwards (speed = -1).
   strafeSpeed : 0, //strafing
-	moveSpeed : 0.075,	// how far (in map units) does the player move each step/update
+	moveSpeed : 0.05,	// how far (in map units) does the player move each step/update
 	rotSpeed : 3,		// how much does the player rotate each step/update (in degrees)
   pitch : 0, // pitch
-  pitchChange : 0
+  pitchChange : 0,
+  z: 0, //feet to floor dist
+  height: 0.4, // player height
+  zSpeed: 0
 }
 
 screenWidth = 960
@@ -216,8 +219,8 @@ var drawFillRectangle = function(x, y, width, height, cssColor){
 };
 function renderCycle() {
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
-  drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch,'#429bf5');
-  drawFillRectangle(0,screenHeight/2+player.pitch,screenWidth,screenHeight/2-player.pitch,'#c0a570');
+  drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#429bf5');
+  drawFillRectangle(0,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),screenWidth,screenHeight/2-player.pitch-25*(player.height+player.z-0.5),'#c0a570');
 	updateMiniMap();
 	castRays();
 	// time since last rendering
@@ -243,6 +246,20 @@ function bindKeys() {
 		e = e || window.event;
 
 		switch (e.keyCode) { // which key was pressed?
+
+  		case 82: // up, idk
+        player.moveSpeed = 0.125
+  			break;
+  		case 16: // up, idk
+  			player.height = 0.2;
+        player.moveSpeed = 0.01
+  			break;
+
+			case 32: // up, idk
+        if(player.z < 0.01){
+				player.zSpeed = 0.2;
+      }
+				break;
 
 			case 38: // up, idk
 				player.pitchChange = 2;
@@ -282,7 +299,11 @@ function bindKeys() {
 		e = e || window.event;
 
 		switch (e.keyCode) {
-
+      case 82:
+  		case 16: // up, idk
+  			player.height = 0.4;
+        player.moveSpeed = 0.05
+  			break;
 		 case 38: // up, idk
      case 40: // down, idk
         player.pitchChange = 0;
@@ -365,7 +386,7 @@ function castSingleRay(rayAngle, stripIdx) {
 		var wallX = Math.floor(x + (right ? 0 : -1));
 		var wallY = Math.floor(y);
 		// is this povar inside a wall block?
-		if(map[wallY][wallX] > 0) {
+		if(map[wallY][wallX] !== map[Math.floor(player.y)][Math.floor(player.x)]) {
 			var distX = x - player.x;
 			var distY = y - player.y;
 			dist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
@@ -444,10 +465,10 @@ function castSingleRay(rayAngle, stripIdx) {
 
 		// top placement is easy since everything is centered on the x-axis, so we simply move
 		// it half way down the screen and then half the wall height back up.
-		var top = Math.round((screenHeight - height) / 2)+player.pitch;
+		var top = Math.round((screenHeight - height) / 2)+player.pitch+200*(player.height+player.z)/dist;
 		var styleHeight;
-    alibaba = wallIsShaded?0.75:1;
-    drawFillRectangle(stripIdx*stripWidth,top,stripWidth,height,`rgb(${wallTypes[wallType][0]*alibaba},${wallTypes[wallType][1]*alibaba},${wallTypes[wallType][2]*alibaba})`)
+    mult = wallIsShaded?0.75:1;
+    drawFillRectangle(stripIdx*stripWidth,top,stripWidth,height,`rgb(${wallTypes[wallType][0]*mult},${wallTypes[wallType][1]*mult},${wallTypes[wallType][2]*mult})`)
 		var dwx = xWallHit - player.x;
 		var dwy = yWallHit - player.y;
 		var wallDist = dwx*dwx + dwy*dwy;
@@ -562,9 +583,9 @@ function move(timeDelta) {
 
 	var newX = player.x + Math.cos(player.rot) * moveStep + Math.sin(player.rot) * moveStepStrafe;	// calculate new player position with simple trigonometry
 	var newY = player.y + Math.sin(player.rot) * moveStep - Math.cos(player.rot) * moveStepStrafe;
-
+  player.zSpeed-=gravity;
+  if(0 <= player.z+player.zSpeed){player.z+=player.zSpeed}else{player.zSpeed = 0;player.z=0}
 	var pos = checkCollision(player.x, player.y, newX, newY, 0.35);
-
 	player.x = pos.x; // set new position
 	player.y = pos.y;
 }
@@ -574,7 +595,7 @@ function checkCollision(fromX, fromY, toX, toY, radius) {
 		x : fromX,
 		y : fromY
 	};
-
+  if(map[Math.floor(fromY)][Math.floor(fromX)] !== 0){return {x:toX,y:toY}}
 	if(toY < 0 || toY >= mapHeight || toX < 0 || toX >= mapWidth)
 		return pos;
 
