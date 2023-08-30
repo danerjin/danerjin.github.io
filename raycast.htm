@@ -147,7 +147,9 @@ var player = {
 	speed : 0,		// is the playing moving forward (speed = 1) or backwards (speed = -1).
   strafeSpeed : 0, //strafing
 	moveSpeed : 0.075,	// how far (in map units) does the player move each step/update
-	rotSpeed : 3		// how much does the player rotate each step/update (in degrees)
+	rotSpeed : 3,		// how much does the player rotate each step/update (in degrees)
+  pitch : 0, // pitch
+  pitchChange : 0
 }
 
 screenWidth = 960
@@ -214,8 +216,8 @@ var drawFillRectangle = function(x, y, width, height, cssColor){
 };
 function renderCycle() {
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
-  drawFillRectangle(0,0,screenWidth,screenHeight/2,'#429bf5');
-  drawFillRectangle(0,screenHeight/2,screenWidth,screenHeight/2,'#c0a570');
+  drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch,'#429bf5');
+  drawFillRectangle(0,screenHeight/2+player.pitch,screenWidth,screenHeight/2-player.pitch,'#c0a570');
 	updateMiniMap();
 	castRays();
 	// time since last rendering
@@ -243,11 +245,11 @@ function bindKeys() {
 		switch (e.keyCode) { // which key was pressed?
 
 			case 38: // up, idk
-				//player.speed = 1;
+				player.pitchChange = -2;
 				break;
 
 			case 40: // down, idk
-				//player.speed = -1;
+				player.pitchChange = 2;
 				break;
 
       case 87: // up, move player forward, ie. increase speed
@@ -283,7 +285,7 @@ function bindKeys() {
 
 		 case 38: // up, idk
      case 40: // down, idk
-        //not yet implemented looking up and down
+        player.pitchChange = 0;
       	break;
 			case 87:
 			case 83:
@@ -442,7 +444,7 @@ function castSingleRay(rayAngle, stripIdx) {
 
 		// top placement is easy since everything is centered on the x-axis, so we simply move
 		// it half way down the screen and then half the wall height back up.
-		var top = Math.round((screenHeight - height) / 2);
+		var top = Math.round((screenHeight - height) / 2)+player.pitch;
 		var styleHeight;
     alibaba = wallIsShaded?0.75:1;
     drawFillRectangle(stripIdx*stripWidth,top,stripWidth,height,`rgb(${wallTypes[wallType][0]*alibaba},${wallTypes[wallType][1]*alibaba},${wallTypes[wallType][2]*alibaba})`)
@@ -550,7 +552,7 @@ function move(timeDelta) {
 	player.rotDeg = player.rotDeg + mul * player.dir * player.rotSpeed; // add rotation if player is rotating (player.dir != 0)
 
 	player.rotDeg = player.rotDeg % 360;
-
+  player.pitch += player.pitchChange
 	var snap = (player.rotDeg+360) % 90
 	if(snap < 2 || snap > 88) {
 		player.rotDeg = Math.round(player.rotDeg / 90) * 90;
