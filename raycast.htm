@@ -137,7 +137,12 @@ var floorlayout = [
   [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 ];
-
+/*
+1 - 10 -- thick walls
+11 -- glass
+12 -- door
+13 -- portal
+*/
 var wallTypes = [0,[202,196,176],[235,106,14],[100, 198, 107],[108,69,39],[180, 179, 82],[205,164,52],[121,85,61],[189,236,182],[61,100,45],[230,50,68]]
 var canvas = $("screen");
 var ctx = canvas.getContext('2d');
@@ -157,9 +162,10 @@ var player = {
   pitch : 0, // pitch
   pitchChange : 0,
   z: 0, //feet to floor dist
-  height: 0.4, // player height
+  height: 0.5, // player height
   zSpeed: 0,
-  isJumping: false
+  isJumping: false,
+  speedMult: 1
 }
 
 screenWidth = 960
@@ -255,12 +261,12 @@ function bindKeys() {
 		switch (e.keyCode) { // which key was pressed?
 
   		case 82: // sprint
-        player.moveSpeed = 0.075
-        player.height = 0.4
+        player.speedMult = 1.5
+        player.height = 0.5
   			break;
   		case 16: // crouch
   			player.height = 0.1;
-        player.moveSpeed = 0.01;
+        player.speedMult = 0.2
   			break;
 
 			case 32: // jump
@@ -307,8 +313,8 @@ function bindKeys() {
 		switch (e.keyCode) {
       case 82:
   		case 16: // up
-  			player.height = 0.4;
-        player.moveSpeed = 0.05
+  			player.height = 0.5;
+        player.speedMult = 1;
   			break;
       case 32:
         player.isJumping = false;
@@ -473,7 +479,7 @@ function castSingleRay(rayAngle, stripIdx) {
 
 		// top placement is easy since everything is centered on the x-axis, so we simply move
 		// it half way down the screen and then half the wall height back up.
-		var top = Math.round((screenHeight - height) / 2)+player.pitch+200*(player.height+player.z)/dist;
+		var top = Math.round(screenHeight/2 - (1-(player.z+player.height))*height-(player.z+player.height))+player.pitch
 		var styleHeight;
     mult = wallIsShaded?0.75:1;
     drawFillRectangle(stripIdx*stripWidth,top,stripWidth,height,`rgb(${wallTypes[wallType][0]*mult},${wallTypes[wallType][1]*mult},${wallTypes[wallType][2]*mult})`)
@@ -573,11 +579,12 @@ function move(timeDelta) {
 
 	// time timeDelta has passed since we moved last time. We should have moved after time gameCycleDelay,
 	// so calculate how much we should multiply our movement to ensure game speed is constant
+  if (player.y >= 0.001){player.moveSpeed = 0.05;}else{player.moveSpeed = 0.069}
 	var mul = timeDelta / gameCycleDelay;
 
-	var moveStep = mul * player.speed * player.moveSpeed;	// player will move this far along the current direction vector
+	var moveStep = mul * player.speed * player.moveSpeed*player.speedMult;	// player will move this far along the current direction vector
 
-  var moveStepStrafe = mul * player.strafeSpeed * player.moveSpeed;
+  var moveStepStrafe = mul * player.strafeSpeed * player.moveSpeed*player.speedMult;
 
 	player.rotDeg = player.rotDeg + mul * player.dir * player.rotSpeed; // add rotation if player is rotating (player.dir != 0)
 
