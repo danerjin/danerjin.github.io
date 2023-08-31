@@ -152,7 +152,8 @@ var player = {
   pitchChange : 0,
   z: 0, //feet to floor dist
   height: 0.4, // player height
-  zSpeed: 0
+  zSpeed: 0,
+  isJumping: false
 }
 
 screenWidth = 960
@@ -247,25 +248,24 @@ function bindKeys() {
 
 		switch (e.keyCode) { // which key was pressed?
 
-  		case 82: // up, idk
+  		case 82: // sprint
         player.moveSpeed = 0.075
+        player.height = 0.4
   			break;
-  		case 16: // up, idk
+  		case 16: // crouch
   			player.height = 0.1;
-        player.moveSpeed = 0.01
+        player.moveSpeed = 0.01;
   			break;
 
-			case 32: // up, idk
-        if(player.z < 0.01){
-				player.zSpeed = 0.2;
-      }
+			case 32: // jump
+        player.isJumping = true;
 				break;
 
-			case 38: // up, idk
+			case 38: // up
 				player.pitchChange = 2;
 				break;
 
-			case 40: // down, idk
+			case 40: // down
 				player.pitchChange = -2;
 				break;
 
@@ -300,12 +300,14 @@ function bindKeys() {
 
 		switch (e.keyCode) {
       case 82:
-  		case 16: // up, idk
+  		case 16: // up
   			player.height = 0.4;
         player.moveSpeed = 0.05
   			break;
-		 case 38: // up, idk
-     case 40: // down, idk
+      case 32:
+        player.isJumping = false;
+		 case 38: // up
+     case 40: // down
         player.pitchChange = 0;
       	break;
 			case 87:
@@ -562,6 +564,7 @@ function drawRay(rayX, rayY) {
 }
 
 function move(timeDelta) {
+
 	// time timeDelta has passed since we moved last time. We should have moved after time gameCycleDelay,
 	// so calculate how much we should multiply our movement to ensure game speed is constant
 	var mul = timeDelta / gameCycleDelay;
@@ -586,7 +589,11 @@ function move(timeDelta) {
 	var newX = player.x + Math.cos(player.rot) * moveStep + Math.sin(player.rot) * moveStepStrafe;	// calculate new player position with simple trigonometry
 	var newY = player.y + Math.sin(player.rot) * moveStep - Math.cos(player.rot) * moveStepStrafe;
   player.zSpeed-=gravity;
-  if(0 <= player.z+player.zSpeed){player.z+=player.zSpeed}else{player.zSpeed = 0;player.z=0}
+  if(0 <= player.z+player.zSpeed){player.z+=player.zSpeed}else{player.zSpeed = 0;player.z=0;}
+  if(player.isJumping){
+  if(player.z < 0.01){
+  player.zSpeed = 0.2;
+}}
 	var pos = checkCollision(player.x, player.y, newX, newY, 0.35);
 	player.x = pos.x; // set new position
 	player.y = pos.y;
