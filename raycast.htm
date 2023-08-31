@@ -573,7 +573,9 @@ function move(timeDelta) {
 	player.rotDeg = player.rotDeg + mul * player.dir * player.rotSpeed; // add rotation if player is rotating (player.dir != 0)
 
 	player.rotDeg = player.rotDeg % 360;
-  player.pitch += player.pitchChange
+  if(-100 < player.pitch+player.pitchChange && player.pitch+player.pitchChange < 100){
+    player.pitch += player.pitchChange
+  }
 	var snap = (player.rotDeg+360) % 90
 	if(snap < 2 || snap > 88) {
 		player.rotDeg = Math.round(player.rotDeg / 90) * 90;
