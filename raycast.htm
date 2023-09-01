@@ -364,7 +364,6 @@ function castRays() {
 	}
 }
 function castSingleRay(rayAngle, stripIdx) {
-  var glassHit = false;
   var glassHitPoints = [];
 	// first make sure the angle is between 0 and 360 degrees
 	rayAngle %= twoPI;
@@ -482,8 +481,6 @@ function castSingleRay(rayAngle, stripIdx) {
         glassHits.push(((thing[0]-player.y)**2+(thing[1]-player.x)**2)**0.5 * Math.cos(player.rot - rayAngle))
       }
     }
-    console.log(glassHitPoints);
-    console.log(glassHits);
     if(glassHits.length > 0){
       glassHits.sort(function(a, b){return b - a});
     }
