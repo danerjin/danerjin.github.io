@@ -153,7 +153,7 @@ window.mobileAndTabletCheck = function() {
 };
 var wallTextures = [0]
 for(var texture = 1; texture < 10;texture++){
-    wallTexture = new Image();
+    var wallTexture = new Image();
   	wallTexture.crossOrigin = "Anonymous";
   	wallTexture.src = `walls_${texture}.png`;
     wallTextures.append(wallTexure);
