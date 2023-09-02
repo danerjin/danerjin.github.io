@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ray Casting Tutorial Demo for Developers, written in Javascript - Part 7</title>
+        <script src="sample7.js"></script>
+
+    </head>
+
+    <body>
+		<canvas id="gameCanvas" width="600" height="200">
+            <!-- Insert fallback content here -->
+        </canvas>
+
+	 To move around, use the arrow keys on your keyboard or:<br>
+	 <li> W = move forwad
+	 <li> A = turn left
+	 <li> S = move down
+	 <li> D = turn right
+<p>
+	 Vertical motions:<br>
+	 <li> Q = look up
+	<li> Z = look down
+
+	<li> E = fly
+	<li> C = crouch
+    </body>
+	<script>
+		var canvas = document.getElementById("gameCanvas");
+		var gameWindow=new GameWindow(canvas);
+		gameWindow.start();
+	</script>
+</html>
