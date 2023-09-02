@@ -241,7 +241,7 @@ var drawWallSliceRectangle = function(x, y, width, height, xOffset,texture){
   wallTexture = new Image();
 	wallTexture.crossOrigin = "Anonymous";
 	wallTexture.src = `walls_${texture}.png`;
-	ctx.drawImage(wallTexture, Math.floor(xOffset*wallTexture.width), 0,
+	ctx.drawImage(wallTexture, Math.floor(xOffset*wallTexture.width/2), 0,
 		1, wallTexture.height,
 		x, y, width, height);
 }
@@ -519,7 +519,7 @@ function castSingleRay(rayAngle, stripIdx) {
 		var top = Math.round(screenHeight/2 - (1-(player.z+player.height))*height-(player.z+player.height))+player.pitch
 		var styleHeight;
     mult = wallIsShaded?0.75:1;
-    drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX,wallType)
+    drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType)
     for(let i = 0; i<glassHits.length;i++){
       var dist = glassHits[i]
       var height = Math.round(viewDist / dist);
