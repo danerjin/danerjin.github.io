@@ -311,6 +311,7 @@ function gameCycle() {
     if(diffY > 0){player.pitchChange = -4;}
     if(diffY < 0){player.pitchChange = 4;}
     if(diffY === 0){player.pitchChange = 0;}
+    prevMousePos = mousePos;
   }
 	var now = new Date().getTime();
 	// time since last game logic
@@ -324,7 +325,6 @@ function gameCycle() {
 	}
 	setTimeout(gameCycle, cycleDelay);
 	lastGameCycleTime = now;
-  prevMousePos = mousePos;
 }
 
 
