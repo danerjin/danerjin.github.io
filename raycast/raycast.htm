@@ -227,12 +227,13 @@ function init() {
         //External reference circonference color
         externalStrokeColor: '#008000',
         // Sets the behavior of the stick
-        autoReturnToCenter: false
+        autoReturnToCenter: true
 
     });
     joyMovingDir = joyMoving.GetDir();
   }
-    canvas.addEventListener("click", async () => {
+
+  canvas.addEventListener("click", async () => {
     await canvas.requestPointerLock();
   });
   drawFillRectangle(0,0,screenWidth,screenHeight/2,'#429bf5');
