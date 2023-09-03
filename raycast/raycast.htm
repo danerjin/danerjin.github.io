@@ -251,6 +251,7 @@ var lastGameCycleTime = 0;
 var gameCycleDelay = 1000 / 60; // aim for 60 fps for game logic
 var mousePos = [0,0];
 var prevMousePos = [0,0];
+var count = 0
 function gameCycle() {
   if(mobile){
     if(joyMoving.GetDir() !== joyMovingDir){
@@ -311,7 +312,7 @@ function gameCycle() {
     if(diffY > 0){player.pitchChange = -4;}
     if(diffY < 0){player.pitchChange = 4;}
     if(diffY === 0){player.pitchChange = 0;}
-    prevMousePos = mousePos;
+    if(count === 0){prevMousePos = mousePos;}
   }
 	var now = new Date().getTime();
 	// time since last game logic
@@ -323,6 +324,7 @@ function gameCycle() {
 	if(timeDelta > cycleDelay) {
 		cycleDelay = Math.max(1, cycleDelay - (timeDelta - cycleDelay))
 	}
+  count = 1 - count;
 	setTimeout(gameCycle, cycleDelay);
 	lastGameCycleTime = now;
 }
