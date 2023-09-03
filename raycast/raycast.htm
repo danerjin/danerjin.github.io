@@ -249,6 +249,8 @@ function init() {
 
 var lastGameCycleTime = 0;
 var gameCycleDelay = 1000 / 60; // aim for 60 fps for game logic
+var diffX = 0;
+var diffY = 0;
 function gameCycle() {
   if(mobile){
     if(joyMoving.GetDir() !== joyMovingDir){
@@ -299,6 +301,16 @@ function gameCycle() {
 
       }
     }
+  }
+  diffX = 0;
+  diffY = 0;
+  if(document.pointerLockElement === canvas){
+    if(diffX > 0){player.dir = 1;}
+    if(diifY < 0){player.dir = -1;}
+    if(diffX === 0){player.dir = 0;}
+    if(diffY > 0){player.pitchChange = -4;}
+    if(diffY < 0){player.pitchChange = 4;}
+    if(diffY === 0){player.pitchChange = 0;}
   }
 	var now = new Date().getTime();
 	// time since last game logic
@@ -362,8 +374,8 @@ function updateMousePosition(e) {
     if(e.movementX > 0){player.dir = 1;}
     if(e.movementX < 0){player.dir = -1;}
     if(e.movementX === 0){player.dir = 0;}
-    if(e.movementY > 0){player.pitchChange = -2;}
-    if(e.movementY < 0){player.pitchChange = 2;}
+    if(e.movementY > 0){player.pitchChange = -4;}
+    if(e.movementY < 0){player.pitchChange = 4;}
     if(e.movementY === 0){player.pitchChange = 0;}
   }
 }
