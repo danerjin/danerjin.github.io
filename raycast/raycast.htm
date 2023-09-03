@@ -371,12 +371,8 @@ function renderCycle() {
 
 function updateMousePosition(e) {
   if(document.pointerLockElement === canvas){
-    if(e.movementX > 0){player.dir = 1;}
-    if(e.movementX < 0){player.dir = -1;}
-    if(e.movementX === 0){player.dir = 0;}
-    if(e.movementY > 0){player.pitchChange = -4;}
-    if(e.movementY < 0){player.pitchChange = 4;}
-    if(e.movementY === 0){player.pitchChange = 0;}
+    diffX = e.movementX;
+    diffY = e.movementY;
   }
 }
 
