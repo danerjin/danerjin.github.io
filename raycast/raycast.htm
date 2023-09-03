@@ -843,10 +843,10 @@ function isBlocking(x,y) {
 	// first make sure that we cannot move outside the boundaries of the level
 	if(y < 0 || y >= mapHeight || x < 0 || x >= mapWidth)
 		return true;
-
 	var ix = Math.floor(x);
 	var iy = Math.floor(y);
-
+console.log(ix)
+console.log(iy)
 	// return true if the map block is not 0, ie. if there is a blocking wall.
 	if(map[iy][ix] != 0)
 		return true;
