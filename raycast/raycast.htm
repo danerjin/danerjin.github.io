@@ -358,10 +358,12 @@ function renderCycle() {
 }
 
 function updateMousePosition(e) {
-  if(e.movementX > 0){player.dir = 1;}
-  if(e.movementX < 0){player.dir = -1;}
-  if(e.movementY > 0){player.pitchChange = 2;}
-  if(e.movementY < 0){player.pitchChange = -2;}
+  if(document.pointerLockElement === canvas){
+    if(e.movementX > 0){player.dir = 1;}
+    if(e.movementX < 0){player.dir = -1;}
+    if(e.movementY > 0){player.pitchChange = 2;}
+    if(e.movementY < 0){player.pitchChange = -2;}
+  }
 }
 
 // bind keyboard events to game functions (movement, etc)
