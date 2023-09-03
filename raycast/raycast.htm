@@ -307,7 +307,7 @@ function gameCycle() {
   }
   if(document.pointerLockElement === canvas){
     if(start === 0){
-      temp = mousePos;
+      temp = JSON.parse(JSON.stringify(mousePos));
     }
     diffX = temp[0]-prevMousePos[0];
     diffY = temp[1]-prevMousePos[1];
@@ -317,7 +317,7 @@ function gameCycle() {
     if(diffY > 0){player.pitchChange = -4;}
     if(diffY < 0){player.pitchChange = 4;}
     if(diffY === 0){player.pitchChange = 0;}
-    prevMousePos = temp;
+    prevMousePos = JSON.parse(JSON.stringify(temp));
   }
 	var now = new Date().getTime();
 	// time since last game logic
