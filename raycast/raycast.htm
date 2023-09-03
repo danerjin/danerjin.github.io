@@ -173,7 +173,7 @@ var player = {
 	speed : 0,		// is the playing moving forward (speed = 1) or backwards (speed = -1).
   strafeSpeed : 0, //strafing
 	moveSpeed : 0.05,	// how far (in map units) does the player move each step/update
-	rotSpeed : 2,		// how much does the player rotate each step/update (in degrees)
+	rotSpeed : 4,		// how much does the player rotate each step/update (in degrees)
   pitch : 0, // pitch
   pitchChange : 0,
   z: 0, //feet to floor dist
@@ -355,7 +355,9 @@ function renderCycle() {
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
   drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#429bf5');
   drawFillRectangle(0,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),screenWidth,screenHeight/2-player.pitch-25*(player.height+player.z-0.5),'#c0a570');
-	updateMiniMap();
+  drawFillRectangle(screenWidth/2-25,screenHeight/2-10,50,20,'#00FF00');
+  drawFillRectangle(screenWidth/2-10,screenHeight/2-25,20,50,'#00FF00');
+  updateMiniMap();
 	castRays();
 	// time since last rendering
 	var now = new Date().getTime();
