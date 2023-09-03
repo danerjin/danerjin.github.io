@@ -173,7 +173,7 @@ var player = {
 	speed : 0,		// is the playing moving forward (speed = 1) or backwards (speed = -1).
   strafeSpeed : 0, //strafing
 	moveSpeed : 0.05,	// how far (in map units) does the player move each step/update
-	rotSpeed : 1,		// how much does the player rotate each step/update (in degrees)
+	rotSpeed : 2,		// how much does the player rotate each step/update (in degrees)
   pitch : 0, // pitch
   pitchChange : 0,
   z: 0, //feet to floor dist
@@ -310,8 +310,8 @@ function gameCycle() {
     if(diffX > 0){player.dir = 1;}
     if(diffX < 0){player.dir = -1;}
     if(diffX === 0){player.dir = 0;}
-    if(diffY > 0){player.pitchChange = -8;}
-    if(diffY < 0){player.pitchChange = 8;}
+    if(diffY > 0){player.pitchChange = -6;}
+    if(diffY < 0){player.pitchChange = 6;}
     if(diffY === 0){player.pitchChange = 0;}
     prevMousePos = JSON.parse(JSON.stringify(temp));
   }
