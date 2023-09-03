@@ -234,6 +234,7 @@ function init() {
 
   canvas.addEventListener("click", async () => {
     await canvas.requestPointerLock();
+    document.addEventListener("mousemove", updateMousePosition, false);
   });
   drawFillRectangle(0,0,screenWidth,screenHeight/2,'#429bf5');
   drawFillRectangle(0,screenHeight/2,screenWidth,screenHeight/2,'#c0a570');
@@ -355,6 +356,12 @@ function renderCycle() {
   ctx.fillStyle = "black";
   ctx.fillText("FPS: "+fps,50,50);
 }
+
+function updateMousePosition(e) {
+  player.dir = (e.movementY>0)?1:-1;
+  player.pitchChange = (e.movementY>0)?2:-2;
+}
+
 // bind keyboard events to game functions (movement, etc)
 function bind() {
 	document.onkeydown = function(e) {
@@ -704,8 +711,6 @@ function drawRay(rayX, rayY) {
 
 function move(timeDelta) {
 
-    player.dir = Math.round(e.movementX / Math.abs(e.movementX));
-    player.pitchChange = 2*Math.round(e.movementY / Math.abs(e.movementY));
 	// time timeDelta has passed since we moved last time. We should have moved after time gameCycleDelay,
 	// so calculate how much we should multiply our movement to ensure game speed is constant
   if (player.y >= 0.001){player.moveSpeed = 0.05;}else{player.moveSpeed = 0.069}
@@ -834,8 +839,6 @@ function isBlocking(x,y) {
 		return true;
 	var ix = Math.floor(x);
 	var iy = Math.floor(y);
-console.log(x)
-console.log(y)
 	// return true if the map block is not 0, ie. if there is a blocking wall.
 	if(map[iy][ix] != 0)
 		return true;
