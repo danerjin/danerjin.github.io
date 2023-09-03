@@ -308,7 +308,7 @@ function gameCycle() {
     diffX = temp[0]-prevMousePos[0];
     diffY = temp[1]-prevMousePos[1];
     if(diffX > 3){player.dir = 1;}
-    if(diffX < 3){player.dir = -1;}
+    if(diffX < -3){player.dir = -1;}
     if(-3 <= diffX && diffX <= -3){player.dir = 0;}
     if(diffY > 0){player.pitchChange = -6;}
     if(diffY < 0){player.pitchChange = 6;}
