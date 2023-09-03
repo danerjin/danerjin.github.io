@@ -355,10 +355,12 @@ function renderCycle() {
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
   drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#429bf5');
   drawFillRectangle(0,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),screenWidth,screenHeight/2-player.pitch-25*(player.height+player.z-0.5),'#c0a570');
-  drawFillRectangle(screenWidth/2-25,screenHeight/2-10,50,20,'#00FF00');
-  drawFillRectangle(screenWidth/2-10,screenHeight/2-25,20,50,'#00FF00');
   updateMiniMap();
 	castRays();
+  drawFillRectangle(screenWidth/2-50,screenHeight/2-2,40,4,'#00FF00');
+  drawFillRectangle(screenWidth/2+10,screenHeight/2-2,40,4,'#00FF00');
+  drawFillRectangle(screenWidth/2-2,screenHeight/2-50,4,40,'#00FF00');
+  drawFillRectangle(screenWidth/2-2,screenHeight/2+10,4,40,'#00FF00');
 	// time since last rendering
 	var now = new Date().getTime();
 	var timeDelta = now - lastRenderCycleTime;
