@@ -252,6 +252,8 @@ var gameCycleDelay = 1000 / 60; // aim for 60 fps for game logic
 var mousePos = [0,0];
 var temp = [0,0];
 var prevMousePos = [0,0];
+var end = 8;
+var start = 0;
 function gameCycle() {
   if(mobile){
     if(joyMoving.GetDir() !== joyMovingDir){
@@ -304,7 +306,9 @@ function gameCycle() {
     }
   }
   if(document.pointerLockElement === canvas){
-    temp = mousePos;
+    if(start === 0){
+      temp = mousePos;
+    }
     diffX = temp[0]-prevMousePos[0];
     diffY = temp[1]-prevMousePos[1];
     if(diffX > 0){player.dir = 1;}
@@ -327,6 +331,8 @@ function gameCycle() {
 	}
 	setTimeout(gameCycle, cycleDelay);
 	lastGameCycleTime = now;
+  start++;
+  start =  start%end;
 }
 
 
