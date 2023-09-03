@@ -208,7 +208,6 @@ function updateFOV(){
   $("fov").innerText = Math.round(fov*180/Math.PI)
 }
 function init() {
-  document.addEventListener("pointerlockchange", lockChangeAlert, false);
   if(mobile){
     var joyMoving = new JoyStick('moving',{
         // The ID of canvas element
@@ -355,18 +354,6 @@ function renderCycle() {
   ctx.font = "15px monospace";
   ctx.fillStyle = "black";
   ctx.fillText("FPS: "+fps,50,50);
-}
-
-function lockChangeAlert() {
-  if (document.pointerLockElement === canvas) {
-    document.addEventListener("mousemove", updateMousePosition, false);
-  } else {
-    document.removeEventListener("mousemove", updateMousePosition, false);
-  }
-}
-function updateMousePosition(e) {
-  player.dir = Math.round(e.movementX / Math.abs(e.movementX));
-  player.pitchChange = 2*Math.round(e.movementY / Math.abs(e.movementY));
 }
 // bind keyboard events to game functions (movement, etc)
 function bind() {
@@ -717,6 +704,8 @@ function drawRay(rayX, rayY) {
 
 function move(timeDelta) {
 
+    player.dir = Math.round(e.movementX / Math.abs(e.movementX));
+    player.pitchChange = 2*Math.round(e.movementY / Math.abs(e.movementY));
 	// time timeDelta has passed since we moved last time. We should have moved after time gameCycleDelay,
 	// so calculate how much we should multiply our movement to ensure game speed is constant
   if (player.y >= 0.001){player.moveSpeed = 0.05;}else{player.moveSpeed = 0.069}
