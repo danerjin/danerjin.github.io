@@ -760,7 +760,7 @@ function move(timeDelta) {
   if(0 <= player.z+player.zSpeed){player.z+=player.zSpeed}else{player.zSpeed = 0;player.z=0;}
   if(player.isJumping){
   if(player.z < 0.01){
-  player.zSpeed = 0.10;
+  player.zSpeed = 0.125;
 }}
 	var pos = checkCollision(player.x, player.y, newX, newY, 0.35);
 	player.x = pos.x; // set new position
