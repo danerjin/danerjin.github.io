@@ -306,7 +306,7 @@ function gameCycle() {
   diffY = 0;
   if(document.pointerLockElement === canvas){
     if(diffX > 0){player.dir = 1;}
-    if(diifY < 0){player.dir = -1;}
+    if(diffX < 0){player.dir = -1;}
     if(diffX === 0){player.dir = 0;}
     if(diffY > 0){player.pitchChange = -4;}
     if(diffY < 0){player.pitchChange = 4;}
