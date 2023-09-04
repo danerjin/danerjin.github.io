@@ -512,6 +512,7 @@ function castFloorRays(){
     var floorX = player.x + rowDistance * rayDirX0;
     var floorY = player.y + rowDistance * rayDirY0;
     for(var x = 0; x < screenWidth; x+=stripWidth){
+      console.log(floorX,floorY);
 			// the cell coord is simply got from the integer parts of floorX and floorY
       var cellX = Math.floor(floorX);
       var cellY = Math.floor(floorY);
