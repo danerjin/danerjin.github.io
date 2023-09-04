@@ -485,45 +485,41 @@ function bind() {
 	}
 }
 function castFloorRays(){
-  var rayDirX0 = Math.cos(player.rot) - Math.sin(player.rot)*Math.tan(fovHalf);
-  var rayDirY0 = Math.sin(player.rot) - Math.cos(player.rot)*Math.tan(fovHalf);
-  var rayDirX1 = Math.cos(player.rot) + Math.sin(player.rot)*Math.tan(fovHalf);
-  var rayDirY1 = Math.sin(player.rot) + Math.cos(player.rot)*Math.tan(fovHalf);
-  //FLOOR CASTING
-  for(var y = 0; y < screenHeight; y+=2){
+  for(var y = screenHeight/2; y < screenHeight; y+=stripWidth){
+    //some values
+    var projectionPlaneDist = screenHeight/(2*Math.tan(fovHalf*Math.PI/180));
+    var dirX = projectionPlaneDist * Math.cos(player.rotDeg*Math.PI/180);
+    var dirY = projectionPlaneDist * Math.sin(player.rotDeg*Math.PI/180);
+    var planeX = screenWidth*Math.cos(player.rotDeg*Math.PI/180)/2;
+    var planeY = screenWidth*Math.sin(player.rotDeg*Math.PI/180)/2;
+    // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
+    var rayDirX0 = dirX - planeX;
+    var rayDirY0 = dirY - planeY;
+    var rayDirX1 = dirX + planeX;
+    var rayDirY1 = dirY + planeY;
     // Current y position compared to the center of the screen (the horizon)
     var p = y - screenHeight / 2;
-
     // Vertical position of the camera.
-    var posZ = (player.height+player.z) * screenHeight;
-
+    var posZ = 0.5 * screenHeight;
     // Horizontal distance from the camera to the floor for the current row.
     // 0.5 is the z position exactly in the middle between floor and ceiling.
     var rowDistance = posZ / p;
-
     // calculate the real world step vector we have to add for each x (parallel to camera plane)
     // adding step by step avoids multiplications with a weight in the inner loop
-    var floorStepX = 2 * rowDistance * (rayDirX1 - rayDirX0) / screenWidth;
-    var floorStepY = 2 * rowDistance * (rayDirY1 - rayDirY0) / screenWidth;
-
+    var floorStepX = rowDistance * (rayDirX1 - rayDirX0) / screenWidth;
+  	var floorStepY = rowDistance * (rayDirY1 - rayDirY0) / screenWidth;
     // real world coordinates of the leftmost column. This will be updated as we step to the right.
     var floorX = player.x + rowDistance * rayDirX0;
     var floorY = player.y + rowDistance * rayDirY0;
-
-    for(var x = 0; x < screenWidth; x+=2){
-      // the cell coord is simply got from the integer parts of floorX and floorY
+    for(var x = 0; x < screenWidth; x+=stripWidth){
+			// the cell coord is simply got from the integer parts of floorX and floorY
       var cellX = Math.floor(floorX);
       var cellY = Math.floor(floorY);
       // get the texture coordinate from the fractional part
-      var tx = (floorX - cellX);
-      var ty = (floorY - cellY);
-
+      var tx = floorX - cellX;
+      var ty = floorY - cellY;
       floorX += floorStepX;
       floorY += floorStepY;
-      floorX = Math.round(floorX*10**5)/10**5;
-      floorY = Math.round(floorY*10**5)/10**5;
-      if(cellX < 0 || cellX >= mapWidth || cellY < 0 || cellY >= mapHeight){continue;}
-      console.log(floorX,floorY,floorStepX,floorStepY);
       // choose texture and draw the pixel
       var floorTexture = floorlayout[cellY][cellX];
       if(floorTexture === 0){continue;}
