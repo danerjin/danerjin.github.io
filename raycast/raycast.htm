@@ -2,53 +2,57 @@
 <head>
 <title>JavaScript 3D Engine</title>
 <style>
-#minimapcontainer{
-  display:inline;
-  margin:50px;
-}
-.slider {
-  -webkit-appearance: none;
-  width: 400px;
-  height: 15px;
-  background: #d3d3d3;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
-}
+  #moving{
+    display:inline;
+  }
+  #minimapcontainer{
+    display:inline;
+    margin:50px;
+  }
+  .slider {
+    -webkit-appearance: none;
+    width: 400px;
+    height: 15px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+  }
 
-.slider:hover {
-  opacity: 1;
-}
+  .slider:hover {
+    opacity: 1;
+  }
 
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  background: #04AA6D;
-  cursor: povarer;
-}
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: #04AA6D;
+    cursor: povarer;
+  }
 
-.slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  background: #04AA6D;
-  cursor: povarer;
-}
-canvas#minimap {
- position : absolute;
-}
-canvas#minimapobjects {
- position : absolute;
-}
-p{
-  font-family: monospace;
-}
+  .slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    background: #04AA6D;
+    cursor: povarer;
+  }
+  canvas#minimap {
+   position : absolute;
+  }
+  canvas#minimapobjects {
+   position : absolute;
+  }
+  p{
+    font-family: monospace;
+  }
 </style>
 </head>
 <body>
 <canvas id="screen" width="960px" height="540px"></canvas>
+<div id="moving"></div>
 <div id="minimapcontainer">
 	<canvas id="minimap"></canvas>
 	<canvas id="minimapobjects"></canvas>
@@ -60,8 +64,6 @@ p{
   <input type="range" min="30" max="120" value="60" class="slider" id="myRange" onInput="updateFOV()">
   <p>FOV: <span id="fov">60</span></p>
 </div>
-<div id="looking"></div>
-<div id="moving"></div>
 <div id="debug"></div>
 <script src="joy.js"></script>
 <script type="text/javascript">
@@ -483,14 +485,12 @@ function bind() {
 	}
 }
 function castFloorRays(){
+  var rayDirX0 = Math.cos(player.rot) - Math.sin(player.rot)*Math.tan(fovHalf);
+  var rayDirY0 = Math.sin(player.rot) - Math.cos(player.rot)*Math.tan(fovHalf);
+  var rayDirX1 = Math.cos(player.rot) + Math.sin(player.rot)*Math.tan(fovHalf);
+  var rayDirY1 = Math.sin(player.rot) + Math.cos(player.rot)*Math.tan(fovHalf);
   //FLOOR CASTING
   for(var y = 0; y < screenHeight; y++){
-    // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
-    var rayDirX0 = Math.cos(player.rot) - Math.sin(player.rot)*Math.tan(fovHalf);
-    var rayDirY0 = Math.sin(player.rot) - Math.cos(player.rot)*Math.tan(fovHalf);
-    var rayDirX1 = Math.cos(player.rot) + Math.sin(player.rot)*Math.tan(fovHalf);
-    var rayDirY1 = Math.sin(player.rot) + Math.cos(player.rot)*Math.tan(fovHalf);
-
     // Current y position compared to the center of the screen (the horizon)
     var p = y - screenHeight / 2;
 
@@ -823,8 +823,8 @@ function move(timeDelta) {
   if(0 <= player.z+player.zSpeed){player.z+=player.zSpeed}else{player.zSpeed = 0;player.z=0;}
   if(player.isJumping){
   if(player.z < 0.01){
-  player.zSpeed = 0.125;
-}}
+    player.zSpeed = 0.125;
+  }}
 	var pos = checkCollision(player.x, player.y, newX, newY, 0.35);
 	player.x = pos.x; // set new position
 	player.y = pos.y;
