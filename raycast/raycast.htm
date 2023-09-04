@@ -511,6 +511,8 @@ function castFloorRays(){
     // real world coordinates of the leftmost column. This will be updated as we step to the right.
     var floorX = player.x + rowDistance * rayDirX0;
     var floorY = player.y + rowDistance * rayDirY0;
+    console.log(floorX,floorStepX);
+    console.log(floorY,floorStepY);
     for(var x = 0; x < screenWidth; x+=stripWidth){
       if(floorX >= mapWidth || floorY >= mapHeight){continue;}
       if(floorX < 0 || floorY < 0){continue;}
