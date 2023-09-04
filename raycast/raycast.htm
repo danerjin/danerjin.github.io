@@ -27,14 +27,14 @@
   width: 25px;
   height: 25px;
   background: #04AA6D;
-  cursor: pointer;
+  cursor: povarer;
 }
 
 .slider::-moz-range-thumb {
   width: 25px;
   height: 25px;
   background: #04AA6D;
-  cursor: pointer;
+  cursor: povarer;
 }
 canvas#minimap {
  position : absolute;
@@ -55,7 +55,7 @@ p{
 </div>
 <br><br>
 
-<p>Use WASD to move, &lt;Space&gt; to jump, &lt;Shift&gt; to crouch, &lt;R&gt; to sprint, and the mouse to look around! Use the FOV slider to adjust FOV.</p>
+<p>Use WASD to move, &lt;Space&gt; to jump, &lt;Shift&gt; to crouch, &lt;R&gt; to sprvar, and the mouse to look around! Use the FOV slider to adjust FOV.</p>
 <div class="slidecontainer">
   <input type="range" min="30" max="120" value="60" class="slider" id="myRange" onInput="updateFOV()">
   <p>FOV: <span id="fov">60</span></p>
@@ -157,6 +157,14 @@ for(var texture = 1; texture < 11;texture++){
   	wallTexture.src = `walls_${texture}.png`;
     wallTextures.push(wallTexture);
 }
+var floorTextures = []
+for(var texture = 1; texture < 11;texture++){
+    var floorTexture = new Image();
+  	floorTexture.crossOrigin = "Anonymous";
+  	floorTexture.src = `floor_${texture}.png`;
+    floorTextures.push(floorTexture);
+}
+
 mobile = window.mobileAndTabletCheck();
 var wallTypes = [0,[202,196,176],[235,106,14],[100, 198, 107],[108,69,39],[180, 179, 82],[205,164,52],[121,85,61],[189,236,182],[61,100,45],[230,50,68],[200,200,200]]
 var canvas = $("screen");
@@ -216,12 +224,12 @@ function init() {
         // width/height
         width: 100,
         height: 100,
-        // Internal color of Stick
-        internalFillColor: '#00AA00',
+        // varernal color of Stick
+        varernalFillColor: '#00AA00',
         // Border width of Stick
-        internalLineWidth: 2,
+        varernalLineWidth: 2,
         // Border color of Stick
-        internalStrokeColor: '#003300',
+        varernalStrokeColor: '#003300',
         // External reference circonference width
         externalLineWidth: 2,
         //External reference circonference color
@@ -234,7 +242,7 @@ function init() {
   }
 
   canvas.addEventListener("click", async () => {
-    await canvas.requestPointerLock();
+    await canvas.requestPovarerLock();
     document.addEventListener("mousemove", updateMousePosition, false);
   });
   drawFillRectangle(0,0,screenWidth,screenHeight/2,'#429bf5');
@@ -304,7 +312,7 @@ function gameCycle() {
       }
     }
   }
-  if(document.pointerLockElement === canvas){
+  if(document.povarerLockElement === canvas){
     temp = JSON.parse(JSON.stringify(mousePos));
     diffX = temp[0]-prevMousePos[0];
     diffY = temp[1]-prevMousePos[1];
@@ -352,11 +360,18 @@ var drawWallSliceRectangle = function(x, y, width, height, xOffset,texture){
 		1, wallTexture.height,
 		x, y, width, height);
 }
+var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
+  floorTexture = floorTextures[texture-1]
+	ctx.drawImage(floorTexture, Math.floor(xOffset*floorTexture.width), Math.floor(yOffset*floorTexture.height),
+		1, floorTexture.height,
+		x, y, width, height);
+}
 function renderCycle() {
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
   drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#429bf5');
   drawFillRectangle(0,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),screenWidth,screenHeight/2-player.pitch-25*(player.height+player.z-0.5),'#c0a570');
   updateMiniMap();
+  castFloorRays();
 	castRays();
   drawFillRectangle(screenWidth/2-50,screenHeight/2-2,40,4,'#00FF00');
   drawFillRectangle(screenWidth/2+10,screenHeight/2-2,40,4,'#00FF00');
@@ -378,7 +393,7 @@ function renderCycle() {
 }
 
 function updateMousePosition(e) {
-  if(document.pointerLockElement === canvas){
+  if(document.povarerLockElement === canvas){
     mousePos[0] += e.movementX;
     mousePos[1] += e.movementY;
   }
@@ -391,7 +406,7 @@ function bind() {
 
 		switch (e.keyCode) { // which key was pressed?
 
-  		case 82: // sprint
+  		case 82: // sprvar
         player.speedMult = 2
         player.height = 0.5
   			break;
@@ -468,6 +483,53 @@ function bind() {
 		}
 	}
 }
+function castFloorRays(){
+  //FLOOR CASTING
+  for(var y = 0; y < screenHeight; y++){
+    // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
+    var rayDirX0 = Math.cos(player.rot) - Math.sin(player.rot)*Math.tan(fovHalf);
+    var rayDirY0 = Math.sin(player.rot) - Math.cos(player.rot)*Math.tan(fovHalf);
+    var rayDirX1 = Math.cos(player.rot) + Math.sin(player.rot)*Math.tan(fovHalf);
+    var rayDirY1 = Math.sin(player.rot) + Math.cos(player.rot)*Math.tan(fovHalf);
+
+    // Current y position compared to the center of the screen (the horizon)
+    var p = y - screenHeight / 2;
+
+    // Vertical position of the camera.
+    var posZ = (player.height+player.z) * screenHeight;
+
+    // Horizontal distance from the camera to the floor for the current row.
+    // 0.5 is the z position exactly in the middle between floor and ceiling.
+    var rowDistance = posZ / p;
+
+    // calculate the real world step vector we have to add for each x (parallel to camera plane)
+    // adding step by step avoids multiplications with a weight in the inner loop
+    var floorStepX = rowDistance * (rayDirX1 - rayDirX0) / screenWidth;
+    var floorStepY = rowDistance * (rayDirY1 - rayDirY0) / screenWidth;
+
+    // real world coordinates of the leftmost column. This will be updated as we step to the right.
+    var floorX = player.x + rowDistance * rayDirX0;
+    var floorY = player.y + rowDistance * rayDirY0;
+
+    for(var x = 0; x < screenWidth; x++){
+      // the cell coord is simply got from the integer parts of floorX and floorY
+      var cellX = Math.floor(floorX);
+      var cellY = Math.floor(floorY);
+
+      // get the texture coordinate from the fractional part
+      var tx = (floorX - cellX);
+      var ty = (floorY - cellY);
+
+      floorX += floorStepX;
+      floorY += floorStepY;
+
+      // choose texture and draw the pixel
+      var floorTexture = floorlayout[cellY][cellX];
+      // floor drawing
+      drawFloorRectangle(x,y,1,1,tx,ty,floorTexture);
+    }
+  }
+}
 function castRays() {
   var stripIdx = 0;
 	for (var i=0;i<numRays;i++) {
@@ -488,7 +550,7 @@ function castRays() {
 	}
 }
 function castSingleRay(rayAngle, stripIdx) {
-  var glassHitPoints = [];
+  var glassHitPovars = [];
 	// first make sure the angle is between 0 and 360 degrees
 	rayAngle %= twoPI;
 	if(rayAngle < 0) rayAngle += twoPI;
@@ -535,12 +597,12 @@ function castSingleRay(rayAngle, stripIdx) {
 		var wallY = Math.floor(y);
 		// is this povar inside a wall block?
     if(map[wallY][wallX] === 11 && map[prevWallY][prevWallX] !== 11) {
-        glassHitPoints.push([y,x,up,right,thinga])
+        glassHitPovars.push([y,x,up,right,thinga])
     }
 		if(map[wallY][wallX] !== map[Math.floor(player.y)][Math.floor(player.x)] && map[wallY][wallX] !== 11) {
 			var distX = x - player.x;
 			var distY = y - player.y;
-			dist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
+			dist = distX*distX + distY*distY;	// the distance from the player to this povar, squared.
 
 			wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
 			textureX = y % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
@@ -576,7 +638,7 @@ function castSingleRay(rayAngle, stripIdx) {
 		var wallY = Math.floor(y + (up ? -1 : 0));
 		var wallX = Math.floor(x);
     if(map[wallY][wallX] === 11 && map[prevWallYHor][prevWallXHor] !== 11) {
-        glassHitPoints.push([y,x,up,right,thinga])
+        glassHitPovars.push([y,x,up,right,thinga])
     }
 		if(map[wallY][wallX]  !== map[Math.floor(player.y)][Math.floor(player.x)] && map[wallY][wallX] !== 11) {
 			var distX = x - player.x;
@@ -606,8 +668,8 @@ function castSingleRay(rayAngle, stripIdx) {
     side = 1;
     var glassHits = [];
     dist = Math.sqrt(dist);
-    for(let i = 0; i<glassHitPoints.length; i++){
-      thing = glassHitPoints[i];
+    for(let i = 0; i<glassHitPovars.length; i++){
+      thing = glassHitPovars[i];
       var cond = map[Math.floor(thing[0]+(thing[4]?1:0)*(thing[2]?1:-1))][Math.floor(thing[1]-(thing[4]?0:1)*(thing[3]?1:-1))] !== 11;
       if (((thing[0]-player.y)**2+(thing[1]-player.x)**2)**0.5 < dist && cond){
         glassHits.push(((thing[0]-player.y)**2+(thing[1]-player.x)**2)**0.5 * Math.cos(player.rot - rayAngle))
@@ -646,8 +708,8 @@ function castSingleRay(rayAngle, stripIdx) {
   /*//FLOOR CASTING
   var floorXWall, floorYWall; //x, y position of the floor texel at the bottom of the wall
   //4 different wall directions possible
-  var mapX = parseInt(x);
-  var mapY = parseInt(y);
+  var mapX = parsevar(x);
+  var mapY = parsevar(y);
   if(side === 0 && right){
     floorXWall = mapX;
     floorYWall = mapY + wallX;
@@ -669,7 +731,7 @@ function castSingleRay(rayAngle, stripIdx) {
   distPlayer = 0.0;
   var drawEnd = height/2+screenHeight/2;
   if(drawEnd < 0){
-    drawEnd = screenHeight; //becomes < 0 when the integer overflows
+    drawEnd = screenHeight; //becomes < 0 when the vareger overflows
   }
   //draw the floor from drawEnd to the bottom of the screen
   for(var y = drawEnd + 1; y < screenHeight; y+=stripWidth){
@@ -903,7 +965,7 @@ function drawMiniMap() {
 	var miniMapCtr = $("minimapcontainer");		// the container div element
 	var miniMapObjects = $("minimapobjects");	// the canvas used for drawing the objects on the map (player character, etc)
 
-	miniMap.width = mapWidth * miniMapScale;	// resize the internal canvas dimensions
+	miniMap.width = mapWidth * miniMapScale;	// resize the varernal canvas dimensions
 	miniMap.height = mapHeight * miniMapScale;	// of both the map canvas and the object canvas
 	miniMapObjects.width = miniMap.width;
 	miniMapObjects.height = miniMap.height;
