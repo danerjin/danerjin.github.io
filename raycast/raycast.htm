@@ -520,10 +520,10 @@ function castFloorRays(){
 
       floorX += floorStepX;
       floorY += floorStepY;
-      floorX = Math.round(floorX, 5);
-      floorY = Math.round(floorY, 5);
+      floorX = Math.round(floorX*10**5)/10**5;
+      floorY = Math.round(floorY*10**5)/10**5;
       if(cellX < 0 || cellX >= mapWidth || cellY < 0 || cellY >= mapHeight){continue;}
-      console.log(floorX,floorY);
+      console.log(floorX,floorY,floorStepX,floorStepY);
       // choose texture and draw the pixel
       var floorTexture = floorlayout[cellY][cellX];
       if(floorTexture === 0){continue;}
