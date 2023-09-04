@@ -369,7 +369,6 @@ var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
 function renderCycle() {
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
   drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#429bf5');
-  drawFillRectangle(0,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),screenWidth,screenHeight/2-player.pitch-25*(player.height+player.z-0.5),'#c0a570');
   updateMiniMap();
   castFloorRays();
 	castRays();
