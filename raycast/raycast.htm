@@ -496,7 +496,7 @@ function castFloorRays(){
   var rayDirX1 = dirX + planeX;
   var rayDirY1 = dirY + planeY;
   var posZ = (player.pitch+player.z) * screenHeight;
-  for(var y = screenHeight/2; y < screenHeight; y+=stripWidth){
+  for(var y = screenHeight/2+stripWidth; y < screenHeight; y+=stripWidth){
     // Current y position compared to the center of the screen (the horizon)
     var p = y - screenHeight / 2;
     // Vertical position of the camera.
