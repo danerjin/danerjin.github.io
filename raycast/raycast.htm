@@ -527,6 +527,7 @@ function castFloorRays(){
       if(floorTexture === 0){continue;}
       // floor drawing
       console.log(x,y)
+      if(!x){console.log("no x value")}
       drawFloorRectangle(x,y,2,2,tx,ty,floorTexture);
     }
   }
