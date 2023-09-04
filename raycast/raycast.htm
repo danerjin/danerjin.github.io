@@ -355,13 +355,13 @@ var drawFillRectangleRGBA = function(x, y, width, height,cssColor){
     ctx.fill();
 };
 var drawWallSliceRectangle = function(x, y, width, height, xOffset,texture){
-  wallTexture = wallTextures[texture-1]
+  var wallTexture = wallTextures[texture-1]
 	ctx.drawImage(wallTexture, Math.floor(xOffset*wallTexture.width/2), 0,
 		1, wallTexture.height,
 		x, y, width, height);
 }
 var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
-  floorTexture = floorTextures[texture-1]
+  var floorTexture = floorTextures[texture-1]
 	ctx.drawImage(floorTexture, Math.floor(xOffset*floorTexture.width), Math.floor(yOffset*floorTexture.height),
 		1, floorTexture.height,
 		x, y, width, height);
