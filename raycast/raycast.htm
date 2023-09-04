@@ -506,8 +506,8 @@ function castFloorRays(){
     var rowDistance = posZ / p;
     // calculate the real world step vector we have to add for each x (parallel to camera plane)
     // adding step by step avoids multiplications with a weight in the inner loop
-    var floorStepX = rowDistance * (rayDirX1 - rayDirX0) / screenWidth;
-  	var floorStepY = rowDistance * (rayDirY1 - rayDirY0) / screenWidth;
+    var floorStepX = stripWidth * rowDistance * (rayDirX1 - rayDirX0) / screenWidth;
+  	var floorStepY = stripWidth * rowDistance * (rayDirY1 - rayDirY0) / screenWidth;
     // real world coordinates of the leftmost column. This will be updated as we step to the right.
     var floorX = player.x + rowDistance * rayDirX0;
     var floorY = player.y + rowDistance * rayDirY0;
