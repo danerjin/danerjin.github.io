@@ -182,7 +182,7 @@ var player = {
 	rot : 0,		// rotation in radians
 	speed : 0,		// is the playing moving forward (speed = 1) or backwards (speed = -1).
   strafeSpeed : 0, //strafing
-	moveSpeed : 0.05,	// how far (in map units) does the player move each step/update
+	moveSpeed : 0.025,	// how far (in map units) does the player move each step/update
 	rotSpeed : 3,		// how much does the player rotate each step/update (in degrees)
   pitch : 0, // pitch
   pitchChange : 0,
@@ -796,7 +796,7 @@ function move(timeDelta) {
 
 	// time timeDelta has passed since we moved last time. We should have moved after time gameCycleDelay,
 	// so calculate how much we should multiply our movement to ensure game speed is constant
-  if (player.y >= 0.001){player.moveSpeed = 0.05;}else{player.moveSpeed = 0.069}
+  if (player.y >= 0.001){player.moveSpeed = 0.025;}else{player.moveSpeed = 0.069/2}
 	var mul = timeDelta / gameCycleDelay;
 
 	var moveStep = mul * player.speed * player.moveSpeed*player.speedMult;	// player will move this far along the current direction vector
@@ -980,6 +980,21 @@ function drawMiniMap() {
 	ctx.fillRect(0,0,miniMap.width,miniMap.height);
 
 	// loop through all blocks on the map
+	for (var y=0;y<mapHeight;y++) {
+		for (var x=0;x<mapWidth;x++) {
+
+			var tile = floorlayout[y][x];
+
+			if(wall > 0) { // if there is a wall block at this (x,y) ...
+				ctx.fillStyle = `rgb(${wallTypes[wall][0]},${wallTypes[wall][1]},${wallTypes[wall][2]})`;
+				ctx.fillRect(				// ... then draw a block on the minimap
+					x * miniMapScale,
+					y * miniMapScale,
+					miniMapScale,miniMapScale
+				);
+			}
+		}
+	}
 	for (var y=0;y<mapHeight;y++) {
 		for (var x=0;x<mapWidth;x++) {
 
