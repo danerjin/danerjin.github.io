@@ -365,7 +365,7 @@ var drawWallSliceRectangle = function(x, y, width, height, xOffset,texture){
 var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
   var floorTexture = floorTextures[texture-1]
 	ctx.drawImage(floorTexture, Math.floor(xOffset*floorTexture.width), Math.floor(yOffset*floorTexture.height),
-		4, 4,
+		stripWidth, stripWidth,
 		x, y, width, height);
 }
 function renderCycle() {
