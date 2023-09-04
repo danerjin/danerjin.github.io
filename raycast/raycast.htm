@@ -512,7 +512,6 @@ function castFloorRays(){
     var floorX = player.x + rowDistance * rayDirX0;
     var floorY = player.y + rowDistance * rayDirY0;
     for(var x = 0; x < screenWidth; x+=stripWidth){
-      console.log(floorX,floorY);
       if(floorX >= mapWidth || floorY >= mapHeight){continue;}
       if(floorX < 0 || floorY < 0){continue;}
 			// the cell coord is simply got from the integer parts of floorX and floorY
@@ -527,7 +526,7 @@ function castFloorRays(){
       var floorTexture = floorlayout[cellY][cellX];
       if(floorTexture === 0){continue;}
       // floor drawing
-      drawFloorRectangle(x,y,1,1,tx,ty,floorTexture);
+      drawFloorRectangle(x,y,2,2,tx,ty,floorTexture);
     }
   }
 }
