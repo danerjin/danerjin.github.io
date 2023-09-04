@@ -490,7 +490,7 @@ function castFloorRays(){
   var dirX = Math.cos(player.rot);
   var dirY = Math.sin(player.rot);
   var planeX = Math.tan(fovHalf)*Math.sin(player.rot)/2;
-  var planeY = Math.tan(fovHalf)*Math.cos(player.rot)/2;
+  var planeY = -Math.tan(fovHalf)*Math.cos(player.rot)/2;
   // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
   var rayDirX0 = dirX - planeX;
   var rayDirY0 = dirY - planeY;
