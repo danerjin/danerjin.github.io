@@ -363,7 +363,7 @@ var drawWallSliceRectangle = function(x, y, width, height, xOffset,texture){
 var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
   var floorTexture = floorTextures[texture-1]
 	ctx.drawImage(floorTexture, Math.floor(xOffset*floorTexture.width), Math.floor(yOffset*floorTexture.height),
-		1, floorTexture.height,
+		1, 1,
 		x, y, width, height);
 }
 function renderCycle() {
@@ -514,7 +514,6 @@ function castFloorRays(){
       // the cell coord is simply got from the integer parts of floorX and floorY
       var cellX = Math.floor(floorX);
       var cellY = Math.floor(floorY);
-
       // get the texture coordinate from the fractional part
       var tx = (floorX - cellX);
       var ty = (floorY - cellY);
@@ -524,6 +523,7 @@ function castFloorRays(){
 
       // choose texture and draw the pixel
       var floorTexture = floorlayout[cellY][cellX];
+      if(floorTexture === 0){continue;}
       console.log(floorTexture);
       // floor drawing
       drawFloorRectangle(x,y,1,1,tx,ty,floorTexture);
