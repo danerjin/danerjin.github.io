@@ -498,7 +498,7 @@ function castFloorRays(){
   var posZ = (player.pitch+player.z) * screenHeight;
   for(var y = screenHeight/2+stripWidth; y < screenHeight; y+=stripWidth){
     // Current y position compared to the center of the screen (the horizon)
-    var p = y - screenHeight / 2;
+    var p = y - screenHeight / 2 - player.pitch;
     // Vertical position of the camera.
     // Horizontal distance from the camera to the floor for the current row.
     // 0.5 is the z position exactly in the middle between floor and ceiling.
