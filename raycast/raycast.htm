@@ -30,14 +30,14 @@
     width: 25px;
     height: 25px;
     background: #04AA6D;
-    cursor: povarer;
+    cursor: pointer;
   }
 
   .slider::-moz-range-thumb {
     width: 25px;
     height: 25px;
     background: #04AA6D;
-    cursor: povarer;
+    cursor: pointer;
   }
   canvas#minimap {
    position : absolute;
@@ -244,7 +244,7 @@ function init() {
   }
 
   canvas.addEventListener("click", async () => {
-    await canvas.requestPovarerLock();
+    await canvas.requestPointerLock();
     document.addEventListener("mousemove", updateMousePosition, false);
   });
   drawFillRectangle(0,0,screenWidth,screenHeight/2,'#429bf5');
@@ -314,7 +314,7 @@ function gameCycle() {
       }
     }
   }
-  if(document.povarerLockElement === canvas){
+  if(document.pointerLockElement === canvas){
     temp = JSON.parse(JSON.stringify(mousePos));
     diffX = temp[0]-prevMousePos[0];
     diffY = temp[1]-prevMousePos[1];
@@ -394,7 +394,7 @@ function renderCycle() {
 }
 
 function updateMousePosition(e) {
-  if(document.povarerLockElement === canvas){
+  if(document.pointerLockElement === canvas){
     mousePos[0] += e.movementX;
     mousePos[1] += e.movementY;
   }
