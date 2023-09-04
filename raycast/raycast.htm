@@ -486,9 +486,8 @@ function bind() {
 }
 function castFloorRays(){
   //some values
-  var projectionPlaneDist = screenHeight/(2*Math.tan(fovHalf*Math.PI/180));
-  var dirX = projectionPlaneDist * Math.cos(player.rotDeg*Math.PI/180);
-  var dirY = projectionPlaneDist * Math.sin(player.rotDeg*Math.PI/180);
+  var dirX = viewDist * Math.cos(player.rotDeg*Math.PI/180);
+  var dirY = viewDist * Math.sin(player.rotDeg*Math.PI/180);
   var planeX = screenWidth*Math.cos(player.rotDeg*Math.PI/180)/2;
   var planeY = screenWidth*Math.sin(player.rotDeg*Math.PI/180)/2;
   // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
