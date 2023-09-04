@@ -51,7 +51,7 @@
 </style>
 </head>
 <body>
-<canvas id="screen" width="960px" height="540px"></canvas>
+<canvas id="screen" width="320px" height="200px"></canvas>
 <div id="moving"></div>
 <div id="minimapcontainer">
 	<canvas id="minimap"></canvas>
@@ -193,8 +193,8 @@ var player = {
   speedMult: 1
 }
 
-screenWidth = 960
-screenHeight = 540
+screenWidth = 320
+screenHeight = 200
 var miniMapScale = 8;
 
 var stripWidth = 2;
@@ -485,22 +485,22 @@ function bind() {
 	}
 }
 function castFloorRays(){
+  //some values
+  var projectionPlaneDist = screenHeight/(2*Math.tan(fovHalf*Math.PI/180));
+  var dirX = projectionPlaneDist * Math.cos(player.rotDeg*Math.PI/180);
+  var dirY = projectionPlaneDist * Math.sin(player.rotDeg*Math.PI/180);
+  var planeX = screenWidth*Math.cos(player.rotDeg*Math.PI/180)/2;
+  var planeY = screenWidth*Math.sin(player.rotDeg*Math.PI/180)/2;
+  // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
+  var rayDirX0 = dirX - planeX;
+  var rayDirY0 = dirY - planeY;
+  var rayDirX1 = dirX + planeX;
+  var rayDirY1 = dirY + planeY;
+  var posZ = (player.pitch+player.z) * screenHeight;
   for(var y = screenHeight/2; y < screenHeight; y+=stripWidth){
-    //some values
-    var projectionPlaneDist = screenHeight/(2*Math.tan(fovHalf*Math.PI/180));
-    var dirX = projectionPlaneDist * Math.cos(player.rotDeg*Math.PI/180);
-    var dirY = projectionPlaneDist * Math.sin(player.rotDeg*Math.PI/180);
-    var planeX = screenWidth*Math.cos(player.rotDeg*Math.PI/180)/2;
-    var planeY = screenWidth*Math.sin(player.rotDeg*Math.PI/180)/2;
-    // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
-    var rayDirX0 = dirX - planeX;
-    var rayDirY0 = dirY - planeY;
-    var rayDirX1 = dirX + planeX;
-    var rayDirY1 = dirY + planeY;
     // Current y position compared to the center of the screen (the horizon)
     var p = y - screenHeight / 2;
     // Vertical position of the camera.
-    var posZ = 0.5 * screenHeight;
     // Horizontal distance from the camera to the floor for the current row.
     // 0.5 is the z position exactly in the middle between floor and ceiling.
     var rowDistance = posZ / p;
