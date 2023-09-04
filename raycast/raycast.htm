@@ -182,7 +182,7 @@ var player = {
 	rot : 0,		// rotation in radians
 	speed : 0,		// is the playing moving forward (speed = 1) or backwards (speed = -1).
   strafeSpeed : 0, //strafing
-	moveSpeed : 0.025,	// how far (in map units) does the player move each step/update
+	moveSpeed : 0.05,	// how far (in map units) does the player move each step/update
 	rotSpeed : 3,		// how much does the player rotate each step/update (in degrees)
   pitch : 0, // pitch
   pitchChange : 0,
@@ -796,7 +796,7 @@ function move(timeDelta) {
 
 	// time timeDelta has passed since we moved last time. We should have moved after time gameCycleDelay,
 	// so calculate how much we should multiply our movement to ensure game speed is constant
-  if (player.y >= 0.001){player.moveSpeed = 0.025;}else{player.moveSpeed = 0.069/2}
+  if (player.y >= 0.001){player.moveSpeed = 0.05;}else{player.moveSpeed = 0.069}
 	var mul = timeDelta / gameCycleDelay;
 
 	var moveStep = mul * player.speed * player.moveSpeed*player.speedMult;	// player will move this far along the current direction vector
