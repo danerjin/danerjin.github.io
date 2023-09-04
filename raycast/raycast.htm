@@ -137,8 +137,8 @@ var floorlayout = [
   [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
   [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
   [0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
-  [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+  [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9,9,9,9,9,9,9,0],
+  [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9,9,9,9,9,9,9,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 ];
 /*
@@ -407,8 +407,8 @@ function bind() {
 
 		switch (e.keyCode) { // which key was pressed?
 
-  		case 82: // sprvar
-        player.speedMult = 2
+  		case 82: // sprint
+        player.speedMult = 1.5
         player.height = 0.5
   			break;
   		case 16: // crouch
@@ -507,6 +507,8 @@ function castFloorRays(){
     // adding step by step avoids multiplications with a weight in the inner loop
     var floorStepX = rowDistance * (rayDirX1 - rayDirX0) / screenWidth;
   	var floorStepY = rowDistance * (rayDirY1 - rayDirY0) / screenWidth;
+    console.log(floorStepX,floorStepY)
+    console.log(rayDirX0,rayDirY0);
     // real world coordinates of the leftmost column. This will be updated as we step to the right.
     var floorX = player.x + rowDistance * rayDirX0;
     var floorY = player.y + rowDistance * rayDirY0;
