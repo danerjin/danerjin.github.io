@@ -365,7 +365,7 @@ var drawWallSliceRectangle = function(x, y, width, height, xOffset,texture){
 var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
   var floorTexture = floorTextures[texture-1]
 	ctx.drawImage(floorTexture, Math.floor(xOffset*floorTexture.width), Math.floor(yOffset*floorTexture.height),
-		1, 1,
+		2, 2,
 		x, y, width, height);
 }
 function renderCycle() {
@@ -490,7 +490,7 @@ function castFloorRays(){
   var rayDirX1 = Math.cos(player.rot) + Math.sin(player.rot)*Math.tan(fovHalf);
   var rayDirY1 = Math.sin(player.rot) + Math.cos(player.rot)*Math.tan(fovHalf);
   //FLOOR CASTING
-  for(var y = 0; y < screenHeight; y++){
+  for(var y = 0; y < screenHeight; y+=2){
     // Current y position compared to the center of the screen (the horizon)
     var p = y - screenHeight / 2;
 
@@ -503,14 +503,14 @@ function castFloorRays(){
 
     // calculate the real world step vector we have to add for each x (parallel to camera plane)
     // adding step by step avoids multiplications with a weight in the inner loop
-    var floorStepX = rowDistance * (rayDirX1 - rayDirX0) / screenWidth;
-    var floorStepY = rowDistance * (rayDirY1 - rayDirY0) / screenWidth;
+    var floorStepX = 2 * rowDistance * (rayDirX1 - rayDirX0) / screenWidth;
+    var floorStepY = 2 * rowDistance * (rayDirY1 - rayDirY0) / screenWidth;
 
     // real world coordinates of the leftmost column. This will be updated as we step to the right.
     var floorX = player.x + rowDistance * rayDirX0;
     var floorY = player.y + rowDistance * rayDirY0;
 
-    for(var x = 0; x < screenWidth; x++){
+    for(var x = 0; x < screenWidth; x+=2){
       // the cell coord is simply got from the integer parts of floorX and floorY
       var cellX = Math.floor(floorX);
       var cellY = Math.floor(floorY);
