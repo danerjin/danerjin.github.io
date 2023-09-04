@@ -484,6 +484,7 @@ function bind() {
 		}
 	}
 }
+//floor casting
 function castFloorRays(){
   //some values
   var dirX = viewDist * Math.cos(player.rotDeg*Math.PI/180);
@@ -507,7 +508,7 @@ function castFloorRays(){
     // adding step by step avoids multiplications with a weight in the inner loop
     var floorStepX = rowDistance * (rayDirX1 - rayDirX0) / screenWidth;
   	var floorStepY = rowDistance * (rayDirY1 - rayDirY0) / screenWidth;
-    console.log(rowDistance);
+    console.log(p,posZ);
     console.log(rayDirX0,rayDirY0);
     // real world coordinates of the leftmost column. This will be updated as we step to the right.
     var floorX = player.x + rowDistance * rayDirX0;
