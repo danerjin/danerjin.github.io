@@ -1,4 +1,4 @@
- <html>
+<html>
 <head>
 <title>JavaScript 3D Engine</title>
 <style>
@@ -522,7 +522,7 @@ function castFloorRays(){
       floorY += floorStepY;
       var floorTexture;
       // choose texture and draw the pixel
-      if((floorX >= mapWidth || floorY >= mapHeight) || (floorX < 0 || floorY < 0)){floorTexture = 1;}else{floorTexture = floorlayout[cellY][cellX];}
+      if((floorX >= mapWidth || floorY >= mapHeight) || (floorX <= 0 || floorY <= 0)){floorTexture = 1;}else{floorTexture = floorlayout[cellY][cellX];}
       if(floorTexture === 0){floorTexture = 1;}
       // floor drawing
       drawFloorRectangle(x,y,stripWidth,stripWidth,tx,ty,floorTexture);
