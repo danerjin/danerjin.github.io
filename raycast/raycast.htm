@@ -512,8 +512,6 @@ function castFloorRays(){
     var floorX = player.x + rowDistance * rayDirX0;
     var floorY = player.y + rowDistance * rayDirY0;
     for(var x = 0; x < screenWidth; x+=stripWidth){
-      if(floorX >= mapWidth || floorY >= mapHeight){continue;}
-      if(floorX < 0 || floorY < 0){continue;}
 			// the cell coord is simply got from the integer parts of floorX and floorY
       var cellX = Math.floor(floorX);
       var cellY = Math.floor(floorY);
@@ -522,9 +520,11 @@ function castFloorRays(){
       var ty = floorY - cellY;
       floorX += floorStepX;
       floorY += floorStepY;
+      var floorTexture;
       // choose texture and draw the pixel
-      var floorTexture = floorlayout[cellY][cellX];
-      if(floorTexture === 0){continue;}
+      if(floorX >= mapWidth || floorY >= mapHeight){floorTexture = 1;}else{floorTexture = floorlayout[cellY][cellX];}
+      if(floorX < 0 || floorY < 0){floorTexture = 1;}else{floorTexture = floorlayout[cellY][cellX];}
+      if(floorTexture === 0){floorTexture = 1;}
       // floor drawing
       drawFloorRectangle(x,y,stripWidth,stripWidth,tx,ty,floorTexture);
     }
