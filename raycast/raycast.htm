@@ -809,7 +809,7 @@ function move(timeDelta) {
 
 	player.rotDeg = player.rotDeg % 360;
   if(-200 < player.pitch+player.pitchChange && player.pitch+player.pitchChange < 200){
-    player.pitch += player.pitchChange
+    player.pitch += mul*player.pitchChange;
   }
 	var snap = (player.rotDeg+360) % 90
 	if(snap < 2 || snap > 88) {
@@ -820,8 +820,8 @@ function move(timeDelta) {
 
 	var newX = player.x + Math.cos(player.rot) * moveStep + Math.sin(player.rot) * moveStepStrafe;	// calculate new player position with simple trigonometry
 	var newY = player.y + Math.sin(player.rot) * moveStep - Math.cos(player.rot) * moveStepStrafe;
-  player.zSpeed-=gravity;
-  if(0 <= player.z+player.zSpeed){player.z+=player.zSpeed}else{player.zSpeed = 0;player.z=0;}
+  player.zSpeed-=mul*gravity;
+  if(0 <= player.z+mul*player.zSpeed){player.z+=mul*player.zSpeed}else{player.zSpeed = 0;player.z=0;}
   if(player.isJumping){
   if(player.z < 0.01){
     player.zSpeed = 0.1125;
