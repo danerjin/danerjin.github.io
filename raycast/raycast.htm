@@ -510,8 +510,8 @@ function castFloorRays(){
     var floorStepX = stripWidth * rowDistance * (rayDirX1 - rayDirX0) / (screenWidth*viewDist**2);
   	var floorStepY = stripWidth * rowDistance * (rayDirY1 - rayDirY0) / (screenWidth*viewDist**2);
     // real world coordinates of the leftmost column. This will be updated as we step to the right.
-    var floorX = player.x + rowDistance * rayDirX0;
-    var floorY = player.y + rowDistance * rayDirY0;
+    var floorX = player.x + rowDistance * rayDirX0 / viewDist**2;
+    var floorY = player.y + rowDistance * rayDirY0 / viewDist**2;
 
     for(var x = 0; x < screenWidth; x+=stripWidth){
 			// the cell coord is simply got from the integer parts of floorX and floorY
