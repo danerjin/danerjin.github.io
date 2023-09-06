@@ -504,7 +504,7 @@ function castFloorRays(){
     // Vertical position of the camera.
     // Horizontal distance from the camera to the floor for the current row.
     // 0.5 is the z position exactly in the middle between floor and ceiling.
-    var rowDistance = posZ / (p*viewDist);
+    var rowDistance = viewDist*posZ / (p);
     // calculate the real world step vector we have to add for each x (parallel to camera plane)
     // adding step by step avoids multiplications with a weight in the inner loop
     var floorStepX = stripWidth * rowDistance * (rayDirX1 - rayDirX0) / screenWidth;
