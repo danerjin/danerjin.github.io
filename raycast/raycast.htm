@@ -210,20 +210,16 @@ var twoPI = Math.PI * 2;
 var fps = 0;
 var joyMoving;
 var joyMovingDir;
-var dirX = viewDist*Math.cos(player.rot);
-var dirY = viewDist*Math.sin(player.rot);
-var planeX = -screenWidth/2*Math.sin(player.rot)/2;
-var planeY = screenWidth/2*Math.cos(player.rot)/2;
+var dirX;
+var dirY;
+var planeX;
+var planeY;
 var slider = document.getElementById("myRange");
 function updateFOV(){
   fov = slider.value*Math.PI/180;
   fovHalf = fov/2;
   viewDist = (screenWidth/2) / Math.tan((fov / 2));
   $("fov").innerText = Math.round(fov*180/Math.PI);
-  dirX = viewDist*Math.cos(player.rot);
-  dirY = viewDist*Math.sin(player.rot);
-  planeX = -screenWidth/2*Math.sin(player.rot)/2;
-  planeY = screenWidth/2*Math.cos(player.rot)/2;
 }
 function init() {
   if(mobile){
@@ -376,6 +372,10 @@ var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
 		x, y, width, height);
 }
 function renderCycle() {
+  dirX = viewDist*Math.cos(player.rot);
+  dirY = viewDist*Math.sin(player.rot);
+  planeX = -screenWidth/2*Math.sin(player.rot)/2;
+  planeY = screenWidth/2*Math.cos(player.rot)/2;
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
   drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#429bf5');
   updateMiniMap();
