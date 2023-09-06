@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <title>JavaScript 3D Engine</title>
@@ -174,7 +174,7 @@ var canvas = $("screen");
 var ctx = canvas.getContext('2d');
 var bufferScreen = $("buffer");
 var overlay;
-gravity = 0.015
+gravity = 0.01
 var player = {
 	x : 2.5,		// current x, y position
 	y : 2,
@@ -507,8 +507,8 @@ function castFloorRays(){
     var rowDistance = viewDist*posZ / (p);
     // calculate the real world step vector we have to add for each x (parallel to camera plane)
     // adding step by step avoids multiplications with a weight in the inner loop
-    var floorStepX = stripWidth * rowDistance * (rayDirX1 - rayDirX0) / (screenWidth*viewDist);
-  	var floorStepY = stripWidth * rowDistance * (rayDirY1 - rayDirY0) / (screenWidth*viewDist);
+    var floorStepX = stripWidth * rowDistance * (rayDirX1 - rayDirX0) / (screenWidth*viewDist**2);
+  	var floorStepY = stripWidth * rowDistance * (rayDirY1 - rayDirY0) / (screenWidth*viewDist**2);
     // real world coordinates of the leftmost column. This will be updated as we step to the right.
     var floorX = player.x + rowDistance * rayDirX0;
     var floorY = player.y + rowDistance * rayDirY0;
