@@ -88,7 +88,13 @@ if(!Array.prototype.indexOf) {
 	};
 }
 
-
+var sprite = function(x,y,texture){
+  this.x = x;
+  this.y = y;
+  this.texture = new Image();
+  this.texture.crossOrigin = "Anonymous";
+  this.texture.src = `sprites/${texture}.png`;
+}
 var map = [
   [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],
   [3,0,0,0,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
@@ -392,7 +398,7 @@ var drawWallSliceRectangle = function(x, y, width, height, xOffset,texture){
 }
 var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
   var floorTexture = floorTextures[texture-1]
-	ctx.drawImage(floorTexture, Math.floor(((xOffset%0.5))*floorTexture.width), Math.floor(((yOffset%0.5))*floorTexture.height),
+	ctx.drawImage(floorTexture, Math.floor(((xOffset%0.5))*floorTexture.width), Math.floor(((yOffset%1))*floorTexture.height),
 		stripWidth, stripWidth,
 		x, y, width, height);
 }
