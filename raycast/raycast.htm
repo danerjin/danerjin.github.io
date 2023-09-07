@@ -374,8 +374,8 @@ var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
 function renderCycle() {
   dirX = Math.cos(player.rot);
   dirY = Math.sin(player.rot);
-  planeX = screenWidth*Math.cos(player.rot)/viewDist;
-  planeY = screenWidth*Math.sin(player.rot)/viewDist;
+  planeX = -screenWidth*Math.sin(player.rot)/viewDist;
+  planeY = screenWidth*Math.cos(player.rot)/viewDist;
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
   drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#429bf5');
   updateMiniMap();
@@ -511,8 +511,8 @@ function castFloorRays(){
     var floorStepX = stripWidth * rowDistance * (rayDirX1 - rayDirX0) / (screenWidth);
   	var floorStepY = stripWidth * rowDistance * (rayDirY1 - rayDirY0) / (screenWidth);
     // real world coordinates of the leftmost column. This will be updated as we step to the right.
-    var floorX = player.x + rowDistance * rayDirX0 / viewDist;
-    var floorY = player.y + rowDistance * rayDirY0 / viewDist;
+    var floorX = player.x + rowDistance * rayDirX0 / viewDist**0;
+    var floorY = player.y + rowDistance * rayDirY0 / viewDist**0;
 
     for(var x = 0; x < screenWidth; x+=stripWidth){
 			// the cell coord is simply got from the integer parts of floorX and floorY
