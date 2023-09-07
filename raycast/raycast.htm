@@ -374,7 +374,7 @@ var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
 function renderCycle() {
   dirX = Math.cos(player.rot);
   dirY = Math.sin(player.rot);
-  planeX = -screenWidth*Math.sin(player.rot)/viewDist;
+  planeX = screenWidth*Math.sin(player.rot)/viewDist;
   planeY = screenWidth*Math.cos(player.rot)/viewDist;
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
   drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#429bf5');
