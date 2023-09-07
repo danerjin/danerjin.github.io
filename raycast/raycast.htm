@@ -52,7 +52,7 @@
 </style>
 </head>
 <body>
-<canvas id="screen" width="640px" height="360px"></canvas>
+<canvas id="screen" width="960px" height="540px"></canvas>
 <div id="moving"></div>
 <div id="minimapcontainer">
 	<canvas id="minimap"></canvas>
@@ -225,11 +225,11 @@ var player = {
   speedMult: 1
 }
 
-screenWidth = 640;
-screenHeight = 360;
+screenWidth = 960;
+screenHeight = 540;
 var miniMapScale = 8;
 
-var stripWidth = 2;
+var stripWidth = 3;
 var fov = 60 * Math.PI / 180;
 
 var numRays = Math.ceil(screenWidth / stripWidth);
@@ -430,7 +430,7 @@ function renderCycle() {
 		cycleDelay = Math.max(1, cycleDelay - (timeDelta - cycleDelay))
 	}
 	lastRenderCycleTime = now;
-	setTimeout(renderCycle, cycleDelay/8);
+	setTimeout(renderCycle, cycleDelay/16);
 	fps = 1000 / timeDelta;
   ctx.font = "15px monospace";
   ctx.fillStyle = "white";
