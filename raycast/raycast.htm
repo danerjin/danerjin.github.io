@@ -508,8 +508,8 @@ function castFloorRays(){
     var rowDistance = viewDist*posZ / (p);
     // calculate the real world step vector we have to add for each x (parallel to camera plane)
     // adding step by step avoids multiplications with a weight in the inner loop
-    var floorStepX = stripWidth * rowDistance * (rayDirX1 - rayDirX0) / (screenWidth*viewDist**2);
-  	var floorStepY = stripWidth * rowDistance * (rayDirY1 - rayDirY0) / (screenWidth*viewDist**2);
+    var floorStepX = stripWidth * rowDistance * (rayDirX1 - rayDirX0) / (screenWidth*viewDist);
+  	var floorStepY = stripWidth * rowDistance * (rayDirY1 - rayDirY0) / (screenWidth*viewDist);
     // real world coordinates of the leftmost column. This will be updated as we step to the right.
     var floorX = player.x + rowDistance * rayDirX0 / viewDist**2;
     var floorY = player.y + rowDistance * rayDirY0 / viewDist**2;
@@ -809,8 +809,16 @@ function move(timeDelta) {
 	player.rotDeg = player.rotDeg + mul * player.dir * player.rotSpeed; // add rotation if player is rotating (player.dir != 0)
 
 	player.rotDeg = player.rotDeg % 360;
-  if(-200 < player.pitch+player.pitchChange && player.pitch+player.pitchChange < 200){
+  if(-200 < player.pitch+mul*player.pitchChange && player.pitch+player.mul*pitchChange < 200){
     player.pitch += mul*player.pitchChange;
+  }else{
+    if(player.pitch+mul*player.pitchChange<-200 && player.pitchChange > 0){
+      player.pitch += mul*player.pitchChange;
+    }else{
+      if(player.pitch+mul*player.pitchChange>200 && player.pitchChange < 0){
+        player.pitch += mul*player.pitchChange;
+      }
+    }
   }
 	var snap = (player.rotDeg+360) % 90
 	if(snap < 2 || snap > 88) {
