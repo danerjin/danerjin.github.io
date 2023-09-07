@@ -52,7 +52,7 @@
 </style>
 </head>
 <body>
-<canvas id="screen" width="640px" height="480px"></canvas>
+<canvas id="screen" width="640px" height="360px"></canvas>
 <div id="moving"></div>
 <div id="minimapcontainer">
 	<canvas id="minimap"></canvas>
@@ -226,7 +226,7 @@ var player = {
 }
 
 screenWidth = 640;
-screenHeight = 480;
+screenHeight = 360;
 var miniMapScale = 8;
 
 var stripWidth = 2;
@@ -566,12 +566,12 @@ function castFloorAndCeilingRays(){
       // choose texture and draw the pixel
       if(is_floor){
         if((floorX >= mapWidth || floorY >= mapHeight) || (floorX <= 0 || floorY <= 0) || floorlayout[cellY] === undefined){floorTexture = 1;}else{floorTexture = floorlayout[cellY][cellX];}
-        if(floorTexture+0 === 0 || floorTexture === undefined){floorTexture = 1;}
+        if(floorTexture+0 === 0 || floorTexture === undefined){floorTexture = 2;}
         // floor drawing
         drawFloorRectangle(x,y,stripWidth,stripWidth,tx,ty,floorTexture);
       }else{
         if((floorX >= mapWidth || floorY >= mapHeight) || (floorX <= 0 || floorY <= 0) || ceilinglayout[cellY] === undefined){floorTexture = 1;}else{floorTexture = ceilinglayout[cellY][cellX];}
-        if(floorTexture+0 === 0 || floorTexture === undefined){floorTexture = 1;}
+        if(floorTexture+0 === 0 || floorTexture === undefined){floorTexture = 4;}
         // floor drawing
         drawCeilRectangle(x,y,stripWidth,stripWidth,tx,ty,floorTexture);
       }
