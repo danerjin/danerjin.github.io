@@ -392,7 +392,7 @@ var drawWallSliceRectangle = function(x, y, width, height, xOffset,texture){
 }
 var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
   var floorTexture = floorTextures[texture-1]
-	ctx.drawImage(floorTexture, Math.floor((xOffset%1)*floorTexture.width), Math.floor((yOffset%1)*floorTexture.height),
+	ctx.drawImage(floorTexture, Math.floor(((xOffset+1)%1)*floorTexture.width), Math.floor(((yOffset+1)%1)*floorTexture.height),
 		stripWidth, stripWidth,
 		x, y, width, height);
 }
@@ -567,7 +567,7 @@ function castFloorAndCeilingRays(){
         if((floorX >= mapWidth || floorY >= mapHeight) || (floorX <= 0 || floorY <= 0) || ceilinglayout[cellY] === undefined){floorTexture = 1;}else{floorTexture = ceilinglayout[cellY][cellX];}
         if(floorTexture+0 === 0 || floorTexture === undefined){floorTexture = 1;}
         // floor drawing
-        drawCeilRectangle(x,y,stripWidth,stripWidth,tx/2,ty/2,floorTexture);
+        drawCeilRectangle(x,y,stripWidth,stripWidth,tx/4,ty/4,floorTexture);
       }
     }
   }
