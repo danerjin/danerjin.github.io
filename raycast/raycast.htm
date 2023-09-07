@@ -532,7 +532,7 @@ function castFloorAndCeilingRays(){
   var posZ = (player.height+player.z) * screenHeight;
   for(var y = 0; y < screenHeight; y+=stripWidth){
     if(y === screenHeight/2+player.pitch){continue;}
-    var is_floor = y > screenHeight / 2 + pitch;
+    var is_floor = y > screenHeight / 2 + player.pitch;
     // Current y position compared to the center of the screen (the horizon)
     var p = is_floor?(y - screenHeight / 2 - player.pitch):(screenHeight / 2 - y + player.pitch);
     // Vertical position of the camera.
