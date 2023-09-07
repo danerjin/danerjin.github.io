@@ -371,11 +371,17 @@ var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
 		stripWidth, stripWidth,
 		x, y, width, height);
 }
+var drawCeilRectangle = function(x, y, width, height, xOffset,yOffset,texture){
+  var ceilTexture = wallTextures[texture-1]
+	ctx.drawImage(ceilTexture, Math.floor((xOffset%1)*ceilTexture.width), Math.floor((yOffset%1)*ceilTexture.height),
+		stripWidth, stripWidth,
+		x, y, width, height);
+}
 function renderCycle() {
   dirX = Math.cos(player.rot);
   dirY = Math.sin(player.rot);
-  planeX = -Math.sin(player.rot);
-  planeY = Math.cos(player.rot);
+  planeX = -0.5*screenWidth*Math.sin(player.rot)/viewDist;
+  planeY = 0.5*screenWidth*Math.cos(player.rot)/viewDist;
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
   drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#429bf5');
   updateMiniMap();
