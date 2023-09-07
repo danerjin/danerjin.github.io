@@ -108,9 +108,9 @@ var map = [
   [3,0,0,0,8,0,0,4,4,0,0,0,0,3,0,0,0,0,0,0,0,0,0,3,0,3,0,0,3,0,0,3],
   [3,0,0,0,8,0,0,4,4,0,0,0,0,3,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3],
   [3,0,0,0,8,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,3,3,3,0,0,0,0,0,0,0,3],
-  [3,0,0,0,8,0,0,0,0,11,11,11,11,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-  [3,0,0,0,0,0,0,0,0,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-  [3,0,4,0,0,0,4,0,0,11,0,0,0,0,0,0,0,0,0,6,6,11,11,3,3,3,3,3,3,3,3,3],
+  [3,0,0,0,8,0,0,0,0,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
+  [3,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
+  [3,0,4,0,0,0,4,0,0,3,0,0,0,0,0,0,0,0,0,6,6,6,3,3,3,3,3,3,3,3,3,3],
   [3,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
   [3,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
   [10,10,10,10,10,10,10,10,10,3,0,0,0,0,9,9,9,9,9,9,9,9,9,9,9,9,0,0,0,0,0,3],
@@ -584,7 +584,7 @@ function castWallRays() {
 		// where on the screen does ray go through?
 		var rayScreenPos = (-numRays/2 + i) * stripWidth;
 
-		// the distance from the viewer to the povar on the screen, simply Pythagoras.
+		// the distance from the viewer to the point on the screen, simply Pythagoras.
 		var rayViewDist = Math.sqrt(rayScreenPos*rayScreenPos + viewDist*viewDist);
 
 		// the angle of the ray, relative to the viewing direction.
@@ -598,7 +598,6 @@ function castWallRays() {
 	}
 }
 function castSingleRay(rayAngle, stripIdx) {
-  var glassHitPovars = [];
 	// first make sure the angle is between 0 and 360 degrees
 	rayAngle %= twoPI;
 	if(rayAngle < 0) rayAngle += twoPI;
@@ -643,14 +642,11 @@ function castSingleRay(rayAngle, stripIdx) {
   while (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight) {
 		var wallX = Math.floor(x + (right ? 0 : -1));
 		var wallY = Math.floor(y);
-		// is this povar inside a wall block?
-    if(map[wallY][wallX] === 11 && map[prevWallY][prevWallX] !== 11) {
-        glassHitPovars.push([y,x,up,right,thinga])
-    }
-		if(map[wallY][wallX] !== map[Math.floor(player.y)][Math.floor(player.x)] && map[wallY][wallX] !== 11) {
+		// is this point inside a wall block?
+		if(map[wallY][wallX] !== map[Math.floor(player.y)][Math.floor(player.x)]) {
 			var distX = x - player.x;
 			var distY = y - player.y;
-			dist = distX*distX + distY*distY;	// the distance from the player to this povar, squared.
+			dist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
 
 			wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
 			textureX = y % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
@@ -685,10 +681,7 @@ function castSingleRay(rayAngle, stripIdx) {
 	while (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight) {
 		var wallY = Math.floor(y + (up ? -1 : 0));
 		var wallX = Math.floor(x);
-    if(map[wallY][wallX] === 11 && map[prevWallYHor][prevWallXHor] !== 11) {
-        glassHitPovars.push([y,x,up,right,thinga])
-    }
-		if(map[wallY][wallX]  !== map[Math.floor(player.y)][Math.floor(player.x)] && map[wallY][wallX] !== 11) {
+		if(map[wallY][wallX]  !== map[Math.floor(player.y)][Math.floor(player.x)]) {
 			var distX = x - player.x;
 			var distY = y - player.y;
 			var blockDist = distX*distX + distY*distY;
@@ -714,18 +707,7 @@ function castSingleRay(rayAngle, stripIdx) {
 	if(dist) {
 		//drawRay(xHit, yHit);
     side = 1;
-    var glassHits = [];
     dist = Math.sqrt(dist);
-    for(let i = 0; i<glassHitPovars.length; i++){
-      thing = glassHitPovars[i];
-      var cond = map[Math.floor(thing[0]+(thing[4]?1:0)*(thing[2]?1:-1))][Math.floor(thing[1]-(thing[4]?0:1)*(thing[3]?1:-1))] !== 11;
-      if (((thing[0]-player.y)**2+(thing[1]-player.x)**2)**0.5 < dist && cond){
-        glassHits.push(((thing[0]-player.y)**2+(thing[1]-player.x)**2)**0.5 * Math.cos(player.rot - rayAngle))
-      }
-    }
-    if(glassHits.length > 0){
-      glassHits.sort(function(a, b){return b - a});
-    }
 		// use perpendicular distance to adjust for fish eye
 		// distorted_dist = correct_dist / cos(relative_angle_of_ray)
 		dist = dist * Math.cos(player.rot - rayAngle);
@@ -746,12 +728,6 @@ function castSingleRay(rayAngle, stripIdx) {
 		var styleHeight;
     mult = wallIsShaded?0.75:1;
     drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType)
-    for(let i = 0; i<glassHits.length;i++){
-      var dist = glassHits[i]
-      var height = Math.round(viewDist / dist);
-  		var top = Math.round(screenHeight/2 - (1-(player.z+player.height))*height-(player.z+player.height))+player.pitch
-      drawFillRectangleRGBA(stripIdx*stripWidth,top,stripWidth,height,[200,250,250,0.2])
-    }
 	}
   /*//FLOOR CASTING
   var floorXWall, floorYWall; //x, y position of the floor texel at the bottom of the wall
