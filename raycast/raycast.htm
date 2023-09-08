@@ -409,7 +409,7 @@ var drawWallSliceRectangle = function(x, y, width, height, xOffset,texture){
 }
 var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
   var floorTexture = floorTextures[texture-1]
-	ctx.drawImage(floorTexture, Math.floor(((xOffset%0.5)+0.5)*floorTexture.width), Math.floor(((yOffset%1))*floorTexture.height),
+	ctx.drawImage(floorTexture, Math.floor((((xOffset%0.5)+0.5)%1)*floorTexture.width), Math.floor(((yOffset%1))*floorTexture.height),
 		stripWidth, stripWidth,
 		x, y, width, height);
 }
@@ -420,10 +420,10 @@ var drawCeilRectangle = function(x, y, width, height, xOffset,yOffset,texture){
 		x, y, width, height);
 }
 function renderCycle() {
-  dirX = Math.cos(player.rot)/(2*Math.tan(fovHalf));
-  dirY = Math.sin(player.rot)/(2*Math.tan(fovHalf));
-  planeX = -Math.sin(player.rot)/2;
-  planeY = Math.cos(player.rot)/2;
+  dirX = Math.cos(player.rot)/Math.tan(fovHalf);
+  dirY = Math.sin(player.rot)/Math.tan(fovHalf);
+  planeX = -Math.sin(player.rot);
+  planeY = Math.cos(player.rot);
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
   drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#429bf5');
   updateMiniMap();
@@ -728,7 +728,7 @@ function castSingleRay(rayAngle, stripIdx) {
 		// "real" wall height in the game world is 1 unit, the distance from the player to the screen is viewDist,
 		// thus the height on the screen is equal to wall_height_real * viewDist / dist
 
-		var height = Math.round(viewDist / dist);
+		var height = 2*Math.round(viewDist / dist);
 
 		// width is the same, but we have to stretch the texture to a factor of stripWidth to make it fill the strip correctly
 		var width = height * stripWidth;
