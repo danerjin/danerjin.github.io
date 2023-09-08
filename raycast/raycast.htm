@@ -903,7 +903,7 @@ function isBlocking(x,y) {
   for(var i = 0; i < sprites.length;i++){
     sprite = sprites[i];
     if(sprite.block){
-      if ((sprite.x - player.x)**2+(sprite.y-player.y)**2 < (sprite.hitbox/2)**2){
+      if (((sprite.x - player.x)**2+(sprite.y-player.y)**2)**0.5 < sprite.hitbox/2){
         return true;
       }
     }
