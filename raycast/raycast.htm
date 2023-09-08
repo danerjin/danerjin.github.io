@@ -229,7 +229,7 @@ screenWidth = 960;
 screenHeight = 540;
 var miniMapScale = 8;
 
-var stripWidth = 3;
+var stripWidth = 1;
 var fov = 60 * Math.PI / 180;
 
 var numRays = Math.ceil(screenWidth / stripWidth);
@@ -399,7 +399,7 @@ var drawWallSliceRectangle = function(x, y, width, height, xOffset,texture){
 var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
   var floorTexture = floorTextures[texture-1]
 	ctx.drawImage(floorTexture, Math.floor(((xOffset%0.5)+0.5)*floorTexture.width), Math.floor(((yOffset%1))*floorTexture.height),
-		stripWidth, stripWidth,
+		stripWidth+1, stripWidth+1,
 		x, y, width, height);
 }
 var drawCeilRectangle = function(x, y, width, height, xOffset,yOffset,texture){
