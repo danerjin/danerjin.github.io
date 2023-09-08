@@ -398,7 +398,7 @@ var drawWallSliceRectangle = function(x, y, width, height, xOffset,texture){
 }
 var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
   var floorTexture = floorTextures[texture-1]
-	ctx.drawImage(floorTexture, Math.floor(((xOffset%0.5)+0.5)*floorTexture.width-1), Math.floor(((yOffset%1))*floorTexture.height-1),
+	ctx.drawImage(floorTexture, Math.floor(((xOffset%0.5)+0.5)*floorTexture.width), Math.floor(((yOffset%1))*floorTexture.height),
 		stripWidth, stripWidth,
 		x, y, width, height);
 }
@@ -411,8 +411,8 @@ var drawCeilRectangle = function(x, y, width, height, xOffset,yOffset,texture){
 function renderCycle() {
   dirX = Math.cos(player.rot);
   dirY = Math.sin(player.rot);
-  planeX = -0.5*screenWidth*Math.sin(player.rot)/viewDist;
-  planeY = 0.5*screenWidth*Math.cos(player.rot)/viewDist;
+  planeX = -Math.tan(fovHalf)*Math.sin(player.rot);
+  planeY = Math.tan(fovHalf)*Math.cos(player.rot);
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
   drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#429bf5');
   updateMiniMap();
@@ -547,8 +547,8 @@ function castFloorAndCeilingRays(){
     var rowDistance = (is_floor?(posZ):(screenHeight-posZ)) / (p);
     // calculate the real world step vector we have to add for each x (parallel to camera plane)
     // adding step by step avoids multiplications with a weight in the inner loop
-    var floorStepX = stripWidth * rowDistance * (rayDirX1 - rayDirX0) / (screenWidth);
-  	var floorStepY = stripWidth * rowDistance * (rayDirY1 - rayDirY0) / (screenWidth);
+    var floorStepX = stripWidth * rowDistance * (rayDirX1 - rayDirX0) / (2*screenWidth);
+  	var floorStepY = stripWidth * rowDistance * (rayDirY1 - rayDirY0) / (2*screenWidth);
     // real world coordinates of the leftmost column. This will be updated as we step to the right.
     var floorX = player.x + rowDistance * rayDirX0;
     var floorY = player.y + rowDistance * rayDirY0;
