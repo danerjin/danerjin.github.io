@@ -903,7 +903,7 @@ function isBlocking(x,y) {
   for(var i = 0; i < sprites.length;i++){
     sprite = sprites[i];
     if(sprite.block){
-      if ((sprite.x - player.x)**2+(sprite.y-player.y)**2 < sprite.hitbox**2){
+      if ((sprite.x - player.x)**2+(sprite.y-player.y)**2 < (sprite.hitbox/2)**2){
         return true;
       }
     }
@@ -995,9 +995,9 @@ function drawMiniMap() {
     sprite = sprites[i];
     ctx.fillStyle = `rgb(0,255,0)`;
     ctx.fillRect(				// ... then draw a block on the minimap
-      (sprite.x-sprite.hitbox) * miniMapScale,
-      (sprite.y-sprite.hitbox) * miniMapScale,
-      2*sprite.hitbox*miniMapScale,2*sprite.hitbox*miniMapScale
+      (sprite.x-sprite.hitbox/2) * miniMapScale,
+      (sprite.y-sprite.hitbox/2) * miniMapScale,
+      2*sprite.hitbox*miniMapScale,sprite.hitbox*miniMapScale
     );
   }
 	updateMiniMap();
