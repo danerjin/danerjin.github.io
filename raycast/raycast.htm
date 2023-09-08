@@ -558,11 +558,11 @@ function castFloorAndCeilingRays(){
     var rowDistance = (is_floor?(posZ):(screenHeight-posZ)) / (p);
     // calculate the real world step vector we have to add for each x (parallel to camera plane)
     // adding step by step avoids multiplications with a weight in the inner loop
-    var floorStepX = stripWidth * rowDistance * (4*planeX) / (screenWidth);
-  	var floorStepY = stripWidth * rowDistance * (4*planeY) / (screenWidth);
+    var floorStepX = stripWidth * rowDistance * (2*planeX) / (screenWidth);
+  	var floorStepY = stripWidth * rowDistance * (2*planeY) / (screenWidth);
     // real world coordinates of the leftmost column. This will be updated as we step to the right.
-    var floorX = player.x + 2*rowDistance * rayDirX0;
-    var floorY = player.y + 2*rowDistance * rayDirY0;
+    var floorX = player.x + rowDistance * rayDirX0;
+    var floorY = player.y + rowDistance * rayDirY0;
 
     for(var x = 0; x < screenWidth; x+=stripWidth){
 			// the cell coord is simply got from the integer parts of floorX and floorY
@@ -579,7 +579,7 @@ function castFloorAndCeilingRays(){
         if((floorX >= mapWidth || floorY >= mapHeight) || (floorX <= 0 || floorY <= 0) || floorlayout[cellY] === undefined){floorTexture = 2;}else{floorTexture = floorlayout[cellY][cellX];}
         if(floorTexture+0 === 0 || floorTexture === undefined){floorTexture = 2;}
         // floor drawing
-        drawFloorRectangle(x,y,stripWidth,stripWidth,tx/2,ty/2,floorTexture);
+        drawFloorRectangle(x,y,stripWidth,stripWidth,tx,ty,floorTexture);
       }else{
         if((floorX >= mapWidth || floorY >= mapHeight) || (floorX <= 0 || floorY <= 0) || ceilinglayout[cellY] === undefined){floorTexture = 4;}else{floorTexture = ceilinglayout[cellY][cellX];}
         if(floorTexture+0 === 0 || floorTexture === undefined){floorTexture = 4;}
