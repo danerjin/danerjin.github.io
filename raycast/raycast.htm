@@ -238,8 +238,8 @@ var zbuffer = [0]*Math.floor(screenWidth/stripWidth);
 var spriteOrder = [0]*sprites.length;
 var screenWidth = 640;
 var screenHeight = 360;
-canvas.width = parseStr(screenWidth)+'px';
-canvas.height = parseStr(screenHeight)+'px';
+canvas.width = String(screenWidth)+'px';
+canvas.height = String(screenHeight)+'px';
 var miniMapScale = 8;
 
 var stripWidth = 3;
