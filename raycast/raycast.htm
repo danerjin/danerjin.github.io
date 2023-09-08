@@ -728,7 +728,7 @@ function castSingleRay(rayAngle, stripIdx) {
 		// "real" wall height in the game world is 1 unit, the distance from the player to the screen is viewDist,
 		// thus the height on the screen is equal to wall_height_real * viewDist / dist
 
-		var height = Math.round(viewDist / dist);
+		var height = 1.1794873*Math.round(viewDist / dist);
 
 		// width is the same, but we have to stretch the texture to a factor of stripWidth to make it fill the strip correctly
 		var width = height * stripWidth;
