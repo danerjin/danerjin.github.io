@@ -238,8 +238,6 @@ var zbuffer = [0]*Math.floor(screenWidth/stripWidth);
 var spriteOrder = [0]*sprites.length;
 var screenWidth = 640;
 var screenHeight = 360;
-canvas.width = `${screenWidth}px`;
-canvas.height = `${screenHeight}px`;
 var miniMapScale = 8;
 
 var stripWidth = 3;
@@ -902,9 +900,15 @@ function isBlocking(x,y) {
 	// return true if the map block is not 0, ie. if there is a blocking wall.
 	if(map[iy][ix] != 0)
 		return true;
-
-	return false;
-
+  for(var i = 0; i < sprites.length;i++){
+    sprite = sprites[i];
+    if(sprite.block){
+      if ((sprite.x - player.x)**2+(sprite.y-player.y)**2 < sprite.hitbox**2){
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 function updateMiniMap() {
