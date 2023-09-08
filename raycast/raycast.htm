@@ -997,7 +997,7 @@ function drawMiniMap() {
     ctx.fillRect(				// ... then draw a block on the minimap
       (sprite.x-sprite.hitbox/2) * miniMapScale,
       (sprite.y-sprite.hitbox/2) * miniMapScale,
-      2*sprite.hitbox*miniMapScale,sprite.hitbox*miniMapScale
+      sprite.hitbox*miniMapScale,sprite.hitbox*miniMapScale
     );
   }
 	updateMiniMap();
