@@ -991,7 +991,15 @@ function drawMiniMap() {
 			}
 		}
 	}
-
+  for(var i = 0; i < sprites.length;i++){
+    sprite = sprites[i];
+    ctx.fillStyle = `rgb(0,255,0)`;
+    ctx.fillRect(				// ... then draw a block on the minimap
+      (sprite.x-sprite.hitbox) * miniMapScale,
+      (sprite.y-sprite.hitbox) * miniMapScale,
+      2*sprite.hitbox*miniMapScale,2*sprite.hitbox*miniMapScale
+    );
+  }
 	updateMiniMap();
 }
 
