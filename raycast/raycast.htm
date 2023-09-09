@@ -770,7 +770,7 @@ function renderSprites(){
 
       var spriteScreenX = Math.floor((screenWidth / 2) * (1 + transformX / transformY));
 
-      var vMoveScreen = pitch + (player.z+player.height) / transformY;
+      var vMoveScreen = player.pitch + (player.z+player.height) / transformY;
 
       //calculate height of the sprite on screen
       var spriteHeight = abs(Math.floor(screenHeight) / (transformY)) / 1; //using "transformY" instead of the real distance prevents fisheye
