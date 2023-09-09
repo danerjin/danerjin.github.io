@@ -778,14 +778,14 @@ function renderSprites(){
       var drawStartY = -spriteHeight / 2 + screenHeight / 2 + vMoveScreen;
       if(drawStartY < 0){drawStartY = 0};
       var drawEndY = spriteHeight / 2 + screenHeight / 2 + vMoveScreen;
-      if(drawEndY >= h){drawEndY = h - 1};
+      if(drawEndY >= screenHeight){drawEndY = screenHeight - 1};
 
       //calculate width of the sprite
       var spriteWidth = Math.abs( Math.floor (screenHeight / (transformY)));
       var drawStartX = -spriteWidth / 2 + spriteScreenX;
       if(drawStartX < 0){drawStartX = 0};
       var drawEndX = spriteWidth / 2 + spriteScreenX;
-      if(drawEndX >= w){drawEndX = w - 1};
+      if(drawEndX >= screenWidth){drawEndX = screenWidth - 1};
 
       //loop through every vertical stripe of the sprite on screen
       for(var stripe = drawStartX; stripe < drawEndX; stripe+=stripWidth){
