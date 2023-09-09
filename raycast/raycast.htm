@@ -752,13 +752,10 @@ function renderSprites(){
   tempVar.sort(function(a, b){return a[1] - b[1]});
   tempVar = tempVar.reverse();
   for(var i = 0; i < sprites.length; i++){
-    spriteDistance[i] = tempVar[i][1];
-    spriteOrder[i] = tempVar[i][0];
-  }
-  for(var i = 0; i < sprites.length; i++){
       //translate sprite position to relative to camera
-      var spriteX = sprites[spriteOrder[i]].x - player.x;
-      var spriteY = sprites[spriteOrder[i]].y - player.y;
+      var num = tempVar[i][1];
+      var spriteX = sprites[num].x - player.x;
+      var spriteY = sprites[num].y - player.y;
 
       //transform sprite with the inverse camera matrix
       // [ planeX   dirX ] -1                                       [ dirY      -dirX ]
@@ -798,8 +795,8 @@ function renderSprites(){
         //3) it's on the screen (right)
         //4) ZBuffer, with perpendicular distance
         if(transformY > 0 && stripe > 0 && stripe < w && transformY < ZBuffer[stripe]){
-          ctx.drawImage(sprites[i].texture, Math.floor((texX%1)*sprites[i].texture.width), 0,
-            1, sprites[i].texture.height,
+          ctx.drawImage(sprites[num].texture, Math.floor((texX%1)*sprites[num].texture.width), 0,
+            1, sprites[num].texture.height,
             stripe, drawStartY, stripWidth, spriteHeight);
         }
       }
