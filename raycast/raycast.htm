@@ -754,7 +754,7 @@ function renderSprites(){
   console.log(tempVar);
   for(var i = 0; i < sprites.length; i++){
       //translate sprite position to relative to camera
-      var num = tempVar[i][1];
+      var num = tempVar[i][0];
       var spriteX = sprites[num].x - player.x;
       var spriteY = sprites[num].y - player.y;
 
