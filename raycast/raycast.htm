@@ -750,7 +750,7 @@ function renderSprites(){
     tempVar[i][1] = ((player.x - sprites[i].x) * (posX - sprites[i].x) + (posY - sprites[i].y) * (posY - sprites[i].y)); //sqrt not taken, unneeded
   }
   tempVar.sort(function(a, b){return a[1] - b[1]});
-  tempVar = tempVar[::-1];
+  tempVar = tempVar.reverse();
   for(var i = 0; i < sprites.length; i++){
     spriteDistance[i] = tempVar[i][1];
     spriteOrder[i] = tempVar[i][0];
