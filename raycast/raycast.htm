@@ -747,7 +747,7 @@ function castSingleRay(rayAngle, stripIdx) {
 function renderSprites(){
   var tempVar = new Array(sprites.length);
   for(var i = 0; i < sprites.length; i++){
-    tempVar[i] = [i,((player.x - sprites[i].x) * (posX - sprites[i].x) + (posY - sprites[i].y) * (posY - sprites[i].y))]; //sqrt not taken, unneeded
+    tempVar[i] = [i,((player.x - sprites[i].x) * (player.x - sprites[i].x) + (player.y - sprites[i].y) * (player.y - sprites[i].y))]; //sqrt not taken, unneeded
   }
   tempVar.sort(function(a, b){return a[1] - b[1]});
   tempVar = tempVar.reverse();
