@@ -720,7 +720,6 @@ function castSingleRay(rayAngle, stripIdx) {
 	if(dist) {
 		//drawRay(xHit, yHit);
     side = 1;
-    zbuffer[stripIdx] = dist;
     dist = Math.sqrt(dist);
 		// use perpendicular distance to adjust for fish eye
 		// distorted_dist = correct_dist / cos(relative_angle_of_ray)
@@ -742,6 +741,7 @@ function castSingleRay(rayAngle, stripIdx) {
 		var styleHeight;
     mult = wallIsShaded?0.75:1;
     drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType)
+    zbuffer[stripIdx] = dist;
 	}
 }
 function renderSprites(){
@@ -790,7 +790,7 @@ function renderSprites(){
         //2) it's on the screen (left)
         //3) it's on the screen (right)
         //4) ZBuffer, with perpendicular distance
-        if(transformY > 0 && stripe >= 0 && stripe < screenWidth && transformY < zbuffer[stripe]){
+        if(transformY > 0 && stripe >= 0 && stripe < screenWidth/* && transformY < zbuffer[stripe]*/){
           ctx.drawImage(sprites[num].texture, Math.floor((texX%1)*sprites[num].texture.width), 0,
             stripWidth*sprites[num].texture.width/spriteWidth, sprites[num].texture.height,
             stripe, drawStartY, stripWidth, spriteHeight);
