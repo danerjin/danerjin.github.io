@@ -765,7 +765,7 @@ function renderSprites(){
       var invDet = 1.0 / (planeX * dirY - dirX * planeY); //required for correct matrix multiplication
 
       var transformX = invDet * (dirY * spriteX - dirX * spriteY);
-      var transformY = invDet * (-planeY * spriteX + planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
+      var transformY = (spriteX**2+spriteY**2)**0.5*Math.cos(Math.abs(Math.atan(spriteY/spriteX)-Math.atan(dirY/dirX)))/*invDet * (-planeY * spriteX + planeX * spriteY)*/; //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
 
       var spriteScreenX = Math.floor((screenWidth / 2) * (1 + transformX / transformY));
 
