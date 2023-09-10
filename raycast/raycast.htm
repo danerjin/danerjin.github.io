@@ -781,10 +781,9 @@ function renderSprites(){
       if(drawStartX < 0){drawStartX = 0};
       var drawEndX = drawStartX+spriteWidth;
       if(drawEndX >= screenWidth){drawEndX = screenWidth - 1};
-      console.log(drawStartX,drawStartY)
+      console.log(drawStartX,drawStartY,spriteWidth,spriteHeight)
       //loop through every vertical stripe of the sprite on screen
       for(var stripe = drawStartX; stripe < drawEndX; stripe+=stripWidth){
-	console.log("sprite")
         var texX = Math.floor(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * sprites[num].texture.width / spriteWidth) / 256;
         //the conditions in the if are:
         //1) it's in front of camera plane so you don't see things behind you
