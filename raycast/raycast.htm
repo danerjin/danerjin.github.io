@@ -769,12 +769,10 @@ function renderSprites(){
 
       var spriteScreenX = Math.floor((screenWidth / 2) * (1 + transformX / transformY));
 
-      var vMoveScreen = player.pitch + (player.z+player.height) / transformY;
-
       //calculate height of the sprite on screen
       var spriteHeight = Math.abs(Math.floor(screenHeight) / (transformY)) / 1; //using "transformY" instead of the real distance prevents fisheye
       //calculate lowest and highest pixel to fill in current stripe
-      var drawStartY = -spriteHeight / 2 + screenHeight / 2 + vMoveScreen;
+      var drawStartY = Math.round(screenHeight/2 - (1-(player.z+player.height))*spriteHeight-(player.z+player.height))+player.pitch
       if(drawStartY < 0){drawStartY = 0};
       var drawEndY = spriteHeight / 2 + screenHeight / 2 + vMoveScreen;
       if(drawEndY >= screenHeight){drawEndY = screenHeight - 1};
