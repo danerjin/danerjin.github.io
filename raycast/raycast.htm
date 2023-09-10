@@ -411,7 +411,7 @@ var drawWallSliceRectangle = function(x, y, width, height, xOffset,texture){
 var drawFloorRectangle = function(x, y, width, height, xOffset,yOffset,texture){
   var floorTexture = floorTextures[texture-1]
 	ctx.drawImage(floorTexture, Math.floor(((xOffset%0.5)+0.5)*floorTexture.width), Math.floor((yOffset%1)*floorTexture.height),
-		1, 1,
+		stripWidth, stripWidth,
 		x, y, width, height);
 }
 var drawCeilRectangle = function(x, y, width, height, xOffset,yOffset,texture){
@@ -781,7 +781,6 @@ function renderSprites(){
       if(drawStartX < 0){drawStartX = 0};
       var drawEndX = drawStartX+spriteWidth;
       if(drawEndX >= screenWidth){drawEndX = screenWidth - 1};
-      console.log(drawStartX,drawStartY,spriteWidth,spriteHeight)
       //loop through every vertical stripe of the sprite on screen
       for(var stripe = drawStartX; stripe < drawEndX; stripe+=stripWidth){
         var texX = Math.floor(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * sprites[num].texture.width / spriteWidth) / 256;
