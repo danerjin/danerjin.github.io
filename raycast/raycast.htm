@@ -790,7 +790,7 @@ function renderSprites(){
         //2) it's on the screen (left)
         //3) it's on the screen (right)
         //4) ZBuffer, with perpendicular distance
-        if(transformY > 0 && stripe > 0 && stripe < screenWidth && transformY/* < zbuffer[stripe]*/){
+        if(true/*transformY > 0 && stripe >= 0 && stripe < screenWidth && transformY < zbuffer[stripe]*/){
           ctx.drawImage(sprites[num].texture, Math.floor(texX%1), 0,
             1, sprites[num].texture.height,
             stripe, drawStartY, stripWidth, spriteHeight);
