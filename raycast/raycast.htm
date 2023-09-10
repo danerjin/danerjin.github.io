@@ -236,7 +236,6 @@ var player = {
   isJumping: false,
   speedMult: 1
 }
-var zbuffer = new Array(Math.ceil(screenWidth/stripWidth));
 var screenWidth = 640;
 var screenHeight = 360;
 var miniMapScale = 8;
@@ -257,6 +256,8 @@ var dirY;
 var planeX;
 var planeY;
 var slider = document.getElementById("myRange");
+
+var zbuffer = new Array(Math.ceil(screenWidth/stripWidth));
 function updateFOV(){
   fov = slider.value*Math.PI/180;
   fovHalf = fov/2;
