@@ -217,6 +217,7 @@ var ctx = canvas.getContext('2d');
 var bufferScreen = $("buffer");
 var overlay;
 gravity = 0.01
+var stripWidth = 3;
 var player = {
 	x : 2.5,		// current x, y position
 	y : 2,
@@ -240,7 +241,6 @@ var screenWidth = 640;
 var screenHeight = 360;
 var miniMapScale = 8;
 
-var stripWidth = 3;
 var fov = 60 * Math.PI / 180;
 
 var numRays = Math.ceil(screenWidth / stripWidth);
