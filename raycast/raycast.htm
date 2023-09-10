@@ -235,8 +235,7 @@ var player = {
   isJumping: false,
   speedMult: 1
 }
-var zbuffer = [0]*Math.floor(screenWidth/stripWidth);
-var spriteOrder = [0]*sprites.length;
+var zbuffer = new Array(screenWidth/stripWidth);
 var screenWidth = 640;
 var screenHeight = 360;
 var miniMapScale = 8;
@@ -720,7 +719,6 @@ function castSingleRay(rayAngle, stripIdx) {
 	if(dist) {
 		//drawRay(xHit, yHit);
     side = 1;
-    zbuffer[stripIdx] = dist;
     dist = Math.sqrt(dist);
 		// use perpendicular distance to adjust for fish eye
 		// distorted_dist = correct_dist / cos(relative_angle_of_ray)
@@ -742,6 +740,7 @@ function castSingleRay(rayAngle, stripIdx) {
 		var styleHeight;
     mult = wallIsShaded?0.75:1;
     drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType);
+    zbuffer[stripIdx] = dist;
 	}
 }
 function renderSprites(){
@@ -765,7 +764,7 @@ function renderSprites(){
       var invDet = 1.0 / (planeX * dirY - dirX * planeY); //required for correct matrix multiplication
 
       var transformX = invDet * (dirY * spriteX - dirX * spriteY);
-      var transformY = (spriteX**2+spriteY**2)**0.5*Math.cos(Math.abs(Math.atan(spriteY/spriteX)-Math.atan(dirY/dirX)))/*invDet * (-planeY * spriteX + planeX * spriteY)*/; //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
+      var transformY = invDet * (-planeY * spriteX + planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
 
       var spriteScreenX = Math.floor((screenWidth / 2) * (1 + transformX / transformY));
 
