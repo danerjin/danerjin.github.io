@@ -959,7 +959,7 @@ function isBlocking(x,y) {
   for(var i = 0; i < sprites.length;i++){
     sprite = sprites[i];
     if(sprite.block){
-      if (((sprite.x - x)**2+(sprite.y-y)**2)**0.5 <= sprite.hitbox/2){
+      if (x>=sprite.x-sprite.hitbox/2 && x <= sprite.x+sprite.hitbox/2 && y>=sprite.y-sprite.hitbox/2 && y <= sprite.y+sprite.hitbox/2){
         return true;
       }
     }
