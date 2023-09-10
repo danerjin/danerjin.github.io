@@ -774,14 +774,14 @@ function renderSprites(){
       //calculate lowest and highest pixel to fill in current stripe
       var drawStartY = Math.round(screenHeight/2 - (1-(player.z+player.height))*spriteHeight-(player.z+player.height))+player.pitch
       if(drawStartY < 0){drawStartY = 0};
-      var drawEndY = spriteHeight / 2 + screenHeight / 2 + vMoveScreen;
+      var drawEndY = drawStartY+spriteHeight;
       if(drawEndY >= screenHeight){drawEndY = screenHeight - 1};
 
       //calculate width of the sprite
       var spriteWidth = Math.abs( Math.floor (screenHeight / (transformY)));
       var drawStartX = -spriteWidth / 2 + spriteScreenX;
       if(drawStartX < 0){drawStartX = 0};
-      var drawEndX = spriteWidth / 2 + spriteScreenX;
+      var drawEndX = drawStartX+spriteWidth;
       if(drawEndX >= screenWidth){drawEndX = screenWidth - 1};
 
       //loop through every vertical stripe of the sprite on screen
