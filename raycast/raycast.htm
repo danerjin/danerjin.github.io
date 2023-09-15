@@ -140,7 +140,7 @@ var floorlayout = [
   [3,2,2,2,3,2,2,2,2,2,3,2,2,3,3,3,3,3,2,2,2,2,2,2,2,3,2,2,3,2,2,3],
   [3,2,2,2,3,2,2,2,2,2,2,2,2,3,3,3,3,3,2,2,2,2,2,3,3,3,2,2,3,2,2,3],
   [3,2,2,2,3,2,2,3,3,2,2,2,2,3,3,3,3,3,2,2,2,2,2,3,2,3,2,2,3,2,2,3],
-  [3,2,2,2,3,2,2,3,3,2,2,2,2,3,3,3,3,2,2,2,2,2,2,3,2,2,2,2,2,2,2,3],
+  [3,2,2,2,3,2,2,3,3,2,2,2,2,3,3,3,3,3,2,2,2,2,2,3,2,2,2,2,2,2,2,3],
   [3,2,2,2,3,2,2,2,2,2,2,2,2,3,3,3,3,3,2,2,2,3,3,3,2,2,2,2,2,2,2,3],
   [3,2,2,2,3,2,2,2,2,2,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3],
   [3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3],
@@ -217,7 +217,7 @@ var ctx = canvas.getContext('2d');
 var bufferScreen = $("buffer");
 var overlay;
 gravity = 0.01
-var stripWidth = 1;
+var stripWidth = 2;
 var player = {
 	x : 2.5,		// current x, y position
 	y : 2,
@@ -392,6 +392,7 @@ function gameCycle() {
 }
 
 
+var posZ;
 var lastRenderCycleTime = 0;
 var drawFillRectangle = function(x, y, width, height, cssColor){
 		ctx.fillStyle = cssColor;
@@ -428,6 +429,7 @@ var drawCeilRectangle = function(x, y, width, height, xOffset,yOffset,texture){
 
 
 function renderCycle() {
+  posZ = (player.height+player.z) * screenHeight;
   dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
   dirY = Math.sin(player.rot)/(Math.tan(fovHalf));
   planeX = -Math.sin(player.rot);
@@ -753,7 +755,6 @@ function castSingleRay(rayAngle, stripIdx) {
     drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType);
     zbuffer[stripIdx] = dist;
     //permadi raycasting
-    var posZ = (player.height+player.z) * screenHeight;
     for(var y = Math.round(top+height); y < screenHeight; y+=stripWidth){
       // Current y position compared to the center of the screen (the horizon)
       var p = y - screenHeight / 2 - player.pitch;
@@ -766,20 +767,45 @@ function castSingleRay(rayAngle, stripIdx) {
       // real world coordinates of the leftmost column. This will be updated as we step to the right.
       var floorX = player.x + rowDistance * 0.847826 * (rayDirX0 + 2*stripIdx*stripWidth*planeX/screenWidth);
       var floorY = player.y + rowDistance * 0.847826 * (rayDirY0 + 2*stripIdx*stripWidth*planeY/screenWidth);
-  			// the cell coord is simply got from the integer parts of floorX and floorY
-        var cellX = Math.floor(floorX);
-        var cellY = Math.floor(floorY);
-        // get the texture coordinate from the fractional part
-        var tx = floorX - cellX;
-        var ty = floorY - cellY;
-        var floorTexture;
-        // choose texture and draw the pixel
-          if((floorX >= mapWidth || floorY >= mapHeight) || (floorX <= 0 || floorY <= 0) || floorlayout[cellY] === undefined){continue;}else{floorTexture = floorlayout[cellY][cellX];}
-          if(floorTexture+0 === 0 || floorTexture === undefined){floorTexture = 2;}
-          // floor drawing
-          drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
-      }
+			// the cell coord is simply got from the integer parts of floorX and floorY
+      var cellX = Math.floor(floorX);
+      var cellY = Math.floor(floorY);
+      // get the texture coordinate from the fractional part
+      var tx = floorX - cellX;
+      var ty = floorY - cellY;
+      var floorTexture;
+      // choose texture and draw the pixel
+      if((floorX >= mapWidth || floorY >= mapHeight) || (floorX <= 0 || floorY <= 0) || floorlayout[cellY] === undefined){floorTexture = 2;}else{floorTexture = floorlayout[cellY][cellX];}
+      if(floorTexture+0 === 0 || floorTexture === undefined){floorTexture = 2;}
+      // floor drawing
+      drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
     }
+    for(var y = 0; y < Math.ceil(top-height); y+=stripWidth){
+      // Current y position compared to the center of the screen (the horizon)
+      var p = screenHeight / 2 - y + player.pitch;
+      // Vertical position of the camera.
+      // Horizontal distance from the camera to the floor for the current row.
+      // 0.5 is the z position exactly in the middle between floor and ceiling.
+      var rowDistance = (screenHeight-posZ) / (p);
+      // calculate the real world step vector we have to add for each x (parallel to camera plane)
+      // adding step by step avoids multiplications with a weight in the inner loop
+      // real world coordinates of the leftmost column. This will be updated as we step to the right.
+      var floorX = player.x + rowDistance * 0.847826 * (rayDirX0 + 2*stripIdx*stripWidth*planeX/screenWidth);
+      var floorY = player.y + rowDistance * 0.847826 * (rayDirY0 + 2*stripIdx*stripWidth*planeY/screenWidth);
+			// the cell coord is simply got from the integer parts of floorX and floorY
+      var cellX = Math.floor(floorX);
+      var cellY = Math.floor(floorY);
+      // get the texture coordinate from the fractional part
+      var tx = floorX - cellX;
+      var ty = floorY - cellY;
+      var floorTexture;
+      // choose texture and draw the pixel
+      if((floorX >= mapWidth || floorY >= mapHeight) || (floorX <= 0 || floorY <= 0) || floorlayout[cellY] === undefined){floorTexture = 2;}else{floorTexture = ceilinglayout[cellY][cellX];}
+      if(floorTexture+0 === 0 || floorTexture === undefined){floorTexture = 2;}
+      // floor drawing
+      drawCeilRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
+    }
+  }
 }
 function renderSprites(){
   var tempVar = new Array(sprites.length);
