@@ -428,10 +428,10 @@ var drawCeilRectangle = function(x, y, width, height, xOffset,yOffset,texture){
 
 
 function renderCycle() {
-  dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
-  dirY = Math.sin(player.rot)/(Math.tan(fovHalf));
-  planeX = -Math.sin(player.rot);
-  planeY = Math.cos(player.rot);
+  dirX = Math.cos(player.rot);
+  dirY = Math.sin(player.rot);
+  planeX = -Math.sin(player.rot)*Math.tan(fovHalf);
+  planeY = Math.cos(player.rot)*Math.tan(fovHalf);
   rayDirX0 = dirX - planeX;
   rayDirY0 = dirY - planeY;
   rayDirX1 = dirX + planeX;
@@ -764,8 +764,8 @@ function castSingleRay(rayAngle, stripIdx) {
       // calculate the real world step vector we have to add for each x (parallel to camera plane)
       // adding step by step avoids multiplications with a weight in the inner loop
       // real world coordinates of the leftmost column. This will be updated as we step to the right.
-      var floorX = player.x + rowDistance * 0.847826 * (rayDirX0 + 2*stripIdx*stripWidth**2*planeX/screenWidth);
-      var floorY = player.y + rowDistance * 0.847826 * (rayDirY0 + 2*stripIdx*stripWidth**2*planeY/screenWidth);
+      var floorX = player.x + rowDistance * (rayDirX0 + 2*stripIdx*stripWidth**2*planeX/screenWidth);
+      var floorY = player.y + rowDistance * (rayDirY0 + 2*stripIdx*stripWidth**2*planeY/screenWidth);
   			// the cell coord is simply got from the integer parts of floorX and floorY
         var cellX = Math.floor(floorX);
         var cellY = Math.floor(floorY);
