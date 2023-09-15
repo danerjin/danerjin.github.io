@@ -431,10 +431,10 @@ function renderCycle() {
   //castFloorAndCeilingRaysLode();
 	castWallRays();
   renderSprites();
-  drawFillRectangle(screenWidth/2-50,screenHeight/2-2,40,4,'#00FF00');
-  drawFillRectangle(screenWidth/2+10,screenHeight/2-2,40,4,'#00FF00');
-  drawFillRectangle(screenWidth/2-2,screenHeight/2-50,4,40,'#00FF00');
-  drawFillRectangle(screenWidth/2-2,screenHeight/2+10,4,40,'#00FF00');
+  drawFillRectangle(screenWidth/2-50/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
+  drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
+  drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
+  drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
 	// time since last rendering
 	var now = new Date().getTime();
 	var timeDelta = now - lastRenderCycleTime;
@@ -773,7 +773,6 @@ function castSingleRay(rayAngle, stripIdx) {
           drawFloorRectangle(x,y,stripWidth,stripWidth,tx,ty,floorTexture);
       }
     }
-	}
 }
 function renderSprites(){
   var tempVar = new Array(sprites.length);
