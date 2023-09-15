@@ -770,7 +770,7 @@ function castSingleRay(rayAngle, stripIdx) {
           if((floorX >= mapWidth || floorY >= mapHeight) || (floorX <= 0 || floorY <= 0) || floorlayout[cellY] === undefined){continue;}else{floorTexture = floorlayout[cellY][cellX];}
           if(floorTexture+0 === 0 || floorTexture === undefined){floorTexture = 2;}
           // floor drawing
-          drawFloorRectangle(x,y,stripWidth,stripWidth,tx,ty,floorTexture);
+          drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
       }
     }
 }
