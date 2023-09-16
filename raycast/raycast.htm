@@ -755,7 +755,7 @@ function castSingleRay(rayAngle, stripIdx) {
     drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType);
     zbuffer[stripIdx] = dist;
     //permadi floorcasting
-    for(var y = Math.round(top+height)-stripWidth; y < screenHeight; y+=stripWidth){
+    for(var y = top+height-stripWidth; y < screenHeight; y+=stripWidth){
       if(y===screenHeight/2+player.pitch){continue;}
       // Current y position compared to the center of the screen (the horizon)
       var p = y - screenHeight / 2 - player.pitch;
@@ -781,7 +781,7 @@ function castSingleRay(rayAngle, stripIdx) {
       // floor drawing
       drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
     }
-    for(var y = 0; y < top+1; y+=stripWidth){
+    for(var y = 0; y < top+stripWidth; y+=stripWidth){
       if(y===screenHeight/2+player.pitch){continue;}
       // Current y position compared to the center of the screen (the horizon)
       var p = screenHeight / 2 - y + player.pitch;
