@@ -780,7 +780,7 @@ function castSingleRay(rayAngle, stripIdx) {
       // floor drawing
       drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
     }
-    for(var y = 0; y < Math.ceil(top-height); y+=stripWidth){
+    for(var y = 0; y < top; y+=stripWidth){
       // Current y position compared to the center of the screen (the horizon)
       var p = screenHeight / 2 - y + player.pitch;
       // Vertical position of the camera.
