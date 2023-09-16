@@ -755,7 +755,7 @@ function castSingleRay(rayAngle, stripIdx) {
     drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType);
     zbuffer[stripIdx] = dist;
     //permadi floorcasting
-    for(var y = top+height-1+player.pitch; y < screenHeight; y+=stripWidth){
+    for(var y = top+height-1; y < screenHeight; y+=stripWidth){
       if(y===screenHeight/2+player.pitch){continue;}
       // Current y position compared to the center of the screen (the horizon)
       var p = y - screenHeight / 2 - player.pitch;
@@ -781,7 +781,7 @@ function castSingleRay(rayAngle, stripIdx) {
       // floor drawing
       drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
     }
-    for(var y = 0; y < top+1+player.pitch; y+=stripWidth){
+    for(var y = 0; y < top+1; y+=stripWidth){
       if(y===screenHeight/2+player.pitch){continue;}
       // Current y position compared to the center of the screen (the horizon)
       var p = screenHeight / 2 - y + player.pitch;
@@ -828,8 +828,8 @@ function renderSprites(){
 
       var invDet = 1.0 / (planeX * dirY - dirX * planeY); //required for correct matrix multiplication
 
-      var transformX = /*invDet * (dirY * spriteX - dirX * spriteY)*/tempVar[i][1]*Math.cos(Math.atan2(dirY,dirX)-Math.atan2(spriteY,spriteX));
-      var transformY = /*invDet * (-planeY * spriteX + planeX * spriteY)*/tempVar[i][1]*Math.sin(Math.atan2(dirY,dirX)-Math.atan2(spriteY,spriteX)); //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
+      var transformX = invDet * (dirY * spriteX - dirX * spriteY)/*tempVar[i][1]*Math.cos(Math.atan2(dirY,dirX)-Math.atan2(spriteY,spriteX))*/;
+      var transformY = invDet * (-planeY * spriteX + planeX * spriteY)/*tempVar[i][1]*Math.sin(Math.atan2(dirY,dirX)-Math.atan2(spriteY,spriteX))*/; //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
 
       var spriteScreenX = Math.floor((screenWidth / 2) * (1 + transformX / transformY));
 
