@@ -802,8 +802,8 @@ function castSingleRay(rayAngle, stripIdx) {
       var ty = floorY - cellY;
       var floorTexture;
       // choose texture and draw the pixel
-      if((floorX >= mapWidth || floorY >= mapHeight) || (floorX <= 0 || floorY <= 0) || floorlayout[cellY] === undefined){floorTexture = 2;}else{floorTexture = ceilinglayout[cellY][cellX];}
-      if(floorTexture+0 === 0 || floorTexture === undefined){floorTexture = 2;}
+      if((floorX >= mapWidth || floorY >= mapHeight) || (floorX <= 0 || floorY <= 0) || floorlayout[cellY] === undefined){continue;}else{floorTexture = ceilinglayout[cellY][cellX];}
+      if(floorTexture+0 === 0 || floorTexture === undefined){continue;}
       // floor drawing
       drawCeilRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
     }
