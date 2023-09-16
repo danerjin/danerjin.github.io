@@ -656,8 +656,6 @@ function castSingleRay(rayAngle, stripIdx) {
   	var slope = angleSin / angleCos; 	// the slope of the straight line made by the ray
   	var dXVer = right ? 1 : -1; 	// we move either 1 map unit to the left or right
   	var dYVer = dXVer * slope; 	// how much to move up or down
-    var glassHitHor = false;
-    var thinga = 0;
   	var x = right ? Math.ceil(player.x) : Math.floor(player.x);	// starting horizontal position, at one of the edges of the current map block
   	var y = player.y + (x - player.x) * slope;			// starting vertical position. We add the small horizontal step we just made, multiplied by the slope.
     var prevWallX = Math.floor(player.x);
@@ -748,7 +746,7 @@ function castSingleRay(rayAngle, stripIdx) {
 		var width = height * stripWidth;
 
 		// similar triangles
-		var top = Math.round(screenHeight/2 - (1-posZ)*height-posZ)+player.pitch;
+		var top = Math.round(screenHeight/2 - (1-(player.z+player.height))*height-(player.z+player.height))+player.pitch;
     drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType);
     zbuffer[stripIdx] = dist;
     //permadi floorcasting
