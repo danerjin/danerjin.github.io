@@ -217,7 +217,7 @@ var ctx = canvas.getContext('2d');
 var bufferScreen = $("buffer");
 var overlay;
 gravity = 0.01
-var stripWidth = 2;
+var stripWidth = 1;
 var player = {
 	x : 2.5,		// current x, y position
 	y : 2,
@@ -831,14 +831,11 @@ function renderSprites(){
       var spriteHeight = Math.abs(Math.floor(screenHeight) / (transformY)) / 1; //using "transformY" instead of the real distance prevents fisheye
       //calculate lowest and highest pixel to fill in current stripe
       var drawStartY = Math.round(screenHeight/2 - (1-(player.z+player.height))*spriteHeight-(player.z+player.height))+player.pitch
-      if(drawStartY < 0){drawStartY = 0};
 
       //calculate width of the sprite
       var spriteWidth = Math.abs( Math.floor (screenHeight / (transformY)));
       var drawStartX = spriteScreenX-spriteWidth/2;
-      if(drawStartX < 0){drawStartX = 0};
       var drawEndX = drawStartX+spriteWidth;
-      if(drawEndX >= screenWidth){drawEndX = screenWidth - 1};
       //loop through every vertical stripe of the sprite on screen
       for(var stripe = drawStartX; stripe < drawEndX; stripe+=stripWidth){
         var texX = (stripe - drawStartX) / spriteWidth
@@ -847,7 +844,7 @@ function renderSprites(){
         //2) it's on the screen (left)
         //3) it's on the screen (right)
         //4) ZBuffer, with perpendicular distance
-        if(transformY > 0 && stripe >= 0 && stripe < screenWidth && transformY <= zbuffer[stripe]){
+        if(transformY > 0 && stripe >= 0 && stripe < screenWidth && transformY < zbuffer[Math.floor(stripe/stripWidth)]){
           ctx.drawImage(sprites[num].texture, Math.floor((texX%1)*sprites[num].texture.width), 0,
             1, sprites[num].texture.height,
             stripe, drawStartY, stripWidth, spriteHeight);
