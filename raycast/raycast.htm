@@ -808,7 +808,7 @@ function renderSprites(){
   for(var i = 0; i < sprites.length; i++){
     tempVar[i] = [i,((player.x - sprites[i].x) * (player.x - sprites[i].x) + (player.y - sprites[i].y) * (player.y - sprites[i].y))]; //sqrt not taken, unneeded
   }
-  tempVar.sort(function(a, b){return a[1] - b[1]});
+  tempVar.sort(function(a, b){return b[1] - a[1]});
   for(var i = 0; i < sprites.length; i++){
       //translate sprite position to relative to camera
       var num = tempVar[i][0];
