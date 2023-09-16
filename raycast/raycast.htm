@@ -756,7 +756,7 @@ function castSingleRay(rayAngle, stripIdx) {
     zbuffer[stripIdx] = dist;
     //permadi raycasting
     for(var y = top+height-1; y < screenHeight; y+=stripWidth){
-      if(y===screenHeight+player.pitch){continue;}
+      if(y===screenHeight/2+player.pitch){continue;}
       // Current y position compared to the center of the screen (the horizon)
       var p = y - screenHeight / 2 - player.pitch;
       // Vertical position of the camera.
@@ -782,7 +782,7 @@ function castSingleRay(rayAngle, stripIdx) {
       drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
     }
     for(var y = 0; y < top+1; y+=stripWidth){
-      if(y===screenHeight+player.pitch){continue;}
+      if(y===screenHeight/2+player.pitch){continue;}
       // Current y position compared to the center of the screen (the horizon)
       var p = screenHeight / 2 - y + player.pitch;
       // Vertical position of the camera.
