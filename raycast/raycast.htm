@@ -845,7 +845,7 @@ function renderSprites(){
       if(drawStartX < 0){drawStartX = 0};
       var drawEndX = drawStartX+spriteWidth;
       if(drawEndX >= screenWidth){drawEndX = screenWidth - 1};
-      console.log(transformY)
+      console.log(transformY,transformX)
       //loop through every vertical stripe of the sprite on screen
       for(var stripe = drawStartX; stripe < drawEndX; stripe+=stripWidth){
         var texX = Math.floor(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * sprites[num].texture.width / spriteWidth) / 256;
