@@ -443,7 +443,7 @@ function renderCycle() {
   updateMiniMap();
   //castFloorAndCeilingRaysLode();
 	castWallRays();
-  renderSprites();
+  //renderSprites();
   drawFillRectangle(screenWidth/2-50/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
   drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
   drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
@@ -748,9 +748,7 @@ function castSingleRay(rayAngle, stripIdx) {
 		var width = height * stripWidth;
 
 		// similar triangles
-		var top = Math.round(screenHeight/2 - (1-posZ)*height-posZ)+player.pitch
-		var styleHeight;
-    mult = wallIsShaded?0.75:1;
+		var top = Math.round(screenHeight/2 - (1-posZ)*height-posZ)+player.pitch;
     drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType);
     zbuffer[stripIdx] = dist;
     //permadi floorcasting
