@@ -52,7 +52,7 @@
 </style>
 </head>
 <body>
-<canvas id="screen" width="720px" height="405px"></canvas>
+<canvas id="screen" width="480px" height="270px"></canvas>
 <div id="moving"></div>
 <div id="minimapcontainer">
 	<canvas id="minimap"></canvas>
@@ -217,7 +217,7 @@ var ctx = canvas.getContext('2d');
 var bufferScreen = $("buffer");
 var overlay;
 gravity = 0.01
-var stripWidth = 3;
+var stripWidth = 2;
 var player = {
 	x : 2.5,		// current x, y position
 	y : 2,
@@ -236,8 +236,8 @@ var player = {
   isJumping: false,
   speedMult: 1
 }
-var screenWidth = 720;
-var screenHeight = 405;
+var screenWidth = 480;
+var screenHeight = 270;
 var miniMapScale = 8;
 
 var fov = 60 * Math.PI / 180;
