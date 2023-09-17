@@ -88,13 +88,14 @@ if(!Array.prototype.indexOf) {
 	};
 }
 
-var Sprite = function(x,y,texture,block){
+var Sprite = function(x,y,texture,block,hitbox){
   this.x = x;
   this.y = y;
   this.texture = new Image();
   this.texture.crossOrigin = "Anonymous";
   this.texture.src = `sprites/objects/${texture}.png`;
   this.block = block;
+  this.hitbox = hitbox/2;
 }
 var map = [
   [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],
@@ -181,11 +182,11 @@ var ceilinglayout = [
   [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]
 ];
 var sprites = [
-  new Sprite(2.5,5,'greenlight',false),
-  new Sprite(2.5,8,'greenlight',false),
-  new Sprite(16.5,12,'pillar',true),
-  new Sprite(17.5,12,'pillar',true),
-  new Sprite(18.5,12,'pillar',true),
+  new Sprite(2.5,5,'greenlight',false,0.1),
+  new Sprite(2.5,8,'greenlight',false,0.1),
+  new Sprite(16.5,12,'pillar',true,1),
+  new Sprite(17.5,12,'pillar',true,1),
+  new Sprite(18.5,12,'pillar',true,1),
 ]
 var spriteDistance = new Array(sprites.length);
 var spriteOrder = new Array(sprites.length);
@@ -926,7 +927,7 @@ function checkCollision(fromX, fromY, toX, toY, radius) {
 	var blockY = Math.floor(toY);
 
 
-	if(isBlocking(blockX,blockY)) {
+	if(isBlocking(toX,toY)) {
 		return pos;
 	}
 
@@ -1013,8 +1014,8 @@ function isBlocking(x,y) {
   for(var i = 0; i < sprites.length;i++){
     sprite = sprites[i];
     if(sprite.block){
-      spriteDist = ((x-sprite.x)**2 + 1*(y-sprite.y)**2)**0.5;
-      if (spriteDist<=0.5){
+      spriteDist = ((x-sprite.x+sprite.hitbox/2)**2 + 1*(y-sprite.y+sprite.hitbox/2)**2)**0.5;
+      if (spriteDist<=sprite.hitbox/2){
         return true;
       }
     }
@@ -1106,9 +1107,9 @@ function drawMiniMap() {
     sprite = sprites[i];
     ctx.fillStyle = `rgb(0,255,0)`;
     ctx.fillRect(				// ... then draw a block on the minimap
-      (sprite.x-0.5) * miniMapScale,
-      (sprite.y-0.5) * miniMapScale,
-      miniMapScale,miniMapScale
+      (sprite.x-sprite.hitbox) * miniMapScale,
+      (sprite.y-sprite.hitbox) * miniMapScale,
+      sprite.hitbox*miniMapScale,sprite.hitbox*miniMapScale
     );
   }
 	updateMiniMap();
