@@ -95,7 +95,7 @@ var Sprite = function(x,y,texture,block,hitbox){
   this.texture.crossOrigin = "Anonymous";
   this.texture.src = `sprites/objects/${texture}.png`;
   this.block = block;
-  this.hitbox = hitbox/2;
+  this.hitbox = hitbox;
 }
 var map = [
   [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],
@@ -184,9 +184,9 @@ var ceilinglayout = [
 var sprites = [
   new Sprite(2.5,5,'greenlight',false,0.1),
   new Sprite(2.5,8,'greenlight',false,0.1),
-  new Sprite(16.5,12,'pillar',true,1),
-  new Sprite(17.5,12,'pillar',true,1),
-  new Sprite(18.5,12,'pillar',true,1),
+  new Sprite(16.5,12,'pillar',true,0.6),
+  new Sprite(17.5,12,'pillar',true,0.6),
+  new Sprite(18.5,12,'pillar',true,0.6),
 ]
 var spriteDistance = new Array(sprites.length);
 var spriteOrder = new Array(sprites.length);
@@ -1081,9 +1081,9 @@ function drawMiniMap() {
 			if(wall > 0) { // if there is a wall block at this (x,y) ...
 				ctx.fillStyle = `rgb(${wallTypes[wall][0]},${wallTypes[wall][1]},${wallTypes[wall][2]})`;
 				ctx.fillRect(				// ... then draw a block on the minimap
-					x * miniMapScale,
-					y * miniMapScale,
-					miniMapScale,miniMapScale
+					(x-hitbox/2) * miniMapScale,
+					(y-hitbox/2) * miniMapScale,
+					hitbox*miniMapScale,hitbox*miniMapScale
 				);
 			}
 		}
