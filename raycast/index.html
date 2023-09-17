@@ -456,7 +456,7 @@ function renderCycle() {
 		cycleDelay = Math.max(1, cycleDelay - (timeDelta - cycleDelay))
 	}
 	lastRenderCycleTime = now;
-	setTimeout(renderCycle, cycleDelay/1000);
+	setTimeout(renderCycle, 1);
 	fps = 1000 / timeDelta;
   ctx.font = "15px monospace";
   ctx.fillStyle = "white";
