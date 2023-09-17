@@ -95,7 +95,7 @@ var Sprite = function(x,y,texture,block,hitbox){
   this.texture.crossOrigin = "Anonymous";
   this.texture.src = `sprites/objects/${texture}.png`;
   this.block = block;
-  this.hitbox = hitbox;
+  this.hitbox = hitbox/2;
 }
 var map = [
   [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],
@@ -1008,12 +1008,14 @@ function isBlocking(x,y) {
 	var ix = Math.floor(x);
 	var iy = Math.floor(y);
 	// return true if the map block is not 0, ie. if there is a blocking wall.
-	if(map[iy][ix] != 0)
+	if(map[iy][ix] !== 0){
 		return true;
+  }
   for(var i = 0; i < sprites.length;i++){
     sprite = sprites[i];
     if(sprite.block){
-      if (x>=sprite.x-sprite.hitbox/2 && x <= sprite.x+sprite.hitbox/2 && y>=sprite.y-sprite.hitbox/2 && y <= sprite.y+sprite.hitbox/2){
+      spriteDist = ((x-sprite.x+sprite.hitbox)**2 + (y-sprite.y+sprite.hitbox)**2)**0.5;
+      if (spriteDist<=sprite.hitbox){
         return true;
       }
     }
@@ -1105,8 +1107,8 @@ function drawMiniMap() {
     sprite = sprites[i];
     ctx.fillStyle = `rgb(0,255,0)`;
     ctx.fillRect(				// ... then draw a block on the minimap
-      (sprite.x-sprite.hitbox/2) * miniMapScale,
-      (sprite.y-sprite.hitbox/2) * miniMapScale,
+      (sprite.x-sprite.hitbox) * miniMapScale,
+      (sprite.y-sprite.hitbox) * miniMapScale,
       sprite.hitbox*miniMapScale,sprite.hitbox*miniMapScale
     );
   }
