@@ -754,8 +754,8 @@ function castSingleRay(rayAngle, stripIdx) {
   		var wallX = Math.floor(x);
   		if(map[wallY][wallX]  !== map[Math.floor(player.y)][Math.floor(player.x)]) {
         if(map[Math.floor(player.y)][Math.floor(player.x)]==8||map[Math.floor(player.y)][Math.floor(player.x)]==10){
-          x_maybe=x+dXVer/2;
-          y_maybe=y+dYVer/2;
+          x_maybe=x+dXHor/2;
+          y_maybe=y+dYHor/2;
           if((x_maybe-Math.floor(x_maybe)) <= 1-doorOffsets[wallY][wallX]){
             var distX = x_maybe - player.x;
             var distY = y_maybe - player.y;
