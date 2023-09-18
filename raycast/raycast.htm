@@ -226,8 +226,8 @@ var ctx = canvas.getContext('2d');
 var gravity = 0.01;
 var stripWidth = 2;
 var player = {
-	x : 22,		// current x, y position
-	y : 10,
+	x : 5.5,		// current x, y position
+	y : 3,
 	dir : 0,		// the direction that the player is turning, either -1 for left or 1 for right.
 	rotDeg : 90,		// the current angle of rotation
 	rot : 0,		// rotation in radians
@@ -464,7 +464,7 @@ function renderCycle() {
 		cycleDelay = Math.max(1, cycleDelay - (timeDelta - cycleDelay))
 	}
 	lastRenderCycleTime = now;
-	setTimeout(renderCycle, 1);
+	setTimeout(renderCycle, 10);
 	fps = 1000 / timeDelta;
   ctx.font = "15px monospace";
   ctx.fillStyle = "white";
@@ -755,7 +755,7 @@ function castSingleRay(rayAngle, stripIdx) {
 		// similar triangles
 		var top = Math.round(screenHeight/2 - (1-(player.z+player.height))*height-(player.z+player.height))+player.pitch;
     drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType);
-    zbuffer[stripIdx] = dist;
+    zbuffer[stripIdx] = 0.847826 * dist;
     //permadi floorcasting
     if(floor){
       for(var y = Math.round(top+height-stripWidth); y < screenHeight; y+=stripWidth){
@@ -854,7 +854,7 @@ function renderSprites(){
         //2) it's on the screen (left)
         //3) it's on the screen (right)
         //4) ZBuffer, with perpendicular distance
-        if(transformY > 0 && stripe >= 0 && stripe < screenWidth && transformY < (0.847826 * zbuffer[Math.floor(stripe/stripWidth)])){
+        if(transformY > 0 && stripe >= 0 && stripe < screenWidth && transformY < zbuffer[Math.floor(stripe/stripWidth)]){
           ctx.drawImage(sprites[num].texture, Math.floor((texX%1)*sprites[num].texture.width), 0,
             1, sprites[num].texture.height,
             stripe, drawStartY, stripWidth, spriteHeight);
