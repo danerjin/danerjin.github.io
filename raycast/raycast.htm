@@ -261,7 +261,9 @@ var player = {
   height: 0.5, // player height
   zSpeed: 0,
   isJumping: false,
-  speedMult: 1
+  speedMult: 1,
+  weapon:0,
+  weaponState:0
 }
 var screenWidth = 480;
 var screenHeight = 270;
@@ -695,7 +697,7 @@ function castSingleRay(rayAngle, stripIdx) {
     		var wallY = Math.floor(y);
     		// is this point inside a wall block?
     		if(map[wallY][wallX] !== map[Math.floor(player.y)][Math.floor(player.x)]) {
-          if(map[Math.floor(player.y)][Math.floor(player.x)]==8||map[Math.floor(player.y)][Math.floor(player.x)]==10){
+          if(map[Math.floor(player.y)][Math.floor(player.x)]===8||map[Math.floor(player.y)][Math.floor(player.x)]===10){
             x_maybe=x+dXVer/2;
             y_maybe=y+dYVer/2;
             if((y_maybe-Math.floor(y_maybe)) <= 1-doorOffsets[wallY][wallX]){
@@ -753,7 +755,7 @@ function castSingleRay(rayAngle, stripIdx) {
   		var wallY = Math.floor(y + (up ? -1 : 0));
   		var wallX = Math.floor(x);
   		if(map[wallY][wallX]  !== map[Math.floor(player.y)][Math.floor(player.x)]) {
-        if(map[Math.floor(player.y)][Math.floor(player.x)]==8||map[Math.floor(player.y)][Math.floor(player.x)]==10){
+        if(map[Math.floor(player.y)][Math.floor(player.x)]===8 || map[Math.floor(player.y)][Math.floor(player.x)]===10){
           x_maybe=x+dXHor/2;
           y_maybe=y+dYHor/2;
           if((x_maybe-Math.floor(x_maybe)) <= 1-doorOffsets[wallY][wallX]){
