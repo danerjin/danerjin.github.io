@@ -446,8 +446,8 @@ function renderCycle() {
   rayDirX1 = dirX + planeX;
   rayDirY1 = dirY + planeY;
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
+  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#b69f66');}
   drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#429bf5');
-  if(!floor){drawFillRectangle(0,screenHeight/2-player.pitch+25*(player.height+player.z-0.5),screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#b69f66');}
   updateMiniMap();
   //castFloorAndCeilingRaysLode();
 	castWallRays();
@@ -854,7 +854,7 @@ function renderSprites(){
         //2) it's on the screen (left)
         //3) it's on the screen (right)
         //4) ZBuffer, with perpendicular distance
-        if(transformY > 0 && stripe >= 0 && stripe < screenWidth && transformY < 0.847826 * zbuffer[Math.floor(stripe/stripWidth)]){
+        if(transformY > 0 && stripe >= 0 && stripe < screenWidth && transformY < (0.847826 * zbuffer[Math.floor(stripe/stripWidth)])){
           ctx.drawImage(sprites[num].texture, Math.floor((texX%1)*sprites[num].texture.width), 0,
             1, sprites[num].texture.height,
             stripe, drawStartY, stripWidth, spriteHeight);
