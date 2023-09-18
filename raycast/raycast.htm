@@ -182,11 +182,25 @@ var ceilinglayout = [
   [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]
 ];
 var sprites = [
-  new Sprite(2.5,5,'greenlight',false,0.1),
-  new Sprite(2.5,8,'greenlight',false,0.1),
-  new Sprite(16.5,12,'pillar',true,0.6),
-  new Sprite(17.5,12,'pillar',true,0.6),
-  new Sprite(18.5,12,'pillar',true,0.6),
+  new Sprite(20.5,11.5,"greenlight",true,0.6),
+  new Sprite(18.5,4.5,"greenlight",true,0.6),
+  new Sprite(10,4.5,"greenlight",true,0.6),
+  new Sprite(10,12.5,"greenlight",true,0.6),
+  new Sprite(3.5,6.5,"greenlight",true,0.6),
+  new Sprite(3.5,20.5,"greenlight",true,0.6),
+  new Sprite(3.5,14.5,"greenlight",true,0.6),
+  new Sprite(14.5,20.5,"greenlight",true,0.6),
+  new Sprite(18.5,10.5,"pillar",true,0.6),
+  new Sprite(18.5,11.5,"pillar",true,0.6),
+  new Sprite(18.5,12.5,"pillar",true,0.6),
+  new Sprite(21.5,1.5,"barrel",true,0.6),
+  new Sprite(15.5,1.5,"barrel",true,0.6),
+  new Sprite(16,1.8,"barrel",true,0.6),
+  new Sprite(16.2,1.2,"barrel",true,0.6),
+  new Sprite(3.5,2.5,"barrel",true,0.6),
+  new Sprite(9.5,15.5,"barrel",true,0.6),
+  new Sprite(10,15.1,"barrel",true,0.6),
+  new Sprite(10.5,15.8,"barrel",true,0.6)
 ]
 var spriteDistance = new Array(sprites.length);
 var spriteOrder = new Array(sprites.length);
@@ -219,8 +233,8 @@ var overlay;
 gravity = 0.01
 var stripWidth = 2;
 var player = {
-	x : 2.5,		// current x, y position
-	y : 2,
+	x : 22,		// current x, y position
+	y : 11.5,
 	dir : 0,		// the direction that the player is turning, either -1 for left or 1 for right.
 	rotDeg : 90,		// the current angle of rotation
 	rot : 0,		// rotation in radians
