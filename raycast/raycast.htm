@@ -179,25 +179,25 @@ var ceilinglayout = [
   [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]
 ];
 var sprites = [
-  new Sprite(20.5,11.5,"greenlight",false,0.6),
-  new Sprite(18.5,4.5,"greenlight",false,0.6),
-  new Sprite(10,4.5,"greenlight",false,0.6),
-  new Sprite(10,12.5,"greenlight",false,0.6),
-  new Sprite(3.5,6.5,"greenlight",false,0.6),
-  new Sprite(3.5,20.5,"greenlight",false,0.6),
-  new Sprite(3.5,14.5,"greenlight",false,0.6),
-  new Sprite(14.5,20.5,"greenlight",false,0.6),
-  new Sprite(18.5,10.5,"pillar",true,0.6),
-  new Sprite(18.5,11.5,"pillar",true,0.6),
-  new Sprite(18.5,12.5,"pillar",true,0.6),
-  new Sprite(21.5,1.5,"barrel",true,0.6),
-  new Sprite(15.5,1.5,"barrel",true,0.6),
-  new Sprite(16,1.8,"barrel",true,0.6),
-  new Sprite(16.2,1.2,"barrel",true,0.6),
-  new Sprite(3.5,2.5,"barrel",true,0.6),
-  new Sprite(9.5,15.5,"barrel",true,0.6),
-  new Sprite(10,15.1,"barrel",true,0.6),
-  new Sprite(10.5,15.8,"barrel",true,0.6)
+  new Sprite(20,11,"greenlight",false,0.6),
+  new Sprite(18,4,"greenlight",false,0.6),
+  new Sprite(9.5,4,"greenlight",false,0.6),
+  new Sprite(9.5,12,"greenlight",false,0.6),
+  new Sprite(3,6,"greenlight",false,0.6),
+  new Sprite(3,20,"greenlight",false,0.6),
+  new Sprite(3,14,"greenlight",false,0.6),
+  new Sprite(14,20,"greenlight",false,0.6),
+  new Sprite(18,10,"pillar",true,0.6),
+  new Sprite(18,11,"pillar",true,0.6),
+  new Sprite(18,12,"pillar",true,0.6),
+  new Sprite(21,1,"barrel",true,0.6),
+  new Sprite(15,1,"barrel",true,0.6),
+  new Sprite(15.5,1.2,"barrel",true,0.6),
+  new Sprite(16.2,0.7,"barrel",true,0.6),
+  new Sprite(3,2,"barrel",true,0.6),
+  new Sprite(9,15,"barrel",true,0.6),
+  new Sprite(9.5,14.6,"barrel",true,0.6),
+  new Sprite(10,15.3,"barrel",true,0.6)
 ]
 window.mobileAndTabletCheck = function() {
   let check = false;
@@ -248,7 +248,6 @@ var screenHeight = 270;
 var miniMapScale = 8;
 
 var fov = 60 * Math.PI / 180;
-
 var numRays = Math.ceil(screenWidth / stripWidth);
 var fovHalf = fov / 2;
 
@@ -448,7 +447,7 @@ function renderCycle() {
   rayDirY1 = dirY + planeY;
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
   drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#429bf5');
-  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#b69f66');}
+  if(!floor){drawFillRectangle(0,screenHeight/2-player.pitch+25*(player.height+player.z-0.5),screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#b69f66');}
   updateMiniMap();
   //castFloorAndCeilingRaysLode();
 	castWallRays();
@@ -855,7 +854,7 @@ function renderSprites(){
         //2) it's on the screen (left)
         //3) it's on the screen (right)
         //4) ZBuffer, with perpendicular distance
-        if(transformY > 0 && stripe >= 0 && stripe < screenWidth && transformY < zbuffer[Math.floor(stripe/stripWidth)]){
+        if(transformY > 0 && stripe >= 0 && stripe < screenWidth && transformY < 0.847826 * zbuffer[Math.floor(stripe/stripWidth)]){
           ctx.drawImage(sprites[num].texture, Math.floor((texX%1)*sprites[num].texture.width), 0,
             1, sprites[num].texture.height,
             stripe, drawStartY, stripWidth, spriteHeight);
