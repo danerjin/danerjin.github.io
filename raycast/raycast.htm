@@ -143,7 +143,7 @@ for (var i = 0; i < mapHeight; i++) {
 }
 
 doorOffsets[6][4] = 0.75
-doorStates[6][4] = 1
+doorStates[6][4] = 0;
 /*
 8 and 10 - doors
 */
@@ -797,7 +797,7 @@ function castSingleRay(rayAngle, stripIdx) {
   	}
   }
 	if(dist) {
-		drawRay(xHit, yHit);
+		//drawRay(xHit, yHit);
     side = 1;
 
     dist = Math.sqrt(dist);
@@ -1106,7 +1106,7 @@ function isBlocking(x,y) {
 	// return true if the map block is not 0, ie. if there is a blocking wall.
 	if(map[iy][ix] !== 0){
     if(map[iy][ix] !== 8 && map[iy][ix] !== 10){return true;}
-		else{if(doorOffsets < 0.5){return true;}}
+		else{if(doorOffsets[iy][ix] < 0.5){return true;}}
   }
   for(var i = 0; i < sprites.length;i++){
     sprite = sprites[i];
