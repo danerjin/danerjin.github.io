@@ -106,7 +106,7 @@ var map = [
   [2,0,0,0,0,0,0,0,0,0,2,4,0,0,0,0,0,6,6,6,8,6,4,6],
   [2,7,7,7,8,7,7,7,7,2,2,4,4,4,4,4,4,6,0,0,0,0,0,6],
   [7,0,0,0,0,0,0,0,0,0,2,0,2,0,2,0,2,4,0,4,0,6,0,6],
-  [7,7,0,0,0,0,0,0,7,2,0,2,0,2,0,2,2,6,0,0,0,0,0,6],
+  [7,0,0,0,0,0,0,0,7,2,0,2,0,2,0,2,2,6,0,0,0,0,0,6],
   [7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,6,0,0,0,0,0,4],
   [7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,6,0,6,0,6,0,6],
   [7,7,0,0,0,0,0,0,7,2,0,2,0,2,0,2,2,6,4,6,0,6,6,6],
@@ -141,9 +141,6 @@ for (var i = 0; i < mapHeight; i++) {
     doorStates[i][j] = 0;
   }
 }
-
-doorOffsets[6][4] = 0.75
-doorStates[6][4] = 0;
 /*
 8 and 10 - doors
 */
@@ -208,17 +205,17 @@ var sprites = [
   new Sprite(3,20,"greenlight",false,0.6),
   new Sprite(3,14,"greenlight",false,0.6),
   new Sprite(14,20,"greenlight",false,0.6),
+  new Sprite(2,7,"pillar",true,0.6),
+  new Sprite(2,8,"pillar",true,0.6),
   new Sprite(2,9,"pillar",true,0.6),
-  new Sprite(2,10,"pillar",true,0.6),
-  new Sprite(2,11,"pillar",true,0.6),
   new Sprite(21,2,"barrel",true,0.6),
   new Sprite(15,2,"barrel",true,0.6),
   new Sprite(15.5,1.2,"barrel",true,0.6),
   new Sprite(16.2,0.7,"barrel",true,0.6),
   new Sprite(3,2,"barrel",true,0.6),
-  new Sprite(9,11,"barrel",true,0.6),
-  new Sprite(9.5,11,"barrel",true,0.6),
-  new Sprite(10,11,"barrel",true,0.6)
+  new Sprite(9,10,"barrel",true,0.6),
+  new Sprite(9.5,10,"barrel",true,0.6),
+  new Sprite(10,10,"barrel",true,0.6)
 ]
 window.mobileAndTabletCheck = function() {
   let check = false;
