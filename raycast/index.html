@@ -68,7 +68,7 @@
 <div id="debug"></div>
 <script src="joy.js"></script>
 <script type="text/javascript">
-
+var isPressingG = false;
 // just a few helper functions
 var $ = function(id) { return document.getElementById(id); };
 var dc = function(tag) { return document.createElement(tag); };
@@ -98,19 +98,19 @@ var Sprite = function(x,y,texture,block,hitbox){
   this.hitbox = hitbox;
 }
 var map = [
-  [8,8,8,8,8,8,8,8,8,8,8,4,4,6,4,4,6,4,6,4,4,4,6,4],
-  [8,0,0,0,0,0,0,0,0,0,8,4,0,0,0,0,0,0,0,0,0,0,0,4],
-  [8,0,3,3,0,0,0,0,0,8,8,4,0,0,0,0,0,0,0,0,0,0,0,6],
-  [8,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6],
-  [8,0,3,3,0,0,0,0,0,8,8,4,0,0,0,0,0,0,0,0,0,0,0,4],
-  [8,0,0,0,0,0,0,0,0,0,8,4,0,0,0,0,0,6,6,6,0,6,4,6],
-  [8,8,8,8,0,8,8,8,8,8,8,4,4,4,4,4,4,6,0,0,0,0,0,6],
-  [7,7,7,7,0,7,7,7,7,0,8,0,8,0,8,0,8,4,0,4,0,6,0,6],
-  [7,7,0,0,0,0,0,0,7,8,0,8,0,8,0,8,8,6,0,0,0,0,0,6],
-  [7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,6,0,0,0,0,0,4],
-  [7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,6,0,6,0,6,0,6],
-  [7,7,0,0,0,0,0,0,7,8,0,8,0,8,0,8,8,6,4,6,0,6,6,6],
-  [7,7,7,7,0,7,7,7,7,8,8,4,0,6,8,4,8,3,3,3,0,3,3,3],
+  [2,2,2,2,2,2,2,2,2,2,2,4,4,6,4,4,6,4,6,4,4,4,6,4],
+  [2,0,0,0,0,0,0,0,0,0,2,4,0,0,0,0,0,0,0,0,0,0,0,4],
+  [2,0,3,3,0,0,0,0,0,2,2,4,0,0,0,0,0,0,0,0,0,0,0,6],
+  [2,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6],
+  [2,0,3,3,0,0,0,0,0,2,2,4,0,0,0,0,0,0,0,0,0,0,0,4],
+  [2,0,0,0,0,0,0,0,0,0,2,4,0,0,0,0,0,6,6,6,0,6,4,6],
+  [2,7,7,7,8,7,7,7,7,2,2,4,4,4,4,4,4,6,0,0,0,0,0,6],
+  [7,0,0,0,0,0,0,0,0,0,2,0,2,0,2,0,2,4,0,4,0,6,0,6],
+  [7,7,0,0,0,0,0,0,7,2,0,2,0,2,0,2,2,6,0,0,0,0,0,6],
+  [7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,6,0,0,0,0,0,4],
+  [7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,6,0,6,0,6,0,6],
+  [7,7,0,0,0,0,0,0,7,2,0,2,0,2,0,2,2,6,4,6,0,6,6,6],
+  [7,7,7,7,0,7,7,7,7,2,2,4,0,6,2,4,2,3,3,3,0,3,3,3],
   [2,2,2,2,0,2,2,2,2,4,6,4,0,0,6,0,6,3,0,0,0,0,0,3],
   [2,2,0,0,0,0,0,2,2,4,0,0,0,0,0,0,4,3,0,0,0,0,0,3],
   [2,0,0,0,0,0,0,0,2,4,0,0,0,0,0,0,4,3,0,0,0,0,0,3],
@@ -123,8 +123,28 @@ var map = [
   [2,2,0,0,0,0,0,2,2,2,0,0,0,2,2,0,5,0,5,0,0,0,5,5],
   [2,2,2,2,1,2,2,2,2,2,2,1,2,2,2,5,5,5,5,5,5,5,5,5]
 ];
-/*
+var mapWidth = map[0].length;
+var mapHeight = map.length;
+var doorStates = new Array(mapHeight);
+// 1 is opening, 0 is closing, 0.5 is for stationary
+for (var i = 0; i < mapHeight; i++) {
+  doorStates[i] = new Array(mapWidth);
+  for (var j = 0; j < mapWidth; j++) {
+    doorStates[i][j] = 0.5;
+  }
+}
+var doorOffsets = new Array(mapHeight);
+//how much is extended
+for (var i = 0; i < mapHeight; i++) {
+  doorOffsets[i] = new Array(mapWidth);
+  for (var j = 0; j < mapWidth; j++) {
+    doorStates[i][j] = 0;
+  }
+}
 
+doorOffsets[6][4] = 0.75
+/*
+8 and 10 - doors
 */
 var floorlayout = [
   [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],
@@ -179,25 +199,25 @@ var ceilinglayout = [
   [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]
 ];
 var sprites = [
-  new Sprite(20,11,"greenlight",false,0.6),
+  new Sprite(21.5,11,"greenlight",false,0.6),
   new Sprite(18,4,"greenlight",false,0.6),
   new Sprite(9.5,4,"greenlight",false,0.6),
-  new Sprite(9.5,12,"greenlight",false,0.6),
+  new Sprite(9.5,11,"greenlight",false,0.6),
   new Sprite(3,6,"greenlight",false,0.6),
   new Sprite(3,20,"greenlight",false,0.6),
   new Sprite(3,14,"greenlight",false,0.6),
   new Sprite(14,20,"greenlight",false,0.6),
-  new Sprite(18,10,"pillar",true,0.6),
-  new Sprite(18,11,"pillar",true,0.6),
-  new Sprite(18,12,"pillar",true,0.6),
-  new Sprite(21,1,"barrel",true,0.6),
-  new Sprite(15,1,"barrel",true,0.6),
+  new Sprite(2,10,"pillar",true,0.6),
+  new Sprite(2,11,"pillar",true,0.6),
+  new Sprite(2,12,"pillar",true,0.6),
+  new Sprite(21,2,"barrel",true,0.6),
+  new Sprite(15,2,"barrel",true,0.6),
   new Sprite(15.5,1.2,"barrel",true,0.6),
   new Sprite(16.2,0.7,"barrel",true,0.6),
   new Sprite(3,2,"barrel",true,0.6),
-  new Sprite(9,15,"barrel",true,0.6),
-  new Sprite(9.5,14.6,"barrel",true,0.6),
-  new Sprite(10,15.3,"barrel",true,0.6)
+  new Sprite(9,11,"barrel",true,0.6),
+  new Sprite(9.5,11,"barrel",true,0.6),
+  new Sprite(10,11,"barrel",true,0.6)
 ]
 window.mobileAndTabletCheck = function() {
   let check = false;
@@ -241,7 +261,9 @@ var player = {
   height: 0.5, // player height
   zSpeed: 0,
   isJumping: false,
-  speedMult: 1
+  speedMult: 1,
+  weapon:0,
+  weaponState:0
 }
 var screenWidth = 480;
 var screenHeight = 270;
@@ -307,8 +329,6 @@ function init() {
   });
   drawFillRectangle(0,0,screenWidth,screenHeight/2,'#429bf5');
   drawFillRectangle(0,screenHeight/2,screenWidth,screenHeight/2,'#c0a570');
-	mapWidth = map[0].length;
-	mapHeight = map.length;
 	bind();
 
 	drawMiniMap();
@@ -433,8 +453,6 @@ var drawCeilRectangle = function(x, y, width, height, xOffset,yOffset,texture){
 		1, 1,
 		x, y, width, height);
 }
-
-
 function renderCycle() {
   posZ = (player.height+player.z) * screenHeight;
   dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
@@ -484,7 +502,9 @@ function bind() {
 		e = e || window.event;
 
 		switch (e.keyCode) { // which key was pressed?
-
+      case 71:
+        isPressingG = true;
+        break;
   		case 82: // sprint
         player.speedMult = 1.5
         player.height = 0.5
@@ -536,6 +556,9 @@ function bind() {
 		e = e || window.event;
 
 		switch (e.keyCode) {
+      case 71:
+        isPressingG = false;
+        break;
       case 82:
   		case 16: // up
   			player.height = 0.5;
@@ -666,31 +689,51 @@ function castSingleRay(rayAngle, stripIdx) {
   	var dYVer = dXVer * slope; 	// how much to move up or down
   	var x = right ? Math.ceil(player.x) : Math.floor(player.x);	// starting horizontal position, at one of the edges of the current map block
   	var y = player.y + (x - player.x) * slope;			// starting vertical position. We add the small horizontal step we just made, multiplied by the slope.
-    var prevWallX = Math.floor(player.x);
-    var prevWallY = Math.floor(player.y);
 
     while (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight) {
     		var wallX = Math.floor(x + (right ? 0 : -1));
     		var wallY = Math.floor(y);
     		// is this point inside a wall block?
-    		if(map[wallY][wallX] !== map[Math.floor(player.y)][Math.floor(player.x)]) {
-    			var distX = x - player.x;
-    			var distY = y - player.y;
-    			dist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
+    		if(map[wallY][wallX]!== 0){
+          if(map[wallY][wallX]===8||map[wallY][wallX]===10){
+            x_maybe=x+dXVer/2;
+            y_maybe=y+dYVer/2;
+            if((y_maybe-wallY) <= 1-doorOffsets[wallY][wallX]){
+              var distX = x_maybe - player.x;
+        			var distY = y_maybe - player.y;
+              dist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
 
-    			wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
-    			textureX = y % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
-    			if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+        			wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
+        			textureX = (y_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
+        			if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
-    			xHit = x;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
-    			yHit = y;
+        			xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
+        			yHit = y_maybe;
 
-    			// make horizontal walls shaded
-    			wallIsShaded = true;
-    			break;
+        			// make horizontal walls shaded
+        			wallIsShaded = true;
+        			break;
+            }
+          }
+          else{
+            var distXMaybe = x - player.x;
+      			var distYMaybe = y - player.y;
+      			blockDist = distXMaybe*distXMaybe + distYMaybe*distYMaybe;	// the distance from the player to this point, squared.
+            if(!dist || distMaybe<=dist){
+              dist = blockDist;
+        			wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
+        			textureX = y % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
+        			if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+
+        			xHit = x;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
+        			yHit = y;
+
+        			// make horizontal walls shaded
+        			wallIsShaded = true;
+        			break;
+            }
+          }
     		}
-        prevWallX = wallX;
-        prevWallY = wallY;
         x += dXVer;
     		y += dYVer;
   	}
@@ -699,42 +742,61 @@ function castSingleRay(rayAngle, stripIdx) {
   	// the only difference here is that once we hit a map block,
   	// we check if there we also found one in the earlier, vertical run. We'll know that if dist != 0.
   	// If so, we only register this hit if this distance is smaller.
-    thinga = 1;
   	var slope = angleCos / angleSin;
   	var dYHor = up ? -1 : 1;
   	var dXHor = dYHor * slope;
   	var y = up ? Math.floor(player.y) : Math.ceil(player.y);
   	var x = player.x + (y - player.y) * slope;
-    var prevWallXHor = Math.floor(player.x);
-    var prevWallYHor = Math.floor(player.y);
   	while (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight) {
   		var wallY = Math.floor(y + (up ? -1 : 0));
   		var wallX = Math.floor(x);
-  		if(map[wallY][wallX]  !== map[Math.floor(player.y)][Math.floor(player.x)]) {
-  			var distX = x - player.x;
-  			var distY = y - player.y;
-  			var blockDist = distX*distX + distY*distY;
-  			if(!dist || blockDist < dist) {
-  				dist = blockDist;
-  				xHit = x;
-  				yHit = y;
+  		if(map[wallY][wallX]  !== 0) {
+        if(map[wallY][wallX]===8 || map[wallY][wallX]===10){
+          x_maybe=x+dXHor/2;
+          y_maybe=y+dYHor/2;
+          if(x_maybe-wallX <= 1-doorOffsets[wallY][wallX]){
+            var distX = x_maybe - player.x;
+            var distY = y_maybe - player.y;
+            var blockDist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
+            if(!dist || blockDist < dist) {
+              dist = blockDist;
+              wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
+              textureX = (x_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
+              if(up) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
-  				wallType = map[wallY][wallX];
-  				textureX = x % 1;
-  				if(up) textureX = 1 - textureX;
+              xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
+              yHit = y_maybe;
 
-  				wallIsShaded = false;
-  			}
-  			break;
+              // make horizontal walls shaded
+              wallIsShaded = true;
+              break;
+            }
+          }
+        }
+  			else{
+          var distXMaybe = x - player.x;
+    			var distYMaybe = y - player.y;
+    			var blockDist = distXMaybe*distXMaybe + distYMaybe*distYMaybe;
+    			if(!dist || blockDist <= dist) {
+    				dist = blockDist;
+    				xHit = x;
+    				yHit = y;
+
+    				wallType = map[wallY][wallX];
+    				textureX = x % 1;
+    				if(up) textureX = 1 - textureX;
+
+    				wallIsShaded = false;
+    			}
+    			break;
+        }
   		}
-      prevWallXHor = wallX;
-      prevWallYHor = wallY;
   		x += dXHor;
   		y += dYHor;
   	}
   }
 	if(dist) {
-		//drawRay(xHit, yHit);
+		drawRay(xHit, yHit);
     side = 1;
 
     dist = Math.sqrt(dist);
@@ -881,10 +943,33 @@ function drawRay(rayX, rayY) {
 
 function move(timeDelta) {
 
+  var mul = timeDelta / gameCycleDelay;
 	// time timeDelta has passed since we moved last time. We should have moved after time gameCycleDelay,
 	// so calculate how much we should multiply our movement to ensure game speed is constant
+  var x_target,y_target;
+  if(isPressingG){
+    if(Math.abs(dirX)>Math.abs(dirY)){
+      x_target = Math.floor(player.x)+Math.round(dirX/Math.abs(dirX))
+      y_target = Math.floor(player.y)
+    }else{
+      x_target = Math.floor(player.x)
+      y_target = Math.floor(player.y)+Math.round(dirY/Math.abs(dirY))
+    }
+  }
+  if(map[y_target][x_target] === 8 || map[y_target][x_target] === 10){
+    doorStates[y_target][x_target] = 1-Math.round(doorOffsets[y_target][x_target]);
+  }
+  for (var y=0;y<mapHeight;y++) {
+    for (var x=0;x<mapWidth;x++) {
+      wall = map[y][x];
+      if(wall === 8 || wall === 10){
+        if(doorOffsets[y][x]+(doorStates[y][x]-0.5)*mul*0.02 >= 1){doorOffsets[y][x] = 1;doorStates[y][x]=0.5;}
+        else if(doorOffsets[y][x]+(doorStates[y][x]-0.5)*mul*0.02 <= 0.2){doorOffsets[y][x] = 0;doorStates[y][x]=0.5;}
+        else{doorOffsets[y][x]+=(doorStates[y][x]-0.5)*mul*0.02;}
+      }
+    }
+  }
   if (player.y >= 0.001){player.moveSpeed = 0.05;}else{player.moveSpeed = 0.069}
-	var mul = timeDelta / gameCycleDelay;
 
 	var moveStep = mul * player.speed * player.moveSpeed*player.speedMult;	// player will move this far along the current direction vector
 
@@ -895,14 +980,14 @@ function move(timeDelta) {
 	player.rotDeg = player.rotDeg % 360;
   if(-screenHeight/2 < player.pitch+mul*player.pitchChange && player.pitch+mul*player.pitchChange < screenHeight/2){
     player.pitch += mul*player.pitchChange;
-  }else{
-    if(player.pitch+mul*player.pitchChange<-screenHeight/2 && player.pitchChange > 0){
-      player.pitch += mul*player.pitchChange;
     }else{
-      if(player.pitch+mul*player.pitchChange>screenHeight/2 && player.pitchChange < 0){
+      if(player.pitch+mul*player.pitchChange<-screenHeight/2 && player.pitchChange > 0){
         player.pitch += mul*player.pitchChange;
+      }else{
+        if(player.pitch+mul*player.pitchChange>screenHeight/2 && player.pitchChange < 0){
+          player.pitch += mul*player.pitchChange;
+        }
       }
-    }
   }
 	var snap = (player.rotDeg+360) % 90
 	if(snap < 2 || snap > 88) {
@@ -1019,7 +1104,8 @@ function isBlocking(x,y) {
 	var iy = Math.floor(y);
 	// return true if the map block is not 0, ie. if there is a blocking wall.
 	if(map[iy][ix] !== 0){
-		return true;
+    if(map[iy][ix] !== 8 && map[iy][ix] !== 10){return true;}
+		else{if(doorOffsets < 0.5){return true;}}
   }
   for(var i = 0; i < sprites.length;i++){
     sprite = sprites[i];
