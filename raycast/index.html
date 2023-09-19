@@ -138,7 +138,7 @@ var doorOffsets = new Array(mapHeight);
 for (var i = 0; i < mapHeight; i++) {
   doorOffsets[i] = new Array(mapWidth);
   for (var j = 0; j < mapWidth; j++) {
-    doorStates[i][j] = 1;
+    doorOffsets[i][j] = 0;
   }
 }
 /*
@@ -219,7 +219,7 @@ var sprites = [
 ]
 var weapons_imgs = [];
 var weapon_names = ['knife','piston','smg','chaingun'];
-for(var texture = 0; texture < weapons_names.length;texture++){
+for(var texture = 0; texture < weapon_names.length;texture++){
     var weaponTexture = new Image();
   	weaponTexture.crossOrigin = "Anonymous";
   	weaponTexture.src = `sprites/weapons/_${weapons_names[texture]}.png`;
