@@ -100,9 +100,9 @@ var Sprite = function(x,y,texture,block,hitbox){
 var map = [
   [2,2,2,2,2,2,2,2,2,2,2,4,4,6,4,4,6,4,6,4,4,4,6,4],
   [2,0,0,0,0,0,0,0,0,0,2,4,0,0,0,0,0,0,0,0,0,0,0,4],
-  [2,0,3,3,0,0,0,0,0,2,2,4,0,0,0,0,0,0,0,0,0,0,0,6],
-  [2,0,0,3,0,0,0,0,0,0,0,10,0,0,0,0,0,0,0,0,0,0,0,6],
-  [2,0,3,3,0,0,0,0,0,2,2,4,0,0,0,0,0,0,0,0,0,0,0,4],
+  [2,0,0,0,0,0,0,0,0,2,2,4,0,0,0,0,0,0,0,0,0,0,0,6],
+  [2,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,0,0,0,0,0,0,0,6],
+  [2,0,0,0,0,0,0,0,0,2,2,4,0,0,0,0,0,0,0,0,0,0,0,4],
   [2,0,0,0,0,0,0,0,0,0,2,4,0,0,0,0,0,6,6,6,8,6,4,6],
   [2,7,7,7,8,7,7,7,7,2,2,4,4,4,4,4,4,6,0,0,0,0,0,6],
   [7,0,0,0,0,0,0,0,0,0,2,0,2,0,2,0,2,4,0,4,0,6,0,6],
@@ -141,8 +141,17 @@ for (var i = 0; i < mapHeight; i++) {
     doorOffsets[i][j] = 0;
   }
 }
+var doorTimers = new Array(mapHeight);
+//timers for door closing
+for (var i = 0; i < mapHeight; i++) {
+  doorTimers[i] = new Array(mapWidth);
+  for (var j = 0; j < mapWidth; j++) {
+    doorTimes[i][j] = 0;
+  }
+}
 /*
-8 and 10 - doors
+8, 9, and 10 - doors
+11 - secret push wall, wood texture
 */
 var floorlayout = [
   [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],
@@ -966,7 +975,7 @@ function move(timeDelta) {
     }
     count = 0;
     while(1){
-      if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 10){
+      if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 9 || map[Math.floor(y_target)][Math.floor(x_target)] === 10){
         doorStates[Math.floor(y_target)][Math.floor(x_target)] = 1-Math.round(doorOffsets[Math.floor(y_target)][Math.floor(x_target)]);
         break;
       }else{
@@ -980,10 +989,14 @@ function move(timeDelta) {
   for (var y=0;y<mapHeight;y++) {
     for (var x=0;x<mapWidth;x++) {
       wall = map[y][x];
-      if(wall === 8 || wall === 10){
+      if(wall === 8 || wall === 9 || wall === 10){
         if(doorOffsets[y][x]+(doorStates[y][x]-0.5)*mul*0.02 >= 0.9){doorOffsets[y][x] = 0.9;doorStates[y][x]=0.5;}
         else if(doorOffsets[y][x]+(doorStates[y][x]-0.5)*mul*0.02 <= 0){doorOffsets[y][x] = 0;doorStates[y][x]=0.5;}
         else{doorOffsets[y][x]+=(doorStates[y][x]-0.5)*mul*0.02;}
+        if(doorStates[y][x]==0.5 && doorOffsets[y][x] >= 0.9){
+          if(doorTimers[y][x]+mul*0.01 >= 1){doorTimers[y][x]=0;doorStates[y][x]=0;}
+          else{doorTimers[y][x]+=mul*0.01;}
+        };
       }
     }
   }
