@@ -968,6 +968,7 @@ function move(timeDelta) {
         x_target+=x_move;
         y_target+=y_move;
       }
+      count++;
       if(count>2||Math.floor(y_target)>=mapHeight||Math.floor(y_target)<0||Math.floor(x_target)>=mapWidth||Math.floor(x_target)<0){break;}
     }
   }
