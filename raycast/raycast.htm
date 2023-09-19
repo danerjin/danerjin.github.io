@@ -965,7 +965,7 @@ function move(timeDelta) {
       wall = map[y][x];
       if(wall === 8 || wall === 10){
         if(doorOffsets[y][x]+(doorStates[y][x]-0.5)*mul*0.02 >= 1){doorOffsets[y][x] = 1;doorStates[y][x]=0.5;}
-        else if(doorOffsets[y][x]+(doorStates[y][x]-0.5)*mul*0.02 <= 0.2){doorOffsets[y][x] = 0;doorStates[y][x]=0.5;}
+        else if(doorOffsets[y][x]+(doorStates[y][x]-0.5)*mul*0.02 <= 0){doorOffsets[y][x] = 0;doorStates[y][x]=0.5;}
         else{doorOffsets[y][x]+=(doorStates[y][x]-0.5)*mul*0.02;}
       }
     }
