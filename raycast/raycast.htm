@@ -959,6 +959,7 @@ function move(timeDelta) {
       x_move = Math.round(dirX/Math.abs(dirY));
       y_move = Math.round(dirY/Math.abs(dirY));
     }
+    count = 0;
     while(1){
       if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 10){
         doorStates[Math.floor(y_target)][Math.floor(x_target)] = 1-Math.round(doorOffsets[Math.floor(y_target)][Math.floor(x_target)]);
@@ -967,6 +968,7 @@ function move(timeDelta) {
         x_target+=x_move;
         y_target+=y_move;
       }
+      if(count>10||Math.floor(y_target)>=mapHeight||Math.floor(y_target)<mapHeight||Math.floor(y_target)||Math.floor(x_target)>=mapWidth||Math.floor(x_target)<0){break;}
     }
   }
   for (var y=0;y<mapHeight;y++) {
