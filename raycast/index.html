@@ -223,7 +223,7 @@ for(var texture = 0; texture < weapon_names.length;texture++){
     var weaponTexture = new Image();
   	weaponTexture.crossOrigin = "Anonymous";
   	weaponTexture.src = `sprites/weapons/_${weapon_names[texture]}.png`;
-    weaponTextures.push(weaponTexture);
+    weapon_imgs.push(weaponTexture);
 }
 window.mobileAndTabletCheck = function() {
   let check = false;
