@@ -205,9 +205,9 @@ var sprites = [
   new Sprite(3,20,"greenlight",false,0.6),
   new Sprite(3,14,"greenlight",false,0.6),
   new Sprite(14,20,"greenlight",false,0.6),
-  new Sprite(2,7,"pillar",true,0.6),
   new Sprite(2,8,"pillar",true,0.6),
   new Sprite(2,9,"pillar",true,0.6),
+  new Sprite(2,10,"pillar",true,0.6),
   new Sprite(21,2,"barrel",true,0.6),
   new Sprite(15,2,"barrel",true,0.6),
   new Sprite(15.5,1.2,"barrel",true,0.6),
@@ -222,7 +222,7 @@ var weapon_names = ['knife','piston','smg','chaingun'];
 for(var texture = 0; texture < weapon_names.length;texture++){
     var weaponTexture = new Image();
   	weaponTexture.crossOrigin = "Anonymous";
-  	weaponTexture.src = `sprites/weapons/_${weapon_names[texture]}.png`;
+  	weaponTexture.src = `sprites/weapons/${weapon_names[texture]}.png`;
     weapons_imgs.push(weaponTexture);
 }
 window.mobileAndTabletCheck = function() {
@@ -922,7 +922,7 @@ function renderSprites(){
         //2) it's on the screen (left)
         //3) it's on the screen (right)
         //4) ZBuffer, with perpendicular distance
-        if(transformY > 0 && stripe >= 0 && stripe < screenWidth && transformY < zbuffer[Math.floor(stripe/stripWidth)]){
+        if(transformY > 0 && stripe >= 0 && stripe < screenWidth && transformY < Math.tan(fovHalf)*zbuffer[Math.floor(stripe/stripWidth)]){
           ctx.drawImage(sprites[num].texture, Math.floor((texX%1)*sprites[num].texture.width), 0,
             1, sprites[num].texture.height,
             stripe, drawStartY, stripWidth, spriteHeight);
