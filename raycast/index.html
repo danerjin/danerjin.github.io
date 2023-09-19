@@ -955,9 +955,9 @@ function move(timeDelta) {
       x_target = Math.floor(player.x)
       y_target = Math.floor(player.y)+Math.round(dirY/Math.abs(dirY))
     }
-  }
-  if(map[y_target][x_target] === 8 || map[y_target][x_target] === 10){
-    doorStates[y_target][x_target] = 1-Math.round(doorOffsets[y_target][x_target]);
+    if(map[y_target][x_target] === 8 || map[y_target][x_target] === 10){
+      doorStates[y_target][x_target] = 1-Math.round(doorOffsets[y_target][x_target]);
+    }
   }
   for (var y=0;y<mapHeight;y++) {
     for (var x=0;x<mapWidth;x++) {
