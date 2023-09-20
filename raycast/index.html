@@ -284,11 +284,6 @@ var screenWidth = canvas.width;
 var screenHeight = canvas.height;
 var miniMapScale = 8;
 
-var posZ = (player.height+player.z) * screenHeight;
-var dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
-var dirY = Math.sin(player.rot)/(Math.tan(fovHalf));
-var planeX = -Math.sin(player.rot);
-var planeY = Math.cos(player.rot);
 
 var fov = 60 * Math.PI / 180;
 var numRays = Math.ceil(screenWidth / stripWidth);
@@ -301,6 +296,11 @@ var fps = 0;
 var joyMoving;
 var joyMovingDir;
 
+var posZ = (player.height+player.z) * screenHeight;
+var dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
+var dirY = Math.sin(player.rot)/(Math.tan(fovHalf));
+var planeX = -Math.sin(player.rot);
+var planeY = Math.cos(player.rot);
 var rayDirX0;
 var rayDirY0;
 var rayDirX1;
