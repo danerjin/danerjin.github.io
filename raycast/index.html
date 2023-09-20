@@ -1095,8 +1095,9 @@ function checkCollision(fromX, fromY, toX, toY, radius) {
 		x : fromX,
 		y : fromY
 	};
-	if(toY < 0 || toY >= mapHeight || toX < 0 || toX >= mapWidth)
+	if(toY <= 0 || toY >= mapHeight || toX <= 0 || toX >= mapWidth){
 		return pos;
+  }
   if(isBlocking(fromX,fromY)){return {x:toX,y:toY}}
 
 	var blockX = Math.floor(toX);
