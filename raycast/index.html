@@ -1027,7 +1027,7 @@ function move(timeDelta) {
   while(1){
     if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 9 || map[Math.floor(y_target)][Math.floor(x_target)] === 10){
       ctx.font = "20px Courier New";
-      ctx.fillStyle = "green";
+      ctx.fillStyle = "#00AA00";
       ctx.textAlign = "center";
       ctx.fillText("Press [G] to open door", screenWidth/2, screenHeight-25);
       break;
@@ -1337,5 +1337,3 @@ setTimeout(init, 1);
 
 
 </body>
-
-	
