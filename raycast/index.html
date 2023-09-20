@@ -280,8 +280,8 @@ var player = {
   weapon:0,
   weaponState:0
 }
-var screenWidth = 480;
-var screenHeight = 270;
+var screenWidth = canvas.width;
+var screenHeight = canvas.height;
 var miniMapScale = 8;
 
 var fov = 60 * Math.PI / 180;
@@ -1003,6 +1003,35 @@ function drawRay(rayX, rayY) {
 function move(timeDelta) {
 
   var mul = timeDelta / gameCycleDelay;
+  var x_target,y_target;
+  var x_move,y_move;
+  x_target = Math.floor(player.x);
+  y_target = Math.floor(player.y);
+  if(Math.abs(dirX)>Math.abs(dirY)){
+    x_move = Math.round(dirX/Math.abs(dirX));
+    y_move = Math.round(dirY/Math.abs(dirX));
+  }
+  else{
+    x_move = Math.round(dirX/Math.abs(dirY));
+    y_move = Math.round(dirY/Math.abs(dirY));
+  }
+  count = 0;
+  x_target+=x_move;
+  y_target+=y_move;
+  while(1){
+    if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 9 || map[Math.floor(y_target)][Math.floor(x_target)] === 10){
+      ctx.font = "30px Arial";
+      ctx.fillStyle = "yellow";
+      ctx.textAlign = "center";
+      ctx.fillText("Press [G] to open door", screenWidth/2, screenHeight/2);
+      break;
+    }else{
+      x_target+=x_move;
+      y_target+=y_move;
+    }
+    count++;
+    if(count>2||Math.floor(y_target)>=mapHeight||Math.floor(y_target)<0||Math.floor(x_target)>=mapWidth||Math.floor(x_target)<0){break;}
+  }
 	// time timeDelta has passed since we moved last time. We should have moved after time gameCycleDelay,
 	// so calculate how much we should multiply our movement to ensure game speed is constant
   if(isPressingG){
