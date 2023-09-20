@@ -730,6 +730,28 @@ function castSingleRay(rayAngle, stripIdx) {
         			break;
             }
           }
+          else if(map[wallY][wallX]===11){
+            x_maybe=x+dXVer*doorOffsets[wallY][wallX];
+            y_maybe=y+dYVer*doorOffsets[wallY][wallX];
+            if(y_maybe-wallY <= 1 && y_maybe-wallY >= 0){
+              var distX = x_maybe - player.x;
+              var distY = y_maybe - player.y;
+              var blockDist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
+              if(!dist || blockDist < dist) {
+                dist = blockDist;
+                wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
+                textureX = (y_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
+                if(up) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+
+                xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
+                yHit = y_maybe;
+
+                // make horizontal walls shaded
+                wallIsShaded = true;
+                break;
+              }
+            }
+          }
           else{
             var distXMaybe = x - player.x;
       			var distYMaybe = y - player.y;
@@ -769,7 +791,7 @@ function castSingleRay(rayAngle, stripIdx) {
         if(map[wallY][wallX]===8 || map[wallY][wallX]===9 || map[wallY][wallX]===10){
           x_maybe=x+dXHor/2;
           y_maybe=y+dYHor/2;
-          if(x_maybe-wallX <= 1-doorOffsets[wallY][wallX]){
+          if(x_maybe-wallX <= 1-doorOffsets[wallY][wallX] && x_maybe-wallX >= 0){
             var distX = x_maybe - player.x;
             var distY = y_maybe - player.y;
             var blockDist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
@@ -788,7 +810,29 @@ function castSingleRay(rayAngle, stripIdx) {
             }
           }
         }
-  			else{
+        else if(map[wallY][wallX]===11){
+          x_maybe=x+dXHor*doorOffsets[wallY][wallX];
+          y_maybe=y+dYHor*doorOffsets[wallY][wallX];
+          if(x_maybe-wallX <= 1 && x_maybe-wallX >= 0){
+            var distX = x_maybe - player.x;
+            var distY = y_maybe - player.y;
+            var blockDist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
+            if(!dist || blockDist < dist) {
+              dist = blockDist;
+              wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
+              textureX = (x_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
+              if(up) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+
+              xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
+              yHit = y_maybe;
+
+              // make horizontal walls shaded
+              wallIsShaded = true;
+              break;
+            }
+          }
+        }
+        else{
           var distXMaybe = x - player.x;
     			var distYMaybe = y - player.y;
     			var blockDist = distXMaybe*distXMaybe + distYMaybe*distYMaybe;
@@ -974,6 +1018,8 @@ function move(timeDelta) {
       y_move = Math.round(dirY/Math.abs(dirY));
     }
     count = 0;
+    x_target+=x_move;
+    y_target+=y_move;
     while(1){
       if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 9 || map[Math.floor(y_target)][Math.floor(x_target)] === 10){
         doorStates[Math.floor(y_target)][Math.floor(x_target)] = 1-Math.round(doorOffsets[Math.floor(y_target)][Math.floor(x_target)]);
@@ -1049,9 +1095,9 @@ function checkCollision(fromX, fromY, toX, toY, radius) {
 		x : fromX,
 		y : fromY
 	};
-  if(isBlocking(fromX,fromY)){return {x:toX,y:toY}}
 	if(toY < 0 || toY >= mapHeight || toX < 0 || toX >= mapWidth)
 		return pos;
+  if(isBlocking(fromX,fromY)){return {x:toX,y:toY}}
 
 	var blockX = Math.floor(toX);
 	var blockY = Math.floor(toY);
