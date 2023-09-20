@@ -264,7 +264,7 @@ var player = {
 	x : 5.5,		// current x, y position
 	y : 3,
 	dir : 0,		// the direction that the player is turning, either -1 for left or 1 for right.
-	rotDeg : 90,		// the current angle of rotation
+	rotDeg : 90.001,		// the current angle of rotation
 	rot : 0,		// rotation in radians
 	speed : 0,		// is the playing moving forward (speed = 1) or backwards (speed = -1).
   strafeSpeed : 0, //strafing
@@ -284,6 +284,12 @@ var screenWidth = canvas.width;
 var screenHeight = canvas.height;
 var miniMapScale = 8;
 
+var posZ = (player.height+player.z) * screenHeight;
+var dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
+var dirY = Math.sin(player.rot)/(Math.tan(fovHalf));
+var planeX = -Math.sin(player.rot);
+var planeY = Math.cos(player.rot);
+
 var fov = 60 * Math.PI / 180;
 var numRays = Math.ceil(screenWidth / stripWidth);
 var fovHalf = fov / 2;
@@ -294,10 +300,6 @@ var twoPI = Math.PI * 2;
 var fps = 0;
 var joyMoving;
 var joyMovingDir;
-var dirX;
-var dirY;
-var planeX;
-var planeY;
 
 var rayDirX0;
 var rayDirY0;
