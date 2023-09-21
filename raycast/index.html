@@ -149,8 +149,16 @@ for (var i = 0; i < mapHeight; i++) {
     doorTimers[i][j] = 0;
   }
 }
+var doorDirs = new Array(mapHeight);
+//directions for doors, 0 is vertical, 1 is horizontal
+for (var i = 0; i < mapHeight; i++) {
+  doorDirs[i] = new Array(mapWidth);
+  for (var j = 0; j < mapWidth; j++) {
+    doorDirs[i][j] = 0;
+  }
+}
 /*
-8, 9, and 10 - doors
+8, 9, and 10 - doors,
 11 - secret push wall, wood texture
 */
 var floorlayout = [
@@ -347,6 +355,16 @@ function init() {
   drawFillRectangle(0,0,screenWidth,screenHeight/2,'#429bf5');
   drawFillRectangle(0,screenHeight/2,screenWidth,screenHeight/2,'#c0a570');
 	bind();
+  for (var y=0;y<mapHeight;y++) {
+    for (var x=0;x<mapWidth;x++) {
+      var wall = map[y][x];
+      if(wall === 8 || wall === 9 || wall === 10){
+        if(map[y][x-1])>0){
+          doorDirs[y][x] = 1;
+        }
+      }
+    }
+  }
 
 	drawMiniMap();
 	gameCycle();
@@ -1204,7 +1222,14 @@ function isBlocking(x,y) {
 	// return true if the map block is not 0, ie. if there is a blocking wall.
 	if(map[iy][ix] !== 0){
     if(map[iy][ix] !== 8 && map[iy][ix] !== 9 && map[iy][ix] !== 10){return true;}
-		else{if(doorOffsets[iy][ix] < 0.5){return true;}}
+		else{
+      if(doorDirs===1){
+        //horizontal
+        if(Math.abs((y%1)-0.5)<=0.1 && (x%1)<1-doorOffsets[iy][ix]){return true;}
+      }else{
+        if(Math.abs((x%1)-0.5)<=0.1 && (y%1)<1-doorOffsets[iy][ix]){return true;}
+      }
+    }
   }
   for(var i = 0; i < sprites.length;i++){
     sprite = sprites[i];
