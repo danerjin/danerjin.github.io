@@ -1041,7 +1041,8 @@ function move(timeDelta) {
   var mul = timeDelta / gameCycleDelay;
 
   if(isPressingG){
-    var x_target,y_target = doorTarget;
+    var x_target = doorTarget[0];
+    var y_target = doorTarget[1];
     if(doorIsPresent){doorStates[Math.floor(y_target)][Math.floor(x_target)] = 1-Math.round(doorOffsets[Math.floor(y_target)][Math.floor(x_target)]);}
   }
   for (var y=0;y<mapHeight;y++) {
