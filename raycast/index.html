@@ -353,6 +353,7 @@ function init() {
     });
     joyMovingDir = joyMoving.GetDir();
     floor=false;
+    $("floor").checked = false;
   }
 
   canvas.addEventListener("click", async () => {
@@ -533,7 +534,7 @@ function renderCycle() {
   rayDirX1 = dirX + planeX;
   rayDirY1 = dirY + planeY;
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
-  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'555555');drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#787878');}
+  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#555555');drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#787878');}
   updateMiniMap();
   //castFloorAndCeilingRaysLode();
 	castWallRays();
