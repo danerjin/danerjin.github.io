@@ -284,7 +284,7 @@ var screenWidth = canvas.width;
 var screenHeight = canvas.height;
 var miniMapScale = 8;
 var doorIsPresent = false;
-
+var doorTarget = [0,0];
 var fov = 60 * Math.PI / 180;
 var numRays = Math.ceil(screenWidth / stripWidth);
 var fovHalf = fov / 2;
@@ -442,6 +442,7 @@ function gameCycle() {
   while(1){
     if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 9 || map[Math.floor(y_target)][Math.floor(x_target)] === 10){
       doorIsPresent = true;
+      doorTarget = [x_target,y_target];
       break;
     }else{
       x_target+=x_move;
@@ -518,8 +519,8 @@ function renderCycle() {
   drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
   drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
   if(doorIsPresent){
-      ctx.font = "20px Courier New";
-      ctx.fillStyle = "#00AA00";
+      ctx.font = "bold 20px Courier New";
+      ctx.fillStyle = "#FFFF66";
       ctx.textAlign = "center";
       ctx.fillText("Press [G] to open door", screenWidth/2, screenHeight-25);
     }
@@ -1040,6 +1041,7 @@ function move(timeDelta) {
   var mul = timeDelta / gameCycleDelay;
 
   if(isPressingG){
+    var x_target,y_target = doorTarget;
     if(doorIsPresent){doorStates[Math.floor(y_target)][Math.floor(x_target)] = 1-Math.round(doorOffsets[Math.floor(y_target)][Math.floor(x_target)]);}
   }
   for (var y=0;y<mapHeight;y++) {
