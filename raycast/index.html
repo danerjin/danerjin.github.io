@@ -1077,7 +1077,8 @@ function move(timeDelta) {
         if(doorOffsets[y][x]+(doorStates[y][x]-0.5)*mul*0.02 >= 0.95){doorOffsets[y][x] = 0.95;doorStates[y][x]=0.5;}
         else if(doorOffsets[y][x]+(doorStates[y][x]-0.5)*mul*0.02 <= 0){doorOffsets[y][x] = 0;doorStates[y][x]=0.5;}
         else{
-          if(!(x < player.x && player.x < x+1 && y<player.y && player.y <y+1 )){
+          if(doorStates[y][x] === 1){doorOffsets[y][x]+=(doorStates[y][x]-0.5)*mul*0.02;}
+          else if(doorStates[y][x] === 0 && !(x < player.x && player.x < x+1 && y<player.y && player.y <y+1 )){
             doorOffsets[y][x]+=(doorStates[y][x]-0.5)*mul*0.02;
           }
         }
