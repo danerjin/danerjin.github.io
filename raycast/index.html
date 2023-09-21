@@ -793,7 +793,7 @@ function castSingleRay(rayAngle, stripIdx) {
           }
           else if(map[wallY][wallX]===11){
             x_maybe=x+dXVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
-            y_maybe=y+dYVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX];
+            y_maybe=y+dYVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
             if(y_maybe-wallY <= 1 && y_maybe-wallY >= 0){
               var distX = x_maybe - player.x;
               var distY = y_maybe - player.y;
