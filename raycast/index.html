@@ -64,6 +64,8 @@
 <div class="slidecontainer">
   <input type="range" min="30" max="120" value="60" class="slider" id="myRange" onInput="updateFOV()">
   <p>FOV: <span id="fov">60</span></p>
+  <input type="checkbox" id="floor" name="floor" value="floor" oninput = "toggleFloor()" checked>
+  <label for="floor"> Floor and Ceiling Texturing</label><br>
 </div>
 <div id="debug"></div>
 <script src="joy.js"></script>
@@ -315,6 +317,7 @@ var rayDirX1;
 var rayDirY1;
 var floor=true;
 var slider = document.getElementById("myRange");
+var floorToggle = document.getElementById("floor");
 
 var zbuffer = new Array(Math.ceil(screenWidth/stripWidth));
 function updateFOV(){
@@ -322,6 +325,9 @@ function updateFOV(){
   fovHalf = fov/2;
   viewDist = (screenWidth/2) / Math.tan((fov / 2));
   $("fov").innerText = Math.round(fov*180/Math.PI);
+}
+function toggleFloor(){
+  floor = !floor;
 }
 function init() {
   if(mobile){
@@ -346,6 +352,7 @@ function init() {
 
     });
     joyMovingDir = joyMoving.GetDir();
+    floor=false;
   }
 
   canvas.addEventListener("click", async () => {
@@ -526,8 +533,7 @@ function renderCycle() {
   rayDirX1 = dirX + planeX;
   rayDirY1 = dirY + planeY;
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
-  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#a1a1a1');}
-  drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#787878');
+  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'555555');drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#787878');}
   updateMiniMap();
   //castFloorAndCeilingRaysLode();
 	castWallRays();
@@ -541,7 +547,7 @@ function renderCycle() {
       ctx.fillStyle = "#FFFF66";
       ctx.textAlign = "center";
       ctx.fillText("Press [G] to interact with door", screenWidth/2, screenHeight-25);
-    }
+  }
 	// time since last rendering
 	var now = new Date().getTime();
 	var timeDelta = now - lastRenderCycleTime;
