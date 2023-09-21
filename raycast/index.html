@@ -871,8 +871,8 @@ function castSingleRay(rayAngle, stripIdx) {
           }
         }
         else if(map[wallY][wallX]===11){
-          x_maybe=x+dXHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX];
-          y_maybe=y+dYHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX];
+          x_maybe=x+dXHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX]);
+          y_maybe=y+dYHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX]);
           if(x_maybe-wallX <= 1 && x_maybe-wallX >= 0){
             var distX = x_maybe - player.x;
             var distY = y_maybe - player.y;
