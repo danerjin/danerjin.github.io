@@ -283,7 +283,7 @@ var player = {
 var screenWidth = canvas.width;
 var screenHeight = canvas.height;
 var miniMapScale = 8;
-
+var doorIsPresent = false;
 
 var fov = 60 * Math.PI / 180;
 var numRays = Math.ceil(screenWidth / stripWidth);
@@ -424,6 +424,32 @@ function gameCycle() {
 	var now = new Date().getTime();
 	// time since last game logic
 	var timeDelta = now - lastGameCycleTime;
+  var x_target,y_target;
+  var x_move,y_move;
+  x_target = Math.floor(player.x);
+  y_target = Math.floor(player.y);
+  if(Math.abs(dirX)>Math.abs(dirY)){
+    x_move = Math.round(dirX/Math.abs(dirX));
+    y_move = Math.round(dirY/Math.abs(dirX));
+  }
+  else if(Math.abs(dirX)<=Math.abs(dirY)){
+    x_move = Math.round(dirX/Math.abs(dirY));
+    y_move = Math.round(dirY/Math.abs(dirY));
+  }
+  count = 0;
+  x_target+=x_move;
+  y_target+=y_move;
+  while(1){
+    if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 9 || map[Math.floor(y_target)][Math.floor(x_target)] === 10){
+      doorIsPresent = true;
+      break;
+    }else{
+      x_target+=x_move;
+      y_target+=y_move;
+    }
+    count++;
+    if(count>2||Math.floor(y_target)>=mapHeight||Math.floor(y_target)<0||Math.floor(x_target)>=mapWidth||Math.floor(x_target)<0){doorIsPresent = false;break;}
+  }
 	move(timeDelta);
 	var cycleDelay = gameCycleDelay;
 	// the timer will likely not run that fast due to the rendering cycle hogging the cpu
@@ -491,6 +517,12 @@ function renderCycle() {
   drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
   drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
   drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
+  if(doorIsPresent){
+      ctx.font = "20px Courier New";
+      ctx.fillStyle = "#00AA00";
+      ctx.textAlign = "center";
+      ctx.fillText("Press [G] to open door", screenWidth/2, screenHeight-25);
+    }
 	// time since last rendering
 	var now = new Date().getTime();
 	var timeDelta = now - lastRenderCycleTime;
@@ -1007,61 +1039,8 @@ function move(timeDelta) {
   // so calculate how much we should multiply our movement to ensure game speed is constant
   var mul = timeDelta / gameCycleDelay;
 
-  var x_target,y_target;
-  var x_move,y_move;
-  x_target = Math.floor(player.x);
-  y_target = Math.floor(player.y);
-  if(Math.abs(dirX)>Math.abs(dirY)){
-    x_move = Math.round(dirX/Math.abs(dirX));
-    y_move = Math.round(dirY/Math.abs(dirX));
-  }
-  else if(Math.abs(dirX)<=Math.abs(dirY)){
-    x_move = Math.round(dirX/Math.abs(dirY));
-    y_move = Math.round(dirY/Math.abs(dirY));
-  }
-  count = 0;
-  x_target+=x_move;
-  y_target+=y_move;
-  while(1){
-    if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 9 || map[Math.floor(y_target)][Math.floor(x_target)] === 10){
-      ctx.font = "20px Courier New";
-      ctx.fillStyle = "#AAAA00";
-      ctx.textAlign = "center";
-      ctx.fillText("Press [G] to open door", screenWidth/2, screenHeight-25);
-      break;
-    }else{
-      x_target+=x_move;
-      y_target+=y_move;
-    }
-    count++;
-    if(count>2||Math.floor(y_target)>=mapHeight||Math.floor(y_target)<0||Math.floor(x_target)>=mapWidth||Math.floor(x_target)<0){break;}
-  }
   if(isPressingG){
-    var x_target,y_target;
-    var x_move,y_move;
-    x_target = Math.floor(player.x);
-    y_target = Math.floor(player.y);
-    if(Math.abs(dirX)>Math.abs(dirY)){
-      x_move = Math.round(dirX/Math.abs(dirX));
-      y_move = Math.round(dirY/Math.abs(dirX));
-    }else{
-      x_move = Math.round(dirX/Math.abs(dirY));
-      y_move = Math.round(dirY/Math.abs(dirY));
-    }
-    count = 0;
-    x_target+=x_move;
-    y_target+=y_move;
-    while(1){
-      if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 9 || map[Math.floor(y_target)][Math.floor(x_target)] === 10){
-        doorStates[Math.floor(y_target)][Math.floor(x_target)] = 1-Math.round(doorOffsets[Math.floor(y_target)][Math.floor(x_target)]);
-        break;
-      }else{
-        x_target+=x_move;
-        y_target+=y_move;
-      }
-      count++;
-      if(count>2||Math.floor(y_target)>=mapHeight||Math.floor(y_target)<0||Math.floor(x_target)>=mapWidth||Math.floor(x_target)<0){break;}
-    }
+    if(doorIsPresent){doorStates[Math.floor(y_target)][Math.floor(x_target)] = 1-Math.round(doorOffsets[Math.floor(y_target)][Math.floor(x_target)]);}
   }
   for (var y=0;y<mapHeight;y++) {
     for (var x=0;x<mapWidth;x++) {
