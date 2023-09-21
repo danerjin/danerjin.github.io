@@ -366,7 +366,7 @@ function init() {
   for (var y=0;y<mapHeight;y++) {
     for (var x=0;x<mapWidth;x++) {
       var wall = map[y][x];
-      if(wall === 8 || wall === 9 || wall === 10){
+      if(wall === 8 || wall === 9 || wall === 10 || wall === 11){
         if(map[y][x-1]>0){
           doorDirs[y][x] = 1;
         }
@@ -534,7 +534,7 @@ function renderCycle() {
   rayDirX1 = dirX + planeX;
   rayDirY1 = dirY + planeY;
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
-  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#555555');drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#787878');}
+  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#555555');}
   updateMiniMap();
   //castFloorAndCeilingRaysLode();
 	castWallRays();
@@ -792,8 +792,8 @@ function castSingleRay(rayAngle, stripIdx) {
             }
           }
           else if(map[wallY][wallX]===11){
-            x_maybe=x+dXVer*doorOffsets[wallY][wallX];
-            y_maybe=y+dYVer*doorOffsets[wallY][wallX];
+            x_maybe=x+dXVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
+            y_maybe=y+dYVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX];
             if(y_maybe-wallY <= 1 && y_maybe-wallY >= 0){
               var distX = x_maybe - player.x;
               var distY = y_maybe - player.y;
@@ -871,8 +871,8 @@ function castSingleRay(rayAngle, stripIdx) {
           }
         }
         else if(map[wallY][wallX]===11){
-          x_maybe=x+dXHor*doorOffsets[wallY][wallX];
-          y_maybe=y+dYHor*doorOffsets[wallY][wallX];
+          x_maybe=x+dXHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX];
+          y_maybe=y+dYHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX];
           if(x_maybe-wallX <= 1 && x_maybe-wallX >= 0){
             var distX = x_maybe - player.x;
             var distY = y_maybe - player.y;
