@@ -1225,10 +1225,10 @@ function isBlocking(x,y) {
 		else{
       if(doorDirs===1){
         //horizontal
-        if(0.3<=(y-iy) && 0.7>=(y-iy) && (x-ix)<1-doorOffsets[iy][ix]){return true;}
+        if(0.35<=(x-ix) && 0.65>=(x-ix) && (x-ix)<=1-doorOffsets[iy][ix]){return true;}
       }else{
         //vertical
-        if(0.3<=(x-ix) && 0.7>=(x-ix) && (y-iy)<1-doorOffsets[iy][ix]){return true;}
+        if(0.35<=(y-iy) && 0.65>=(y-iy) && (y-iy)<=1-doorOffsets[iy][ix]){return true;}
       }
     }
   }
