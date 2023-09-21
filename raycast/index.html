@@ -1067,14 +1067,14 @@ function move(timeDelta) {
     for (var x=0;x<mapWidth;x++) {
       wall = map[y][x];
       if(wall === 8 || wall === 9 || wall === 10){
-        if(doorOffsets[y][x]+(doorStates[y][x]-0.5)*mul*0.02 >= 0.9){doorOffsets[y][x] = 0.9;doorStates[y][x]=0.5;}
+        if(doorOffsets[y][x]+(doorStates[y][x]-0.5)*mul*0.02 >= 0.95){doorOffsets[y][x] = 0.95;doorStates[y][x]=0.5;}
         else if(doorOffsets[y][x]+(doorStates[y][x]-0.5)*mul*0.02 <= 0){doorOffsets[y][x] = 0;doorStates[y][x]=0.5;}
         else{
           if(!(x < player.x && player.x < x+1 && y<player.y && player.y <y+1 )){
             doorOffsets[y][x]+=(doorStates[y][x]-0.5)*mul*0.02;
           }
         }
-        if(doorStates[y][x]==0.5 && doorOffsets[y][x] >= 0.9){
+        if(doorStates[y][x]==0.5 && doorOffsets[y][x] >= 0.95){
           if(doorTimers[y][x]+mul*0.01 >= 1){doorTimers[y][x]=0;doorStates[y][x]=0;}
           else{
             doorTimers[y][x]+=mul*0.01;
@@ -1119,7 +1119,7 @@ function move(timeDelta) {
     if(player.z < 0.01){
       player.zSpeed = 0.1125;
     }}
-  	var pos = checkCollision(player.x, player.y, newX, newY, 0.1);
+  	var pos = checkCollision(player.x, player.y, newX, newY, 0.05);
   	player.x = pos.x; // set new position
   	player.y = pos.y;
   }
@@ -1225,9 +1225,10 @@ function isBlocking(x,y) {
 		else{
       if(doorDirs===1){
         //horizontal
-        if(Math.abs((y-iy)-0.5)<=0.2 && (x-ix)<doorOffsets[iy][ix]){return true;}
+        if(0.3<=(y-iy) && 0.7>=(y-iy) && (x-ix)<1-doorOffsets[iy][ix]){return true;}
       }else{
-        if(Math.abs((x-iy)-0.5)<=0.2 && (y-iy)<doorOffsets[iy][ix]){return true;}
+        //vertical
+        if(0.3<=(x-ix) && 0.7>=(x-ix) && (y-iy)<1-doorOffsets[iy][ix]){return true;}
       }
     }
   }
