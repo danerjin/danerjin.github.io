@@ -359,7 +359,7 @@ function init() {
     for (var x=0;x<mapWidth;x++) {
       var wall = map[y][x];
       if(wall === 8 || wall === 9 || wall === 10){
-        if(map[y][x-1])>0){
+        if(map[y][x-1]>0){
           doorDirs[y][x] = 1;
         }
       }
@@ -540,7 +540,7 @@ function renderCycle() {
       ctx.font = "bold 20px Courier New";
       ctx.fillStyle = "#FFFF66";
       ctx.textAlign = "center";
-      ctx.fillText("Press [G] to open door", screenWidth/2, screenHeight-25);
+      ctx.fillText("Press [G] to interact with door", screenWidth/2, screenHeight-25);
     }
 	// time since last rendering
 	var now = new Date().getTime();
