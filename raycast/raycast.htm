@@ -543,7 +543,7 @@ function renderCycle() {
   drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
   drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
   drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
-  if(doorIsPresent&&map[y_target][x_target] !== 11){
+  if(doorIsPresent&&map[doorTarget[1]][doorTarget[0]] !== 11){
       ctx.font = "bold 20px Courier New";
       ctx.fillStyle = "#FFFF66";
       ctx.textAlign = "center";
