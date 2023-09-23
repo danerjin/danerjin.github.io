@@ -1114,11 +1114,10 @@ function move(timeDelta) {
         if(doorOffsets[y][x]>=1){
           var next_x = x+(1-doorDirs[y][x])*sign(doorStates[y][x]-0.5);
           var next_y = y-(doorDirs[y][x])*sign(doorStates[y][x]-0.5);
-          console.log(next_x,next_y,x,y);
           if(map[next_y][next_x] === 0){
             doorStates[next_y][next_x] = doorStates[y][x];
             doorOffsets[y][x]=0;
-            console.log("new square");
+            map[next_y][next_x]=11;
           }
           map[y][x]=0;
           doorStates[y][x]=0.5;
