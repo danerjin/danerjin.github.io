@@ -106,10 +106,10 @@ var map = [
   [2,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,0,0,0,0,0,0,0,6],
   [2,0,0,0,0,0,0,0,0,2,2,4,0,0,0,0,0,0,0,0,0,0,0,4],
   [2,0,0,0,0,0,0,0,0,0,2,4,0,0,0,0,0,6,6,6,8,6,4,6],
-  [2,7,7,7,8,7,7,7,7,2,2,4,4,4,4,4,4,6,0,0,0,0,0,6],
-  [7,0,0,0,0,0,0,0,0,0,2,0,2,0,2,0,2,4,0,4,0,6,0,6],
-  [7,0,0,0,0,0,0,0,7,2,0,2,0,2,0,2,2,6,0,0,0,0,0,6],
-  [7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,6,0,0,0,0,0,4],
+  [2,7,7,7,8,7,7,7,7,2,2,4,4,4,11,4,4,6,0,0,0,0,0,6],
+  [7,0,0,0,0,0,0,0,0,0,2,0,0,4,0,0,2,4,0,4,0,6,0,6],
+  [7,0,0,0,0,0,0,0,7,2,0,0,0,4,0,2,2,6,0,0,0,0,0,6],
+  [7,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4,0,6,0,0,0,0,0,4],
   [7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,6,0,6,0,6,0,6],
   [7,7,0,0,0,0,0,0,7,2,0,2,0,2,0,2,2,6,4,6,0,6,6,6],
   [7,7,7,7,9,7,7,7,7,2,2,4,0,6,2,4,2,3,3,3,10,3,3,3],
@@ -250,7 +250,7 @@ window.mobileAndTabletCheck = function() {
   return check;
 };
 var wallTextures = []
-for(var texture = 1; texture < 11;texture++){
+for(var texture = 1; texture < 12;texture++){
     var wallTexture = new Image();
   	wallTexture.crossOrigin = "Anonymous";
   	wallTexture.src = `walls_${texture}.png`;
@@ -466,7 +466,7 @@ function gameCycle() {
   x_target+=x_move;
   y_target+=y_move;
   while(1){
-    if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 9 || map[Math.floor(y_target)][Math.floor(x_target)] === 10){
+    if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 9 || map[Math.floor(y_target)][Math.floor(x_target)] === 10 || map[Math.floor(y_target)][Math.floor(x_target)] === 11){
       doorIsPresent = true;
       doorTarget = [x_target,y_target];
       break;
@@ -543,7 +543,7 @@ function renderCycle() {
   drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
   drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
   drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
-  if(doorIsPresent){
+  if(doorIsPresent&&map[doorTarget[1]][doorTarget[0]] !== 11){
       ctx.font = "bold 20px Courier New";
       ctx.fillStyle = "#FFFF66";
       ctx.textAlign = "center";
@@ -1068,7 +1068,25 @@ function move(timeDelta) {
   if(isPressingG){
     var x_target = doorTarget[0];
     var y_target = doorTarget[1];
-    if(doorIsPresent){doorStates[Math.floor(y_target)][Math.floor(x_target)] = 1-Math.round(doorOffsets[Math.floor(y_target)][Math.floor(x_target)]);}
+    if(doorIsPresent){
+      if(map[Math.floor(y_target)][Math.floor(x_target)]!==11){
+        doorStates[Math.floor(y_target)][Math.floor(x_target)] = 1-Math.round(doorOffsets[Math.floor(y_target)][Math.floor(x_target)]);
+      }else{
+        if(doorDirs[Math.floor(y_target)][Math.floor(x_target)]==1){
+          if(player.y>y_target){
+            doorStates[Math.floor(y_target)][Math.floor(x_target)]=1;
+          }else{
+            doorStates[Math.floor(y_target)][Math.floor(x_target)]=0;
+          }
+        }else{
+          if(player.x>y_target){
+            doorStates[Math.floor(y_target)][Math.floor(x_target)]=1
+          }else{
+            doorStates[Math.floor(y_target)][Math.floor(x_target)]=0;
+          }
+        }
+      }
+    }
   }
   for (var y=0;y<mapHeight;y++) {
     for (var x=0;x<mapWidth;x++) {
@@ -1088,6 +1106,17 @@ function move(timeDelta) {
             doorTimers[y][x]+=mul*0.01;
           }
         };
+      }else if(wall===11){
+        doorOffsets[y][x]+=Math.abs(doorStates[y][x]-0.5)*mul*0.02;
+        if(doorOffsets[y][x]>=1){
+          map[y][x]=0;
+          var next_x = y+(1-doorDirs[y][x])*2*(doorStates[y][x]-0.5);
+          var next_y = y+(doorDirs[y][x])*2*(doorStates[y][x]-0.5);
+          if(map[next_y][next_x] === 0){
+            doorStates[next_y][next_x] = doorStates[y][x];
+            doorOffests[y][x]=0;
+          }
+        }
       }
     }
   }
