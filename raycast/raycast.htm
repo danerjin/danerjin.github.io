@@ -487,7 +487,9 @@ function gameCycle() {
 	setTimeout(gameCycle, cycleDelay);
 	lastGameCycleTime = now;
 }
-
+function sign(num){
+  return Math.round(num/Math.abs(num));
+}
 
 var posZ;
 var lastRenderCycleTime = 0;
@@ -543,7 +545,7 @@ function renderCycle() {
   drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
   drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
   drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
-  if(doorIsPresent&&map[doorTarget[1]][doorTarget[0]] !== 11){
+  if(doorIsPresent&&(map[doorTarget[1]][doorTarget[0]] === 8 || map[doorTarget[1]][doorTarget[0]] === 9 || map[doorTarget[1]][doorTarget[0]] === 10)){
       ctx.font = "bold 20px Courier New";
       ctx.fillStyle = "#FFFF66";
       ctx.textAlign = "center";
@@ -770,10 +772,17 @@ function castSingleRay(rayAngle, stripIdx) {
     		var wallX = Math.floor(x + (right ? 0 : -1));
     		var wallY = Math.floor(y);
     		// is this point inside a wall block?
-    		if(map[wallY][wallX]!== 0){
+    		if(map[wallY][wallX]
+          !== 0){
           if(map[wallY][wallX]===8||map[wallY][wallX]===9 ||map[wallY][wallX]===10){
-            x_maybe=x+dXVer/2;
-            y_maybe=y+dYVer/2;
+            if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
+              x_maybe = x-dXVer/2;
+              y_maybe = y-dYVer/2;
+            }
+            else{
+              x_maybe=x+dXVer/2;
+              y_maybe=y+dYVer/2;
+            }
             if((y_maybe-wallY) <= 1-doorOffsets[wallY][wallX]){
               var distX = x_maybe - player.x;
         			var distY = y_maybe - player.y;
@@ -792,8 +801,13 @@ function castSingleRay(rayAngle, stripIdx) {
             }
           }
           else if(map[wallY][wallX]===11){
-            x_maybe=x+dXVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
-            y_maybe=y+dYVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
+            if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
+              x_maybe=x+dXVer*(doorOffsets[wallY][wallX]-1)*(1-doorDirs[wallY][wallX]);
+              y_maybe=y+dYVer*(doorOffsets[wallY][wallX]-1)*(1-doorDirs[wallY][wallX]);
+            }else{
+              x_maybe=x+dXVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
+              y_maybe=y+dYVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
+            }
             if(y_maybe-wallY <= 1 && y_maybe-wallY >= 0){
               var distX = x_maybe - player.x;
               var distY = y_maybe - player.y;
@@ -850,8 +864,13 @@ function castSingleRay(rayAngle, stripIdx) {
   		var wallX = Math.floor(x);
   		if(map[wallY][wallX]  !== 0) {
         if(map[wallY][wallX]===8 || map[wallY][wallX]===9 || map[wallY][wallX]===10){
-          x_maybe=x+dXHor/2;
-          y_maybe=y+dYHor/2;
+          if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
+            x_maybe = x-dXVer/2;
+            y_maybe = y-dYVer/2;
+          }else{
+            x_maybe=x+dXHor/2;
+            y_maybe=y+dYHor/2;
+          }
           if(x_maybe-wallX <= 1-doorOffsets[wallY][wallX] && x_maybe-wallX >= 0){
             var distX = x_maybe - player.x;
             var distY = y_maybe - player.y;
@@ -871,8 +890,13 @@ function castSingleRay(rayAngle, stripIdx) {
           }
         }
         else if(map[wallY][wallX]===11){
-          x_maybe=x+dXHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX]);
-          y_maybe=y+dYHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX]);
+          if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
+            x_maybe=x+dXHor*(doorOffsets[wallY][wallX]-1)*(doorDirs[wallY][wallX]);
+            y_maybe=y+dYHor*(doorOffsets[wallY][wallX]-1)*(doorDirs[wallY][wallX]);
+          }else{
+            x_maybe=x+dXHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX]);
+            y_maybe=y+dYHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX]);
+          }
           if(x_maybe-wallX <= 1 && x_maybe-wallX >= 0){
             var distX = x_maybe - player.x;
             var distY = y_maybe - player.y;
@@ -1106,16 +1130,21 @@ function move(timeDelta) {
             doorTimers[y][x]+=mul*0.01;
           }
         };
-      }else if(wall===11){
+      }
+      else if(wall===11){
         doorOffsets[y][x]+=Math.abs(doorStates[y][x]-0.5)*mul*0.02;
         if(doorOffsets[y][x]>=1){
-          map[y][x]=0;
-          var next_x = y+(1-doorDirs[y][x])*2*(doorStates[y][x]-0.5);
-          var next_y = y+(doorDirs[y][x])*2*(doorStates[y][x]-0.5);
+          var next_x = x+(1-doorDirs[y][x])*sign(doorStates[y][x]-0.5);
+          var next_y = y-(doorDirs[y][x])*sign(doorStates[y][x]-0.5);
           if(map[next_y][next_x] === 0){
             doorStates[next_y][next_x] = doorStates[y][x];
-            doorOffests[y][x]=0;
+            doorDirs[next_y][next_x]=doorDirs[y][x];
+            doorOffsets[next_y][next_x]=0;
+            map[next_y][next_x]=11;
           }
+          map[y][x]=0;
+          doorStates[y][x]=0.5;
+          doorOffsets[y][x]=0;
         }
       }
     }
@@ -1258,14 +1287,31 @@ function isBlocking(x,y) {
 	var iy = Math.floor(y);
 	// return true if the map block is not 0, ie. if there is a blocking wall.
 	if(map[iy][ix] !== 0){
-    if(map[iy][ix] !== 8 && map[iy][ix] !== 9 && map[iy][ix] !== 10){return true;}
+    if(map[iy][ix] !== 8 && map[iy][ix] !== 9 && map[iy][ix] !== 10 && map[iy][ix] !== 11){return true;}
+    else if(map[iy][ix] === 11){
+      if(doorDirs[iy][ix]===1){
+        //horizontal
+        if(doorStates[iy][ix]===1){
+          if((y-iy)>doorOffsets[iy][ix]){return true;}
+        }else{
+          if((y-iy)<1-doorOffsets[iy][ix]){return true;}
+        }
+      }else{
+        //vertical
+        if(doorStates[iy][ix]===1){
+          if((x-ix)>doorOffsets[iy][ix]){return true;}
+        }else{
+          if((x-ix)<1-doorOffsets[iy][ix]){return true;}
+        }
+      }
+    }
 		else{
       if(doorDirs===1){
         //horizontal
-        if(0.35<=(x-ix) && 0.65>=(x-ix) && (y-iy)<=1-doorOffsets[iy][ix]){return true;}
+        if(0.35<=(y-iy) && 0.65>=(y-iy) && 1-(x-ix)>=doorOffsets[iy][ix]){return true;}
       }else{
         //vertical
-        if(0.35<=(x-ix) && 0.65>=(x-ix) && (y-iy)<=1-doorOffsets[iy][ix]){return true;}
+        if(0.35<=(y-iy) && 0.65>=(y-iy) && 1-(x-ix)>=doorOffsets[iy][ix]){return true;}
       }
     }
   }
@@ -1283,6 +1329,7 @@ function isBlocking(x,y) {
 
 function updateMiniMap() {
 
+  //drawMiniMap();
 	var miniMap = $("minimap");
 	var miniMapObjects = $("minimapobjects");
 
@@ -1331,46 +1378,18 @@ function drawMiniMap() {
 	ctx.fillRect(0,0,miniMap.width,miniMap.height);
 
 	// loop through all blocks on the map
-	for (var y=0;y<mapHeight;y++) {
-		for (var x=0;x<mapWidth;x++) {
-
-			var tile = floorlayout[y][x];
-
-			if(wall > 0) { // if there is a wall block at this (x,y) ...
-				ctx.fillStyle = `rgb(${wallTypes[wall][0]},${wallTypes[wall][1]},${wallTypes[wall][2]})`;
-				ctx.fillRect(				// ... then draw a block on the minimap
-					(x-hitbox/2) * miniMapScale,
-					(y-hitbox/2) * miniMapScale,
-					hitbox*miniMapScale,hitbox*miniMapScale
-				);
-			}
+	for (var y=0;y<mapHeight*miniMapScale;y++) {
+		for (var x=0;x<mapWidth*miniMapScale;x++) {
+        if(isBlocking(x/miniMapScale,y/miniMapScale)){
+          ctx.fillStyle = 'gray';
+  				ctx.fillRect(				// ... then draw a block on the minimap
+  					x,
+  					y,
+  					1,1
+  				);
+        }
 		}
 	}
-	for (var y=0;y<mapHeight;y++) {
-		for (var x=0;x<mapWidth;x++) {
-
-			var wall = map[y][x];
-
-			if(wall > 0) { // if there is a wall block at this (x,y) ...
-				ctx.fillStyle = `rgb(${wallTypes[wall][0]},${wallTypes[wall][1]},${wallTypes[wall][2]})`;
-				ctx.fillRect(				// ... then draw a block on the minimap
-					x * miniMapScale,
-					y * miniMapScale,
-					miniMapScale,miniMapScale
-				);
-			}
-		}
-	}
-  for(var i = 0; i < sprites.length;i++){
-    sprite = sprites[i];
-    ctx.fillStyle = `rgb(0,255,0)`;
-    ctx.fillRect(				// ... then draw a block on the minimap
-      (sprite.x-sprite.hitbox) * miniMapScale,
-      (sprite.y-sprite.hitbox) * miniMapScale,
-      sprite.hitbox*miniMapScale,sprite.hitbox*miniMapScale
-    );
-  }
-	updateMiniMap();
 }
 
 setTimeout(init, 1);
