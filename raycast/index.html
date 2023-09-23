@@ -1116,7 +1116,8 @@ function move(timeDelta) {
           var next_y = y-(doorDirs[y][x])*sign(doorStates[y][x]-0.5);
           if(map[next_y][next_x] === 0){
             doorStates[next_y][next_x] = doorStates[y][x];
-            doorOffsets[y][x]=0;
+            doorDirs[next_y][next_x]=doorDirs[y][x];
+            doorOffsets[next_y][next_x]=0;
             map[next_y][next_x]=11;
           }
           map[y][x]=0;
