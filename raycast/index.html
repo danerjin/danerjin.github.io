@@ -89,7 +89,7 @@ if(!Array.prototype.indexOf) {
 		return -1;
 	};
 }
-
+var debug = false;
 var Sprite = function(x,y,texture,block,hitbox){
   this.x = x;
   this.y = y;
@@ -772,7 +772,7 @@ function castSingleRay(rayAngle, stripIdx) {
     		var wallX = Math.floor(x + (right ? 0 : -1));
     		var wallY = Math.floor(y);
     		// is this point inside a wall block?
-    		if(map[wallY][wallX]!== 0){
+    		if(map[wallY][wallX] !== 0){
           if(map[wallY][wallX]===8||map[wallY][wallX]===9 ||map[wallY][wallX]===10){
             if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
               x_maybe = x-dXVer/2;
@@ -1291,26 +1291,26 @@ function isBlocking(x,y) {
       if(doorDirs[iy][ix]===1){
         //horizontal
         if(doorStates[iy][ix]===1){
-          if((y-iy)>doorOffsets[iy][ix]){return true;}
-        }else{
           if((y-iy)<1-doorOffsets[iy][ix]){return true;}
+        }else{
+          if((y-iy)>doorOffsets[iy][ix]){return true;}
         }
       }else{
         //vertical
         if(doorStates[iy][ix]===1){
-          if((x-ix)>doorOffsets[iy][ix]){return true;}
-        }else{
           if((x-ix)<1-doorOffsets[iy][ix]){return true;}
+        }else{
+          if((x-ix)>doorOffsets[iy][ix]){return true;}
         }
       }
     }
 		else{
-      if(doorDirs===1){
+      if(doorDirs[iy][ix]===0){
         //horizontal
-        if(0.35<=(y-iy) && 0.65>=(y-iy) && 1-(x-ix)>=doorOffsets[iy][ix]){return true;}
-      }else{
-        //vertical
         if(0.35<=(x-ix) && 0.65>=(x-ix) && 1-(y-iy)>=doorOffsets[iy][ix]){return true;}
+      }else if(doorDirs[iy][ix]===1){
+        //vertical
+        if(0.35<=(y-iy) && 0.65>=(y-iy) && 1-(x-ix)>=doorOffsets[iy][ix]){return true;}
       }
     }
   }
@@ -1328,6 +1328,7 @@ function isBlocking(x,y) {
 
 function updateMiniMap() {
 
+  if(debug){drawMiniMap();}
 	var miniMap = $("minimap");
 	var miniMapObjects = $("minimapobjects");
 
@@ -1376,46 +1377,18 @@ function drawMiniMap() {
 	ctx.fillRect(0,0,miniMap.width,miniMap.height);
 
 	// loop through all blocks on the map
-	for (var y=0;y<mapHeight;y++) {
-		for (var x=0;x<mapWidth;x++) {
-
-			var tile = floorlayout[y][x];
-
-			if(wall > 0) { // if there is a wall block at this (x,y) ...
-				ctx.fillStyle = `rgb(${wallTypes[wall][0]},${wallTypes[wall][1]},${wallTypes[wall][2]})`;
-				ctx.fillRect(				// ... then draw a block on the minimap
-					(x-hitbox/2) * miniMapScale,
-					(y-hitbox/2) * miniMapScale,
-					hitbox*miniMapScale,hitbox*miniMapScale
-				);
-			}
+	for (var y=0;y<mapHeight*miniMapScale;y++) {
+		for (var x=0;x<mapWidth*miniMapScale;x++) {
+        if(isBlocking(x/miniMapScale,y/miniMapScale)){
+          ctx.fillStyle = 'gray';
+  				ctx.fillRect(				// ... then draw a block on the minimap
+  					x,
+  					y,
+  					1,1
+  				);
+        }
 		}
 	}
-	for (var y=0;y<mapHeight;y++) {
-		for (var x=0;x<mapWidth;x++) {
-
-			var wall = map[y][x];
-
-			if(wall > 0) { // if there is a wall block at this (x,y) ...
-				ctx.fillStyle = `rgb(${wallTypes[wall][0]},${wallTypes[wall][1]},${wallTypes[wall][2]})`;
-				ctx.fillRect(				// ... then draw a block on the minimap
-					x * miniMapScale,
-					y * miniMapScale,
-					miniMapScale,miniMapScale
-				);
-			}
-		}
-	}
-  for(var i = 0; i < sprites.length;i++){
-    sprite = sprites[i];
-    ctx.fillStyle = `rgb(0,255,0)`;
-    ctx.fillRect(				// ... then draw a block on the minimap
-      (sprite.x-sprite.hitbox) * miniMapScale,
-      (sprite.y-sprite.hitbox) * miniMapScale,
-      sprite.hitbox*miniMapScale,sprite.hitbox*miniMapScale
-    );
-  }
-	updateMiniMap();
 }
 
 setTimeout(init, 1);
