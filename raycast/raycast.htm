@@ -250,7 +250,7 @@ window.mobileAndTabletCheck = function() {
   return check;
 };
 var wallTextures = []
-for(var texture = 1; texture < 11;texture++){
+for(var texture = 1; texture < 12;texture++){
     var wallTexture = new Image();
   	wallTexture.crossOrigin = "Anonymous";
   	wallTexture.src = `walls_${texture}.png`;
@@ -1114,7 +1114,7 @@ function move(timeDelta) {
           var next_y = y+(doorDirs[y][x])*2*(doorStates[y][x]-0.5);
           if(map[next_y][next_x] === 0){
             doorStates[next_y][next_x] = doorStates[y][x];
-            doorOffets[y][x]=0;
+            doorOffests[y][x]=0;
           }
         }
       }
