@@ -487,7 +487,9 @@ function gameCycle() {
 	setTimeout(gameCycle, cycleDelay);
 	lastGameCycleTime = now;
 }
-
+function sign(num){
+  return Math.round(num/Math.abs(num));
+}
 
 var posZ;
 var lastRenderCycleTime = 0;
@@ -1106,16 +1108,21 @@ function move(timeDelta) {
             doorTimers[y][x]+=mul*0.01;
           }
         };
-      }else if(wall===11){
+      }
+      else if(wall===11){
         doorOffsets[y][x]+=Math.abs(doorStates[y][x]-0.5)*mul*0.02;
         if(doorOffsets[y][x]>=1){
-          map[y][x]=0;
-          var next_x = y+(1-doorDirs[y][x])*2*(doorStates[y][x]-0.5);
-          var next_y = y+(doorDirs[y][x])*2*(doorStates[y][x]-0.5);
+          var next_x = x+(1-doorDirs[y][x])*sign(doorStates[y][x]-0.5);
+          var next_y = y-(doorDirs[y][x])*sign(doorStates[y][x]-0.5);
+          console.log(next_x,next_y,x,y);
           if(map[next_y][next_x] === 0){
             doorStates[next_y][next_x] = doorStates[y][x];
             doorOffsets[y][x]=0;
+            console.log("new square");
           }
+          map[y][x]=0;
+          doorStates[y][x]=0.5;
+          doorOffsets[y][x]=0;
         }
       }
     }
