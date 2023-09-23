@@ -64,6 +64,8 @@
 <div class="slidecontainer">
   <input type="range" min="30" max="120" value="60" class="slider" id="myRange" onInput="updateFOV()">
   <p>FOV: <span id="fov">60</span></p>
+  <input type="checkbox" id="floor" name="floor" value="floor" oninput = "toggleFloor()" checked>
+  <label for="floor"> Floor and Ceiling Texturing</label><br>
 </div>
 <div id="debug"></div>
 <script src="joy.js"></script>
@@ -149,61 +151,69 @@ for (var i = 0; i < mapHeight; i++) {
     doorTimers[i][j] = 0;
   }
 }
+var doorDirs = new Array(mapHeight);
+//directions for doors, 0 is vertical, 1 is horizontal
+for (var i = 0; i < mapHeight; i++) {
+  doorDirs[i] = new Array(mapWidth);
+  for (var j = 0; j < mapWidth; j++) {
+    doorDirs[i][j] = 0;
+  }
+}
 /*
-8, 9, and 10 - doors
+8, 9, and 10 - doors,
 11 - secret push wall, wood texture
 */
 var floorlayout = [
-  [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],
-  [3,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3],
-  [3,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3],
-  [3,2,2,2,3,2,2,2,2,2,2,2,2,3,3,3,3,2,2,2,2,2,2,3,3,3,2,2,3,2,2,3],
-  [3,2,2,2,3,2,2,2,2,2,2,2,2,3,3,3,3,2,2,2,2,2,2,3,2,3,2,2,3,2,2,3],
-  [3,2,2,2,3,2,2,2,2,2,2,2,2,3,3,3,3,2,2,2,2,2,2,2,2,3,2,2,3,2,2,3],
-  [3,2,2,2,3,3,3,3,3,3,3,2,2,3,3,3,3,3,3,2,2,2,2,2,2,3,2,2,3,2,2,3],
-  [3,2,2,2,3,2,2,2,2,2,3,2,2,3,3,3,3,3,2,2,2,2,2,2,2,3,2,2,3,2,2,3],
-  [3,2,2,2,3,2,2,2,2,2,2,2,2,3,3,3,3,3,2,2,2,2,2,3,3,3,2,2,3,2,2,3],
-  [3,2,2,2,3,2,2,3,3,2,2,2,2,3,3,3,3,3,2,2,2,2,2,3,2,3,2,2,3,2,2,3],
-  [3,2,2,2,3,2,2,3,3,2,2,2,2,3,3,3,3,3,2,2,2,2,2,3,2,2,2,2,2,2,2,3],
-  [3,2,2,2,3,2,2,2,2,2,2,2,2,3,3,3,3,3,2,2,2,3,3,3,2,2,2,2,2,2,2,3],
-  [3,2,2,2,3,2,2,2,2,2,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3],
-  [3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3],
-  [3,2,3,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2,2,2,3,2,2,2,3,3,3,3,3,3,3,3],
-  [3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3],
-  [3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3],
-  [3,3,3,3,3,3,3,3,3,3,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,2,2,2,2,2,3],
-  [3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3],
-  [3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3],
-  [3,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],
-  [3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,9,9,9,9,9,9,9,9,9,3],
-  [3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,9,9,9,9,9,9,9,9,9,3],
-  [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3]
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+  [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
 ];
 var ceilinglayout = [
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
-  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],
+  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]
 ];
 var sprites = [
   new Sprite(21.5,11,"greenlight",false,0.6),
@@ -264,7 +274,7 @@ var player = {
 	x : 5.5,		// current x, y position
 	y : 3,
 	dir : 0,		// the direction that the player is turning, either -1 for left or 1 for right.
-	rotDeg : 90,		// the current angle of rotation
+	rotDeg : 90.001,		// the current angle of rotation
 	rot : 0,		// rotation in radians
 	speed : 0,		// is the playing moving forward (speed = 1) or backwards (speed = -1).
   strafeSpeed : 0, //strafing
@@ -280,10 +290,11 @@ var player = {
   weapon:0,
   weaponState:0
 }
-var screenWidth = 480;
-var screenHeight = 270;
+var screenWidth = canvas.width;
+var screenHeight = canvas.height;
 var miniMapScale = 8;
-
+var doorIsPresent = false;
+var doorTarget = [0,0];
 var fov = 60 * Math.PI / 180;
 var numRays = Math.ceil(screenWidth / stripWidth);
 var fovHalf = fov / 2;
@@ -294,17 +305,19 @@ var twoPI = Math.PI * 2;
 var fps = 0;
 var joyMoving;
 var joyMovingDir;
-var dirX;
-var dirY;
-var planeX;
-var planeY;
 
+var posZ = (player.height+player.z) * screenHeight;
+var dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
+var dirY = Math.sin(player.rot)/(Math.tan(fovHalf));
+var planeX = -Math.sin(player.rot);
+var planeY = Math.cos(player.rot);
 var rayDirX0;
 var rayDirY0;
 var rayDirX1;
 var rayDirY1;
 var floor=true;
 var slider = document.getElementById("myRange");
+var floorToggle = document.getElementById("floor");
 
 var zbuffer = new Array(Math.ceil(screenWidth/stripWidth));
 function updateFOV(){
@@ -312,6 +325,9 @@ function updateFOV(){
   fovHalf = fov/2;
   viewDist = (screenWidth/2) / Math.tan((fov / 2));
   $("fov").innerText = Math.round(fov*180/Math.PI);
+}
+function toggleFloor(){
+  floor = !floor;
 }
 function init() {
   if(mobile){
@@ -336,6 +352,8 @@ function init() {
 
     });
     joyMovingDir = joyMoving.GetDir();
+    floor=false;
+    $("floor").checked = false;
   }
 
   canvas.addEventListener("click", async () => {
@@ -345,6 +363,16 @@ function init() {
   drawFillRectangle(0,0,screenWidth,screenHeight/2,'#429bf5');
   drawFillRectangle(0,screenHeight/2,screenWidth,screenHeight/2,'#c0a570');
 	bind();
+  for (var y=0;y<mapHeight;y++) {
+    for (var x=0;x<mapWidth;x++) {
+      var wall = map[y][x];
+      if(wall === 8 || wall === 9 || wall === 10 || wall === 11){
+        if(map[y][x-1]>0){
+          doorDirs[y][x] = 1;
+        }
+      }
+    }
+  }
 
 	drawMiniMap();
 	gameCycle();
@@ -422,6 +450,33 @@ function gameCycle() {
 	var now = new Date().getTime();
 	// time since last game logic
 	var timeDelta = now - lastGameCycleTime;
+  var x_target,y_target;
+  var x_move,y_move;
+  x_target = Math.floor(player.x);
+  y_target = Math.floor(player.y);
+  if(Math.abs(dirX)>Math.abs(dirY)){
+    x_move = Math.round(dirX/Math.abs(dirX));
+    y_move = Math.round(dirY/Math.abs(dirX));
+  }
+  else if(Math.abs(dirX)<=Math.abs(dirY)){
+    x_move = Math.round(dirX/Math.abs(dirY));
+    y_move = Math.round(dirY/Math.abs(dirY));
+  }
+  count = 0;
+  x_target+=x_move;
+  y_target+=y_move;
+  while(1){
+    if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 9 || map[Math.floor(y_target)][Math.floor(x_target)] === 10 || map[Math.floor(y_target)][Math.floor(x_target)] === 11){
+      doorIsPresent = true;
+      doorTarget = [x_target,y_target];
+      break;
+    }else{
+      x_target+=x_move;
+      y_target+=y_move;
+    }
+    count++;
+    if(count>2||Math.floor(y_target)>=mapHeight||Math.floor(y_target)<0||Math.floor(x_target)>=mapWidth||Math.floor(x_target)<0){doorIsPresent = false;break;}
+  }
 	move(timeDelta);
 	var cycleDelay = gameCycleDelay;
 	// the timer will likely not run that fast due to the rendering cycle hogging the cpu
@@ -479,8 +534,7 @@ function renderCycle() {
   rayDirX1 = dirX + planeX;
   rayDirY1 = dirY + planeY;
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
-  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#a1a1a1');}
-  drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#787878');
+  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#555555');}
   updateMiniMap();
   //castFloorAndCeilingRaysLode();
 	castWallRays();
@@ -489,6 +543,12 @@ function renderCycle() {
   drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
   drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
   drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
+  if(doorIsPresent&&map[y_target][x_target] !== 11){
+      ctx.font = "bold 20px Courier New";
+      ctx.fillStyle = "#FFFF66";
+      ctx.textAlign = "center";
+      ctx.fillText("Press [G] to interact with door", screenWidth/2, screenHeight-25);
+  }
 	// time since last rendering
 	var now = new Date().getTime();
 	var timeDelta = now - lastRenderCycleTime;
@@ -501,6 +561,7 @@ function renderCycle() {
 	fps = 1000 / timeDelta;
   ctx.font = "15px monospace";
   ctx.fillStyle = "white";
+  ctx.textAlign = "left";
   ctx.fillText("FPS: "+fps,50,50);
 }
 
@@ -710,7 +771,7 @@ function castSingleRay(rayAngle, stripIdx) {
     		var wallY = Math.floor(y);
     		// is this point inside a wall block?
     		if(map[wallY][wallX]!== 0){
-          if(map[wallY][wallX]===8||map[wallY][wallX]===10){
+          if(map[wallY][wallX]===8||map[wallY][wallX]===9 ||map[wallY][wallX]===10){
             x_maybe=x+dXVer/2;
             y_maybe=y+dYVer/2;
             if((y_maybe-wallY) <= 1-doorOffsets[wallY][wallX]){
@@ -728,6 +789,28 @@ function castSingleRay(rayAngle, stripIdx) {
         			// make horizontal walls shaded
         			wallIsShaded = true;
         			break;
+            }
+          }
+          else if(map[wallY][wallX]===11){
+            x_maybe=x+dXVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
+            y_maybe=y+dYVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
+            if(y_maybe-wallY <= 1 && y_maybe-wallY >= 0){
+              var distX = x_maybe - player.x;
+              var distY = y_maybe - player.y;
+              var blockDist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
+              if(!dist || blockDist < dist) {
+                dist = blockDist;
+                wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
+                textureX = (y_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
+                if(up) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+
+                xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
+                yHit = y_maybe;
+
+                // make horizontal walls shaded
+                wallIsShaded = true;
+                break;
+              }
             }
           }
           else{
@@ -766,10 +849,10 @@ function castSingleRay(rayAngle, stripIdx) {
   		var wallY = Math.floor(y + (up ? -1 : 0));
   		var wallX = Math.floor(x);
   		if(map[wallY][wallX]  !== 0) {
-        if(map[wallY][wallX]===8 || map[wallY][wallX]===10){
+        if(map[wallY][wallX]===8 || map[wallY][wallX]===9 || map[wallY][wallX]===10){
           x_maybe=x+dXHor/2;
           y_maybe=y+dYHor/2;
-          if(x_maybe-wallX <= 1-doorOffsets[wallY][wallX]){
+          if(x_maybe-wallX <= 1-doorOffsets[wallY][wallX] && x_maybe-wallX >= 0){
             var distX = x_maybe - player.x;
             var distY = y_maybe - player.y;
             var blockDist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
@@ -782,13 +865,33 @@ function castSingleRay(rayAngle, stripIdx) {
               xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
               yHit = y_maybe;
 
-              // make horizontal walls shaded
-              wallIsShaded = true;
+              wallIsShaded = false;
               break;
             }
           }
         }
-  			else{
+        else if(map[wallY][wallX]===11){
+          x_maybe=x+dXHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX]);
+          y_maybe=y+dYHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX]);
+          if(x_maybe-wallX <= 1 && x_maybe-wallX >= 0){
+            var distX = x_maybe - player.x;
+            var distY = y_maybe - player.y;
+            var blockDist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
+            if(!dist || blockDist < dist) {
+              dist = blockDist;
+              wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
+              textureX = (x_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
+              if(up) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+
+              xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
+              yHit = y_maybe;
+
+              wallIsShaded = false;
+              break;
+            }
+          }
+        }
+        else{
           var distXMaybe = x - player.x;
     			var distYMaybe = y - player.y;
     			var blockDist = distXMaybe*distXMaybe + distYMaybe*distYMaybe;
@@ -832,7 +935,7 @@ function castSingleRay(rayAngle, stripIdx) {
 		// similar triangles
 		var top = Math.round(screenHeight/2 - (1-(player.z+player.height))*height-(player.z+player.height))+player.pitch;
     drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType);
-    zbuffer[stripIdx] = 0.847826 * dist;
+    zbuffer[stripIdx] = dist;
     //permadi floorcasting
     if(floor){
       for(var y = Math.round(top+height-stripWidth); y < screenHeight; y+=stripWidth){
@@ -958,45 +1061,62 @@ function drawRay(rayX, rayY) {
 
 function move(timeDelta) {
 
+  // time timeDelta has passed since we moved last time. We should have moved after time gameCycleDelay,
+  // so calculate how much we should multiply our movement to ensure game speed is constant
   var mul = timeDelta / gameCycleDelay;
-	// time timeDelta has passed since we moved last time. We should have moved after time gameCycleDelay,
-	// so calculate how much we should multiply our movement to ensure game speed is constant
+
   if(isPressingG){
-    var x_target,y_target;
-    var x_move,y_move;
-    x_target = Math.floor(player.x);
-    y_target = Math.floor(player.y);
-    if(Math.abs(dirX)>Math.abs(dirY)){
-      x_move = Math.round(dirX/Math.abs(dirX));
-      y_move = Math.round(dirY/Math.abs(dirX));
-    }else{
-      x_move = Math.round(dirX/Math.abs(dirY));
-      y_move = Math.round(dirY/Math.abs(dirY));
-    }
-    count = 0;
-    while(1){
-      if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 9 || map[Math.floor(y_target)][Math.floor(x_target)] === 10){
+    var x_target = doorTarget[0];
+    var y_target = doorTarget[1];
+    if(doorIsPresent){
+      if(map[Math.floor(y_target)][Math.floor(x_target)]!==11){
         doorStates[Math.floor(y_target)][Math.floor(x_target)] = 1-Math.round(doorOffsets[Math.floor(y_target)][Math.floor(x_target)]);
-        break;
       }else{
-        x_target+=x_move;
-        y_target+=y_move;
+        if(doorDirs[Math.floor(y_target)][Math.floor(x_target)]==1){
+          if(player.y>y_target){
+            doorStates[Math.floor(y_target)][Math.floor(x_target)]=1;
+          }else{
+            doorStates[Math.floor(y_target)][Math.floor(x_target)]=0;
+          }
+        }else{
+          if(player.x>y_target){
+            doorStates[Math.floor(y_target)][Math.floor(x_target)]=1
+          }else{
+            doorStates[Math.floor(y_target)][Math.floor(x_target)]=0;
+          }
+        }
       }
-      count++;
-      if(count>2||Math.floor(y_target)>=mapHeight||Math.floor(y_target)<0||Math.floor(x_target)>=mapWidth||Math.floor(x_target)<0){break;}
     }
   }
   for (var y=0;y<mapHeight;y++) {
     for (var x=0;x<mapWidth;x++) {
       wall = map[y][x];
       if(wall === 8 || wall === 9 || wall === 10){
-        if(doorOffsets[y][x]+(doorStates[y][x]-0.5)*mul*0.02 >= 0.9){doorOffsets[y][x] = 0.9;doorStates[y][x]=0.5;}
+        if(doorOffsets[y][x]+(doorStates[y][x]-0.5)*mul*0.02 >= 0.95){doorOffsets[y][x] = 0.95;doorStates[y][x]=0.5;}
         else if(doorOffsets[y][x]+(doorStates[y][x]-0.5)*mul*0.02 <= 0){doorOffsets[y][x] = 0;doorStates[y][x]=0.5;}
-        else{doorOffsets[y][x]+=(doorStates[y][x]-0.5)*mul*0.02;}
-        if(doorStates[y][x]==0.5 && doorOffsets[y][x] >= 0.9){
+        else{
+          if(doorStates[y][x] === 1){doorOffsets[y][x]+=(doorStates[y][x]-0.5)*mul*0.02;}
+          else if(doorStates[y][x] === 0 && !(x < player.x && player.x < x+1 && y<player.y && player.y <y+1 )){
+            doorOffsets[y][x]+=(doorStates[y][x]-0.5)*mul*0.02;
+          }
+        }
+        if(doorStates[y][x]==0.5 && doorOffsets[y][x] >= 0.95){
           if(doorTimers[y][x]+mul*0.01 >= 1){doorTimers[y][x]=0;doorStates[y][x]=0;}
-          else{doorTimers[y][x]+=mul*0.01;}
+          else{
+            doorTimers[y][x]+=mul*0.01;
+          }
         };
+      }else if(wall===11){
+        doorOffsets[y][x]+=Math.abs(doorStates[y][x]-0.5)*mul*0.02;
+        if(doorOffsets[y][x]>=1){
+          map[y][x]=0;
+          var next_x = y+(1-doorDirs[y][x])*2*(doorStates[y][x]-0.5);
+          var next_y = y+(doorDirs[y][x])*2*(doorStates[y][x]-0.5);
+          if(map[next_y][next_x] === 0){
+            doorStates[next_y][next_x] = doorStates[y][x];
+            doorOffets[y][x]=0;
+          }
+        }
       }
     }
   }
@@ -1036,7 +1156,7 @@ function move(timeDelta) {
     if(player.z < 0.01){
       player.zSpeed = 0.1125;
     }}
-  	var pos = checkCollision(player.x, player.y, newX, newY, 0.1);
+  	var pos = checkCollision(player.x, player.y, newX, newY, 0.05);
   	player.x = pos.x; // set new position
   	player.y = pos.y;
   }
@@ -1047,9 +1167,10 @@ function checkCollision(fromX, fromY, toX, toY, radius) {
 		x : fromX,
 		y : fromY
 	};
-  if(map[Math.floor(fromY)][Math.floor(fromX)] !== 0){return {x:toX,y:toY}}
-	if(toY < 0 || toY >= mapHeight || toX < 0 || toX >= mapWidth)
+	if(toY <= 0 || toY >= mapHeight || toX <= 0 || toX >= mapWidth){
 		return pos;
+  }
+  if(isBlocking(fromX,fromY)){return {x:toX,y:toY}}
 
 	var blockX = Math.floor(toX);
 	var blockY = Math.floor(toY);
@@ -1137,8 +1258,16 @@ function isBlocking(x,y) {
 	var iy = Math.floor(y);
 	// return true if the map block is not 0, ie. if there is a blocking wall.
 	if(map[iy][ix] !== 0){
-    if(map[iy][ix] !== 8 && map[iy][ix] !== 10){return true;}
-		else{if(doorOffsets[iy][ix] < 0.5){return true;}}
+    if(map[iy][ix] !== 8 && map[iy][ix] !== 9 && map[iy][ix] !== 10){return true;}
+		else{
+      if(doorDirs===1){
+        //horizontal
+        if(0.35<=(x-ix) && 0.65>=(x-ix) && (y-iy)<=1-doorOffsets[iy][ix]){return true;}
+      }else{
+        //vertical
+        if(0.35<=(x-ix) && 0.65>=(x-ix) && (y-iy)<=1-doorOffsets[iy][ix]){return true;}
+      }
+    }
   }
   for(var i = 0; i < sprites.length;i++){
     sprite = sprites[i];
