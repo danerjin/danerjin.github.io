@@ -235,8 +235,7 @@ var sprites = [
   new Sprite(9,10,"barrel",true,0.6),
   new Sprite(9.5,10,"barrel",true,0.6),
   new Sprite(10,10,"barrel",true,0.6)
-];
-var tempVar = new Array(sprites.length);
+]
 var weapons_imgs = [];
 var weapon_names = ['knife','pistol','smg','chaingun'];
 for(var texture = 0; texture < weapon_names.length;texture++){
@@ -574,7 +573,9 @@ function updateMousePosition(e) {
     mousePos[1] += e.movementY;
   }
 }
-
+function between(a,x,b){
+  return (a<=x && x<=b)||(b<=x || x<=a)
+}
 // bind keyboard events to game functions (movement, etc)
 function bind() {
 	document.onkeydown = function(e) {
@@ -733,49 +734,49 @@ function castSingleRay(rayAngle, stripIdx) {
   // determine the hit point
 	// first make sure the angle is between 0 and 360 degrees
   {
-  	rayAngle %= twoPI;
-  	if(rayAngle < 0) rayAngle += twoPI;
+    {
+    	rayAngle %= twoPI;
+    	if(rayAngle < 0) rayAngle += twoPI;
 
-  	// moving right/left? up/down? Determined by which quadrant the angle is in.
-  	var right = (rayAngle > twoPI * 0.75 || rayAngle < twoPI * 0.25);
-  	var up = (rayAngle < 0 || rayAngle > Math.PI);
-    //WALL CASTING
-  	var wallType = 0;
+    	// moving right/left? up/down? Determined by which quadrant the angle is in.
+    	var right = (rayAngle > twoPI * 0.75 || rayAngle < twoPI * 0.25);
+    	var up = (rayAngle < 0 || rayAngle > Math.PI);
+      //WALL CASTING
+    	var wallType = 0;
 
-  	// only do these once
-  	var angleSin = Math.sin(rayAngle);
-  	var angleCos = Math.cos(rayAngle);
+    	// only do these once
+    	var angleSin = Math.sin(rayAngle);
+    	var angleCos = Math.cos(rayAngle);
 
-  	var dist = 0;	// the distance to the block we hit
-  	var xHit = 0; 	// the x and y coord of where the ray hit the block
-  	var yHit = 0;
-  	var xWallHit = 0;
-  	var yWallHit = 0;
+    	var dist = 0;	// the distance to the block we hit
+    	var xHit = 0; 	// the x and y coord of where the ray hit the block
+    	var yHit = 0;
+    	var xWallHit = 0;
+    	var yWallHit = 0;
 
-  	var textureX;	// the x-coord on the texture of the block, ie. what part of the texture are we going to render
-  	var wallX;	// the (x,y) map coords of the block
-  	var wallY;
+    	var textureX;	// the x-coord on the texture of the block, ie. what part of the texture are we going to render
+    	var wallX;	// the (x,y) map coords of the block
+    	var wallY;
 
-  	var wallIsShaded = false;
+    	var wallIsShaded = false;
 
-  	// first check against the vertical map/wall lines
-  	// we do this by moving to the right or left edge of the block we're standing in
-  	// and then moving in 1 map unit steps horizontally. The amount we have to move vertically
-  	// is determined by the slope of the ray, which is simply defined as sin(angle) / cos(angle).
-
+    	// first check against the vertical map/wall lines
+    	// we do this by moving to the right or left edge of the block we're standing in
+    	// and then moving in 1 map unit steps horizontally. The amount we have to move vertically
+    	// is determined by the slope of the ray, which is simply defined as sin(angle) / cos(angle).
+    }
   	var slope = angleSin / angleCos; 	// the slope of the straight line made by the ray
   	var dXVer = right ? 1 : -1; 	// we move either 1 map unit to the left or right
   	var dYVer = dXVer * slope; 	// how much to move up or down
   	var x = right ? Math.ceil(player.x) : Math.floor(player.x);	// starting horizontal position, at one of the edges of the current map block
   	var y = player.y + (x - player.x) * slope;			// starting vertical position. We add the small horizontal step we just made, multiplied by the slope.
-
     while (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight) {
     		var wallX = Math.floor(x + (right ? 0 : -1));
     		var wallY = Math.floor(y);
     		// is this point inside a wall block?
     		if(map[wallY][wallX] !== 0){
           if(map[wallY][wallX]===8||map[wallY][wallX]===9 ||map[wallY][wallX]===10){
-            if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
+            if(!(between(Math.floor(x - dXVer + (right ? 0 : -1)),player.x,wallX)&&between(Math.floor(y - dYVer),player.y,wallY))){
               x_maybe = x-dXVer/2;
               y_maybe = y-dYVer/2;
             }
@@ -864,7 +865,7 @@ function castSingleRay(rayAngle, stripIdx) {
   		var wallX = Math.floor(x);
   		if(map[wallY][wallX]  !== 0) {
         if(map[wallY][wallX]===8 || map[wallY][wallX]===9 || map[wallY][wallX]===10){
-          if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
+          if(!(between(Math.floor(wallX-dXHor),player.x,wallX)&&between(Math.floor(y + (up ? -1 : 0) - dYHor),player.y,wallY))){
             x_maybe = x-dXHor/2;
             y_maybe = y-dYHor/2;
           }else{
@@ -1018,6 +1019,7 @@ function castSingleRay(rayAngle, stripIdx) {
   }
 }
 function renderSprites(){
+  var tempVar = new Array(sprites.length);
   for(var i = 0; i < sprites.length; i++){
     tempVar[i] = [i,((player.x - sprites[i].x) * (player.x - sprites[i].x) + (player.y - sprites[i].y) * (player.y - sprites[i].y))]; //sqrt not taken, unneeded
   }
