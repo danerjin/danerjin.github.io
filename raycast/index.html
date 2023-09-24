@@ -573,6 +573,7 @@ function updateMousePosition(e) {
     mousePos[1] += e.movementY;
   }
 }
+
 // bind keyboard events to game functions (movement, etc)
 function bind() {
 	document.onkeydown = function(e) {
@@ -762,19 +763,27 @@ function castSingleRay(rayAngle, stripIdx) {
     	// and then moving in 1 map unit steps horizontally. The amount we have to move vertically
     	// is determined by the slope of the ray, which is simply defined as sin(angle) / cos(angle).
     }
+
   	var slope = angleSin / angleCos; 	// the slope of the straight line made by the ray
   	var dXVer = right ? 1 : -1; 	// we move either 1 map unit to the left or right
   	var dYVer = dXVer * slope; 	// how much to move up or down
   	var x = right ? Math.ceil(player.x) : Math.floor(player.x);	// starting horizontal position, at one of the edges of the current map block
   	var y = player.y + (x - player.x) * slope;			// starting vertical position. We add the small horizontal step we just made, multiplied by the slope.
+
     while (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight) {
     		var wallX = Math.floor(x + (right ? 0 : -1));
     		var wallY = Math.floor(y);
     		// is this point inside a wall block?
     		if(map[wallY][wallX] !== 0){
           if(map[wallY][wallX]===8||map[wallY][wallX]===9 ||map[wallY][wallX]===10){
-            x_maybe=x+dXVer/2;
-            y_maybe=y+dYVer/2;
+            if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
+              x_maybe = x-dXVer/2;
+              y_maybe = y-dYVer/2;
+            }
+            else{
+              x_maybe=x+dXVer/2;
+              y_maybe=y+dYVer/2;
+            }
             if((y_maybe-wallY) <= 1-doorOffsets[wallY][wallX]){
               var distX = x_maybe - player.x;
         			var distY = y_maybe - player.y;
@@ -856,8 +865,13 @@ function castSingleRay(rayAngle, stripIdx) {
   		var wallX = Math.floor(x);
   		if(map[wallY][wallX]  !== 0) {
         if(map[wallY][wallX]===8 || map[wallY][wallX]===9 || map[wallY][wallX]===10){
-          x_maybe=x+dXHor/2;
-          y_maybe=y+dYHor/2;
+          if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
+            x_maybe = x-dXHor/2;
+            y_maybe = y-dYHor/2;
+          }else{
+            x_maybe=x+dXHor/2;
+            y_maybe=y+dYHor/2;
+          }
           if(x_maybe-wallX <= 1-doorOffsets[wallY][wallX] && x_maybe-wallX >= 0){
             var distX = x_maybe - player.x;
             var distY = y_maybe - player.y;
