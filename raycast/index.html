@@ -1317,7 +1317,7 @@ function isBlocking(x,y) {
   for(var i = 0; i < sprites.length;i++){
     sprite = sprites[i];
     if(sprite.block){
-      spriteDist = ((x-sprite.x+sprite.hitbox/2)**2 + 1*(y-sprite.y+sprite.hitbox/2)**2)**0.5;
+      spriteDist = ((x-sprite.x)**2 + 1*(y-sprite.y)**2)**0.5;
       if (spriteDist<=sprite.hitbox/2){
         return true;
       }
