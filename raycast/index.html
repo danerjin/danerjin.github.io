@@ -777,14 +777,8 @@ function castSingleRay(rayAngle, stripIdx) {
     		if(map[wallY][wallX] !== 0){
           if(map[wallY][wallX]===8||map[wallY][wallX]===9 ||map[wallY][wallX]===10){
             var x_maybe,y_maybe;
-            if(!(between(Math.floor(x - dXVer + (right ? 0 : -1)),player.x,wallX)&&between(Math.floor(y - dYVer),player.y,wallY))){
-              x_maybe = x-dXVer/2;
-              y_maybe = y-dYVer/2;
-            }
-            else{
-              x_maybe=x+dXVer/2;
-              y_maybe=y+dYVer/2;
-            }
+            x_maybe=x+dXVer/2;
+            y_maybe=y+dYVer/2;
             if((y_maybe-wallY) <= 1-doorOffsets[wallY][wallX]){
               var distX = x_maybe - player.x;
         			var distY = y_maybe - player.y;
@@ -867,13 +861,8 @@ function castSingleRay(rayAngle, stripIdx) {
   		if(map[wallY][wallX]  !== 0) {
         if(map[wallY][wallX]===8 || map[wallY][wallX]===9 || map[wallY][wallX]===10){
           var x_maybe,y_maybe;
-          if(!(between(Math.floor(wallX-dXHor),player.x,wallX)&&between(Math.floor(y + (up ? -1 : 0) - dYHor),player.y,wallY))){
-            x_maybe = x-dXHor/2;
-            y_maybe = y-dYHor/2;
-          }else{
-            x_maybe=x+dXHor/2;
-            y_maybe=y+dYHor/2;
-          }
+          x_maybe=x+dXHor/2;
+          y_maybe=y+dYHor/2;
           if(x_maybe-wallX <= 1-doorOffsets[wallY][wallX] && x_maybe-wallX >= 0){
             var distX = x_maybe - player.x;
             var distY = y_maybe - player.y;
