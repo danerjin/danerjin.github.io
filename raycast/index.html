@@ -817,7 +817,7 @@ function castSingleRay(rayAngle, stripIdx) {
                 dist = blockDist;
                 wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
                 textureX = (y_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
-                textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+                if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
                 xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
                 yHit = y_maybe;
@@ -906,7 +906,7 @@ function castSingleRay(rayAngle, stripIdx) {
               dist = blockDist;
               wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
               textureX = (x_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
-              textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+              if(up) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
               xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
               yHit = y_maybe;
