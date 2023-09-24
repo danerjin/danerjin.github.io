@@ -236,6 +236,7 @@ var sprites = [
   new Sprite(9.5,10,"barrel",true,0.6),
   new Sprite(10,10,"barrel",true,0.6)
 ];
+var tempVar = new Array(sprites.length);
 var weapons_imgs = [];
 var weapon_names = ['knife','pistol','smg','chaingun'];
 for(var texture = 0; texture < weapon_names.length;texture++){
@@ -864,8 +865,8 @@ function castSingleRay(rayAngle, stripIdx) {
   		if(map[wallY][wallX]  !== 0) {
         if(map[wallY][wallX]===8 || map[wallY][wallX]===9 || map[wallY][wallX]===10){
           if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
-            x_maybe = x-dXVer/2;
-            y_maybe = y-dYVer/2;
+            x_maybe = x-dXHor/2;
+            y_maybe = y-dYHor/2;
           }else{
             x_maybe=x+dXHor/2;
             y_maybe=y+dYHor/2;
@@ -1017,7 +1018,6 @@ function castSingleRay(rayAngle, stripIdx) {
   }
 }
 function renderSprites(){
-  var tempVar = new Array(sprites.length);
   for(var i = 0; i < sprites.length; i++){
     tempVar[i] = [i,((player.x - sprites[i].x) * (player.x - sprites[i].x) + (player.y - sprites[i].y) * (player.y - sprites[i].y))]; //sqrt not taken, unneeded
   }
