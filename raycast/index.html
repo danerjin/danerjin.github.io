@@ -776,7 +776,7 @@ function castSingleRay(rayAngle, stripIdx) {
     		// is this point inside a wall block?
     		if(map[wallY][wallX] !== 0){
           if(map[wallY][wallX]===8||map[wallY][wallX]===9 ||map[wallY][wallX]===10){
-            if((between(Math.floor(x - dXVer + (right ? 0 : -1)),player.x,wallX)&&between(Math.floor(y - dYVer),player.y,wallY))){
+            if(false&&(between(Math.floor(x - dXVer + (right ? 0 : -1)),player.x,wallX)&&between(Math.floor(y - dYVer),player.y,wallY))){
               x_maybe = x-dXVer/2;
               y_maybe = y-dYVer/2;
             }
@@ -865,7 +865,7 @@ function castSingleRay(rayAngle, stripIdx) {
   		var wallX = Math.floor(x);
   		if(map[wallY][wallX]  !== 0) {
         if(map[wallY][wallX]===8 || map[wallY][wallX]===9 || map[wallY][wallX]===10){
-          if((between(Math.floor(wallX-dXHor),player.x,wallX)&&between(Math.floor(y + (up ? -1 : 0) - dYHor),player.y,wallY))){
+          if(false&&(between(Math.floor(wallX-dXHor),player.x,wallX)&&between(Math.floor(y + (up ? -1 : 0) - dYHor),player.y,wallY))){
             x_maybe = x-dXHor/2;
             y_maybe = y-dYHor/2;
           }else{
