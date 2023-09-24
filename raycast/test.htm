@@ -89,7 +89,7 @@ if(!Array.prototype.indexOf) {
 		return -1;
 	};
 }
-
+var debug = false;
 var Sprite = function(x,y,texture,block,hitbox){
   this.x = x;
   this.y = y;
@@ -236,6 +236,7 @@ var sprites = [
   new Sprite(9.5,10,"barrel",true,0.6),
   new Sprite(10,10,"barrel",true,0.6)
 ];
+var tempVar = new Array(sprites.length);
 var weapons_imgs = [];
 var weapon_names = ['knife','pistol','smg','chaingun'];
 for(var texture = 0; texture < weapon_names.length;texture++){
@@ -272,7 +273,7 @@ var gravity = 0.01;
 var stripWidth = 2;
 var player = {
 	x : 5.5,		// current x, y position
-	y : 3,
+	y : 11,
 	dir : 0,		// the direction that the player is turning, either -1 for left or 1 for right.
 	rotDeg : 90.001,		// the current angle of rotation
 	rot : 0,		// rotation in radians
@@ -772,8 +773,7 @@ function castSingleRay(rayAngle, stripIdx) {
     		var wallX = Math.floor(x + (right ? 0 : -1));
     		var wallY = Math.floor(y);
     		// is this point inside a wall block?
-    		if(map[wallY][wallX]
-          !== 0){
+    		if(map[wallY][wallX] !== 0){
           if(map[wallY][wallX]===8||map[wallY][wallX]===9 ||map[wallY][wallX]===10){
             if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
               x_maybe = x-dXVer/2;
@@ -790,7 +790,7 @@ function castSingleRay(rayAngle, stripIdx) {
 
         			wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
         			textureX = (y_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
-        			if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+        			textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
         			xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
         			yHit = y_maybe;
@@ -816,7 +816,7 @@ function castSingleRay(rayAngle, stripIdx) {
                 dist = blockDist;
                 wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
                 textureX = (y_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
-                if(up) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+                textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
                 xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
                 yHit = y_maybe;
@@ -865,8 +865,8 @@ function castSingleRay(rayAngle, stripIdx) {
   		if(map[wallY][wallX]  !== 0) {
         if(map[wallY][wallX]===8 || map[wallY][wallX]===9 || map[wallY][wallX]===10){
           if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
-            x_maybe = x-dXVer/2;
-            y_maybe = y-dYVer/2;
+            x_maybe = x-dXHor/2;
+            y_maybe = y-dYHor/2;
           }else{
             x_maybe=x+dXHor/2;
             y_maybe=y+dYHor/2;
@@ -879,7 +879,7 @@ function castSingleRay(rayAngle, stripIdx) {
               dist = blockDist;
               wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
               textureX = (x_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
-              if(up) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+              textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
               xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
               yHit = y_maybe;
@@ -905,7 +905,7 @@ function castSingleRay(rayAngle, stripIdx) {
               dist = blockDist;
               wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
               textureX = (x_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
-              if(up) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+              textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
               xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
               yHit = y_maybe;
@@ -1018,7 +1018,6 @@ function castSingleRay(rayAngle, stripIdx) {
   }
 }
 function renderSprites(){
-  var tempVar = new Array(sprites.length);
   for(var i = 0; i < sprites.length; i++){
     tempVar[i] = [i,((player.x - sprites[i].x) * (player.x - sprites[i].x) + (player.y - sprites[i].y) * (player.y - sprites[i].y))]; //sqrt not taken, unneeded
   }
@@ -1292,24 +1291,24 @@ function isBlocking(x,y) {
       if(doorDirs[iy][ix]===1){
         //horizontal
         if(doorStates[iy][ix]===1){
-          if((y-iy)>doorOffsets[iy][ix]){return true;}
-        }else{
           if((y-iy)<1-doorOffsets[iy][ix]){return true;}
+        }else{
+          if((y-iy)>doorOffsets[iy][ix]){return true;}
         }
       }else{
         //vertical
         if(doorStates[iy][ix]===1){
-          if((x-ix)>doorOffsets[iy][ix]){return true;}
-        }else{
           if((x-ix)<1-doorOffsets[iy][ix]){return true;}
+        }else{
+          if((x-ix)>doorOffsets[iy][ix]){return true;}
         }
       }
     }
 		else{
-      if(doorDirs===1){
+      if(doorDirs[iy][ix]===0){
         //horizontal
-        if(0.35<=(y-iy) && 0.65>=(y-iy) && 1-(x-ix)>=doorOffsets[iy][ix]){return true;}
-      }else{
+        if(0.35<=(x-ix) && 0.65>=(x-ix) && 1-(y-iy)>=doorOffsets[iy][ix]){return true;}
+      }else if(doorDirs[iy][ix]===1){
         //vertical
         if(0.35<=(y-iy) && 0.65>=(y-iy) && 1-(x-ix)>=doorOffsets[iy][ix]){return true;}
       }
@@ -1318,7 +1317,7 @@ function isBlocking(x,y) {
   for(var i = 0; i < sprites.length;i++){
     sprite = sprites[i];
     if(sprite.block){
-      spriteDist = ((x-sprite.x+sprite.hitbox/2)**2 + 1*(y-sprite.y+sprite.hitbox/2)**2)**0.5;
+      spriteDist = ((x-sprite.x)**2 + 1*(y-sprite.y)**2)**0.5;
       if (spriteDist<=sprite.hitbox/2){
         return true;
       }
@@ -1329,7 +1328,7 @@ function isBlocking(x,y) {
 
 function updateMiniMap() {
 
-  //drawMiniMap();
+  if(debug){drawMiniMap();}
 	var miniMap = $("minimap");
 	var miniMapObjects = $("minimapobjects");
 
