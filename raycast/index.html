@@ -1003,7 +1003,7 @@ function castSingleRay(rayAngle, stripIdx) {
 		var width = height * stripWidth;
 
 		// similar triangles
-		var top = Math.round(screenHeight/2 - (1-(player.z+player.height))*height-(player.z+player.height))+player.pitch;
+		var top = Math.round(screenHeight/2 - height+(player.z+player.height)*viewDist/dist)+player.pitch;
     drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType);
     zbuffer[stripIdx] = dist;
     //permadi floorcasting
