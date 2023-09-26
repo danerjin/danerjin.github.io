@@ -1226,12 +1226,10 @@ function move(timeDelta) {
   	var newX = player.x + Math.cos(player.rot) * moveStep + Math.sin(player.rot) * moveStepStrafe;	// calculate new player position with simple trigonometry
   	var newY = player.y + Math.sin(player.rot) * moveStep - Math.cos(player.rot) * moveStepStrafe;
     player.zSpeed-=mul*gravity;
-    if(0 <= player.z+mul*player.zSpeed){
-      if(!isBlockingVer()){
+    if(0 <= player.z+mul*player.zSpeed&&!isBlockingVer(player.z+mul*player.zSpeed)){
         player.z+=mul*player.zSpeed;
-      }
     }else{
-      player.zSpeed = 0;player.z=0;
+      player.zSpeed = 0;
     }
     if(player.isJumping){
     if(player.z < 0.01){
@@ -1330,17 +1328,17 @@ function checkCollision(fromX, fromY, toX, toY, radius) {
 	return pos;
 }
 
-function isBlockingVer(){
+function isBlockingVer(z){
   for(var i = 0; i < sprites.length;i++){
     sprite = sprites[i];
     if(sprite.block){
       spriteDist = ((player.x-sprite.x)**2 + 1*(player.y-sprite.y)**2)**0.5;
       if (spriteDist<=sprite.hitbox/2){
         if(
-          between(player.z+player.height,sprite.h+sprite.z,player.z)||
-          between(player.z+player.height,sprite.h,player.z)||
-          between(sprite.z+sprite.h,player.z,sprite.z)||
-          between(sprite.z+sprite.h,player.height+player.z,sprite.z)
+          between(z+player.height,sprite.h+sprite.z,z)||
+          between(z+player.height,sprite.h,z)||
+          between(sprite.z+sprite.h,z,sprite.z)||
+          between(sprite.z+sprite.h,player.height+z,sprite.z)
         ){
           return true;
         }
