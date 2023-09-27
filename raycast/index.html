@@ -306,7 +306,7 @@ var numRays = Math.ceil(screenWidth / stripWidth);
 var fovHalf = fov / 2;
 
 var viewDist = (screenWidth/2) / Math.tan((fov / 2));
-var ceiling = false;
+var ceiling = !!Math.floor(Math.random()*2);
 var twoPI = Math.PI * 2;
 var fps = 0;
 var joyMoving;
@@ -545,19 +545,6 @@ function renderCycle() {
   rayDirY1 = dirY + planeY;
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
   if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#555555');}
-  if(!ceiling){
-    //skybox
-    var startX=screenWidth*((player.rot/2*Math.PI)%1);
-    ctx.drawImage(skydomeTexture, 0, 0,
-      skydomeTexture.width, skydomeTexture.height,
-      startX, 0, screenHeight*16/5, screenHeight);
-    ctx.drawImage(skydomeTexture, 0, 0,
-      skydomeTexture.width, skydomeTexture.height,
-      startX-screenHeight*16/5, 0, screenHeight*16/5, screenHeight);
-    ctx.drawImage(skydomeTexture, 0, 0,
-      skydomeTexture.width, skydomeTexture.height,
-      startX+screenHeight*16/5, 0, screenHeight*16/5, screenHeight);
-  }
   updateMiniMap();
   //castFloorAndCeilingRaysLode();
 	castWallRays();
@@ -580,7 +567,7 @@ function renderCycle() {
 		cycleDelay = Math.max(1, cycleDelay - (timeDelta - cycleDelay))
 	}
 	lastRenderCycleTime = now;
-	setTimeout(renderCycle, 10);
+	setTimeout(renderCycle, 1);
 	fps = 1000 / timeDelta;
   ctx.font = "15px monospace";
   ctx.fillStyle = "white";
@@ -742,7 +729,12 @@ function castWallRays() {
 		// the angle of the ray, relative to the viewing direction.
 		// right triangle: a = sin(A) * c
 		var rayAngle = Math.asin(rayScreenPos / rayViewDist);
-
+    if(!ceiling){
+      //skybox
+      ctx.drawImage(skydomeTexture, Math.floor((skydomeTexture.width)*((player.rot + rayAngle+2*Math.PI)/(Math.PI)%1)), 0,
+    		1, skydomeTexture.height,
+    		stripIdx*stripWidth, 0, stripWidth, screenHeight);
+    }
 		castSingleRay(
 			player.rot + rayAngle, 	// add the players viewing direction to get the angle in world space
 			stripIdx++
@@ -1260,7 +1252,7 @@ function move(timeDelta) {
       player.zSpeed = 0;
     }
     if(player.isJumping){
-    if(player.z < 0.01){
+    if(player.z<=0.01||isBlockingVer(player.z)){
       player.zSpeed = 0.1125;
     }}
   	var pos = checkCollision(player.x, player.y, newX, newY, 0.05);
