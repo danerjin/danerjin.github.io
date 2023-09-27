@@ -165,6 +165,9 @@ for (var i = 0; i < mapHeight; i++) {
 8, 9, and 10 - doors,
 11 - secret push wall, wood texture
 */
+var skydomeTexture = new Image();
+skydomeTexture.crossOrigin = "Anonymous";
+skydomeTexture.src = `sprites/pano.png`;
 var floorlayout = [
   [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
   [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
@@ -303,7 +306,7 @@ var numRays = Math.ceil(screenWidth / stripWidth);
 var fovHalf = fov / 2;
 
 var viewDist = (screenWidth/2) / Math.tan((fov / 2));
-
+var ceiling = false;
 var twoPI = Math.PI * 2;
 var fps = 0;
 var joyMoving;
@@ -542,6 +545,19 @@ function renderCycle() {
   rayDirY1 = dirY + planeY;
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
   if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#555555');}
+  if(!ceiling){
+    //skybox
+    var startX=screenWidth*((player.rot/2*Math.PI)%1);
+    ctx.drawImage(skydomeTexture, 0, 0,
+      skydomeTexture.width, skydomeTexture.height,
+      startX, 0, screenHeight*16/5, screenHeight);
+    ctx.drawImage(skydomeTexture, 0, 0,
+      skydomeTexture.width, skydomeTexture.height,
+      startX-screenHeight*16/5, 0, screenHeight*16/5, screenHeight);
+    ctx.drawImage(skydomeTexture, 0, 0,
+      skydomeTexture.width, skydomeTexture.height,
+      startX+screenHeight*16/5, 0, screenHeight*16/5, screenHeight);
+  }
   updateMiniMap();
   //castFloorAndCeilingRaysLode();
 	castWallRays();
@@ -996,15 +1012,25 @@ function castSingleRay(rayAngle, stripIdx) {
 
 		// "real" wall height in the game world is 1 unit, the distance from the player to the screen is viewDist,
 		// thus the height on the screen is equal to wall_height_real * viewDist / dist
-
-		var height = Math.round(viewDist / dist);
+    var heightSeg = Math.round(viewDist / dist);
+		var height = Math.round(1*viewDist / dist);
 
 		// width is the same, but we have to stretch the texture to a factor of stripWidth to make it fill the strip correctly
 		var width = height * stripWidth;
 
 		// similar triangles
 		var top = Math.round(screenHeight/2 - height+(player.z+player.height)*viewDist/dist)+player.pitch;
-    drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType);
+
+    for(var drawTop = top+height-heightSeg; drawTop >= top-10; drawTop-=heightSeg){
+      drawWallSliceRectangle(stripIdx*stripWidth,drawTop,stripWidth,heightSeg,textureX+(wallIsShaded?1:0),wallType);
+    }
+    if(drawTop<=top){
+      var wallTexture = wallTextures[wallType-1]
+    	ctx.drawImage(wallTexture, Math.floor((textureX+(wallIsShaded?1:0))*wallTexture.width/2), Math.round(wallTexture.height*(1-(height/heightSeg)%1)),
+    		1, Math.round(wallTexture.height*(((height)/heightSeg)%1)),
+    		stripIdx*stripWidth, top, stripWidth, (height%heightSeg)+3);
+    }
+    //drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType);
     zbuffer[stripIdx] = dist;
     //permadi floorcasting
     if(floor){
@@ -1034,7 +1060,8 @@ function castSingleRay(rayAngle, stripIdx) {
         // floor drawing
         drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
       }
-      for(var y = 0; y < top+stripWidth; y+=stripWidth){
+      if(ceiling){
+        for(var y = 0; y < top+stripWidth; y+=stripWidth){
         if(y===screenHeight/2+player.pitch){continue;}
         // Current y position compared to the center of the screen (the horizon)
         var p = screenHeight / 2 - y + player.pitch;
@@ -1059,6 +1086,7 @@ function castSingleRay(rayAngle, stripIdx) {
         if(floorTexture+0 === 0 || floorTexture === undefined){continue;}
         // floor drawing
         drawCeilRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
+      }
       }
     }
   }

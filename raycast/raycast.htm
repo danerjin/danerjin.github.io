@@ -90,7 +90,7 @@ if(!Array.prototype.indexOf) {
 	};
 }
 var debug = false;
-var Sprite = function(x,y,texture,block,hitbox){
+var Sprite = function(x,y,texture,block,hitbox,h,z){
   this.x = x;
   this.y = y;
   this.texture = new Image();
@@ -98,6 +98,8 @@ var Sprite = function(x,y,texture,block,hitbox){
   this.texture.src = `sprites/objects/${texture}.png`;
   this.block = block;
   this.hitbox = hitbox;
+  this.h = h;
+  this.z = z;
 }
 var map = [
   [2,2,2,2,2,2,2,2,2,2,2,4,4,6,4,4,6,4,6,4,4,4,6,4],
@@ -163,6 +165,9 @@ for (var i = 0; i < mapHeight; i++) {
 8, 9, and 10 - doors,
 11 - secret push wall, wood texture
 */
+var skydomeTexture = new Image();
+skydomeTexture.crossOrigin = "Anonymous";
+skydomeTexture.src = `sprites/pano.png`;
 var floorlayout = [
   [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
   [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
@@ -216,25 +221,25 @@ var ceilinglayout = [
   [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]
 ];
 var sprites = [
-  new Sprite(21.5,11,"greenlight",false,0.6),
-  new Sprite(18,4,"greenlight",false,0.6),
-  new Sprite(9.5,4,"greenlight",false,0.6),
-  new Sprite(9.5,11,"greenlight",false,0.6),
-  new Sprite(3,6,"greenlight",false,0.6),
-  new Sprite(3,20,"greenlight",false,0.6),
-  new Sprite(3,14,"greenlight",false,0.6),
-  new Sprite(14,20,"greenlight",false,0.6),
-  new Sprite(2,8,"pillar",true,0.6),
-  new Sprite(2,9,"pillar",true,0.6),
-  new Sprite(2,10,"pillar",true,0.6),
-  new Sprite(21,2,"barrel",true,0.6),
-  new Sprite(15,2,"barrel",true,0.6),
-  new Sprite(15.5,1.2,"barrel",true,0.6),
-  new Sprite(16.2,0.7,"barrel",true,0.6),
-  new Sprite(3,2,"barrel",true,0.6),
-  new Sprite(9,10,"barrel",true,0.6),
-  new Sprite(9.5,10,"barrel",true,0.6),
-  new Sprite(10,10,"barrel",true,0.6)
+  new Sprite(21.5,10,"greenlight",false,0.6,0,0),
+  new Sprite(18,3,"greenlight",false,0.6,0,0),
+  new Sprite(9.5,3.5,"greenlight",false,0.6,0,0),
+  new Sprite(9.5,10,"greenlight",false,0.6,0,0),
+  new Sprite(3,3.5,"greenlight",false,0.6,0,0),
+  new Sprite(3,19.5,"greenlight",false,0.6,0,0),
+  new Sprite(3,13,"greenlight",false,0.6,0,0),
+  new Sprite(14,19,"greenlight",false,0.6,0,0),
+  new Sprite(2,8,"pillar",true,0.6,1,0),
+  new Sprite(2,9,"pillar",true,0.6,1,0),
+  new Sprite(2,10,"pillar",true,0.6,1,0),
+  new Sprite(21,2,"barrel",true,0.6,0.4,0),
+  new Sprite(15,3,"barrel",true,0.6,0.4,0),
+  new Sprite(15.5,2.2,"barrel",true,0.6,0.4,0),
+  new Sprite(16.2,2.7,"barrel",true,0.6,0.4,0),
+  new Sprite(3,2,"barrel",true,0.6,0.4,0),
+  new Sprite(9,10,"barrel",true,0.6,0.4,0),
+  new Sprite(9.5,10,"barrel",true,0.6,0.4,0),
+  new Sprite(10,10,"barrel",true,0.6,0.4,0)
 ]
 var weapons_imgs = [];
 var weapon_names = ['knife','pistol','smg','chaingun'];
@@ -272,7 +277,7 @@ var gravity = 0.01;
 var stripWidth = 2;
 var player = {
 	x : 5.5,		// current x, y position
-	y : 3,
+	y : 3.1,
 	dir : 0,		// the direction that the player is turning, either -1 for left or 1 for right.
 	rotDeg : 90.001,		// the current angle of rotation
 	rot : 0,		// rotation in radians
@@ -288,7 +293,8 @@ var player = {
   isJumping: false,
   speedMult: 1,
   weapon:0,
-  weaponState:0
+  weaponState:0,
+  currSquare: 0
 }
 var screenWidth = canvas.width;
 var screenHeight = canvas.height;
@@ -300,12 +306,11 @@ var numRays = Math.ceil(screenWidth / stripWidth);
 var fovHalf = fov / 2;
 
 var viewDist = (screenWidth/2) / Math.tan((fov / 2));
-
+var ceiling = false;
 var twoPI = Math.PI * 2;
 var fps = 0;
 var joyMoving;
 var joyMovingDir;
-
 var posZ = (player.height+player.z) * screenHeight;
 var dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
 var dirY = Math.sin(player.rot)/(Math.tan(fovHalf));
@@ -490,7 +495,9 @@ function gameCycle() {
 function sign(num){
   return Math.round(num/Math.abs(num));
 }
-
+function between(a,x,b){
+  return (a<=x && x<=b)||(b<=x && x<=a)
+}
 var posZ;
 var lastRenderCycleTime = 0;
 var drawFillRectangle = function(x, y, width, height, cssColor){
@@ -526,6 +533,7 @@ var drawCeilRectangle = function(x, y, width, height, xOffset,yOffset,texture){
 		x, y, width, height);
 }
 function renderCycle() {
+  player.currSquare=map[Math.floor(player.y)][Math.floor(player.x)];
   posZ = (player.height+player.z) * screenHeight;
   dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
   dirY = Math.sin(player.rot)/(Math.tan(fovHalf));
@@ -537,6 +545,19 @@ function renderCycle() {
   rayDirY1 = dirY + planeY;
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
   if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#555555');}
+  if(!ceiling){
+    //skybox
+    var startX=screenWidth*((player.rot/2*Math.PI)%1);
+    ctx.drawImage(skydomeTexture, 0, 0,
+      skydomeTexture.width, skydomeTexture.height,
+      startX, 0, screenHeight*16/5, screenHeight);
+    ctx.drawImage(skydomeTexture, 0, 0,
+      skydomeTexture.width, skydomeTexture.height,
+      startX-screenHeight*16/5, 0, screenHeight*16/5, screenHeight);
+    ctx.drawImage(skydomeTexture, 0, 0,
+      skydomeTexture.width, skydomeTexture.height,
+      startX+screenHeight*16/5, 0, screenHeight*16/5, screenHeight);
+  }
   updateMiniMap();
   //castFloorAndCeilingRaysLode();
 	castWallRays();
@@ -730,58 +751,79 @@ function castWallRays() {
 }
 function castSingleRay(rayAngle, stripIdx) {
   // determine the hit point
-	// first make sure the angle is between 0 and 360 degrees
   {
-  	rayAngle %= twoPI;
-  	if(rayAngle < 0) rayAngle += twoPI;
+    {
 
-  	// moving right/left? up/down? Determined by which quadrant the angle is in.
-  	var right = (rayAngle > twoPI * 0.75 || rayAngle < twoPI * 0.25);
-  	var up = (rayAngle < 0 || rayAngle > Math.PI);
-    //WALL CASTING
-  	var wallType = 0;
+    	// first make sure the angle is between 0 and 360 degrees
+    	rayAngle %= twoPI;
+    	if(rayAngle < 0) rayAngle += twoPI;
 
-  	// only do these once
-  	var angleSin = Math.sin(rayAngle);
-  	var angleCos = Math.cos(rayAngle);
+    	// moving right/left? up/down? Determined by which quadrant the angle is in.
+    	var right = (rayAngle > twoPI * 0.75 || rayAngle < twoPI * 0.25);
+    	var up = (rayAngle < 0 || rayAngle > Math.PI);
+      //WALL CASTING
+    	var wallType = 0;
 
-  	var dist = 0;	// the distance to the block we hit
-  	var xHit = 0; 	// the x and y coord of where the ray hit the block
-  	var yHit = 0;
-  	var xWallHit = 0;
-  	var yWallHit = 0;
+    	// only do these once
+    	var angleSin = Math.sin(rayAngle);
+    	var angleCos = Math.cos(rayAngle);
 
-  	var textureX;	// the x-coord on the texture of the block, ie. what part of the texture are we going to render
-  	var wallX;	// the (x,y) map coords of the block
-  	var wallY;
+    	var dist = 0;	// the distance to the block we hit
+    	var xHit = 0; 	// the x and y coord of where the ray hit the block
+    	var yHit = 0;
+    	var xWallHit = 0;
+    	var yWallHit = 0;
 
-  	var wallIsShaded = false;
+    	var textureX;	// the x-coord on the texture of the block, ie. what part of the texture are we going to render
+    	var wallX;	// the (x,y) map coords of the block
+    	var wallY;
 
-  	// first check against the vertical map/wall lines
-  	// we do this by moving to the right or left edge of the block we're standing in
-  	// and then moving in 1 map unit steps horizontally. The amount we have to move vertically
-  	// is determined by the slope of the ray, which is simply defined as sin(angle) / cos(angle).
+    	var wallIsShaded = false;
 
+    	// first check against the vertical map/wall lines
+    	// we do this by moving to the right or left edge of the block we're standing in
+    	// and then moving in 1 map unit steps horizontally. The amount we have to move vertically
+    	// is determined by the slope of the ray, which is simply defined as sin(angle) / cos(angle).
+    }
   	var slope = angleSin / angleCos; 	// the slope of the straight line made by the ray
   	var dXVer = right ? 1 : -1; 	// we move either 1 map unit to the left or right
   	var dYVer = dXVer * slope; 	// how much to move up or down
-  	var x = right ? Math.ceil(player.x) : Math.floor(player.x);	// starting horizontal position, at one of the edges of the current map block
-  	var y = player.y + (x - player.x) * slope;			// starting vertical position. We add the small horizontal step we just made, multiplied by the slope.
-
+    /*if(player.currSquare===8||player.currSquare===9||player.currSquare===10){
+      if(right){
+        if(player.x%1>=0.5){
+          var x = !right ? Math.ceil(player.x) : Math.floor(player.x);
+        }
+      }
+      else{
+        if(player.x%1<=0.5){
+          var x = !right ? Math.ceil(player.x) : Math.floor(player.x);
+        }
+      }
+    }
+    else if(player.currSquare===11){
+      if(right){
+        if(player.x%1>=1-doorOffsets[Math.floor(player.y)][Math.floor(player.x)]){
+          var x = !right ? Math.ceil(player.x) : Math.floor(player.x);
+        }
+      }
+      else{
+        if(player.x%1<=doorOffsets[Math.floor(player.y)][Math.floor(player.x)]){
+          var x = !right ? Math.ceil(player.x) : Math.floor(player.x);
+        }
+      }
+    }
+    else{*/
+      var x = right ? Math.ceil(player.x) : Math.floor(player.x);	// starting horizontal position, at one of the edges of the current map block
+    //}
+    var y = player.y + (x - player.x) * slope;// starting vertical position. We add the small horizontal step we just made, multiplied by the slope.
     while (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight) {
     		var wallX = Math.floor(x + (right ? 0 : -1));
     		var wallY = Math.floor(y);
     		// is this point inside a wall block?
     		if(map[wallY][wallX] !== 0){
-          if(map[wallY][wallX]===8||map[wallY][wallX]===9 ||map[wallY][wallX]===10){
-            if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
-              x_maybe = x-dXVer/2;
-              y_maybe = y-dYVer/2;
-            }
-            else{
-              x_maybe=x+dXVer/2;
-              y_maybe=y+dYVer/2;
-            }
+          if(map[wallY][wallX]===8||map[wallY][wallX]===9 ||map[wallY][wallX]===10&&doorDirs[wallY][wallX]===0){
+            x_maybe=x+dXVer/2;
+            y_maybe=y+dYVer/2;
             if((y_maybe-wallY) <= 1-doorOffsets[wallY][wallX]){
               var distX = x_maybe - player.x;
         			var distY = y_maybe - player.y;
@@ -815,7 +857,7 @@ function castSingleRay(rayAngle, stripIdx) {
                 dist = blockDist;
                 wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
                 textureX = (y_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
-                textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+                if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
                 xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
                 yHit = y_maybe;
@@ -856,20 +898,41 @@ function castSingleRay(rayAngle, stripIdx) {
   	var slope = angleCos / angleSin;
   	var dYHor = up ? -1 : 1;
   	var dXHor = dYHor * slope;
-  	var y = up ? Math.floor(player.y) : Math.ceil(player.y);
-  	var x = player.x + (y - player.y) * slope;
+    /*if(player.currSquare===8||player.currSquare===9||player.currSquare===10){
+      if(up){
+        if(player.y%1<=0.5){
+          var y = !up ? Math.floor(player.y) : Math.ceil(player.y);
+        }
+      }
+      else{
+        if(player.y%1>=0.5){
+          var y = !up ? Math.floor(player.y) : Math.ceil(player.y);
+        }
+      }
+    }
+    else if(player.currSquare===11){
+      if(up){
+        if(player.y%1>=1-doorOffsets[Math.floor(player.y)][Math.floor(player.x)]){
+          var y = !up ? Math.floor(player.y) : Math.ceil(player.y);
+        }
+      }
+      else{
+        if(player.y%1<=doorOffsets[Math.floor(player.y)][Math.floor(player.x)]){
+          var y = !up ? Math.floor(player.y) : Math.ceil(player.y);
+        }
+      }
+    }
+    else{*/
+      var y = up ? Math.floor(player.y) : Math.ceil(player.y);
+    //}
+    var x = player.x + (y - player.y) * slope;
   	while (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight) {
   		var wallY = Math.floor(y + (up ? -1 : 0));
   		var wallX = Math.floor(x);
   		if(map[wallY][wallX]  !== 0) {
-        if(map[wallY][wallX]===8 || map[wallY][wallX]===9 || map[wallY][wallX]===10){
-          if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
-            x_maybe = x-dXVer/2;
-            y_maybe = y-dYVer/2;
-          }else{
-            x_maybe=x+dXHor/2;
-            y_maybe=y+dYHor/2;
-          }
+        if(map[wallY][wallX]===8 || map[wallY][wallX]===9 || map[wallY][wallX]===10&&doorDirs[wallY][wallX]===1){
+          x_maybe=x+dXHor/2;
+          y_maybe=y+dYHor/2;
           if(x_maybe-wallX <= 1-doorOffsets[wallY][wallX] && x_maybe-wallX >= 0){
             var distX = x_maybe - player.x;
             var distY = y_maybe - player.y;
@@ -904,7 +967,7 @@ function castSingleRay(rayAngle, stripIdx) {
               dist = blockDist;
               wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
               textureX = (x_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
-              textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+              if(up) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
               xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
               yHit = y_maybe;
@@ -949,15 +1012,25 @@ function castSingleRay(rayAngle, stripIdx) {
 
 		// "real" wall height in the game world is 1 unit, the distance from the player to the screen is viewDist,
 		// thus the height on the screen is equal to wall_height_real * viewDist / dist
-
-		var height = Math.round(viewDist / dist);
+    var heightSeg = Math.round(viewDist / dist);
+		var height = Math.round(1*viewDist / dist);
 
 		// width is the same, but we have to stretch the texture to a factor of stripWidth to make it fill the strip correctly
 		var width = height * stripWidth;
 
 		// similar triangles
-		var top = Math.round(screenHeight/2 - (1-(player.z+player.height))*height-(player.z+player.height))+player.pitch;
-    drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType);
+		var top = Math.round(screenHeight/2 - height+(player.z+player.height)*viewDist/dist)+player.pitch;
+
+    for(var drawTop = top+height-heightSeg; drawTop >= top-10; drawTop-=heightSeg){
+      drawWallSliceRectangle(stripIdx*stripWidth,drawTop,stripWidth,heightSeg,textureX+(wallIsShaded?1:0),wallType);
+    }
+    if(drawTop<=top){
+      var wallTexture = wallTextures[wallType-1]
+    	ctx.drawImage(wallTexture, Math.floor((textureX+(wallIsShaded?1:0))*wallTexture.width/2), Math.round(wallTexture.height*(1-(height/heightSeg)%1)),
+    		1, Math.round(wallTexture.height*(((height)/heightSeg)%1)),
+    		stripIdx*stripWidth, top, stripWidth, (height%heightSeg)+3);
+    }
+    //drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType);
     zbuffer[stripIdx] = dist;
     //permadi floorcasting
     if(floor){
@@ -987,7 +1060,8 @@ function castSingleRay(rayAngle, stripIdx) {
         // floor drawing
         drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
       }
-      for(var y = 0; y < top+stripWidth; y+=stripWidth){
+      if(ceiling){
+        for(var y = 0; y < top+stripWidth; y+=stripWidth){
         if(y===screenHeight/2+player.pitch){continue;}
         // Current y position compared to the center of the screen (the horizon)
         var p = screenHeight / 2 - y + player.pitch;
@@ -1012,6 +1086,7 @@ function castSingleRay(rayAngle, stripIdx) {
         if(floorTexture+0 === 0 || floorTexture === undefined){continue;}
         // floor drawing
         drawCeilRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
+      }
       }
     }
   }
@@ -1179,7 +1254,11 @@ function move(timeDelta) {
   	var newX = player.x + Math.cos(player.rot) * moveStep + Math.sin(player.rot) * moveStepStrafe;	// calculate new player position with simple trigonometry
   	var newY = player.y + Math.sin(player.rot) * moveStep - Math.cos(player.rot) * moveStepStrafe;
     player.zSpeed-=mul*gravity;
-    if(0 <= player.z+mul*player.zSpeed){player.z+=mul*player.zSpeed}else{player.zSpeed = 0;player.z=0;}
+    if(0 <= player.z+mul*player.zSpeed&&!isBlockingVer(player.z+mul*player.zSpeed)){
+        player.z+=mul*player.zSpeed;
+    }else{
+      player.zSpeed = 0;
+    }
     if(player.isJumping){
     if(player.z < 0.01){
       player.zSpeed = 0.1125;
@@ -1277,6 +1356,26 @@ function checkCollision(fromX, fromY, toX, toY, radius) {
 	return pos;
 }
 
+function isBlockingVer(z){
+  for(var i = 0; i < sprites.length;i++){
+    sprite = sprites[i];
+    if(sprite.block){
+      spriteDist = ((player.x-sprite.x)**2 + 1*(player.y-sprite.y)**2)**0.5;
+      if (spriteDist<=sprite.hitbox/2){
+        if(
+          between(z+player.height,sprite.h+sprite.z,z)||
+          between(z+player.height,sprite.h,z)||
+          between(sprite.z+sprite.h,z,sprite.z)||
+          between(sprite.z+sprite.h,player.height+z,sprite.z)
+        ){
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
 function isBlocking(x,y) {
 
 	// first make sure that we cannot move outside the boundaries of the level
@@ -1319,7 +1418,14 @@ function isBlocking(x,y) {
     if(sprite.block){
       spriteDist = ((x-sprite.x)**2 + 1*(y-sprite.y)**2)**0.5;
       if (spriteDist<=sprite.hitbox/2){
-        return true;
+        if(
+          between(player.z+player.height,sprite.h+sprite.z,player.z)||
+          between(player.z+player.height,sprite.h,player.z)||
+          between(sprite.z+sprite.h,player.z,sprite.z)||
+          between(sprite.z+sprite.h,player.height+player.z,sprite.z)
+        ){
+          return true;
+        }
       }
     }
   }
