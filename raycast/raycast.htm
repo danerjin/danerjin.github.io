@@ -332,7 +332,7 @@ var numRays = Math.ceil(screenWidth / stripWidth);
 var fovHalf = fov / 2;
 
 var viewDist = (screenWidth/2) / Math.tan((fov / 2));
-var ceiling = !!Math.floor(Math.random()*2);
+var ceiling = false;
 var twoPI = Math.PI * 2;
 var fps = 0;
 var joyMoving;
@@ -846,42 +846,25 @@ function castSingleRay(rayAngle, stripIdx) {
             if((y_maybe-wallY) <= 1-doorOffsets[wallY][wallX]){
               var distX = x_maybe - player.x;
         			var distY = y_maybe - player.y;
-              dist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
-
-        			wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
         			textureX = (y_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
         			textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
-        			xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
-        			yHit = y_maybe;
-
-              hits.push([wallType,textureX,dist,wallY,wallX,true]);
+              hits.push([map[wallY][wallX],textureX,distX*distX + distY*distY,wallY,wallX,true]);
               if(heightMap[wallY][wallX]>=2){
         			    break;
               }
             }
           }
           else if(map[wallY][wallX]===11){
-            if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
-              x_maybe=x+dXVer*(doorOffsets[wallY][wallX]-1)*(1-doorDirs[wallY][wallX]);
-              y_maybe=y+dYVer*(doorOffsets[wallY][wallX]-1)*(1-doorDirs[wallY][wallX]);
-            }else{
               x_maybe=x+dXVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
               y_maybe=y+dYVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
-            }
             if(y_maybe-wallY <= 1 && y_maybe-wallY >= 0){
               var distX = x_maybe - player.x;
               var distY = y_maybe - player.y;
-              var blockDist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
-              dist = blockDist
-                wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
                 textureX = (y_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
                 if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
-                xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
-                yHit = y_maybe;
-
-                hits.push([wallType,textureX,dist,wallY,wallX,true]);
+                hits.push([map[wallY][wallX],textureX,distX*distX + distY*distY,wallY,wallX,true]);
                 if(heightMap[wallY][wallX]>=2){
           			    break;
               }
@@ -890,16 +873,10 @@ function castSingleRay(rayAngle, stripIdx) {
           else{
             var distXMaybe = x - player.x;
       			var distYMaybe = y - player.y;
-      			blockDist = distXMaybe*distXMaybe + distYMaybe*distYMaybe;	// the distance from the player to this point, squared.
-              dist = blockDist;
-        			wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
         			textureX = y % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
         			if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
-        			xHit = x;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
-        			yHit = y;
-
-              hits.push([wallType,textureX,dist,wallY,wallX,true]);
+              hits.push([map[wallY][wallX],textureX,distXMaybe*distXMaybe + distYMaybe*distYMaybe,wallY,wallX,true]);
               if(heightMap[wallY][wallX]>=2){
                   break;
               }
@@ -954,43 +931,24 @@ function castSingleRay(rayAngle, stripIdx) {
           if(x_maybe-wallX <= 1-doorOffsets[wallY][wallX] && x_maybe-wallX >= 0){
             var distX = x_maybe - player.x;
             var distY = y_maybe - player.y;
-            var blockDist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
-              dist = blockDist;
-              wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
               textureX = (x_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
               textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
-              xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
-              yHit = y_maybe;
-
-              hits.push([wallType,textureX,dist,wallY,wallX,false]);
+              hits.push([map[wallY][wallX],textureX,distX*distX + distY*distY,wallY,wallX,false]);
               if(heightMap[wallY][wallX]>=2){
                   break;
               }
           }
         }
         else if(map[wallY][wallX]===11){
-          if(player.x<wallX+1&&player.x>wallX&&player.y<wallY+1&&player.y>wallY){
-            x_maybe=x+dXHor*(doorOffsets[wallY][wallX]-1)*(doorDirs[wallY][wallX]);
-            y_maybe=y+dYHor*(doorOffsets[wallY][wallX]-1)*(doorDirs[wallY][wallX]);
-          }else{
             x_maybe=x+dXHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX]);
             y_maybe=y+dYHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX]);
-          }
           if(x_maybe-wallX <= 1 && x_maybe-wallX >= 0){
             var distX = x_maybe - player.x;
             var distY = y_maybe - player.y;
-            var blockDist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
-              dist = blockDist;
-              wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
               textureX = (x_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
               if(up) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
-
-              xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
-              yHit = y_maybe;
-
-
-              hits.push([wallType,textureX,blockDist,wallY,wallX,false]);
+              hits.push([map[wallY][wallX],textureX,distX*distX + distY*distY,wallY,wallX,false]);
               if(heightMap[wallY][wallX]>=2){
                   break;
               }
@@ -999,16 +957,12 @@ function castSingleRay(rayAngle, stripIdx) {
         else{
           var distXMaybe = x - player.x;
     			var distYMaybe = y - player.y;
-    			var blockDist = distXMaybe*distXMaybe + distYMaybe*distYMaybe;
-    				dist = blockDist;
     				xHit = x;
-    				yHit = y;
 
-    				wallType = map[wallY][wallX];
     				textureX = x % 1;
     				if(up) textureX = 1 - textureX
 
-            hits.push([wallType,textureX,dist,wallY,wallX,false]);
+            hits.push([map[wallY][wallX],textureX,distXMaybe*distXMaybe + distYMaybe*distYMaybe,wallY,wallX,false]);
             if(heightMap[wallY][wallX]>=2){
                 break;
             }
@@ -1024,10 +978,7 @@ function castSingleRay(rayAngle, stripIdx) {
     hits = hits.sort(function(x,y){return y[2]-x[2]})
     for(var i = 0; i<hits.length;i++){
       hit = hits[i];
-      dist = Math.sqrt(hit[2]);
-  		// use perpendicular distance to adjust for fish eye
-  		// distorted_dist = correct_dist / cos(relative_angle_of_ray)
-  		dist = dist * Math.cos(player.rot - rayAngle);
+      dist = Math.sqrt(hit[2])*Math.cos(player.rot - rayAngle)
 
   		// now calc the position, height and width of the wall strip
 
@@ -1051,9 +1002,8 @@ function castSingleRay(rayAngle, stripIdx) {
       		1, Math.round(wallTexture.height*(((height)/heightSeg)%1)),
       		stripIdx*stripWidth, top, stripWidth, (height%heightSeg)+3);
       }
-      //drawWallSliceRectangle(stripIdx*stripWidth,top,stripWidth,height,textureX+(wallIsShaded?1:0),wallType);
-      zbuffer[stripIdx] = dist;
     }
+    zbuffer[stripIdx] = Math.sqrt(hits[hits.length-1][2])*Math.cos(player.rot - rayAngle);
     //permadi floorcasting
     if(floor){
       for(var y = Math.round(top+height-stripWidth); y < screenHeight; y+=stripWidth){
@@ -1284,7 +1234,7 @@ function move(timeDelta) {
       player.zSpeed = 0;
     }
     if(player.isJumping){
-    if(player.z<=0.01||isBlockingVer(player.z)){
+    if(player.z<=0.01||isBlockingVer(player.z-0.01)){
       player.zSpeed = 0.1125;
     }}
   	var pos = checkCollision(player.x, player.y, newX, newY, 0.05);
