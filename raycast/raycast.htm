@@ -332,7 +332,7 @@ var numRays = Math.ceil(screenWidth / stripWidth);
 var fovHalf = fov / 2;
 
 var viewDist = (screenWidth/2) / Math.tan((fov / 2));
-var ceiling = false;
+var ceiling = !!Math.floor(Math.random()*2);
 var twoPI = Math.PI * 2;
 var fps = 0;
 var joyMoving;
@@ -854,10 +854,8 @@ function castSingleRay(rayAngle, stripIdx) {
 
         			xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
         			yHit = y_maybe;
-        			// make horizontal walls shaded
-        			wallIsShaded = true;
 
-              hits.push([wallType,textureX,dist,wallY,wallX,wallIsShaded]);
+              hits.push([wallType,textureX,dist,wallY,wallX,true]);
               if(heightMap[wallY][wallX]>=2){
         			    break;
               }
@@ -882,10 +880,7 @@ function castSingleRay(rayAngle, stripIdx) {
                 xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
                 yHit = y_maybe;
 
-                // make horizontal walls shaded
-                wallIsShaded = true;
-
-                hits.push([wallType,textureX,dist,wallY,wallX,wallIsShaded]);
+                hits.push([wallType,textureX,dist,wallY,wallX,true]);
                 if(heightMap[wallY][wallX]>=2){
           			    break;
               }
@@ -903,10 +898,7 @@ function castSingleRay(rayAngle, stripIdx) {
         			xHit = x;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
         			yHit = y;
 
-        			// make horizontal walls shaded
-        			wallIsShaded = true;
-
-              hits.push([wallType,textureX,dist,wallY,wallX,wallIsShaded]);
+              hits.push([wallType,textureX,dist,wallY,wallX,true]);
               if(heightMap[wallY][wallX]>=2){
                   break;
               }
@@ -970,9 +962,7 @@ function castSingleRay(rayAngle, stripIdx) {
               xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
               yHit = y_maybe;
 
-              wallIsShaded = false;
-
-              hits.push([wallType,textureX,dist,wallY,wallX,wallIsShaded]);
+              hits.push([wallType,textureX,dist,wallY,wallX,false]);
               if(heightMap[wallY][wallX]>=2){
                   break;
               }
@@ -998,9 +988,8 @@ function castSingleRay(rayAngle, stripIdx) {
               xHit = x_maybe;	// save the coordinates of the hit. We only really use these to draw the rays on minimap.
               yHit = y_maybe;
 
-              wallIsShaded = false;
 
-              hits.push([wallType,textureX,dist,wallY,wallX,wallIsShaded]);
+              hits.push([wallType,textureX,dist,wallY,wallX,false]);
               if(heightMap[wallY][wallX]>=2){
                   break;
               }
@@ -1016,11 +1005,9 @@ function castSingleRay(rayAngle, stripIdx) {
 
     				wallType = map[wallY][wallX];
     				textureX = x % 1;
-    				if(up) textureX = 1 - textureX;
+    				if(up) textureX = 1 - textureX
 
-    				wallIsShaded = false;
-
-            hits.push([wallType,textureX,dist,wallY,wallX,wallIsShaded]);
+            hits.push([wallType,textureX,dist,wallY,wallX,false]);
             if(heightMap[wallY][wallX]>=2){
                 break;
             }
@@ -1055,11 +1042,11 @@ function castSingleRay(rayAngle, stripIdx) {
   		var top = Math.round(screenHeight/2 - height+(player.z+player.height)*viewDist/dist)+player.pitch;
 
       for(var drawTop = top+height-heightSeg; drawTop >= top-10; drawTop-=heightSeg){
-        drawWallSliceRectangle(stripIdx*stripWidth,drawTop,stripWidth,heightSeg,hit[1]+(hit[6]?1:0),hit[0]);
+        drawWallSliceRectangle(stripIdx*stripWidth,drawTop,stripWidth,heightSeg,hit[1]+(hit[5]?1:0),hit[0]);
       }
       if(drawTop<=top){
         var wallTexture = wallTextures[hit[0]-1]
-      	ctx.drawImage(wallTexture, Math.floor((hit[1]+(hit[6]?1:0))*wallTexture.width/2), Math.round(wallTexture.height*(1-(height/heightSeg)%1)),
+      	ctx.drawImage(wallTexture, Math.floor((hit[1]+(hit[5]?1:0))*wallTexture.width/2), Math.round(wallTexture.height*(1-(height/heightSeg)%1)),
       		1, Math.round(wallTexture.height*(((height)/heightSeg)%1)),
       		stripIdx*stripWidth, top, stripWidth, (height%heightSeg)+3);
       }
