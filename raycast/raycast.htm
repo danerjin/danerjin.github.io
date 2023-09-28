@@ -873,6 +873,7 @@ function castSingleRay(rayAngle, stripIdx) {
               var distX = x_maybe - player.x;
               var distY = y_maybe - player.y;
               var blockDist = distX*distX + distY*distY;	// the distance from the player to this point, squared.
+              dist = blockDist
                 wallType = map[wallY][wallX]; // we'll remember the type of wall we hit for later
                 textureX = (y_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
                 if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
@@ -989,7 +990,7 @@ function castSingleRay(rayAngle, stripIdx) {
               yHit = y_maybe;
 
 
-              hits.push([wallType,textureX,dist,wallY,wallX,false]);
+              hits.push([wallType,textureX,blockDist,wallY,wallX,false]);
               if(heightMap[wallY][wallX]>=2){
                   break;
               }
