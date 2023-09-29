@@ -332,7 +332,7 @@ var numRays = Math.ceil(screenWidth / stripWidth);
 var fovHalf = fov / 2;
 
 var viewDist = (screenWidth/2) / Math.tan((fov / 2));
-var ceiling = false;
+var ceiling = !!Math.floor(Math.random()*2);
 var twoPI = Math.PI * 2;
 var fps = 0;
 var joyMoving;
@@ -570,7 +570,8 @@ function renderCycle() {
   rayDirX1 = dirX + planeX;
   rayDirY1 = dirY + planeY;
   ctx.clearRect(0,0,screenWidth*2,screenHeight*2)
-  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#555555');}
+  drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#87CEEB');
+  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');if(ceiling){drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#555555');}}
   updateMiniMap();
   //castFloorAndCeilingRaysLode();
 	castWallRays();
@@ -757,9 +758,10 @@ function castWallRays() {
 		var rayAngle = Math.asin(rayScreenPos / rayViewDist);
     if(!ceiling){
       //skybox
-      ctx.drawImage(skydomeTexture, Math.floor((skydomeTexture.width)*((player.rot + rayAngle+2*Math.PI)/(Math.PI)%1)), 0,
+      /*ctx.drawImage(skydomeTexture, Math.floor((skydomeTexture.width)*((player.rot + rayAngle+2*Math.PI)/(Math.PI)%1)), 0,
     		1, skydomeTexture.height,
-    		stripIdx*stripWidth, 0, stripWidth, screenHeight);
+    		stripIdx*stripWidth, 0, stripWidth, screenHeight);*/
+
     }
 		castSingleRay(
 			player.rot + rayAngle, 	// add the players viewing direction to get the angle in world space
@@ -992,11 +994,11 @@ function castSingleRay(rayAngle, stripIdx) {
 
   		// similar triangles
   		var top = Math.round(screenHeight/2 - height+(player.z+player.height)*viewDist/dist)+player.pitch;
-
+      
       for(var drawTop = top+height-heightSeg; drawTop >= top-10; drawTop-=heightSeg){
         drawWallSliceRectangle(stripIdx*stripWidth,drawTop,stripWidth,heightSeg,hit[1]+(hit[5]?1:0),hit[0]);
       }
-      if(drawTop<=top){
+      if(drawTop<top){
         var wallTexture = wallTextures[hit[0]-1]
       	ctx.drawImage(wallTexture, Math.floor((hit[1]+(hit[5]?1:0))*wallTexture.width/2), Math.round(wallTexture.height*(1-(height/heightSeg)%1)),
       		1, Math.round(wallTexture.height*(((height)/heightSeg)%1)),
@@ -1205,7 +1207,7 @@ function move(timeDelta) {
   	player.rotDeg = player.rotDeg + mul * player.dir * player.rotSpeed; // add rotation if player is rotating (player.dir != 0)
 
   	player.rotDeg = player.rotDeg % 360;
-    if(ceiling){
+    if(true/*ceiling*/){
       if(-screenHeight/2 < player.pitch+mul*player.pitchChange && player.pitch+mul*player.pitchChange < screenHeight/2){
       player.pitch += mul*player.pitchChange;
       }else{
@@ -1331,6 +1333,40 @@ function checkCollision(fromX, fromY, toX, toY, radius) {
 }
 
 function isBlockingVer(z){
+  var y=player.y;
+  var x=player.x;
+  var ix = Math.floor(x);
+	var iy = Math.floor(y);
+	// return true if the map block is not 0, ie. if there is a blocking wall.
+	if(map[iy][ix] !== 0&&heightMap[iy][ix]>=z){
+    if(map[iy][ix] !== 8 && map[iy][ix] !== 9 && map[iy][ix] !== 10 && map[iy][ix] !== 11){return true;}
+    else if(map[iy][ix] === 11){
+      if(doorDirs[iy][ix]===1){
+        //horizontal
+        if(doorStates[iy][ix]===1){
+          if((y-iy)<1-doorOffsets[iy][ix]){return true;}
+        }else{
+          if((y-iy)>doorOffsets[iy][ix]){return true;}
+        }
+      }else{
+        //vertical
+        if(doorStates[iy][ix]===1){
+          if((x-ix)<1-doorOffsets[iy][ix]){return true;}
+        }else{
+          if((x-ix)>doorOffsets[iy][ix]){return true;}
+        }
+      }
+    }
+		else{
+      if(doorDirs[iy][ix]===0){
+        //horizontal
+        if(0.35<=(x-ix) && 0.65>=(x-ix) && 1-(y-iy)>=doorOffsets[iy][ix]){return true;}
+      }else if(doorDirs[iy][ix]===1){
+        //vertical
+        if(0.35<=(y-iy) && 0.65>=(y-iy) && 1-(x-ix)>=doorOffsets[iy][ix]){return true;}
+      }
+    }
+  }
   for(var i = 0; i < sprites.length;i++){
     sprite = sprites[i];
     if(sprite.block){
@@ -1358,7 +1394,7 @@ function isBlocking(x,y) {
 	var ix = Math.floor(x);
 	var iy = Math.floor(y);
 	// return true if the map block is not 0, ie. if there is a blocking wall.
-	if(map[iy][ix] !== 0){
+	if(map[iy][ix] !== 0&&heightMap[iy][ix]>player.z){
     if(map[iy][ix] !== 8 && map[iy][ix] !== 9 && map[iy][ix] !== 10 && map[iy][ix] !== 11){return true;}
     else if(map[iy][ix] === 11){
       if(doorDirs[iy][ix]===1){
