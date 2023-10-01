@@ -869,7 +869,7 @@ function castSingleRay(rayAngle, stripIdx) {
                 textureX = (y_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
                 if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
-                hits.push(new WallStripe(wallX,wallY,textureX,stripIdx*stripWidth,true,((distX*distX + distY*distY)**0.5)));
+                hits.push(new WallStripe(wallX,wallY,textureX,stripIdx*stripWidth,true,((distX*distX + distY*distY)**0.5)*fisheyecorrection));
                 if(heightMap[wallY][wallX]>=3){
           			    break;
               }
@@ -1209,7 +1209,7 @@ function move(timeDelta) {
       player.zSpeed = 0;
     }
     if(player.isJumping){
-    if(player.z<=0.01||isBlockingVer(player.z-0.01)){
+    if(player.z<=0||isBlockingVer(player.z-0.01)){
       player.zSpeed = 0.1125;
     }}
   	var pos = checkCollision(player.x, player.y, newX, newY, 0.05);
