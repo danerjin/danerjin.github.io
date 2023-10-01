@@ -550,7 +550,7 @@ function renderCycle() {
 			rowdistlookup[y] = posZ/(y - screenHeight / 2 - player.pitch);
 		}
 	  updateMiniMap();
-		ctx.clearRect(0,0,screenWidth,screenHeight);
+		drawFillRectangle(0,0,screenWidth,screenHeight,fill="#FFFFFF");
 		drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#87CEEB');
 	  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');if(ceiling){drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#555555');}}
 	  if(floor){//castFloorAndCeilingRaysLode();}
