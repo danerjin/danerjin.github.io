@@ -265,6 +265,7 @@ var sprites = [
   new Sprite(2,10,"pillar",true,0.6,1,0,0),
   new Sprite(21,2,"barrel",true,0.6,0.4,0,0),
   new Sprite(15,3,"barrel",true,0.6,0.4,0,0),
+  //new Sprite(15.2,2.4,"barrel",true,0.6,0.4,0.4,0.4),
   new Sprite(15.5,2.2,"barrel",true,0.6,0.4,0,0),
   new Sprite(16.2,2.7,"barrel",true,0.6,0.4,0,0),
   new Sprite(3,2,"barrel",true,0.6,0.4,0,0),
@@ -807,7 +808,7 @@ function castWallRays() {
 		);
 	}
 }
-function castSingleRay(rayAngle, stripIdx) {
+function castSingleRay(rayAngle, stripIdx,zbuffer) {
   // determine the hit point
 	var fisheyecorrection = Math.cos(player.rot - rayAngle);
   {
