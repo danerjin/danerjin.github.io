@@ -300,7 +300,7 @@ for(var texture = 1; texture < 11;texture++){
   	floorTexture.src = `floor_${texture}.png`;
     floorTextures.push(floorTexture);
 }
-
+var weapon_size = screenWidth/3;
 mobile = window.mobileAndTabletCheck();
 var canvas = $("screen");
 var screenWidth = canvas.width;
@@ -330,8 +330,7 @@ var player = {
   isJumping: false,
   speedMult: 1,
   weapon:0,
-  weaponState:0,
-  currSquare: 0
+  weaponState:0
 }
 var miniMapScale = 8;
 var doorIsPresent = false;
@@ -571,7 +570,6 @@ var drawCeilRectangle = function(x, y, width, height, xOffset,yOffset,texture){
 		x, y, width, height);
 }
 function renderCycle() {
-	  player.currSquare=map[Math.floor(player.y)][Math.floor(player.x)];
 	  posZ = (player.height+player.z) * screenHeight;
 	  dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
 	  dirY = Math.sin(player.rot)/(Math.tan(fovHalf));
@@ -589,13 +587,18 @@ function renderCycle() {
 		drawFillRectangle(0,0,screenWidth,screenHeight,fill="#FFFFFF");
 		drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#87CEEB');
 	  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');if(ceiling){drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#555555');}}
-	  if(floor){//castFloorAndCeilingRaysLode();}
+	  else{//castFloorAndCeilingRaysLode();}
 		}
 		castWallRays();
-	  drawFillRectangle(screenWidth/2-50/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
-	  drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
-	  drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
-	  drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
+		//crosshair
+	  {
+			drawFillRectangle(screenWidth/2-50/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
+		  drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
+		  drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
+		  drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
+		}
+
+		ctx.drawImage(weapons_imgs[player.weapon],65*player.weaponState,0,64,64,screenWidth/2-weapon_size/2,screenHeight-weapon_size,weapon_size,weapon_size);
 	  if(doorIsPresent&&(map[doorTarget[1]][doorTarget[0]] === 8 || map[doorTarget[1]][doorTarget[0]] === 9 || map[doorTarget[1]][doorTarget[0]] === 10)){
 	      ctx.font = "bold 20px Courier New";
 	      ctx.fillStyle = "#FFFF66";
@@ -614,7 +617,7 @@ function renderCycle() {
 	  ctx.font = "15px monospace";
 	  ctx.fillStyle = "white";
 	  ctx.textAlign = "left";
-	  ctx.fillText("FPS: "+fps,50,50);
+	  ctx.fillText("FPS: "+Math.round(fps),50,50);
 		ctxfin.drawImage((offcanvas.transferToImageBitmap()),0,0,screenWidth,screenHeight);
 		setTimeout(renderCycle, 1);
 }
