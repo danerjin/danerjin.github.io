@@ -157,7 +157,7 @@ var heightMap = [
   [2,1,0.8,0.6,0.4,0.2,0,2,2,2,0,0,0,2,2,0,2,0,2,0,0,0,2,2],
   [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
 ];
-var maxHeight = 2.1;
+var maxHeight = 2;
 var mapWidth = map[0].length;
 var mapHeight = map.length;
 var doorStates = new Array(mapHeight);
@@ -899,7 +899,7 @@ function castSingleRay(rayAngle, stripIdx,zbuffer) {
         			textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,((distX*distX + distY*distY)**0.5)*fisheyecorrection);
               hits.push(front);
-              if(heightMap[wallY][wallX]>=maxHeight){
+              if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
         			    break;
               }
             }
@@ -932,7 +932,7 @@ function castSingleRay(rayAngle, stripIdx,zbuffer) {
 								}
 								var back = (distXNew*distXNew + distYNew*distYNew)**0.5*fisheyecorrection;
                 hits.push(new WallStripe(front,back));
-                if(heightMap[wallY][wallX]>=maxHeight){
+                if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
           			    break;
               }
             }
@@ -962,7 +962,7 @@ function castSingleRay(rayAngle, stripIdx,zbuffer) {
 							}
 							var back = (distXNew*distXNew + distYNew*distYNew)**0.5*fisheyecorrection;
 							hits.push(new WallStripe(front,back));
-              if(heightMap[wallY][wallX]>=maxHeight){
+              if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
                   break;
               }
           }
@@ -1018,7 +1018,7 @@ function castSingleRay(rayAngle, stripIdx,zbuffer) {
 
 							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,((distX*distX + distY*distY)**0.5)*fisheyecorrection);
 							hits.push(front);
-							if(heightMap[wallY][wallX]>=maxHeight){
+							if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
                   break;
               }
           }
@@ -1051,7 +1051,7 @@ function castSingleRay(rayAngle, stripIdx,zbuffer) {
 							}
 							var back = (distXNew*distXNew + distYNew*distYNew)**0.5*fisheyecorrection;
 							hits.push(new WallStripe(front,back));
-              if(heightMap[wallY][wallX]>=maxHeight){
+              if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
                   break;
               }
           }
@@ -1081,7 +1081,7 @@ function castSingleRay(rayAngle, stripIdx,zbuffer) {
 						}
 						var back = (distXNew*distXNew + distYNew*distYNew)**0.5*fisheyecorrection;
 						hits.push(new WallStripe(front,back));
-            if(heightMap[wallY][wallX]>=maxHeight){
+            if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
                 break;
             }
         }
