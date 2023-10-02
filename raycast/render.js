@@ -117,7 +117,7 @@ var map = [
   [7,0,0,0,0,0,0,0,7,2,0,0,0,4,0,0,2,6,0,0,0,0,0,6],
   [7,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4,2,6,0,0,0,0,0,4],
   [7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,6,0,6,0,6,0,6],
-  [7,7,0,0,0,0,0,0,7,2,0,2,0,2,0,2,2,6,4,6,0,6,6,6],
+  [7,0,0,0,0,0,0,0,7,2,0,2,0,2,0,2,2,6,4,6,0,6,6,6],
   [7,7,7,7,9,7,7,7,7,2,2,4,0,6,2,4,2,3,3,3,10,3,3,3],
   [2,2,2,2,0,2,2,2,2,4,6,4,0,0,6,0,6,3,0,0,0,0,0,3],
   [2,2,0,0,0,0,0,2,2,4,0,0,0,0,0,0,4,3,0,0,0,0,0,3],
@@ -139,9 +139,9 @@ var heightMap = [
   [2,0,0,0,0,0,0,0,0,2,2,2,0,0,0,0,0,0,0,0,0,0,0,2],
   [1.5,0,0,0,0,0,0,0,0,0,2,1,0,0,0,0,0,2,2,2,1,2,1,1.5],
   [2,2,2,2,1,2,2,2,2,2,2,1,1,1,1,1,1,2,0,0,0,0,0,2],
-  [1.5,0,0,0,0,0,0,0,0,0,2,0,1,0,1,0,2,1,0,1,0,2,0,1.5],
-  [2,0,0,0,0,0,0,0,2,2,0,0,0,1,0,1,2,2,0,0,0,0,0,2],
-  [1.5,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,2,2,0,0,0,0,0,1.5],
+  [1.5,0,0,0,0,0,0,0,0,0,2,0,0,1,0,0,2,1,0,1,0,2,0,1.5],
+  [2,0,0,0,0,0,0,0,2,2,0,0,0,0,1,0,0,2,0,0,0,0,0,2],
+  [1.5,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,2,2,0,0,0,0,0,1.5],
   [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,2,0,2,0,2],
   [1.5,0,0,0,0,0,0,0,2,2,0,2,0,2,0,2,2,2,1,2,0,2,2,1.5],
   [2,2,2,2,1,2,2,2,2,2,2,1,0,2,2,1,2,2,2,2,1,2,2,2],
@@ -598,7 +598,7 @@ function renderCycle() {
 		  drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
 		  drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
 		}
-
+		//weapon
 		ctx.drawImage(weapons_imgs[player.weapon],65*player.weaponState,0,64,64,screenWidth/2-weapon_size/2,screenHeight-weapon_size,weapon_size,weapon_size);
 	  if(doorIsPresent&&(map[doorTarget[1]][doorTarget[0]] === 8 || map[doorTarget[1]][doorTarget[0]] === 9 || map[doorTarget[1]][doorTarget[0]] === 10)){
 	      ctx.font = "bold 20px Courier New";
@@ -1318,16 +1318,16 @@ function move(timeDelta) {
 
   	var newX = player.x + Math.cos(player.rot) * moveStep + Math.sin(player.rot) * moveStepStrafe;	// calculate new player position with simple trigonometry
   	var newY = player.y + Math.sin(player.rot) * moveStep - Math.cos(player.rot) * moveStepStrafe;
+    if(player.isJumping){
+    if(player.z<=0.05||isBlockingVer(player.z-0.05)){
+      player.zSpeed = 0.1125;
+    }}
     player.zSpeed-=mul*gravity;
     if(0 <= player.z+mul*player.zSpeed&&!isBlockingVer(player.z+mul*player.zSpeed)){
         player.z+=mul*player.zSpeed;
     }else{
       player.zSpeed = 0;
     }
-    if(player.isJumping){
-    if(player.z<=0.05||isBlockingVer(player.z-0.05)){
-      player.zSpeed = 0.1125;
-    }}
   	var pos = checkCollision(player.x, player.y, newX, newY, 0.05);
   	player.x = pos.x; // set new position
   	player.y = pos.y;
