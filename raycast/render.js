@@ -42,8 +42,10 @@ var SpriteStripe = function(tex,xOffset,stripe,y,height,dist){
       this.stripe, this.y, stripWidth, this.height);
   }
 }
-var WallStripe = function(wallX,wallY,xOffset,x,shade,dist){
+var WallStripeHalf = function(wallX,wallY,xOffset,x,shade,dist){
   this.tex = map[wallY][wallX];
+	this.wallY = wallY;
+	this.wallX = wallX;
   this.x = x;
   this.dist = dist;
   this.seg=Math.round(viewDist/this.dist);
@@ -65,6 +67,42 @@ var WallStripe = function(wallX,wallY,xOffset,x,shade,dist){
         this.x, this.y, stripWidth, (this.height%this.seg)+3);
     }
   }
+}
+var WallStripe = function(front,backdist){
+	this.front = front;
+	this.backdist = backdist;
+	this.wallX = this.front.wallX;
+	this.wallY = this.front.wallY;
+	this.x=this.front.x
+  this.backheight = Math.round(viewDist*heightMap[this.wallY][this.wallX]/this.backdist);
+  this.backy = Math.round(screenHeight/2 - this.backheight+(player.z+player.height)*viewDist/this.backdist)+player.pitch;
+	this.dist = this.front.dist;
+	this.height = this.front.height;
+	this.y = this.front.y;
+	this.draw = function(){
+		if(this.front.y > this.backy&&this.backy<=screenHeight){
+			//topside
+			var drawEnd = Math.min(this.front.y,screenHeight);
+			//drawFillRectangle(this.front.x,this.backy,stripWidth,this.front.y-this.backy,fill="#69FF00");// <= this was temporary
+			for(var y = this.backy; y<=drawEnd; y+=stripWidth){
+				// Current y position compared to the center of the screen (the horizon)
+				var p = y - screenHeight / 2 - player.pitch;
+				// Vertical position of the camera.
+				// Horizontal distance from the camera to the floor for the current row.
+				// 0.5 is the z position exactly in the middle between floor and ceiling.
+				var rowDistance = (posZ-heightMap[this.wallY][this.wallX]*screenHeight) / (p);
+		    var floorX = player.x + rowDistance * 0.847826 * (dirX+(this.x/stripWidth-numRays/2)*planeX/(numRays/2));
+		    var floorY = player.y + rowDistance * 0.847826 * (dirY+(this.x/stripWidth-numRays/2)*planeY/(numRays/2));
+	      // get the texture coordinate from the fractional part
+	      var tx = floorX%1;
+	      var ty = floorY%1;
+	      var floorTexture=this.front.tex;
+	      // floor drawing
+	      drawCeilRectangle(this.x,y,stripWidth,stripWidth,tx,ty,floorTexture);
+			}
+		}
+		if(this.front.y<=screenHeight){this.front.draw();}
+	}
 }
 var map = [
   [2,2,2,2,2,2,2,2,2,2,2,4,4,6,4,4,6,4,6,4,4,4,6,4],
@@ -89,7 +127,7 @@ var map = [
   [2,4,0,0,0,0,0,0,2,0,0,0,0,0,2,5,0,5,0,0,0,0,0,5],
   [1,3,0,0,0,0,0,0,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5],
   [2,1,0,0,0,0,0,0,2,0,0,0,0,0,2,0,0,0,0,0,0,0,0,5],
-  [2,2,0,0,0,0,0,2,2,2,0,0,0,2,2,0,5,0,5,0,0,0,5,5],
+  [2,2,1,3,4,5,0,2,2,2,0,0,0,2,2,0,5,0,5,0,0,0,5,5],
   [2,2,2,2,1,2,2,2,2,2,2,1,2,2,2,5,5,5,5,5,5,5,5,5]
 ];
 var heightMap = [
@@ -100,8 +138,8 @@ var heightMap = [
   [2,0,0,0,0,0,0,0,0,2,2,2,0,0,0,0,0,0,0,0,0,0,0,2],
   [1.5,0,0,0,0,0,0,0,0,0,2,1,0,0,0,0,0,2,2,2,1,2,1,1.5],
   [2,2,2,2,1,2,2,2,2,2,2,1,1,1,1,1,1,2,0,0,0,0,0,2],
-  [1.5,0,0,0,0,0,0,0,0,0,2,0,1,1,1,0,2,1,0,1,0,2,0,1.5],
-  [2,0,0,0,0,0,0,0,2,2,0,0,0,1,1,1,2,2,0,0,0,0,0,2],
+  [1.5,0,0,0,0,0,0,0,0,0,2,0,1,0,1,0,2,1,0,1,0,2,0,1.5],
+  [2,0,0,0,0,0,0,0,2,2,0,0,0,1,0,1,2,2,0,0,0,0,0,2],
   [1.5,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,2,2,0,0,0,0,0,1.5],
   [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,2,0,2,0,2],
   [1.5,0,0,0,0,0,0,0,2,2,0,2,0,2,0,2,2,2,1,2,0,2,2,1.5],
@@ -115,9 +153,10 @@ var heightMap = [
   [1.5,0.4,0,0,0,0,0,0,2,0,0,0,0,0,2,2,0,2,0,0,0,0,0,1.5],
   [2,0.6,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
   [1.5,0.8,0,0,0,0,0,0,2,0,0,0,0,0,2,0,0,0,0,0,0,0,0,1.5],
-  [2,1,0,0,0,0,0,2,2,2,0,0,0,2,2,0,2,0,2,0,0,0,2,2],
+  [2,1,0.8,0.6,0.4,0.2,0,2,2,2,0,0,0,2,2,0,2,0,2,0,0,0,2,2],
   [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
 ];
+var maxHeight = 2.1;
 var mapWidth = map[0].length;
 var mapHeight = map.length;
 var doorStates = new Array(mapHeight);
@@ -812,6 +851,9 @@ function castSingleRay(rayAngle, stripIdx) {
     var slope = angleSin / angleCos; 	// the slope of the straight line made by the ray
   	var dXVer = right ? 1 : -1; 	// we move either 1 map unit to the left or right
   	var dYVer = dXVer * slope; 	// how much to move up or down
+  	slopeHor = angleCos / angleSin;
+  	var dYHor = up ? -1 : 1;
+  	var dXHor = dYHor * slopeHor;
     /*if(player.currSquare===8||player.currSquare===9||player.currSquare===10){
       if(right){
         if(player.x%1>=0.5){
@@ -853,9 +895,9 @@ function castSingleRay(rayAngle, stripIdx) {
         			var distY = y_maybe - player.y;
         			textureX = (y_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
         			textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
-
-              hits.push(new WallStripe(wallX,wallY,textureX,stripIdx*stripWidth,true,((distX*distX + distY*distY)**0.5)*fisheyecorrection));
-              if(heightMap[wallY][wallX]>=3){
+							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,((distX*distX + distY*distY)**0.5)*fisheyecorrection);
+              hits.push(front);
+              if(heightMap[wallY][wallX]>=maxHeight){
         			    break;
               }
             }
@@ -868,9 +910,27 @@ function castSingleRay(rayAngle, stripIdx) {
               var distY = y_maybe - player.y;
                 textureX = (y_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
                 if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
-
-                hits.push(new WallStripe(wallX,wallY,textureX,stripIdx*stripWidth,true,((distX*distX + distY*distY)**0.5)*fisheyecorrection));
-                if(heightMap[wallY][wallX]>=3){
+								var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,((distX*distX + distY*distY)**0.5)*fisheyecorrection);
+								if(up){
+									if(Math.abs(dXVer)>Math.abs(dXHor*(y%1))){
+										var distXNew = x+dXHor*(y%1)-player.x;
+										var distYNew = y+dYHor*(y%1)-player.y;
+									}else{
+										var distXNew = x+dXVer-player.x;
+										var distYNew = y+dYVer-player.y;
+									}
+								}else{
+									if(Math.abs(dXVer)>Math.abs(dXHor*(1-y%1))){
+										var distXNew = x+dXHor*(1-y%1)-player.x;
+										var distYNew = y+dYHor*(1-y%1)-player.y;
+									}else{
+										var distXNew = x+dXVer-player.x;
+										var distYNew = y+dYVer-player.y;
+									}
+								}
+								var back = (distXNew*distXNew + distYNew*distYNew)**0.5*fisheyecorrection;
+                hits.push(new WallStripe(front,back));
+                if(heightMap[wallY][wallX]>=maxHeight){
           			    break;
               }
             }
@@ -880,9 +940,27 @@ function castSingleRay(rayAngle, stripIdx) {
       			var distY = y - player.y;
         			textureX = y % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
         			if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
-
-              hits.push(new WallStripe(wallX,wallY,textureX,stripIdx*stripWidth,true,((distX*distX + distY*distY)**0.5)*fisheyecorrection));
-              if(heightMap[wallY][wallX]>=3){
+							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,((distX*distX + distY*distY)**0.5)*fisheyecorrection);
+							if(up){
+								if(Math.abs(dXVer)>Math.abs(dXHor*(y%1))){
+									var distXNew = x+dXHor*(y%1)-player.x;
+									var distYNew = y+dYHor*(y%1)-player.y;
+								}else{
+									var distXNew = x+dXVer-player.x;
+									var distYNew = y+dYVer-player.y;
+								}
+							}else{
+								if(Math.abs(dXVer)>Math.abs(dXHor*(1-y%1))){
+									var distXNew = x+dXHor*(1-y%1)-player.x;
+									var distYNew = y+dYHor*(1-y%1)-player.y;
+								}else{
+									var distXNew = x+dXVer-player.x;
+									var distYNew = y+dYVer-player.y;
+								}
+							}
+							var back = (distXNew*distXNew + distYNew*distYNew)**0.5*fisheyecorrection;
+							hits.push(new WallStripe(front,back));
+              if(heightMap[wallY][wallX]>=maxHeight){
                   break;
               }
           }
@@ -895,9 +973,6 @@ function castSingleRay(rayAngle, stripIdx) {
   	// the only difference here is that once we hit a map block,
   	// we check if there we also found one in the earlier, vertical run. We'll know that if dist != 0.
   	// If so, we only register this hit if this distance is smaller.
-  	var slope = angleCos / angleSin;
-  	var dYHor = up ? -1 : 1;
-  	var dXHor = dYHor * slope;
     /*if(player.currSquare===8||player.currSquare===9||player.currSquare===10){
       if(up){
         if(player.y%1<=0.5){
@@ -925,7 +1000,7 @@ function castSingleRay(rayAngle, stripIdx) {
     else{*/
       var y = up ? Math.floor(player.y) : Math.ceil(player.y);
     //}
-    var x = player.x + (y - player.y) * slope;
+    var x = player.x + (y - player.y) * slopeHor;
   	while (x > 0 && x < mapWidth && y > 0 && y < mapHeight) {
   		var wallY = Math.floor(y + (up ? -1 : 0));
   		var wallX = Math.floor(x);
@@ -939,8 +1014,9 @@ function castSingleRay(rayAngle, stripIdx) {
               textureX = (x_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
               textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
-              hits.push(new WallStripe(wallX,wallY,textureX,stripIdx*stripWidth,false,((distX*distX + distY*distY)**0.5)*fisheyecorrection));
-              if(heightMap[wallY][wallX]>=3){
+							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,((distX*distX + distY*distY)**0.5)*fisheyecorrection);
+							hits.push(front);
+							if(heightMap[wallY][wallX]>=maxHeight){
                   break;
               }
           }
@@ -953,8 +1029,27 @@ function castSingleRay(rayAngle, stripIdx) {
             var distY = y_maybe - player.y;
               textureX = (x_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
               if(up) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
-              hits.push(new WallStripe(wallX,wallY,textureX,stripIdx*stripWidth,false,((distX*distX + distY*distY)**0.5)*fisheyecorrection));
-              if(heightMap[wallY][wallX]>=3){
+							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,((distX*distX + distY*distY)**0.5)*fisheyecorrection);
+							if(!right){
+								if(Math.abs(dYHor)>Math.abs(dYVer*(x%1))){
+									var distXNew = x+dXVer*(x%1)-player.x;
+									var distYNew = y+dYVer*(x%1)-player.y;
+								}else{
+									var distXNew = x+dXHor-player.x;
+									var distYNew = y+dYHor-player.y;
+								}
+							}else{
+								if(Math.abs(dYHor)>Math.abs(dYVer*(1-x%1))){
+									var distXNew = x+dXVer*(1-x%1)-player.x;
+									var distYNew = y+dYVer*(1-x%1)-player.y;
+								}else{
+									var distXNew = x+dXHor-player.x;
+									var distYNew = y+dYHor-player.y;
+								}
+							}
+							var back = (distXNew*distXNew + distYNew*distYNew)**0.5*fisheyecorrection;
+							hits.push(new WallStripe(front,back));
+              if(heightMap[wallY][wallX]>=maxHeight){
                   break;
               }
           }
@@ -964,9 +1059,27 @@ function castSingleRay(rayAngle, stripIdx) {
     			var distY = y - player.y;
     				textureX = x % 1;
     				if(up) textureX = 1 - textureX
-
-            hits.push(new WallStripe(wallX,wallY,textureX,stripIdx*stripWidth,false,((distX*distX + distY*distY)**0.5)*fisheyecorrection));
-            if(heightMap[wallY][wallX]>=3){
+						var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,((distX*distX + distY*distY)**0.5)*fisheyecorrection);
+						if(!right){
+							if(Math.abs(dXHor)>Math.abs(dXVer*(x%1))){
+								var distXNew = x+dXVer*(x%1)-player.x;
+								var distYNew = y+dYVer*(x%1)-player.y;
+							}else{
+								var distXNew = x+dXHor-player.x;
+								var distYNew = y+dYHor-player.y;
+							}
+						}else{
+							if(Math.abs(dXHor)>Math.abs(dXVer*(1-x%1))){
+								var distXNew = x+dXVer*(1-x%1)-player.x;
+								var distYNew = y+dYVer*(1-x%1)-player.y;
+							}else{
+								var distXNew = x+dXHor-player.x;
+								var distYNew = y+dYHor-player.y;
+							}
+						}
+						var back = (distXNew*distXNew + distYNew*distYNew)**0.5*fisheyecorrection;
+						hits.push(new WallStripe(front,back));
+            if(heightMap[wallY][wallX]>=maxHeight){
                 break;
             }
         }
@@ -1209,7 +1322,7 @@ function move(timeDelta) {
       player.zSpeed = 0;
     }
     if(player.isJumping){
-    if(player.z<=0||isBlockingVer(player.z-0.01)){
+    if(player.z<=0.05||isBlockingVer(player.z-0.05)){
       player.zSpeed = 0.1125;
     }}
   	var pos = checkCollision(player.x, player.y, newX, newY, 0.05);
