@@ -18,9 +18,10 @@ if(!Array.prototype.indexOf) {
 	};
 }
 var debug = false;
-var Sprite = function(x,y,texture,block,hitbox,h,z){
+var Sprite = function(x,y,texture,block,hitbox,h,z,vmove){
   this.x = x;
   this.y = y;
+	this.vmove = vmove;
   this.texture = new Image();
   this.texture.crossOrigin = "Anonymous";
   this.texture.src = `sprites/objects/${texture}.png`;
@@ -73,7 +74,7 @@ var WallStripe = function(front,backdist){
 	this.backdist = backdist;
 	this.wallX = this.front.wallX;
 	this.wallY = this.front.wallY;
-	this.x=this.front.x
+	this.x=this.front.x;
   this.backheight = Math.round(viewDist*heightMap[this.wallY][this.wallX]/this.backdist);
   this.backy = Math.round(screenHeight/2 - this.backheight+(player.z+player.height)*viewDist/this.backdist)+player.pitch;
 	this.dist = this.front.dist;
@@ -251,25 +252,25 @@ var ceilinglayout = [
   [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]
 ];
 var sprites = [
-  new Sprite(21.5,10,"greenlight",false,0.6,0,0),
-  new Sprite(18,3,"greenlight",false,0.6,0,0),
-  new Sprite(9.5,3.5,"greenlight",false,0.6,0,0),
-  new Sprite(9.5,10,"greenlight",false,0.6,0,0),
-  new Sprite(3,3.5,"greenlight",false,0.6,0,0),
-  new Sprite(3,19.5,"greenlight",false,0.6,0,0),
-  new Sprite(3,13,"greenlight",false,0.6,0,0),
-  new Sprite(14,19,"greenlight",false,0.6,0,0),
-  new Sprite(2,8,"pillar",true,0.6,1,0),
-  new Sprite(2,9,"pillar",true,0.6,1,0),
-  new Sprite(2,10,"pillar",true,0.6,1,0),
-  new Sprite(21,2,"barrel",true,0.6,0.4,0),
-  new Sprite(15,3,"barrel",true,0.6,0.4,0),
-  new Sprite(15.5,2.2,"barrel",true,0.6,0.4,0),
-  new Sprite(16.2,2.7,"barrel",true,0.6,0.4,0),
-  new Sprite(3,2,"barrel",true,0.6,0.4,0),
-  new Sprite(9,10,"barrel",true,0.6,0.4,0),
-  new Sprite(9.5,10,"barrel",true,0.6,0.4,0),
-  new Sprite(10,10,"barrel",true,0.6,0.4,0)
+  new Sprite(21.5,10,"greenlight",false,0.6,0,0,0),
+  new Sprite(18,3,"greenlight",false,0.6,0,0,0),
+  new Sprite(9.5,3.5,"greenlight",false,0.6,0,0,0),
+  new Sprite(9.5,10,"greenlight",false,0.6,0,0,0),
+  new Sprite(3,3.5,"greenlight",false,0.6,0,0,0),
+  new Sprite(3,19.5,"greenlight",false,0.6,0,0,0),
+  new Sprite(3,13,"greenlight",false,0.6,0,0,0),
+  new Sprite(14,19,"greenlight",false,0.6,0,0,0),
+  new Sprite(2,8,"pillar",true,0.6,1,0,0),
+  new Sprite(2,9,"pillar",true,0.6,1,0,0),
+  new Sprite(2,10,"pillar",true,0.6,1,0,0),
+  new Sprite(21,2,"barrel",true,0.6,0.4,0,0),
+  new Sprite(15,3,"barrel",true,0.6,0.4,0,0),
+  new Sprite(15.5,2.2,"barrel",true,0.6,0.4,0,0),
+  new Sprite(16.2,2.7,"barrel",true,0.6,0.4,0,0),
+  new Sprite(3,2,"barrel",true,0.6,0.4,0,0),
+  new Sprite(9,10,"barrel",true,0.6,0.4,0,0),
+  new Sprite(9.5,10,"barrel",true,0.6,0.4,0,0),
+  new Sprite(10,10,"barrel",true,0.6,0.4,0,0)
 ]
 var weapons_imgs = [];
 var weapon_names = ['knife','pistol','smg','chaingun'];
@@ -360,10 +361,6 @@ var rowdistlookup = new Array(Math.ceil(screenHeight/stripWidth));
 var orzbuffer = new Array(numRays);
 for(var i = 0; i < numRays+10;i++){
   orzbuffer[i]=[];
-}
-var zbuffer = new Array(numRays);
-for(var i = 0; i < numRays+10;i++){
-  zbuffer[i]=[];
 }
 function updateFOV(){
   fov = slider.value*Math.PI/180;
@@ -573,7 +570,6 @@ var drawCeilRectangle = function(x, y, width, height, xOffset,yOffset,texture){
 		x, y, width, height);
 }
 function renderCycle() {
-	  zbuffer=JSON.parse(JSON.stringify(orzbuffer));
 	  player.currSquare=map[Math.floor(player.y)][Math.floor(player.x)];
 	  posZ = (player.height+player.z) * screenHeight;
 	  dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
@@ -594,7 +590,6 @@ function renderCycle() {
 	  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');if(ceiling){drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#555555');}}
 	  if(floor){//castFloorAndCeilingRaysLode();}
 		}
-	  renderSprites();
 		castWallRays();
 	  drawFillRectangle(screenWidth/2-50/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
 	  drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
@@ -787,6 +782,7 @@ function castFloorAndCeilingRaysLode(){
 }
 function castWallRays() {
   var stripIdx = 0;
+	var zbuffer = renderSprites();
 	for (var i=0;i<numRays;i++) {
 		// where on the screen does ray go through?
 		var rayScreenPos = (-numRays/2 + i) * stripWidth;
@@ -806,7 +802,8 @@ function castWallRays() {
     }
 		castSingleRay(
 			player.rot + rayAngle, 	// add the players viewing direction to get the angle in world space
-			stripIdx++
+			stripIdx++,
+			zbuffer
 		);
 	}
 }
@@ -1154,6 +1151,7 @@ function castSingleRay(rayAngle, stripIdx) {
   }
 }
 function renderSprites(){
+	var zbuffer=JSON.parse(JSON.stringify(orzbuffer));
   var tempVar = new Array(sprites.length);
   for(var i = 0; i < sprites.length; i++){
     tempVar[i] = [i,((player.x - sprites[i].x) * (player.x - sprites[i].x) + (player.y - sprites[i].y) * (player.y - sprites[i].y))]; //sqrt not taken, unneeded
@@ -1174,13 +1172,13 @@ function renderSprites(){
 
       var transformX = invDet * (dirY * spriteX - dirX * spriteY)/*tempVar[i][1]*Math.cos(Math.atan2(dirY,dirX)-Math.atan2(spriteY,spriteX))*/;
       var transformY = invDet * (-planeY * spriteX + planeX * spriteY)/*tempVar[i][1]*Math.sin(Math.atan2(dirY,dirX)-Math.atan2(spriteY,spriteX))*/; //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
-
+			var vMoveScreen = Math.round(sprites[num].vmove / transformY);
       var spriteScreenX = Math.floor((screenWidth / 2) * (1 + transformX / transformY));
 
       //calculate height of the sprite on screen
       var spriteHeight = Math.abs(Math.floor(screenHeight) / (transformY)) / 1; //using "transformY" instead of the real distance prevents fisheye
       //calculate lowest and highest pixel to fill in current stripe
-      var drawStartY = Math.round(screenHeight/2 - (1-(player.z+player.height))*spriteHeight-(player.z+player.height))+player.pitch
+      var drawStartY = Math.round(screenHeight/2 - (1-(player.z+player.height))*spriteHeight-(player.z+player.height))+player.pitch+vMoveScreen;
 
       //calculate width of the sprite
       var spriteWidth = Math.abs( Math.floor (screenHeight / (transformY)));
@@ -1199,7 +1197,7 @@ function renderSprites(){
         }
       }
     }
-
+	return zbuffer;
 }
 function drawRay(rayX, rayY) {
 	var miniMapObjects = $("minimapobjects");
