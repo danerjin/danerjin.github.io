@@ -300,7 +300,7 @@ for(var texture = 1; texture < 11;texture++){
   	floorTexture.src = `floor_${texture}.png`;
     floorTextures.push(floorTexture);
 }
-var weapon_size = screenWidth*2/3;
+var weapon_size = screenWidth/2;
 mobile = window.mobileAndTabletCheck();
 var canvas = $("screen");
 var screenWidth = canvas.width;
@@ -405,6 +405,7 @@ function init() {
   drawFillRectangle(0,0,screenWidth,screenHeight/2,'#429bf5');
   drawFillRectangle(0,screenHeight/2,screenWidth,screenHeight/2,'#c0a570');
 	bind();
+	weapon_size = screenWidth/2;
   for (var y=0;y<mapHeight;y++) {
     for (var x=0;x<mapWidth;x++) {
       var wall = map[y][x];
