@@ -300,7 +300,7 @@ for(var texture = 1; texture < 11;texture++){
   	floorTexture.src = `floor_${texture}.png`;
     floorTextures.push(floorTexture);
 }
-var weapon_size = screenWidth/3;
+var weapon_size = screenWidth*2/3;
 mobile = window.mobileAndTabletCheck();
 var canvas = $("screen");
 var screenWidth = canvas.width;
