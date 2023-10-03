@@ -264,10 +264,10 @@ var sprites = [
   new Sprite(2,9,"pillar",true,0.6,1,0,0),
   new Sprite(2,10,"pillar",true,0.6,1,0,0),
   new Sprite(21,2,"barrel",true,0.6,0.4,0,0),
-  new Sprite(15,3,"barrel",true,0.6,0.4,0,0),
-  //new Sprite(15.2,2.4,"barrel",true,0.6,0.4,0.4,0.4),
-  new Sprite(15.5,2.2,"barrel",true,0.6,0.4,0,0),
-  new Sprite(16.2,2.7,"barrel",true,0.6,0.4,0,0),
+  new Sprite(15.73,2.1,"barrel",true,0.6,0.4,0,0),
+  new Sprite(15.27,2.1,"barrel",true,0.6,0.4,0,0),
+  new Sprite(15.5,2.3,"barrel",true,0.6,0.4,0.4,0.4),
+  new Sprite(15.5,2.7,"barrel",true,0.6,0.4,0,0),
   new Sprite(3,2,"barrel",true,0.6,0.4,0,0),
   new Sprite(9,10,"barrel",true,0.6,0.4,0,0),
   new Sprite(9.5,10,"barrel",true,0.6,0.4,0,0),
@@ -1177,7 +1177,7 @@ function renderSprites(){
 
       var transformX = invDet * (dirY * spriteX - dirX * spriteY)/*tempVar[i][1]*Math.cos(Math.atan2(dirY,dirX)-Math.atan2(spriteY,spriteX))*/;
       var transformY = invDet * (-planeY * spriteX + planeX * spriteY)/*tempVar[i][1]*Math.sin(Math.atan2(dirY,dirX)-Math.atan2(spriteY,spriteX))*/; //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
-			var vMoveScreen = Math.round(sprites[num].vmove / transformY);
+			var vMoveScreen = Math.round(-sprites[num].vmove *screenHeight/ transformY);
       var spriteScreenX = Math.floor((screenWidth / 2) * (1 + transformX / transformY));
 
       //calculate height of the sprite on screen
