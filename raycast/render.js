@@ -1416,7 +1416,7 @@ function checkCollision(fromX,fromY,toX,toY,radius,fromZ,toZ){
 			if (spriteDist<=sprite.hitbox/2){
 				if(
 					between(toZ+player.height,sprite.h+sprite.z,toZ)||
-					between(toZ+player.height,sprite.h,toZ)||
+					between(toZ+player.height,sprite.z,toZ)||
 					between(sprite.z+sprite.h,toZ,sprite.z)||
 					between(sprite.z+sprite.h,player.height+toZ,sprite.z)
 				){
