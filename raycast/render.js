@@ -1412,17 +1412,20 @@ function checkCollision(fromX,fromY,toX,toY,radius,fromZ,toZ){
 	for(var i = 0; i < sprites.length;i++){
 		sprite = sprites[i];
 		if(sprite.block){
-			spriteDist = ((player.x-sprite.x)**2 + 1*(player.y-sprite.y)**2)**0.5;
+			spriteDist = ((x-sprite.x)**2 + 1*(y-sprite.y)**2)**0.5;
 			if (spriteDist<=sprite.hitbox/2){
-				if(
-					between(toZ+player.height,sprite.h+sprite.z,toZ)||
-					between(toZ+player.height,sprite.z,toZ)||
-					between(sprite.z+sprite.h,toZ,sprite.z)||
-					between(sprite.z+sprite.h,player.height+toZ,sprite.z)
-				){
-					pos.z = fromZ;
-					pos.zSpeed = 0;
-					return pos;
+				if(toZ<=sprite.z+sprite.h){
+					if(toZ>=sprite.z||fromZ>=sprite.z+sprite.h){
+							pos.z = sprite.z+sprite.h;
+							pos.zSpeed = 0;
+							return pos;
+					}else{
+						if(toZ+player.height>=sprite.z){
+							pos.z = sprite.z;
+							pos.zSpeed = 0;
+							return pos;
+						}
+					}
 				}
 			}
 		}
@@ -1576,7 +1579,7 @@ function isBlocking(x,y,z) {
       if (spriteDist<=sprite.hitbox/2){
         if(
           between(z+player.height,sprite.h+sprite.z,z)||
-          between(z+player.height,sprite.h,z)||
+          between(z+player.height,sprite.z,z)||
           between(sprite.z+sprite.h,z,sprite.z)||
           between(sprite.z+sprite.h,player.height+z,sprite.z)
         ){
