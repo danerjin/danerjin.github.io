@@ -1322,7 +1322,7 @@ function move(timeDelta) {
   	var newX = player.x + Math.cos(player.rot) * moveStep + Math.sin(player.rot) * moveStepStrafe;	// calculate new player position with simple trigonometry
   	var newY = player.y + Math.sin(player.rot) * moveStep - Math.cos(player.rot) * moveStepStrafe;
     if(player.isJumping){
-    if(player.z<=0.05||isBlockingVer(player.x,player.y,player.z-0.05)){
+    if(player.z<=0.05||isBlocking(player.x,player.y,player.z-0.05)){
       player.zSpeed = 0.1125;
     }}
     player.zSpeed-=mul*gravity;
@@ -1531,57 +1531,6 @@ function heightMapCheck(x,y,z){
 		return false;
 	}
 }
-function isBlockingVer(x,y,z){
-  var ix = Math.floor(x);
-	var iy = Math.floor(y);
-	// return true if the map block is not 0, ie. if there is a blocking wall.
-	if(map[iy][ix] !== 0&&heightMap[iy][ix]>=z){
-    if(map[iy][ix] !== 8 && map[iy][ix] !== 9 && map[iy][ix] !== 10 && map[iy][ix] !== 11){return true;}
-    else if(map[iy][ix] === 11){
-      if(doorDirs[iy][ix]===1){
-        //horizontal
-        if(doorStates[iy][ix]===1){
-          if((y-iy)<1-doorOffsets[iy][ix]){return true;}
-        }else{
-          if((y-iy)>doorOffsets[iy][ix]){return true;}
-        }
-      }else{
-        //vertical
-        if(doorStates[iy][ix]===1){
-          if((x-ix)<1-doorOffsets[iy][ix]){return true;}
-        }else{
-          if((x-ix)>doorOffsets[iy][ix]){return true;}
-        }
-      }
-    }
-		else{
-      if(doorDirs[iy][ix]===0){
-        //horizontal
-        if(1-(y-iy)>=doorOffsets[iy][ix]){return true;}
-      }else if(doorDirs[iy][ix]===1){
-        //vertical
-        if(1-(x-ix)>=doorOffsets[iy][ix]){return true;}
-      }
-    }
-  }
-  for(var i = 0; i < sprites.length;i++){
-    sprite = sprites[i];
-    if(sprite.block){
-      spriteDist = ((player.x-sprite.x)**2 + 1*(player.y-sprite.y)**2)**0.5;
-      if (spriteDist<=sprite.hitbox/2){
-        if(
-          between(z+player.height,sprite.h+sprite.z,z)||
-          between(z+player.height,sprite.h,z)||
-          between(sprite.z+sprite.h,z,sprite.z)||
-          between(sprite.z+sprite.h,player.height+z,sprite.z)
-        ){
-          return true;
-        }
-      }
-    }
-  }
-  return false;
-}
 
 function isBlocking(x,y,z) {
 
@@ -1628,8 +1577,8 @@ function isBlocking(x,y,z) {
         if(
           between(z+player.height,sprite.h+sprite.z,z)||
           between(z+player.height,sprite.h,z)||
-          between(z+sprite.h,z,sprite.z)||
-          between(z+sprite.h,player.height+z,sprite.z)
+          between(sprite.z+sprite.h,z,sprite.z)||
+          between(sprite.z+sprite.h,player.height+z,sprite.z)
         ){
           return true;
         }
