@@ -509,6 +509,9 @@ function gameCycle() {
   x_target+=x_move;
   y_target+=y_move;
   while(1){
+		if(y_target < 0 || y_target >= mapHeight || x_target < 0 || x_target >= mapWidth){
+			break;
+	  }
     if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 9 || map[Math.floor(y_target)][Math.floor(x_target)] === 10 || map[Math.floor(y_target)][Math.floor(x_target)] === 11){
       doorIsPresent = true;
       doorTarget = [x_target,y_target];
@@ -1319,62 +1322,158 @@ function move(timeDelta) {
   	var newX = player.x + Math.cos(player.rot) * moveStep + Math.sin(player.rot) * moveStepStrafe;	// calculate new player position with simple trigonometry
   	var newY = player.y + Math.sin(player.rot) * moveStep - Math.cos(player.rot) * moveStepStrafe;
     if(player.isJumping){
-    if(player.z<=0.05||isBlockingVer(player.z-0.05)){
+    if(player.z<=0.05||isBlockingVer(player.x,player.y,player.z-0.05)){
       player.zSpeed = 0.1125;
     }}
     player.zSpeed-=mul*gravity;
-    if(0 <= player.z+mul*player.zSpeed&&!isBlockingVer(player.z+mul*player.zSpeed)){
-        player.z+=mul*player.zSpeed;
-    }else{
-      player.zSpeed = 0;
-    }
-  	var pos = checkCollision(player.x, player.y, newX, newY, 0.05);
-  	player.x = pos.x; // set new position
-  	player.y = pos.y;
+		var newZ = player.z+mul*player.zSpeed;
+  	var pos = checkCollision(player.x, player.y, newX, newY, 0.05, player.z, newZ);
+  	player.z = pos.z;
+		player.x = pos.x;
+		player.y = pos.y;
+		if(pos.zSpeed){player.zSpeed = pos.zSpeed;}
   }
 }
 
-function checkCollision(fromX, fromY, toX, toY, radius) {
+function checkCollision(fromX,fromY,toX,toY,radius,fromZ,toZ){
+	var pos = checkCollisionHor(fromX,fromY,toX,toY,radius,fromZ);
+	var x = pos.x;
+	var y = pos.y;
+	var ix = Math.floor(x);
+	var iy = Math.floor(y);
+	// return true if the map block is not 0, ie. if there is a blocking wall.
+	if(map[iy][ix] !== 0){
+		if(map[iy][ix] !== 8 && map[iy][ix] !== 9 && map[iy][ix] !== 10 && map[iy][ix] !== 11){
+			if(fromZ>=heightMap[iy][ix]){
+				if(toZ<=heightMap[iy][ix]){
+					pos.z = heightMap[iy][ix];
+					pos.zSpeed = 0;
+					return pos;
+				}
+			}else{
+				if(Math.abs(heightMap[iy][ix]-fromZ) <= 0.25){
+					pos.z = heightMap[iy][ix];
+					pos.zSpeed = 0;
+					return pos;
+				}
+			}
+		}
+		else if(map[iy][ix] === 11){
+			if(doorDirs[iy][ix]===1){
+				//horizontal
+				if(doorStates[iy][ix]===1){
+					if((y-iy)<1-doorOffsets[iy][ix]){
+						if(fromZ>=heightMap[iy][ix]){
+							if(toZ<=heightMap[iy][ix]){pos.z = heightMap[iy][ix];pos.zSpeed = 0;return pos;}
+						}
+					}
+				}else{
+					if((y-iy)>doorOffsets[iy][ix]){
+						if(fromZ>=heightMap[iy][ix]){
+							if(toZ<=heightMap[iy][ix]){pos.z = heightMap[iy][ix];pos.zSpeed = 0;return pos}
+						}
+					}
+				}
+			}else{
+				//vertical
+				if(doorStates[iy][ix]===1){
+					if((x-ix)<1-doorOffsets[iy][ix]){
+						if(fromZ>=heightMap[iy][ix]){
+							if(toZ<=heightMap[iy][ix]){pos.z = heightMap[iy][ix];pos.zSpeed = 0;return pos}
+						}
+					}
+				}else{
+					if((x-ix)>doorOffsets[iy][ix]){
+						if(fromZ>=heightMap[iy][ix]){
+							if(toZ<=heightMap[iy][ix]){pos.z = heightMap[iy][ix];pos.zSpeed = 0;return pos}
+						}
+					}
+				}
+			}
+		}
+		else{
+			if(doorDirs[iy][ix]===0){
+				//horizontal
+				if(1-(y-iy)>=doorOffsets[iy][ix]){
+					if(fromZ>=heightMap[iy][ix]){
+						if(toZ<=heightMap[iy][ix]){pos.z = heightMap[iy][ix];pos.zSpeed = 0;return pos}
+					}
+				}
+			}else if(doorDirs[iy][ix]===1){
+				//vertical
+				if(1-(x-ix)>=doorOffsets[iy][ix]){
+					if(fromZ>=heightMap[iy][ix]){
+						if(toZ<=heightMap[iy][ix]){pos.z = heightMap[iy][ix];pos.zSpeed = 0;return pos}
+					}
+				}
+			}
+		}
+	}
+	for(var i = 0; i < sprites.length;i++){
+		sprite = sprites[i];
+		if(sprite.block){
+			spriteDist = ((player.x-sprite.x)**2 + 1*(player.y-sprite.y)**2)**0.5;
+			if (spriteDist<=sprite.hitbox/2){
+				if(
+					between(toZ+player.height,sprite.h+sprite.z,toZ)||
+					between(toZ+player.height,sprite.h,toZ)||
+					between(sprite.z+sprite.h,toZ,sprite.z)||
+					between(sprite.z+sprite.h,player.height+toZ,sprite.z)
+				){
+					pos.z = fromZ;
+					pos.zSpeed = 0;
+					return pos;
+				}
+			}
+		}
+	}
+	if(toZ>=0){pos.z = toZ;return pos;}
+	else{pos.z = 0;pos.zSpeed = 0;return pos;}
+}
+
+function checkCollisionHor(fromX, fromY, toX, toY, radius,fromZ) {
 	var pos = {
 		x : fromX,
 		y : fromY
 	};
-	if(toY <= 0 || toY >= mapHeight || toX <= 0 || toX >= mapWidth){
+	if(toY < 0 || toY >= mapHeight || toX < 0 || toX >= mapWidth){
 		return pos;
   }
-  if(isBlocking(fromX,fromY)){return {x:toX,y:toY}}
+  if(isBlocking(fromX,fromY,fromZ+0.25)){return {x:toX,y:toY}}
 
 	var blockX = Math.floor(toX);
 	var blockY = Math.floor(toY);
-
-
-	if(isBlocking(toX,toY)) {
-		return pos;
+	var coolPos = {
+		x:JSON.parse(JSON.stringify(toX)),
+		y:JSON.parse(JSON.stringify(toY))
 	}
 
+	if(isBlocking(toX,toY,fromZ+0.25)) {
+		return pos;
+	}
 	pos.x = toX;
 	pos.y = toY;
 
-	var blockTop = isBlocking(blockX,blockY-1);
-	var blockBottom = isBlocking(blockX,blockY+1);
-	var blockLeft = isBlocking(blockX-1,blockY);
-	var blockRight = isBlocking(blockX+1,blockY);
+	var blockTop = isBlocking(blockX,blockY-1,fromZ+0.25);
+	var blockBottom = isBlocking(blockX,blockY+1,fromZ+0.25);
+	var blockLeft = isBlocking(blockX-1,blockY,fromZ+0.25);
+	var blockRight = isBlocking(blockX+1,blockY,fromZ+0.25);
 
-	if(blockTop != 0 && toY - blockY < radius) {
+	if(blockTop && toY - blockY < radius) {
 		toY = pos.y = blockY + radius;
 	}
-	if(blockBottom != 0 && blockY+1 - toY < radius) {
+	if(blockBottom && blockY+1 - toY < radius) {
 		toY = pos.y = blockY + 1 - radius;
 	}
-	if(blockLeft != 0 && toX - blockX < radius) {
+	if(blockLeft && toX - blockX < radius) {
 		toX = pos.x = blockX + radius;
 	}
-	if(blockRight != 0 && blockX+1 - toX < radius) {
+	if(blockRight && blockX+1 - toX < radius) {
 		toX = pos.x = blockX + 1 - radius;
 	}
 
 	// is tile to the top-left a wall
-	if(isBlocking(blockX-1,blockY-1) != 0 && !(blockTop != 0 && blockLeft != 0)) {
+	if(isBlocking(blockX-1,blockY-1,fromZ+0.25) && !(blockTop && blockLeft)) {
 		var dx = toX - blockX;
 		var dy = toY - blockY;
 		if(dx*dx+dy*dy < radius*radius) {
@@ -1383,9 +1482,10 @@ function checkCollision(fromX, fromY, toX, toY, radius) {
 			else
 				toY = pos.y = blockY + radius;
 		}
+		return pos;
 	}
 	// is tile to the top-right a wall
-	if(isBlocking(blockX+1,blockY-1) != 0 && !(blockTop != 0 && blockRight != 0)) {
+	if(isBlocking(blockX+1,blockY-1,fromZ+0.25) && !(blockTop && blockRight)) {
 		var dx = toX - (blockX+1);
 		var dy = toY - blockY;
 		if(dx*dx+dy*dy < radius*radius) {
@@ -1394,9 +1494,10 @@ function checkCollision(fromX, fromY, toX, toY, radius) {
 			else
 				toY = pos.y = blockY + radius;
 		}
+		return pos;
 	}
 	// is tile to the bottom-left a wall
-	if(isBlocking(blockX-1,blockY+1) != 0 && !(blockBottom != 0 && blockBottom != 0)) {
+	if(isBlocking(blockX-1,blockY+1,fromZ+0.25) && !(blockBottom && blockLeft)) {
 		var dx = toX - blockX;
 		var dy = toY - (blockY+1);
 		if(dx*dx+dy*dy < radius*radius) {
@@ -1405,9 +1506,10 @@ function checkCollision(fromX, fromY, toX, toY, radius) {
 			else
 				toY = pos.y = blockY + 1 - radius;
 		}
+		return pos;
 	}
 	// is tile to the bottom-right a wall
-	if(isBlocking(blockX+1,blockY+1) != 0 && !(blockBottom != 0 && blockRight != 0)) {
+	if(isBlocking(blockX+1,blockY+1,fromZ+0.25) && !(blockBottom && blockRight)) {
 		var dx = toX - (blockX+1);
 		var dy = toY - (blockY+1);
 		if(dx*dx+dy*dy < radius*radius) {
@@ -1416,14 +1518,20 @@ function checkCollision(fromX, fromY, toX, toY, radius) {
 			else
 				toY = pos.y = blockY + 1 - radius;
 		}
+		return pos;
 	}
-
-	return pos;
+	return coolPos;
 }
-
-function isBlockingVer(z){
-  var y=player.y;
-  var x=player.x;
+function heightMapCheck(x,y,z){
+	if(y < 0 || y >= mapHeight || x < 0 || x >= mapWidth)
+		return true;
+	if(heightMap[y][x]>z){
+		return true;
+	}else{
+		return false;
+	}
+}
+function isBlockingVer(x,y,z){
   var ix = Math.floor(x);
 	var iy = Math.floor(y);
 	// return true if the map block is not 0, ie. if there is a blocking wall.
@@ -1475,7 +1583,7 @@ function isBlockingVer(z){
   return false;
 }
 
-function isBlocking(x,y) {
+function isBlocking(x,y,z) {
 
 	// first make sure that we cannot move outside the boundaries of the level
 	if(y < 0 || y >= mapHeight || x < 0 || x >= mapWidth)
@@ -1483,7 +1591,7 @@ function isBlocking(x,y) {
 	var ix = Math.floor(x);
 	var iy = Math.floor(y);
 	// return true if the map block is not 0, ie. if there is a blocking wall.
-	if(map[iy][ix] !== 0&&heightMap[iy][ix]>player.z){
+	if(map[iy][ix] !== 0&&heightMap[iy][ix]>z){
     if(map[iy][ix] !== 8 && map[iy][ix] !== 9 && map[iy][ix] !== 10 && map[iy][ix] !== 11){return true;}
     else if(map[iy][ix] === 11){
       if(doorDirs[iy][ix]===1){
@@ -1518,10 +1626,10 @@ function isBlocking(x,y) {
       spriteDist = ((x-sprite.x)**2 + 1*(y-sprite.y)**2)**0.5;
       if (spriteDist<=sprite.hitbox/2){
         if(
-          between(player.z+player.height,sprite.h+sprite.z,player.z)||
-          between(player.z+player.height,sprite.h,player.z)||
-          between(sprite.z+sprite.h,player.z,sprite.z)||
-          between(sprite.z+sprite.h,player.height+player.z,sprite.z)
+          between(z+player.height,sprite.h+sprite.z,z)||
+          between(z+player.height,sprite.h,z)||
+          between(z+sprite.h,z,sprite.z)||
+          between(z+sprite.h,player.height+z,sprite.z)
         ){
           return true;
         }
@@ -1584,7 +1692,7 @@ function drawMiniMap() {
 	// loop through all blocks on the map
 	for (var y=0;y<mapHeight*miniMapScale;y++) {
 		for (var x=0;x<mapWidth*miniMapScale;x++) {
-        if(isBlocking(x/miniMapScale,y/miniMapScale)){
+        if(isBlocking(x/miniMapScale,y/miniMapScale,0.1)){
           ctx.fillStyle = 'gray';
   				ctx.fillRect(				// ... then draw a block on the minimap
   					x,
