@@ -28,8 +28,6 @@
   list-style-type: none;
   padding: 0;
   margin: 0;
-  position:absolute;
-  top:150px;
 }
 
 #myUL li a {
@@ -50,8 +48,6 @@
   width: 130px;
   transition-duration: 0.8s;
   transition-timing-function: ease-in-out;
-  position:absolute;
-  top:70px;
 }
 #myInput:hover {
    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
@@ -60,9 +56,15 @@
 #myInput:focus {
   width: 800px;
 }
+        main{
+            height:auto;
+            overflow:auto;
+            /*background-color:gray;*/
+        }
+        .headertext{
+            text-align:center;
+        }
         footer{
-            position:relative;
-            bottom:0px;
             padding:2.5em;
             width:100%;
         }
@@ -92,7 +94,9 @@
             </div>
         </div>
     </nav>
+    
     <main role = 'main' class = 'container mt-5'>
+        
         <br>
         <br>
         <div class = 'pb2 mb-2 border-bottom' id="header">
@@ -101,23 +105,8 @@
             <br>
     <h2 class="headertext display-4 text-secondary">w0 cool</h2>
             <br>
+        </div>
         <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-    <style>
-        #main{
-            height:auto;
-            overflow:auto;
-            /*background-color:gray;*/
-        }
-        .headertext{
-            text-align:center;
-            margin:0 auto;
-        }
-    </style>
     <input type="text" id="myInput" onkeyup ="myFunction()" placeholder="Search for stuff..." title="seach">
 </div>
 <ul id="myUL">
@@ -139,20 +128,6 @@
     <br>
     <br>
     <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
         <br>
         <br>
         <br>
