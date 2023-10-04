@@ -416,7 +416,7 @@ function init() {
       }
     }
   }
-
+	ctx.imageSmoothingEnabled = false;
 	drawMiniMap();
 	gameCycle();
 	renderCycle();
