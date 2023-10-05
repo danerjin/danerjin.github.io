@@ -797,10 +797,6 @@ function castWallRays() {
 
 		// the distance from the viewer to the point on the screen, simply Pythagoras.
 		var rayViewDist = Math.sqrt(rayScreenPos*rayScreenPos + viewDist*viewDist);
-
-		// the angle of the ray, relative to the viewing direction.
-		// right triangle: a = sin(A) * c
-		var rayAngle = Math.asin(rayScreenPos / rayViewDist);
     if(!ceiling){
       //skybox
       /*ctx.drawImage(skydomeTexture, Math.floor((skydomeTexture.width)*((player.rot + rayAngle+2*Math.PI)/(Math.PI)%1)), 0,
@@ -809,37 +805,27 @@ function castWallRays() {
 
     }
 		castSingleRay(
-			player.rot + rayAngle, 	// add the players viewing direction to get the angle in world space
+			rayViewDist, 	// add the players viewing direction to get the angle in world space
 			stripIdx++,
 			zbuffer
 		);
 	}
 }
-function castSingleRay(rayAngle, stripIdx,zbuffer) {
+function castSingleRay(euclidDist, stripIdx,zbuffer) {
   // determine the hit point
-	var fisheyecorrection = Math.cos(player.rot - rayAngle);
+	var fisheyecorrection = viewDist/euclidDist;
   {
     {
+			var cameraX = 2 * stripIdx * stripWidth / screenWidth - 1; //x-coordinate in camera space
+			var rayDirX = dirX + planeX * cameraX;
+			var rayDirY = dirY + planeY * cameraX;
 
-    	// first make sure the angle is between 0 and 360 degrees
-    	rayAngle %= twoPI;
-    	if(rayAngle < 0) rayAngle += twoPI;
-
-    	// moving right/left? up/down? Determined by which quadrant the angle is in.
-    	var right = (rayAngle > twoPI * 0.75 || rayAngle < twoPI * 0.25);
-    	var up = (rayAngle < 0 || rayAngle > Math.PI);
+			var right = (rayDirX>=0);
+			var up = (rayDirY<=0);
       //WALL CASTING
     	var wallType = 0;
 
-    	// only do these once
-    	var angleSin = Math.sin(rayAngle);
-    	var angleCos = Math.cos(rayAngle);
-
     	var dist = 0;	// the distance to the block we hit
-    	var xHit = 0; 	// the x and y coord of where the ray hit the block
-    	var yHit = 0;
-    	var xWallHit = 0;
-    	var yWallHit = 0;
 
     	var textureX;	// the x-coord on the texture of the block, ie. what part of the texture are we going to render
     	var wallX;	// the (x,y) map coords of the block
@@ -853,10 +839,10 @@ function castSingleRay(rayAngle, stripIdx,zbuffer) {
     	// is determined by the slope of the ray, which is simply defined as sin(angle) / cos(angle).
     }
     var hits = [];
-    var slope = angleSin / angleCos; 	// the slope of the straight line made by the ray
+    var slope = rayDirY / rayDirX; 	// the slope of the straight line made by the ray
   	var dXVer = right ? 1 : -1; 	// we move either 1 map unit to the left or right
   	var dYVer = dXVer * slope; 	// how much to move up or down
-  	slopeHor = angleCos / angleSin;
+  	slopeHor = rayDirX / rayDirY;
   	var dYHor = up ? -1 : 1;
   	var dXHor = dYHor * slopeHor;
     /*if(player.currSquare===8||player.currSquare===9||player.currSquare===10){
@@ -1178,8 +1164,8 @@ function renderSprites(){
 
       var invDet = 1.0 / (planeX * dirY - dirX * planeY); //required for correct matrix multiplication
 
-      var transformX = invDet * (dirY * spriteX - dirX * spriteY)/*tempVar[i][1]*Math.cos(Math.atan2(dirY,dirX)-Math.atan2(spriteY,spriteX))*/;
-      var transformY = invDet * (-planeY * spriteX + planeX * spriteY)/*tempVar[i][1]*Math.sin(Math.atan2(dirY,dirX)-Math.atan2(spriteY,spriteX))*/; //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
+      var transformX = invDet * (dirY * spriteX - dirX * spriteY);
+      var transformY = invDet * (-planeY * spriteX + planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
 			var vMoveScreen = Math.round(-sprites[num].vmove *screenHeight/ transformY);
       var spriteScreenX = Math.floor((screenWidth / 2) * (1 + transformX / transformY));
 
@@ -1611,8 +1597,8 @@ function updateMiniMap() {
 	objectCtx.beginPath();
 	objectCtx.moveTo(player.x * miniMapScale, player.y * miniMapScale);
 	objectCtx.lineTo(
-		(player.x + Math.cos(player.rot) * 4) * miniMapScale,
-		(player.y + Math.sin(player.rot) * 4) * miniMapScale
+		(player.x + dirX * 4) * miniMapScale,
+		(player.y + dirY * 4) * miniMapScale
 	);
 	objectCtx.closePath();
 	objectCtx.stroke();
