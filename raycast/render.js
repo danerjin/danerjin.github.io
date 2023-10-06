@@ -842,9 +842,8 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
     var slope = rayDirY / rayDirX; 	// the slope of the straight line made by the ray
   	var dXVer = right ? 1 : -1; 	// we move either 1 map unit to the left or right
   	var dYVer = dXVer * slope; 	// how much to move up or down
-  	slopeHor = rayDirX / rayDirY;
   	var dYHor = up ? -1 : 1;
-  	var dXHor = dYHor * slopeHor;
+  	var dXHor = dYHor / slopeHor;
     /*if(player.currSquare===8||player.currSquare===9||player.currSquare===10){
       if(right){
         if(player.x%1>=0.5){
@@ -991,7 +990,7 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
     else{*/
       var y = up ? Math.floor(player.y) : Math.ceil(player.y);
     //}
-    var x = player.x + (y - player.y) * slopeHor;
+    var x = player.x + (y - player.y) / slopeHor;
   	while (x > 0 && x < mapWidth && y > 0 && y < mapHeight) {
   		var wallY = Math.floor(y + (up ? -1 : 0));
   		var wallX = Math.floor(x);
@@ -1529,7 +1528,7 @@ function isBlocking(x,y,z) {
 	var ix = Math.floor(x);
 	var iy = Math.floor(y);
 	// return true if the map block is not 0, ie. if there is a blocking wall.
-	if(map[iy][ix] !== 0&&heightMap[iy][ix]>z){
+	if(map[iy][ix] !== 0&&(heightMap[iy][ix]===0)?1:heightMap[iy][ix]>z){
     if(map[iy][ix] !== 8 && map[iy][ix] !== 9 && map[iy][ix] !== 10 && map[iy][ix] !== 11){return true;}
     else if(map[iy][ix] === 11){
       if(doorDirs[iy][ix]===1){
