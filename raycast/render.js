@@ -843,7 +843,7 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
   	var dXVer = right ? 1 : -1; 	// we move either 1 map unit to the left or right
   	var dYVer = dXVer * slope; 	// how much to move up or down
   	var dYHor = up ? -1 : 1;
-  	var dXHor = dYHor / slopeHor;
+  	var dXHor = dYHor / slope;
     /*if(player.currSquare===8||player.currSquare===9||player.currSquare===10){
       if(right){
         if(player.x%1>=0.5){
@@ -990,7 +990,7 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
     else{*/
       var y = up ? Math.floor(player.y) : Math.ceil(player.y);
     //}
-    var x = player.x + (y - player.y) / slopeHor;
+    var x = player.x + (y - player.y) / slope;
   	while (x > 0 && x < mapWidth && y > 0 && y < mapHeight) {
   		var wallY = Math.floor(y + (up ? -1 : 0));
   		var wallX = Math.floor(x);
