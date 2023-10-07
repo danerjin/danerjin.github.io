@@ -579,10 +579,6 @@ function renderCycle() {
 	  dirY = Math.sin(player.rot)/(Math.tan(fovHalf));
 	  planeX = -Math.sin(player.rot);
 	  planeY = Math.cos(player.rot);
-	  rayDirX0 = dirX - planeX;
-	  rayDirY0 = dirY - planeY;
-	  rayDirX1 = dirX + planeX;
-	  rayDirY1 = dirY + planeY;
 		for(var y = 0; y<=screenHeight; y+=stripWidth){
 			if(y===screenHeight/2+player.pitch){break;}
 			rowdistlookup[y] = posZ/(y - screenHeight / 2 - player.pitch);
@@ -1017,14 +1013,14 @@ function castSingleRay(stripIdx,zbuffer) {
 		//permadi floorcasting
     if(floor){
 			var floorX,floorY,cellX,cellY,tx,ty,floorTexture;
-      for(var y = Math.round(top+height-stripWidth); y < screenHeight; y+=stripWidth){
+      for(var y = top+height-stripWidth; y < screenHeight; y+=stripWidth){
         if(y===screenHeight/2+player.pitch){continue;}
         var rowDistance = rowdistlookup[Math.round(y/stripWidth)*stripWidth];
         // calculate the real world step vector we have to add for each x (parallel to camera plane)
         // adding step by step avoids multiplications with a weight in the inner loop
         // real world coordinates of the leftmost column. This will be updated as we step to the right.
-        floorX = player.x + rowDistance * (dirX+(stripIdx-numRays/2)*planeX/(numRays/2));
-        floorY = player.y + rowDistance * (dirY+(stripIdx-numRays/2)*planeY/(numRays/2));
+        floorX = player.x + rowDistance * (dirX+cameraX*planeX);
+        floorY = player.y + rowDistance * (dirY+cameraX*planeY);
   			// the cell coord is simply got from the integer parts of floorX and floorY
         cellX = Math.floor(floorX);
         cellY = Math.floor(floorY);
