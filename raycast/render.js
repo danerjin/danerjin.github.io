@@ -92,8 +92,8 @@ var WallStripe = function(front,backdist){
 				// Horizontal distance from the camera to the floor for the current row.
 				// 0.5 is the z position exactly in the middle between floor and ceiling.
 				var rowDistance = (posZ-heightMap[this.wallY][this.wallX]*screenHeight) / (p);
-		    var floorX = player.x + rowDistance * 0.847826 * (dirX+(this.x/stripWidth-numRays/2)*planeX/(numRays/2));
-		    var floorY = player.y + rowDistance * 0.847826 * (dirY+(this.x/stripWidth-numRays/2)*planeY/(numRays/2));
+		    var floorX = player.x + rowDistance * (dirX+(this.x/stripWidth-numRays/2)*planeX/(numRays/2));
+		    var floorY = player.y + rowDistance * (dirY+(this.x/stripWidth-numRays/2)*planeY/(numRays/2));
 	      // get the texture coordinate from the fractional part
 	      var tx = floorX%1;
 	      var ty = floorY%1;
@@ -736,8 +736,8 @@ function castFloorAndCeilingRaysLode(){
 		// real world coordinates of the leftmost column. This will be updated as we step to the right.
 		var floorStepX = stripWidth * rowDistance * (2*0.847826*planeX) / (screenWidth);
   	var floorStepY = stripWidth * rowDistance * (2*0.847826*planeY) / (screenWidth);
-    var floorX = player.x + rowDistance * 0.847826 * rayDirX0;
-    var floorY = player.y + rowDistance * 0.847826 * rayDirY0;
+    var floorX = player.x + rowDistance * rayDirX0;
+    var floorY = player.y + rowDistance * rayDirY0;
     for(var x = 0; x < screenWidth; x+=stripWidth){
 			// the cell coord is simply got from the integer parts of floorX and floorY
       var cellX = Math.floor(floorX);
@@ -767,8 +767,8 @@ function castFloorAndCeilingRaysLode(){
 		var floorStepX = stripWidth * rowDistance * (2*0.847826*planeX) / (screenWidth);
   	var floorStepY = stripWidth * rowDistance * (2*0.847826*planeY) / (screenWidth);
     // real world coordinates of the leftmost column. This will be updated as we step to the right.
-    var floorX = player.x + rowDistance * 0.847826 * rayDirX0;
-    var floorY = player.y + rowDistance * 0.847826 * rayDirY0;
+    var floorX = player.x + rowDistance * rayDirX0;
+    var floorY = player.y + rowDistance * rayDirY0;
     for(var x = 0; x < screenWidth; x+=stripWidth){
 			// the cell coord is simply got from the integer parts of floorX and floorY
       var cellX = Math.floor(floorX);
@@ -794,9 +794,6 @@ function castWallRays() {
 	for (var i=0;i<numRays;i++) {
 		// where on the screen does ray go through?
 		var rayScreenPos = (-numRays/2 + i) * stripWidth;
-
-		// the distance from the viewer to the point on the screen, simply Pythagoras.
-		var rayViewDist = Math.sqrt(rayScreenPos*rayScreenPos + viewDist*viewDist);
     if(!ceiling){
       //skybox
       /*ctx.drawImage(skydomeTexture, Math.floor((skydomeTexture.width)*((player.rot + rayAngle+2*Math.PI)/(Math.PI)%1)), 0,
@@ -805,40 +802,38 @@ function castWallRays() {
 
     }
 		castSingleRay(
-			rayViewDist, 	// add the players viewing direction to get the angle in world space
 			stripIdx++,
 			zbuffer
 		);
 	}
 }
-function castSingleRay(euclidDist, stripIdx,zbuffer) {
+function castSingleRay(stripIdx,zbuffer) {
   // determine the hit point
-	var fisheyecorrection = viewDist/euclidDist;
+	 var invDet = 1.0 / (planeX * dirY - dirX * planeY); //required for correct matrix multiplication
   {
-    {
-			var cameraX = 2 * stripIdx * stripWidth / screenWidth - 1; //x-coordinate in camera space
-			var rayDirX = dirX + planeX * cameraX;
-			var rayDirY = dirY + planeY * cameraX;
-
-			var right = (rayDirX>=0);
-			var up = (rayDirY<=0);
-      //WALL CASTING
-    	var wallType = 0;
-
-    	var dist = 0;	// the distance to the block we hit
-
-    	var textureX;	// the x-coord on the texture of the block, ie. what part of the texture are we going to render
-    	var wallX;	// the (x,y) map coords of the block
-    	var wallY;
-
-    	var wallIsShaded = false;
-
-    	// first check against the vertical map/wall lines
-    	// we do this by moving to the right or left edge of the block we're standing in
-    	// and then moving in 1 map unit steps horizontally. The amount we have to move vertically
-    	// is determined by the slope of the ray, which is simply defined as sin(angle) / cos(angle).
-    }
+		var cameraX = 2 * stripIdx * stripWidth / screenWidth - 1; //x-coordinate in camera space
+		var rayDirX = dirX + planeX * cameraX;
+		var rayDirY = dirY + planeY * cameraX;
+		var right = (rayDirX>=0);
+		var up = (rayDirY<=0);
+    //WALL CASTING
+  	var wallType = 0;
+		var deltaDistX = Math.abs(1 / rayDirX);
+		var deltaDistY = Math.abs(1 / rayDirY);
+		//length of ray from current position to next x or y-side
+		//var sideDistX = right?((mapX + 1.0 - player.x) * deltaDistX):((player.x - mapX) * deltaDistX);
+		//var sideDistY = up?((player.y - mapY) * deltaDistY):((mapY + 1.0 - player.y) * deltaDistY);
+  	var dist = 0;	// the distance to the block we hit
+  	var textureX;	// the x-coord on the texture of the block, ie. what part of the texture are we going to render
+  	var wallX;	// the (x,y) map coords of the block
+  	var wallY;
+  	var wallIsShaded = false;
+  	// first check against the vertical map/wall lines
+  	// we do this by moving to the right or left edge of the block we're standing in
+  	// and then moving in 1 map unit steps horizontally. The amount we have to move vertically
+  	// is determined by the slope of the ray, which is simply defined as sin(angle) / cos(angle).
     var hits = [];
+		//var hit;
     var slope = rayDirY / rayDirX; 	// the slope of the straight line made by the ray
   	var dXVer = right ? 1 : -1; 	// we move either 1 map unit to the left or right
   	var dYVer = dXVer * slope; 	// how much to move up or down
@@ -885,7 +880,7 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
         			var distY = y_maybe - player.y;
         			textureX = (y_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
         			textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
-							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,((distX*distX + distY*distY)**0.5)*fisheyecorrection);
+							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,(invDet * (-planeY * distX + planeX * distY))/Math.tan(fovHalf));
               hits.push(front);
               if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
         			    break;
@@ -900,7 +895,7 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
               var distY = y_maybe - player.y;
                 textureX = (y_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
                 if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
-								var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,((distX*distX + distY*distY)**0.5)*fisheyecorrection);
+								var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,(invDet * (-planeY * distX + planeX * distY))/Math.tan(fovHalf));
 								if(up){
 									if(Math.abs(dXVer)>Math.abs(dXHor*(y%1))){
 										var distXNew = x+dXHor*(y%1)-player.x;
@@ -918,7 +913,7 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
 										var distYNew = y+dYVer-player.y;
 									}
 								}
-								var back = (distXNew*distXNew + distYNew*distYNew)**0.5*fisheyecorrection;
+								var back = (invDet * (-planeY * distXNew + planeX * distYNew))/Math.tan(fovHalf);
                 hits.push(new WallStripe(front,back));
                 if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
           			    break;
@@ -930,7 +925,7 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
       			var distY = y - player.y;
         			textureX = y % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
         			if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
-							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,((distX*distX + distY*distY)**0.5)*fisheyecorrection);
+							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,(invDet * (-planeY * distX + planeX * distY))/Math.tan(fovHalf));
 							if(up){
 								if(Math.abs(dXVer)>Math.abs(dXHor*(y%1))){
 									var distXNew = x+dXHor*(y%1)-player.x;
@@ -948,7 +943,7 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
 									var distYNew = y+dYVer-player.y;
 								}
 							}
-							var back = (distXNew*distXNew + distYNew*distYNew)**0.5*fisheyecorrection;
+							var back = (invDet * (-planeY * distXNew + planeX * distYNew))/Math.tan(fovHalf);
 							hits.push(new WallStripe(front,back));
               if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
                   break;
@@ -1004,7 +999,7 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
               textureX = (x_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
               textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
-							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,((distX*distX + distY*distY)**0.5)*fisheyecorrection);
+							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,(invDet * (-planeY * distX + planeX * distY))/Math.tan(fovHalf));
 							hits.push(front);
 							if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
                   break;
@@ -1019,7 +1014,7 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
             var distY = y_maybe - player.y;
               textureX = (x_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
               if(up) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
-							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,((distX*distX + distY*distY)**0.5)*fisheyecorrection);
+							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,(invDet * (-planeY * distX + planeX * distY))/Math.tan(fovHalf));
 							if(!right){
 								if(Math.abs(dYHor)>Math.abs(dYVer*(x%1))){
 									var distXNew = x+dXVer*(x%1)-player.x;
@@ -1037,7 +1032,7 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
 									var distYNew = y+dYHor-player.y;
 								}
 							}
-							var back = (distXNew*distXNew + distYNew*distYNew)**0.5*fisheyecorrection;
+							var back = (invDet * (-planeY * distXNew + planeX * distYNew))/Math.tan(fovHalf);
 							hits.push(new WallStripe(front,back));
               if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
                   break;
@@ -1049,7 +1044,7 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
     			var distY = y - player.y;
     				textureX = x % 1;
     				if(up) textureX = 1 - textureX
-						var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,((distX*distX + distY*distY)**0.5)*fisheyecorrection);
+						var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,(invDet * (-planeY * distX + planeX * distY))/Math.tan(fovHalf));
 						if(!right){
 							if(Math.abs(dXHor)>Math.abs(dXVer*(x%1))){
 								var distXNew = x+dXVer*(x%1)-player.x;
@@ -1067,7 +1062,7 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
 								var distYNew = y+dYHor-player.y;
 							}
 						}
-						var back = (distXNew*distXNew + distYNew*distYNew)**0.5*fisheyecorrection;
+						var back = (invDet * (-planeY * distXNew + planeX * distYNew))/Math.tan(fovHalf);
 						hits.push(new WallStripe(front,back));
             if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
                 break;
@@ -1097,8 +1092,8 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
         // calculate the real world step vector we have to add for each x (parallel to camera plane)
         // adding step by step avoids multiplications with a weight in the inner loop
         // real world coordinates of the leftmost column. This will be updated as we step to the right.
-        floorX = player.x + rowDistance * 0.847826 * (dirX+(stripIdx-numRays/2)*planeX/(numRays/2));
-        floorY = player.y + rowDistance * 0.847826 * (dirY+(stripIdx-numRays/2)*planeY/(numRays/2));
+        floorX = player.x + rowDistance * (dirX+(stripIdx-numRays/2)*planeX/(numRays/2));
+        floorY = player.y + rowDistance * (dirY+(stripIdx-numRays/2)*planeY/(numRays/2));
   			// the cell coord is simply got from the integer parts of floorX and floorY
         cellX = Math.floor(floorX);
         cellY = Math.floor(floorY);
@@ -1123,8 +1118,8 @@ function castSingleRay(euclidDist, stripIdx,zbuffer) {
         // calculate the real world step vector we have to add for each x (parallel to camera plane)
         // adding step by step avoids multiplications with a weight in the inner loop
         // real world coordinates of the leftmost column. This will be updated as we step to the right.
-        var floorX = player.x + rowDistance * 0.847826 * (rayDirX0 + 2*stripIdx*stripWidth*planeX/screenWidth);
-        var floorY = player.y + rowDistance * 0.847826 * (rayDirY0 + 2*stripIdx*stripWidth*planeY/screenWidth);
+        var floorX = player.x + rowDistance * (rayDirX0 + 2*stripIdx*stripWidth*planeX/screenWidth);
+        var floorY = player.y + rowDistance * (rayDirY0 + 2*stripIdx*stripWidth*planeY/screenWidth);
   			// the cell coord is simply got from the integer parts of floorX and floorY
         var cellX = Math.floor(floorX);
         var cellY = Math.floor(floorY);
