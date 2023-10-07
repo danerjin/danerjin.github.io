@@ -538,6 +538,7 @@ function between(a,x,b){
   return (a<=x && x<=b)||(b<=x && x<=a)
 }
 var posZ;
+var invDet;
 var lastRenderCycleTime = 0;
 var drawFillRectangle = function(x, y, width, height, cssColor){
 		ctx.fillStyle = cssColor;
@@ -581,6 +582,7 @@ function renderCycle() {
 	  rayDirY0 = dirY - planeY;
 	  rayDirX1 = dirX + planeX;
 	  rayDirY1 = dirY + planeY;
+		invDet = 1.0 / (planeX * dirY - dirX * planeY); //required for correct matrix multiplication
 		for(var y = 0; y<=screenHeight; y+=stripWidth){
 			if(y===screenHeight/2+player.pitch){break;}
 			rowdistlookup[y] = posZ/(y - screenHeight / 2 - player.pitch);
@@ -740,7 +742,6 @@ function castWallRays() {
 function castSingleRay(stripIdx,zbuffer) {
   // determine the hit point
   {
-	 	var invDet = 1.0 / (planeX * dirY - dirX * planeY); //required for correct matrix multiplication
 		var cameraX = 2 * stripIdx * stripWidth / screenWidth - 1; //x-coordinate in camera space
 		var rayDirX = dirX + planeX * cameraX;
 		var rayDirY = dirY + planeY * cameraX;
@@ -1085,8 +1086,6 @@ function renderSprites(){
       // [ planeX   dirX ] -1                                       [ dirY      -dirX ]
       // [               ]       =  1/(planeX*dirY-dirX*planeY) *   [                 ]
       // [ planeY   dirY ]                                          [ -planeY  planeX ]
-
-      var invDet = 1.0 / (planeX * dirY - dirX * planeY); //required for correct matrix multiplication
 
       var transformX = invDet * (dirY * spriteX - dirX * spriteY);
       var transformY = invDet * (-planeY * spriteX + planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
