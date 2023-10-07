@@ -1,7 +1,6 @@
 var isPressingG = false;
 // just a few helper functions
 var $ = function(id) { return document.getElementById(id); };
-var dc = function(tag) { return document.createElement(tag); };
 // indexOf for IE. From: https://developer.mozilla.org/En/Core_JavaScript_1.5_Reference:Objects:Array:indexOf
 if(!Array.prototype.indexOf) {
 	Array.prototype.indexOf = function(elt /*, from*/) {
@@ -809,8 +808,8 @@ function castWallRays() {
 }
 function castSingleRay(stripIdx,zbuffer) {
   // determine the hit point
-	 var invDet = 1.0 / (planeX * dirY - dirX * planeY); //required for correct matrix multiplication
   {
+	 	var invDet = 1.0 / (planeX * dirY - dirX * planeY); //required for correct matrix multiplication
 		var cameraX = 2 * stripIdx * stripWidth / screenWidth - 1; //x-coordinate in camera space
 		var rayDirX = dirX + planeX * cameraX;
 		var rayDirY = dirY + planeY * cameraX;
@@ -1437,10 +1436,10 @@ function checkCollisionHor(fromX, fromY, toX, toY, radius,fromZ) {
 	pos.x = toX;
 	pos.y = toY;
 
-	var blockTop = isBlocking(blockX,blockY-1,fromZ+0.25);
-	var blockBottom = isBlocking(blockX,blockY+1,fromZ+0.25);
-	var blockLeft = isBlocking(blockX-1,blockY,fromZ+0.25);
-	var blockRight = isBlocking(blockX+1,blockY,fromZ+0.25);
+	var blockTop = isBlocking(blockX,blockY-1,0);
+	var blockBottom = isBlocking(blockX,blockY+1,0);
+	var blockLeft = isBlocking(blockX-1,blockY,0);
+	var blockRight = isBlocking(blockX+1,blockY,0);
 
 	if(blockTop && toY - blockY < radius) {
 		toY = pos.y = blockY + radius;
