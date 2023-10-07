@@ -1021,14 +1021,11 @@ function castSingleRay(stripIdx,zbuffer) {
   			// the cell coord is simply got from the integer parts of floorX and floorY
         cellX = Math.floor(floorX);
         cellY = Math.floor(floorY);
-        // get the texture coordinate from the fractional part
-        tx = floorX - cellX;
-        ty = floorY - cellY;
         // choose texture and draw the pixel
-        if((floorX >= mapWidth || floorY >= mapHeight) || (floorX < 0 || floorY < 0) || floorlayout[cellY] === undefined){floorTexture = 2;}else{floorTexture = floorlayout[cellY][cellX];}
-        if(floorTexture === 0 || floorTexture === undefined){floorTexture = 2;}
+        /*if((floorX >= mapWidth || floorY >= mapHeight) || (floorX < 0 || floorY < 0) || floorlayout[cellY] === undefined){floorTexture = 2;}else{floorTexture = floorlayout[cellY][cellX];}
+        if(floorTexture === 0 || floorTexture === undefined){floorTexture = 2;}*/
         // floor drawing
-        drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
+        drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,floorX%1,floorY%1,2);
       }
       if(ceiling){
         for(var y = 0; y < top+stripWidth; y+=stripWidth){
