@@ -1010,7 +1010,7 @@ function castSingleRay(stripIdx,zbuffer) {
 		}
 		//permadi floorcasting
     if(floor){
-			var floorX,floorY,cellX,cellY,tx,ty,floorTexture;
+			var floorX,floorY,floorTexture;
       for(var y = top+height-stripWidth; y < screenHeight; y+=stripWidth){
         var rowDistance = rowdistlookup[Math.round(y/stripWidth)*stripWidth];
         // calculate the real world step vector we have to add for each x (parallel to camera plane)
@@ -1018,9 +1018,6 @@ function castSingleRay(stripIdx,zbuffer) {
         // real world coordinates of the leftmost column. This will be updated as we step to the right.
         floorX = player.x + rowDistance * (dirX+cameraX*planeX);
         floorY = player.y + rowDistance * (dirY+cameraX*planeY);
-  			// the cell coord is simply got from the integer parts of floorX and floorY
-        cellX = Math.floor(floorX);
-        cellY = Math.floor(floorY);
         // choose texture and draw the pixel
         /*if((floorX >= mapWidth || floorY >= mapHeight) || (floorX < 0 || floorY < 0) || floorlayout[cellY] === undefined){floorTexture = 2;}else{floorTexture = floorlayout[cellY][cellX];}
         if(floorTexture === 0 || floorTexture === undefined){floorTexture = 2;}*/
