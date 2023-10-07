@@ -724,8 +724,6 @@ function castWallRays() {
   var stripIdx = 0;
 	var zbuffer = renderSprites();
 	for (var i=0;i<numRays;i++) {
-		// where on the screen does ray go through?
-		var rayScreenPos = (-numRays/2 + i) * stripWidth;
     if(!ceiling){
       //skybox
       /*ctx.drawImage(skydomeTexture, Math.floor((skydomeTexture.width)*((player.rot + rayAngle+2*Math.PI)/(Math.PI)%1)), 0,
