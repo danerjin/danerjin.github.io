@@ -538,7 +538,7 @@ function between(a,x,b){
   return (a<=x && x<=b)||(b<=x && x<=a)
 }
 var posZ;
-var invDet;
+var invDet = 1.0 / (planeX * dirY - dirX * planeY); //required for correct matrix multiplication;
 var lastRenderCycleTime = 0;
 var drawFillRectangle = function(x, y, width, height, cssColor){
 		ctx.fillStyle = cssColor;
@@ -582,7 +582,6 @@ function renderCycle() {
 	  rayDirY0 = dirY - planeY;
 	  rayDirX1 = dirX + planeX;
 	  rayDirY1 = dirY + planeY;
-		invDet = 1.0 / (planeX * dirY - dirX * planeY); //required for correct matrix multiplication
 		for(var y = 0; y<=screenHeight; y+=stripWidth){
 			if(y===screenHeight/2+player.pitch){break;}
 			rowdistlookup[y] = posZ/(y - screenHeight / 2 - player.pitch);
