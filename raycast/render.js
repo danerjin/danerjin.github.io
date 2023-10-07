@@ -394,8 +394,6 @@ function init() {
 
     });
     joyMovingDir = joyMoving.GetDir();
-    floor=false;
-    $("floor").checked = false;
   }
 
   canvas.addEventListener("click", async () => {
