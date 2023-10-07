@@ -366,6 +366,7 @@ function updateFOV(){
   fovHalf = fov/2;
   viewDist = (screenWidth/2) / Math.tan((fov / 2));
   $("fov").innerText = Math.round(fov*180/Math.PI);
+	invDet = 1.0 / (planeX * dirY - dirX * planeY);
 }
 function toggleFloor(){
   floor = !floor;
