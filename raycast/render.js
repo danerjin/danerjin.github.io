@@ -424,7 +424,6 @@ function init() {
 var lastGameCycleTime = 0;
 var gameCycleDelay = 1000 / 60; // aim for 60 fps for game logic
 var mousePos = [0,0];
-var temp = [0,0];
 var prevMousePos = [0,0];
 function gameCycle() {
   if(mobile){
@@ -588,10 +587,10 @@ function renderCycle() {
 		}
 	  updateMiniMap();
 		drawFillRectangle(0,0,screenWidth,screenHeight,fill="#FFFFFF");
-		drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#87CEEB');
-	  if(!floor){drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');if(ceiling){drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#555555');}}
-	  else{//castFloorAndCeilingRaysLode();}
+	  if(!floor){
+			drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');
 		}
+		drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#87CEEB');
 		castWallRays();
 		//crosshair
 	  {
@@ -719,72 +718,6 @@ function bind() {
 				player.dir = 0;
 				break;
 		}
-	}
-}
-//floor casting
-function castFloorAndCeilingRaysLode(){
-  // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
-	for(var y = screenHeight-stripWidth; true; y-=stripWidth){
-		if(y<=screenHeight/2+player.pitch){break;}
-		// Current y position compared to the center of the screen (the horizon)
-		var p = y - screenHeight / 2 - player.pitch;
-		// Vertical position of the camera.
-		// Horizontal distance from the camera to the floor for the current row.
-		// 0.5 is the z position exactly in the middle between floor and ceiling.
-		var rowDistance = posZ / (p);
-		// real world coordinates of the leftmost column. This will be updated as we step to the right.
-		var floorStepX = stripWidth * rowDistance * (2*0.847826*planeX) / (screenWidth);
-  	var floorStepY = stripWidth * rowDistance * (2*0.847826*planeY) / (screenWidth);
-    var floorX = player.x + rowDistance * rayDirX0;
-    var floorY = player.y + rowDistance * rayDirY0;
-    for(var x = 0; x < screenWidth; x+=stripWidth){
-			// the cell coord is simply got from the integer parts of floorX and floorY
-      var cellX = Math.floor(floorX);
-      var cellY = Math.floor(floorY);
-      // get the texture coordinate from the fractional part
-      var tx = floorX - cellX;
-      var ty = floorY - cellY;
-      floorX += floorStepX;
-      floorY += floorStepY;
-      var floorTexture;
-      if((floorX >= mapWidth || floorY >= mapHeight) || (floorX < 0 || floorY < 0) || floorlayout[cellY] === undefined){continue;}else{floorTexture = floorlayout[cellY][cellX];}
-      if(floorTexture+0 === 0 || floorTexture === undefined){floorTexture = 2;}
-      // floor drawing
-      drawFloorRectangle(x,y,stripWidth,stripWidth,tx,ty,floorTexture);
-		}
-	}
-	if(ceiling){
-		for(var y = 0; y < screenHeight/2+player.pitch-stripWidth; y+=stripWidth){
-		if(y===screenHeight/2+player.pitch){break;}
-		// Current y position compared to the center of the screen (the horizon)
-		var p = screenHeight / 2 - y + player.pitch;
-		// Vertical position of the camera.
-		// Horizontal distance from the camera to the floor for the current row.
-		// 0.5 is the z position exactly in the middle between floor and ceiling.
-		var rowDistance = (3*screenHeight-posZ) / (p);
-		// real world coordinates of the leftmost column. This will be updated as we step to the right.
-		var floorStepX = stripWidth * rowDistance * (2*0.847826*planeX) / (screenWidth);
-  	var floorStepY = stripWidth * rowDistance * (2*0.847826*planeY) / (screenWidth);
-    // real world coordinates of the leftmost column. This will be updated as we step to the right.
-    var floorX = player.x + rowDistance * rayDirX0;
-    var floorY = player.y + rowDistance * rayDirY0;
-    for(var x = 0; x < screenWidth; x+=stripWidth){
-			// the cell coord is simply got from the integer parts of floorX and floorY
-      var cellX = Math.floor(floorX);
-      var cellY = Math.floor(floorY);
-      // get the texture coordinate from the fractional part
-      var tx = floorX - cellX;
-      var ty = floorY - cellY;
-      floorX += floorStepX;
-      floorY += floorStepY;
-      var floorTexture;
-      // choose texture and draw the pixel
-        if((floorX >= mapWidth || floorY >= mapHeight) || (floorX <= 0 || floorY <= 0) || ceilinglayout[cellY] === undefined){continue;}else{floorTexture = ceilinglayout[cellY][cellX];}
-        if(floorTexture+0 === 0 || floorTexture === undefined){continue;}
-        // floor drawing
-        drawCeilRectangle(x,y,stripWidth,stripWidth,tx,ty,floorTexture);
-      }
-    }
 	}
 }
 function castWallRays() {
@@ -1436,10 +1369,10 @@ function checkCollisionHor(fromX, fromY, toX, toY, radius,fromZ) {
 	pos.x = toX;
 	pos.y = toY;
 
-	var blockTop = isBlocking(blockX,blockY-1,0);
-	var blockBottom = isBlocking(blockX,blockY+1,0);
-	var blockLeft = isBlocking(blockX-1,blockY,0);
-	var blockRight = isBlocking(blockX+1,blockY,0);
+	var blockTop = isBlocking(blockX,blockY-1,fromZ+0.25);
+	var blockBottom = isBlocking(blockX,blockY+1,fromZ+0.25);
+	var blockLeft = isBlocking(blockX-1,blockY,fromZ+0.25);
+	var blockRight = isBlocking(blockX+1,blockY,fromZ+0.25);
 
 	if(blockTop && toY - blockY < radius) {
 		toY = pos.y = blockY + radius;
@@ -1503,15 +1436,6 @@ function checkCollisionHor(fromX, fromY, toX, toY, radius,fromZ) {
 		return pos;
 	}
 	return coolPos;
-}
-function heightMapCheck(x,y,z){
-	if(y < 0 || y >= mapHeight || x < 0 || x >= mapWidth)
-		return true;
-	if(heightMap[y][x]>z){
-		return true;
-	}else{
-		return false;
-	}
 }
 
 function isBlocking(x,y,z) {
