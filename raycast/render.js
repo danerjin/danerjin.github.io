@@ -1014,7 +1014,6 @@ function castSingleRay(stripIdx,zbuffer) {
     if(floor){
 			var floorX,floorY,cellX,cellY,tx,ty,floorTexture;
       for(var y = top+height-stripWidth; y < screenHeight; y+=stripWidth){
-        if(y===screenHeight/2+player.pitch){continue;}
         var rowDistance = rowdistlookup[Math.round(y/stripWidth)*stripWidth];
         // calculate the real world step vector we have to add for each x (parallel to camera plane)
         // adding step by step avoids multiplications with a weight in the inner loop
@@ -1028,7 +1027,7 @@ function castSingleRay(stripIdx,zbuffer) {
         tx = floorX - cellX;
         ty = floorY - cellY;
         // choose texture and draw the pixel
-        if((floorX >= mapWidth || floorY >= mapHeight) || (floorX <= 0 || floorY <= 0) || floorlayout[cellY] === undefined){floorTexture = 2;}else{floorTexture = floorlayout[cellY][cellX];}
+        if((floorX >= mapWidth || floorY >= mapHeight) || (floorX < 0 || floorY < 0) || floorlayout[cellY] === undefined){floorTexture = 2;}else{floorTexture = floorlayout[cellY][cellX];}
         if(floorTexture === 0 || floorTexture === undefined){floorTexture = 2;}
         // floor drawing
         drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
