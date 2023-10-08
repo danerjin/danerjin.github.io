@@ -1024,34 +1024,6 @@ function castSingleRay(stripIdx,zbuffer) {
         // floor drawing
         drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,floorX%1,floorY%1,2);
       }
-      if(ceiling){
-        for(var y = 0; y < top+stripWidth; y+=stripWidth){
-        if(y===screenHeight/2+player.pitch){continue;}
-        // Current y position compared to the center of the screen (the horizon)
-        var p = screenHeight / 2 - y + player.pitch;
-        // Vertical position of the camera.
-        // Horizontal distance from the camera to the floor for the current row.
-        // 0.5 is the z position exactly in the middle between floor and ceiling.
-        var rowDistance = (3*screenHeight-posZ) / (p);
-        // calculate the real world step vector we have to add for each x (parallel to camera plane)
-        // adding step by step avoids multiplications with a weight in the inner loop
-        // real world coordinates of the leftmost column. This will be updated as we step to the right.
-        var floorX = player.x + rowDistance * (rayDirX0 + 2*stripIdx*stripWidth*planeX/screenWidth);
-        var floorY = player.y + rowDistance * (rayDirY0 + 2*stripIdx*stripWidth*planeY/screenWidth);
-  			// the cell coord is simply got from the integer parts of floorX and floorY
-        var cellX = Math.floor(floorX);
-        var cellY = Math.floor(floorY);
-        // get the texture coordinate from the fractional part
-        var tx = floorX - cellX;
-        var ty = floorY - cellY;
-        var floorTexture;
-        // choose texture and draw the pixel
-        if((floorX >= mapWidth || floorY >= mapHeight) || (floorX <= 0 || floorY <= 0) || floorlayout[cellY] === undefined){continue;}else{floorTexture = ceilinglayout[cellY][cellX];}
-        if(floorTexture+0 === 0 || floorTexture === undefined){continue;}
-        // floor drawing
-        drawCeilRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,tx,ty,floorTexture);
-      }
-      }
     }
 		hits.concat(zbuffer[stripIdx]).sort(function(x,y){return y.dist-x.dist}).forEach((element) => element.draw());
   }
