@@ -1011,7 +1011,7 @@ function castSingleRay(stripIdx,zbuffer) {
 		//permadi floorcasting
     if(floor){
 			var floorX,floorY,floorTexture;
-      for(var y = top+height-stripWidth; y < screenHeight; y+=stripWidth){
+      for(var y = Math.round(top+height-stripWidth); y < screenHeight; y+=stripWidth){
         var rowDistance = rowdistlookup[Math.round(y/stripWidth)*stripWidth];
         // calculate the real world step vector we have to add for each x (parallel to camera plane)
         // adding step by step avoids multiplications with a weight in the inner loop
