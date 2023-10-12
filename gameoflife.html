@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang = 'en'>
 <head>
-  <title>Game of life</title>
+  <title>Conway's Game of Life</title>
     <style>
     </style>
   </head>
   <body>
-    <canvas id = 'canvas' width = '400' height = '400'></canvas>
+    <canvas id = 'canvas' width = '800' height = '800'></canvas>
     <script>
     var canvas = document.getElementById('canvas');
     var screenWidth = canvas.width;
@@ -14,7 +14,6 @@
     var scaleX = screenWidth/45;
     var scaleY = screenHeight/45;
     var ctx = canvas.getContext('2d');
-    ctx.fillStyle='black';
     var thing = [
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -83,6 +82,11 @@
     }
     function renderCycle() {
       ctx.clearRect(0,0,screenWidth,screenHeight);
+      ctx.fillStyle='rgba(10,10,10,0.8)';
+      ctx.beginPath();
+      ctx.rect(x*scaleX, y*scaleY, scaleX, scaleY);
+      ctx.closePath();
+      ctx.fill();
       for(var y = 0;y<45;y++){
         for(var x = 0;x<45;x++){
           //update whatever
@@ -90,6 +94,7 @@
           if(thing[y][x]>0){
             if(neighbors===2||neighbors===3){
               newthing[y][x]=1;
+      ctx.fillStyle='white';
               ctx.beginPath();
               ctx.rect(x*scaleX, y*scaleY, scaleX, scaleY);
               ctx.closePath();
@@ -100,6 +105,7 @@
           }else{
             if(neighbors===3){
               newthing[y][x]=1;
+      ctx.fillStyle='black';
               ctx.beginPath();
               ctx.rect(x*scaleX, y*scaleY, scaleX, scaleY);
               ctx.closePath();
