@@ -80,18 +80,18 @@
       }
       return count-oldthing[y][x];
     }
-      
+
       ctx.fillStyle='rgb(10,10,10)';
       ctx.beginPath();
-      ctx.rect(x*scaleX, y*scaleY, scaleX, scaleY);
+      ctx.rect(0, 0, screenWidth, screenHeight);
       ctx.closePath();
       ctx.fill();
     function renderCycle() {
-      ctx.fillStyle='rgba(10,10,10,0.8)';
-      ctx.beginPath();
-      ctx.rect(x*scaleX, y*scaleY, scaleX, scaleY);
-      ctx.closePath();
-      ctx.fill();
+          ctx.fillStyle='rgba(10,10,10,0.75)';
+          ctx.beginPath();
+          ctx.rect(0, 0, screenWidth, screenHeight);
+          ctx.closePath();
+          ctx.fill();
       for(var y = 0;y<45;y++){
         for(var x = 0;x<45;x++){
           //update whatever
