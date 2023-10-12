@@ -80,8 +80,13 @@
       }
       return count-oldthing[y][x];
     }
+      
+      ctx.fillStyle='rgb(10,10,10)';
+      ctx.beginPath();
+      ctx.rect(x*scaleX, y*scaleY, scaleX, scaleY);
+      ctx.closePath();
+      ctx.fill();
     function renderCycle() {
-      ctx.clearRect(0,0,screenWidth,screenHeight);
       ctx.fillStyle='rgba(10,10,10,0.8)';
       ctx.beginPath();
       ctx.rect(x*scaleX, y*scaleY, scaleX, scaleY);
@@ -105,7 +110,7 @@
           }else{
             if(neighbors===3){
               newthing[y][x]=1;
-      ctx.fillStyle='black';
+      ctx.fillStyle='white';
               ctx.beginPath();
               ctx.rect(x*scaleX, y*scaleY, scaleX, scaleY);
               ctx.closePath();
