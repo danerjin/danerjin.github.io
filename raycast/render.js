@@ -58,7 +58,7 @@ var WallStripeHalf = function(wallX,wallY,xOffset,x,shade,dist){
   this.xOffset=xOffset;
   this.shade=shade;
   this.draw = function(){
-    for(var drawTop = this.y+this.height-this.seg; drawTop >= this.y-10; drawTop-=this.seg){
+    for(var drawTop = this.y+this.height-this.seg; drawTop >= this.y-2; drawTop-=this.seg){
       drawWallSliceRectangle(this.x,drawTop,stripWidth,this.seg,this.xOffset+(this.shade?1:0),this.tex);
     }
     if(drawTop<this.y){
@@ -66,6 +66,17 @@ var WallStripeHalf = function(wallX,wallY,xOffset,x,shade,dist){
         1, Math.round(wallTextures[this.tex-1].height*((this.height/this.seg)%1)),
         this.x, this.y, stripWidth, (this.height%this.seg)+3);
     }
+  }
+}
+var GlassPaneStripe = function(wallX,wallY,x,dist){
+	this.wallY = wallY;
+	this.wallX = wallX;
+  this.x = x;
+  this.dist = dist;
+  this.height = Math.round(viewDist*heightMap[wallY][wallX]/this.dist);
+  this.y = Math.round(screenHeight/2 - this.height+(player.z+player.height)*viewDist/this.dist)+player.pitch;
+  this.draw = function(){
+		drawFillRectangleRGBA(this.x,this.y,stripWidth,this.height,[157,234,244,0.5])
   }
 }
 var WallStripe = function(front,backdist){
@@ -125,9 +136,9 @@ var map = [
   [2,0,0,0,0,0,0,0,2,2,2,1,2,2,2,6,6,0,0,5,8,5,0,5],
   [2,5,0,0,0,0,0,2,2,2,0,0,0,2,2,0,5,0,0,0,0,0,0,5],
   [2,4,0,0,0,0,0,0,2,0,0,0,0,0,2,5,0,5,0,0,0,0,0,5],
-  [1,3,0,0,0,0,0,0,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5],
-  [2,1,0,0,0,0,0,0,2,0,0,0,0,0,2,0,0,0,0,0,0,0,0,5],
-  [2,2,1,3,4,5,0,2,2,2,0,0,0,2,2,0,5,0,5,0,0,0,5,5],
+  [1,3,0,0,0,0,0,0,8,0,0,0,0,0,0,0,0,0,0,0,2,2,12,5],
+  [2,1,0,0,0,0,0,0,2,0,0,0,0,0,2,0,0,0,0,0,2,0,0,5],
+  [2,2,1,3,4,5,0,2,2,2,0,0,0,2,2,0,5,0,5,0,12,0,5,5],
   [2,2,2,2,1,2,2,2,2,2,2,1,2,2,2,5,5,5,5,5,5,5,5,5]
 ];
 var heightMap = [
@@ -151,9 +162,9 @@ var heightMap = [
   [1.5,0.1,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,0,0,2,1,2,0,1.5],
   [2,0.2,0,0,0,0,0,2,2,2,0,0,0,2,2,0,2,0,0,0,0,0,0,2],
   [1.5,0.4,0,0,0,0,0,0,2,0,0,0,0,0,2,2,0,2,0,0,0,0,0,1.5],
-  [2,0.6,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
-  [1.5,0.8,0,0,0,0,0,0,2,0,0,0,0,0,2,0,0,0,0,0,0,0,0,1.5],
-  [2,1,0.8,0.6,0.4,0.2,0,2,2,2,0,0,0,2,2,0,2,0,2,0,0,0,2,2],
+  [2,0.6,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,2],
+  [1.5,0.8,0,0,0,0,0,0,2,0,0,0,0,0,2,0,0,0,0,0,1,0,0,1.5],
+  [2,1,0.8,0.6,0.4,0.2,0,2,2,2,0,0,0,2,2,0,2,0,2,0,1,0,1,2],
   [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
 ];
 var maxHeight = 2;
@@ -194,6 +205,8 @@ for (var i = 0; i < mapHeight; i++) {
 /*
 8, 9, and 10 - doors,
 11 - secret push wall, wood texture
+12 - glass
+13 - iron bars
 */
 var skydomeTexture = new Image();
 skydomeTexture.crossOrigin = "Anonymous";
@@ -407,7 +420,7 @@ function init() {
   for (var y=0;y<mapHeight;y++) {
     for (var x=0;x<mapWidth;x++) {
       var wall = map[y][x];
-      if(wall === 8 || wall === 9 || wall === 10 || wall === 11){
+      if(wall === 8 || wall === 9 || wall === 10 || wall === 11 || wall===12){
         if(map[y][x-1]>0){
           doorDirs[y][x] = 1;
         }
@@ -797,21 +810,23 @@ function castSingleRay(stripIdx,zbuffer) {
     		var wallY = Math.floor(y);
     		// is this point inside a wall block?
     		if(map[wallY][wallX] !== 0){
-          if(map[wallY][wallX]===8||map[wallY][wallX]===9 ||map[wallY][wallX]===10&&doorDirs[wallY][wallX]===0){
-            x_maybe=x+dXVer/2;
-            y_maybe=y+dYVer/2;
-            if((y_maybe-wallY) <= 1-doorOffsets[wallY][wallX]){
-              var distX = x_maybe - player.x;
-        			var distY = y_maybe - player.y;
-        			textureX = (y_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
-        			textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
-							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,(invDet * (-planeY * distX + planeX * distY))/Math.tan(fovHalf));
-              hits.push(front);
-              if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
-        			    break;
-              }
-            }
-          }
+          if(map[wallY][wallX]===8||map[wallY][wallX]===9 ||map[wallY][wallX]===10){
+						if(doorDirs[wallY][wallX]===0){
+	            x_maybe=x+dXVer/2;
+	            y_maybe=y+dYVer/2;
+	            if((y_maybe-wallY) <= 1-doorOffsets[wallY][wallX]){
+	              var distX = x_maybe - player.x;
+	        			var distY = y_maybe - player.y;
+	        			textureX = (y_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
+	        			textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+								var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,planeY * distX - planeX * distY);
+	              hits.push(front);
+	              if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
+	        			    break;
+	              }
+	            }
+	          }
+					}
           else if(map[wallY][wallX]===11){
               x_maybe=x+dXVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
               y_maybe=y+dYVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
@@ -820,7 +835,7 @@ function castSingleRay(stripIdx,zbuffer) {
               var distY = y_maybe - player.y;
                 textureX = (y_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
                 if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
-								var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,(invDet * (-planeY * distX + planeX * distY))/Math.tan(fovHalf));
+								var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,planeY * distX - planeX * distY);
 								if(up){
 									if(Math.abs(dXVer)>Math.abs(dXHor*(y%1))){
 										var distXNew = x+dXHor*(y%1)-player.x;
@@ -838,19 +853,31 @@ function castSingleRay(stripIdx,zbuffer) {
 										var distYNew = y+dYVer-player.y;
 									}
 								}
-								var back = (invDet * (-planeY * distXNew + planeX * distYNew))/Math.tan(fovHalf);
+								var back = planeY * distXNew - planeX * distYNew;
                 hits.push(new WallStripe(front,back));
                 if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
           			    break;
               }
             }
           }
-          else{
-            var distX = x - player.x;
-      			var distY = y - player.y;
-        			textureX = y % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
-        			if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
-							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,(invDet * (-planeY * distX + planeX * distY))/Math.tan(fovHalf));
+					else if(map[wallY][wallX]===12){
+						if(doorDirs[wallY][wallX]===0){
+							var x_maybe=x+dXVer/2;
+							var y_maybe=y+dYVer/2;
+							if(y_maybe<=1+wallY){
+								var distX = x_maybe - player.x;
+								var distY = y_maybe - player.y;
+								var front = new GlassPaneStripe(wallX,wallY,stripIdx*stripWidth,planeY * distX - planeX * distY);
+								hits.push(front);
+							}
+						}
+					}
+					else if(map[wallY][wallX]<8){
+	          var distX = x - player.x;
+	    			var distY = y - player.y;
+	      			textureX = y % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
+	      			if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,planeY * distX - planeX * distY);
 							if(up){
 								if(Math.abs(dXVer)>Math.abs(dXHor*(y%1))){
 									var distXNew = x+dXHor*(y%1)-player.x;
@@ -868,12 +895,12 @@ function castSingleRay(stripIdx,zbuffer) {
 									var distYNew = y+dYVer-player.y;
 								}
 							}
-							var back = (invDet * (-planeY * distXNew + planeX * distYNew))/Math.tan(fovHalf);
+							var back = planeY * distXNew - planeX * distYNew;
 							hits.push(new WallStripe(front,back));
-              if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
-                  break;
-              }
-          }
+	            if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
+	                break;
+	            }
+	        }
     		}
         x += dXVer;
     		y += dYVer;
@@ -915,21 +942,23 @@ function castSingleRay(stripIdx,zbuffer) {
   		var wallY = Math.floor(y + (up ? -1 : 0));
   		var wallX = Math.floor(x);
   		if(map[wallY][wallX]  !== 0) {
-        if(map[wallY][wallX]===8 || map[wallY][wallX]===9 || map[wallY][wallX]===10&&doorDirs[wallY][wallX]===1){
-          x_maybe=x+dXHor/2;
-          y_maybe=y+dYHor/2;
-          if(x_maybe-wallX <= 1-doorOffsets[wallY][wallX] && x_maybe-wallX >= 0){
-            var distX = x_maybe - player.x;
-            var distY = y_maybe - player.y;
-              textureX = (x_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
-              textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
+        if(map[wallY][wallX]===8 || map[wallY][wallX]===9 || map[wallY][wallX]===10){
+					if(doorDirs[wallY][wallX]===1){
+	          x_maybe=x+dXHor/2;
+	          y_maybe=y+dYHor/2;
+	          if(x_maybe-wallX <= 1-doorOffsets[wallY][wallX] && x_maybe-wallX >= 0){
+	            var distX = x_maybe - player.x;
+	            var distY = y_maybe - player.y;
+	              textureX = (x_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
+	              textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
-							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,(invDet * (-planeY * distX + planeX * distY))/Math.tan(fovHalf));
-							hits.push(front);
-							if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
-                  break;
-              }
-          }
+								var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,planeY * distX - planeX * distY);
+								hits.push(front);
+								if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
+	                  break;
+	              }
+	          }
+					}
         }
         else if(map[wallY][wallX]===11){
             x_maybe=x+dXHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX]);
@@ -939,7 +968,7 @@ function castSingleRay(stripIdx,zbuffer) {
             var distY = y_maybe - player.y;
               textureX = (x_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
               if(up) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
-							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,(invDet * (-planeY * distX + planeX * distY))/Math.tan(fovHalf));
+							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,planeY * distX - planeX * distY);
 							if(!right){
 								if(Math.abs(dYHor)>Math.abs(dYVer*(x%1))){
 									var distXNew = x+dXVer*(x%1)-player.x;
@@ -957,19 +986,31 @@ function castSingleRay(stripIdx,zbuffer) {
 									var distYNew = y+dYHor-player.y;
 								}
 							}
-							var back = (invDet * (-planeY * distXNew + planeX * distYNew))/Math.tan(fovHalf);
+							var back = planeY * distXNew - planeX * distYNew;
 							hits.push(new WallStripe(front,back));
               if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
                   break;
               }
           }
         }
-        else{
+				else if(map[wallY][wallX]===12){
+					if(doorDirs[wallY][wallX]===1){
+						var x_maybe=x+dXHor/2;
+						var y_maybe=y+dYHor/2;
+						if(x_maybe<=wallX+1){
+							var distX = x_maybe - player.x;
+							var distY = y_maybe - player.y;
+							var front = new GlassPaneStripe(wallX,wallY,stripIdx*stripWidth,planeY * distX - planeX * distY);
+							hits.push(front);
+						}
+					}
+				}
+				else if(map[wallY][wallX]<8){
           var distX = x - player.x;
     			var distY = y - player.y;
     				textureX = x % 1;
     				if(up) textureX = 1 - textureX
-						var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,(invDet * (-planeY * distX + planeX * distY))/Math.tan(fovHalf));
+						var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,planeY * distX - planeX * distY);
 						if(!right){
 							if(Math.abs(dXHor)>Math.abs(dXVer*(x%1))){
 								var distXNew = x+dXVer*(x%1)-player.x;
@@ -987,7 +1028,7 @@ function castSingleRay(stripIdx,zbuffer) {
 								var distYNew = y+dYHor-player.y;
 							}
 						}
-						var back = (invDet * (-planeY * distXNew + planeX * distYNew))/Math.tan(fovHalf);
+						var back = planeY * distXNew - planeX * distYNew;
 						hits.push(new WallStripe(front,back));
             if(heightMap[wallY][wallX]>=maxHeight&&(player.height+player.z)<maxHeight){
                 break;
@@ -1405,7 +1446,8 @@ function isBlocking(x,y,z) {
 	if(map[iy][ix] !== 0&&((heightMap[iy][ix]===0)?1:heightMap[iy][ix])>z){
     if(map[iy][ix] !== 8 && map[iy][ix] !== 9 && map[iy][ix] !== 10 && map[iy][ix] !== 11){return true;}
     else if(map[iy][ix] === 11){
-      if(doorDirs[iy][ix]===1){
+      return true;
+			if(doorDirs[iy][ix]===1){
         //horizontal
         if(doorStates[iy][ix]===1){
           if((y-iy)<1-doorOffsets[iy][ix]){return true;}
