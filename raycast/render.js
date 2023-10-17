@@ -342,7 +342,9 @@ var player = {
   isJumping: false,
   speedMult: 1,
   weapon:0,
-  weaponState:0
+  weaponState:0,
+	weaponTimer:0,
+	weaponIsActive:false
 }
 var miniMapScale = 8;
 var doorIsPresent = false;
@@ -534,6 +536,21 @@ function gameCycle() {
     if(count>2||Math.floor(y_target)>=mapHeight||Math.floor(y_target)<0||Math.floor(x_target)>=mapWidth||Math.floor(x_target)<0){doorIsPresent = false;break;}
   }
 	move(timeDelta);
+	//handle weapon
+	if(player.weaponIsActive || player.weaponTimer > 0){
+		player.weaponTimer+=0.2;
+		if(player.weaponTimer>4){
+			if(player.weapon > 1 && player.weaponIsActive){
+				player.weaponTimer=2;
+			}else if (player.weapon < 1 && player.weaponIsActive && player.weaponTimer > 5){
+				player.weaponTimer=0;
+			}else if(player.weaponTimer > 5){
+				player.weaponTimer=0;
+				player.weaponIsActive = false;
+			}
+		}
+		player.weaponState = Math.floor(player.weaponTimer);
+	}
 	var cycleDelay = gameCycleDelay;
 	// the timer will likely not run that fast due to the rendering cycle hogging the cpu
 	// so figure out how much time was lost since last cycle
@@ -657,6 +674,9 @@ function bind() {
   			player.height = 0.2;
         player.speedMult = 0.2
   			break;
+			case 13: // fire
+  			player.weaponIsActive=true;
+  			break;
 
 			case 32: // jump
         player.isJumping = true;
@@ -703,8 +723,11 @@ function bind() {
       case 71:
         isPressingG = false;
         break;
+			case 13: // fire
+  			player.weaponIsActive=false;
+  			break;
       case 82:
-  		case 16: // up
+  		case 16:
   			player.height = 0.5;
         player.speedMult = 1;
   			break;
