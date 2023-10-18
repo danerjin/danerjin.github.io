@@ -540,10 +540,18 @@ function gameCycle() {
 	if(player.weaponIsActive || player.weaponTimer > 0){
 		player.weaponTimer+=0.2;
 		if(player.weaponTimer>4){
-			if(player.weapon > 1 && player.weaponIsActive){
-				player.weaponTimer=2;
-			}else if (player.weapon < 1 && player.weaponIsActive && player.weaponTimer > 5){
-				player.weaponTimer=0;
+			if(player.weapon > 1){
+				if(player.weaponIsActive){
+					player.weaponTimer=2;
+				}else{
+					if(player.weaponTimer>5){
+						player.weaponTimer = 0;
+					}
+				}
+			}else if (player.weapon < 1){
+				if(player.weaponTimer > 5){
+					player.weaponTimer=0;
+				}
 			}else if(player.weaponTimer > 5){
 				player.weaponTimer=0;
 				player.weaponIsActive = false;
