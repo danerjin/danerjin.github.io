@@ -341,10 +341,24 @@ var player = {
   zSpeed: 0,
   isJumping: false,
   speedMult: 1,
-  weapon:0,
+  weapon:3,
   weaponState:0,
 	weaponTimer:0,
-	weaponIsActive:false
+	weaponIsActive:false,
+	maxWeapon:3,
+	secondary:function(){
+		if(this.weapon===this.maxWeapon){
+			this.weapon = 1;
+		}else{
+			this.weapon = this.maxWeapon;
+		}
+	},
+	primary:function(){
+		this.weapon = this.maxWeapon;
+	},
+	melee:function(){
+		this.weapon = 0;
+	}
 }
 var miniMapScale = 8;
 var doorIsPresent = false;
@@ -434,6 +448,8 @@ function init() {
 	gameCycle();
 	renderCycle();
 }
+
+
 
 var lastGameCycleTime = 0;
 var gameCycleDelay = 1000 / 60; // aim for 60 fps for game logic
@@ -674,13 +690,22 @@ function bind() {
       case 71:
         isPressingG = true;
         break;
+			case 84:
+        player.primary();
+        break;
+			case 69:
+        player.secondary();
+        break;
+			case 81:
+        player.melee();
+        break;
   		case 82: // sprint
         player.speedMult = 1.5
         player.height = 0.5
   			break;
   		case 16: // crouch
   			player.height = 0.2;
-        player.speedMult = 0.2
+        player.speedMult = 0.2;
   			break;
 			case 13: // fire
   			player.weaponIsActive=true;
