@@ -357,7 +357,11 @@ var player = {
 		this.weapon = this.maxWeapon;
 	},
 	melee:function(){
-		this.weapon = 0;
+		if(this.weapon===0){
+			this.weapon=this.maxWeapon;
+		}else{
+			this.weapon = 0;
+		}
 	}
 }
 var miniMapScale = 8;
@@ -554,7 +558,7 @@ function gameCycle() {
 	move(timeDelta);
 	//handle weapon
 	if(player.weaponIsActive || player.weaponTimer > 0){
-		player.weaponTimer+=0.2;
+		player.weaponTimer+=0.4;
 		if(player.weaponTimer>4){
 			if(player.weapon > 1){
 				if(player.weaponIsActive){
