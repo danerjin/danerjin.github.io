@@ -345,7 +345,7 @@ var player = {
   weaponState:0,
 	weaponTimer:0,
 	weaponIsActive:false,
-	maxWeapon:3,
+	maxWeapon:2+((Math.random()>0.5)?1:0),
 	secondary:function(){
 		if(this.weapon===this.maxWeapon){
 			this.weapon = 1;
@@ -391,6 +391,7 @@ var slider = document.getElementById("myRange");
 var floorToggle = document.getElementById("floor");
 var rowdistlookup = new Array(Math.ceil(screenHeight/stripWidth));
 var orzbuffer = new Array(numRays);
+var centerStripe = [];
 for(var i = 0; i < numRays+10;i++){
   orzbuffer[i]=[];
 }
@@ -558,7 +559,29 @@ function gameCycle() {
 	move(timeDelta);
 	//handle weapon
 	if(player.weaponIsActive || player.weaponTimer > 0){
+		if(player.ammo<0){
+			player.weaponTimer=0;
+			player.weaponIsActive = false;
+		}
 		player.weaponTimer+=0.3;
+		if(player.weapon === 3 && player.weaponTimer>3){
+			player.ammo -=1;
+			//fire bullet
+			for(var i = 0; i < centerStripe.length;i++){
+				//check
+			}
+		}
+		if(player.weapon>1 && player.weapon < 3){
+			if(player.weaponTimer === 4){
+				player.ammo-=1;
+				//fire bullet
+			}
+		}
+		if(player.weapon===1){
+			if(player.weaponTimer===4){
+				//check
+			}
+		}
 		if(player.weaponTimer>4){
 			if(player.weapon > 1){
 				if(player.weaponIsActive){
@@ -696,21 +719,24 @@ function bind() {
         break;
 			case 84:
         player.primary();
+				player.weaponState = 0;
+				player.weaponTimer = 0;
         break;
 			case 69:
         player.secondary();
+				player.weaponState = 0;
+				player.weaponTimer = 0;
         break;
 			case 81:
         player.melee();
+				player.weaponState = 0;
+				player.weaponTimer = 0;
         break;
-  		case 82: // sprint
-        player.speedMult = 1.5
-        player.height = 0.5
-  			break;
   		case 16: // crouch
   			player.height = 0.2;
-        player.speedMult = 0.2;
   			break;
+			case 82://reload
+				break;
 			case 13: // fire
   			player.weaponIsActive=true;
   			break;
@@ -763,7 +789,6 @@ function bind() {
 			case 13: // fire
   			player.weaponIsActive=false;
   			break;
-      case 82:
   		case 16:
   			player.height = 0.5;
         player.speedMult = 1;
@@ -792,6 +817,7 @@ function bind() {
 function castWallRays() {
   var stripIdx = 0;
 	var zbuffer = renderSprites();
+	centerStripe = zbuffer[Math.round(numRays/2)];
 	for (var i=0;i<numRays;i++) {
     if(!ceiling){
       //skybox
@@ -1259,8 +1285,14 @@ function move(timeDelta) {
     }
   }
   {
-    if (player.y >= 0.001){player.moveSpeed = 0.05;}else{player.moveSpeed = 0.069}
 
+		player.speedMult = 1;
+		if(player.height===0.2){
+			if(player.z<=0.05||isBlocking(player.x,player.y,player.z-0.05)){
+				player.speedMult = 0.3;
+			}
+		}
+    if (player.y >= 0.001){player.moveSpeed = 0.05;}else{player.moveSpeed = 0.069}
   	var moveStep = mul * player.speed * player.moveSpeed*player.speedMult;	// player will move this far along the current direction vector
 
     var moveStepStrafe = mul * player.strafeSpeed * player.moveSpeed*player.speedMult;
@@ -1291,9 +1323,11 @@ function move(timeDelta) {
   	var newX = player.x + Math.cos(player.rot) * moveStep + Math.sin(player.rot) * moveStepStrafe;	// calculate new player position with simple trigonometry
   	var newY = player.y + Math.sin(player.rot) * moveStep - Math.cos(player.rot) * moveStepStrafe;
     if(player.isJumping){
-    if(player.z<=0.05||isBlocking(player.x,player.y,player.z-0.05)){
-      player.zSpeed = 0.1125;
-    }}
+	    if(player.z<=0.05||isBlocking(player.x,player.y,player.z-0.05)){
+	      player.zSpeed = 0.1125;
+				player.isJumping = false;
+	    }
+		}
     player.zSpeed-=mul*gravity;
 		var newZ = player.z+mul*player.zSpeed;
   	var pos = checkCollision(player.x, player.y, newX, newY, 0.05, player.z, newZ);
