@@ -341,7 +341,7 @@ var player = {
   zSpeed: 0,
   isJumping: false,
   speedMult: 1,
-  weapon:3,
+  weapon:2+((Math.random()>0.5)?1:0),
   weaponState:0,
 	weaponTimer:0,
 	weaponIsActive:false,
