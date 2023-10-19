@@ -321,7 +321,7 @@ var offcanvas = new OffscreenCanvas(screenWidth,screenHeight);//document.createE
 var ctxfin = canvas.getContext('2d');
 var ctx = offcanvas.getContext('2d');
 
-
+var max = 2+((Math.random()>0.5)?1:0);
 var gravity = 0.01;
 var stripWidth = 2;
 var player = {
@@ -341,11 +341,11 @@ var player = {
   zSpeed: 0,
   isJumping: false,
   speedMult: 1,
-  weapon:2+((Math.random()>0.5)?1:0),
+  weapon:max,
   weaponState:0,
 	weaponTimer:0,
 	weaponIsActive:false,
-	maxWeapon:2+((Math.random()>0.5)?1:0),
+	maxWeapon:max,
 	secondary:function(){
 		if(this.weapon===this.maxWeapon){
 			this.weapon = 1;
