@@ -348,6 +348,8 @@ var player = {
 	weaponTimer:0,
 	weaponIsActive:false,
 	maxWeapon:max,
+	ammo:[10,10,28,30],
+	maxAmmo:[10,10,28,30],
 	secondary:function(){
 		if(this.weapon===this.maxWeapon){
 			this.weapon = 1;
@@ -363,6 +365,15 @@ var player = {
 			this.weapon=this.maxWeapon;
 		}else{
 			this.weapon = 0;
+		}
+	},
+	reload:function(){
+		if(this.weapon>0){
+			this.weaponState = -1;
+			setTimeout(function(){
+				player.ammo = player.maxAmmo[player.weapon];
+				player.weaponState = 0;
+			},500);
 		}
 	}
 }
@@ -561,48 +572,52 @@ function gameCycle() {
 	move(timeDelta);
 	//handle weapon
 	if(player.weaponIsActive || player.weaponTimer > 0){
-		if(player.ammo<0){
-			player.weaponTimer=0;
+		if(player.ammo[player.weapon]<=0){
+			player.weaponTimer=min(player.weaponTimer,0);
+			player.weaponState=min(player.weaponState,0);
 			player.weaponIsActive = false;
 		}
-		player.weaponTimer+=0.3;
-		if(player.weapon === 3 && player.weaponTimer>3){
-			player.ammo -=1;
-			//fire bullet
-			for(var i = 0; i < centerStripe.length;i++){
-				//check
-			}
-		}
-		if(player.weapon>1 && player.weapon < 3){
-			if(player.weaponTimer === 4){
-				player.ammo-=1;
+		else{
+			player.weaponTimer+=0.3;
+			if(player.weapon === 3 && player.weaponTimer>3){
+				player.ammo[3] -=1;
 				//fire bullet
+				for(var i = 0; i < centerStripe.length;i++){
+					//check
+				}
 			}
-		}
-		if(player.weapon===1){
-			if(player.weaponTimer===4){
-				//check
+			if(player.weapon===2){
+				if(player.weaponTimer === 4){
+					player.ammo[2]-=1;
+					//fire bullet
+				}
 			}
-		}
-		if(player.weaponTimer>4){
-			if(player.weapon > 1){
-				if(player.weaponIsActive){
-					player.weaponTimer=2;
-				}else{
-					if(player.weaponTimer>5){
-						player.weaponTimer = 0;
+			if(player.weapon===1){
+				if(player.weaponTimer===4){
+					player.ammo[1]-=1;
+					//check
+				}
+			}
+			if(player.weaponTimer>4){
+				if(player.weapon > 1){
+					if(player.weaponIsActive){
+						player.weaponTimer=2;
+					}else{
+						if(player.weaponTimer>5){
+							player.weaponTimer = 0;
+						}
 					}
-				}
-			}else if (player.weapon < 1){
-				if(player.weaponTimer > 5){
+				}else if (player.weapon < 1){
+					if(player.weaponTimer > 5){
+						player.weaponTimer=0;
+					}
+				}else if(player.weaponTimer > 5){
 					player.weaponTimer=0;
+					player.weaponIsActive = false;
 				}
-			}else if(player.weaponTimer > 5){
-				player.weaponTimer=0;
-				player.weaponIsActive = false;
 			}
+			player.weaponState = Math.floor(player.weaponTimer);
 		}
-		player.weaponState = Math.floor(player.weaponTimer);
 	}
 	var cycleDelay = gameCycleDelay;
 	// the timer will likely not run that fast due to the rendering cycle hogging the cpu
@@ -699,6 +714,9 @@ function renderCycle() {
 	  ctx.fillStyle = "white";
 	  ctx.textAlign = "left";
 	  ctx.fillText("FPS: "+Math.round(fps),50,50);
+		drawFillRectangleRGBA(screenWidth-100,screenHeight-100,100,100,(100,100,100,0.5));
+
+	  ctx.fillText(player.ammo[player.weapon]+'/'+player.maxAmmo[player.weapon],screenWidth-100,screenHeight-100);
 		ctxfin.drawImage((offcanvas.transferToImageBitmap()),0,0,screenWidth,screenHeight);
 		setTimeout(renderCycle, 1);
 }
