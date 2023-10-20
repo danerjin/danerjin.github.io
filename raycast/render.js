@@ -332,6 +332,7 @@ var player = {
 	rot : 0,		// rotation in radians
 	speed : 0,		// is the playing moving forward (speed = 1) or backwards (speed = -1).
   strafeSpeed : 0, //strafing
+	momentum:0,//momentum for slidehop
 	moveSpeed : 0.05,	// how far (in map units) does the player move each step/update
 	rotSpeed : 3,		// how much does the player rotate each step/update (in degrees)
   pitch : 0, // pitch
@@ -1290,16 +1291,25 @@ function move(timeDelta) {
 
 		player.speedMult = 1;
 		player.height=0.5;
-		if(player.isCrouching){
-			if(player.z<=0.05||isBlocking(player.x,player.y,player.z-0.05)){
+		if(player.z<=0.05||isBlocking(player.x,player.y,player.z-0.05)){
+			if(player.isJumping){
+				player.zSpeed = 0.1125;
+				player.isJumping = false;
+			}
+			if(player.isCrouching){
 				player.speedMult = 0.3;
 				player.height=0.2;
+				if(player.momentum-0.0075>=0){player.momentum-=0.0075;}
+			}else{
+				player.momentum = 0;
 			}
+		}else{
+			player.momentum+=0.015;
 		}
     if (player.y >= 0.001){player.moveSpeed = 0.05;}else{player.moveSpeed = 0.069}
-  	var moveStep = mul * player.speed * player.moveSpeed*player.speedMult;	// player will move this far along the current direction vector
+  	var moveStep = mul * player.speed * player.moveSpeed*(player.speedMult+player.momentum);	// player will move this far along the current direction vector
 
-    var moveStepStrafe = mul * player.strafeSpeed * player.moveSpeed*player.speedMult;
+    var moveStepStrafe = mul * player.strafeSpeed * player.moveSpeed*(player.speedMult+player.momentum);
 
   	player.rotDeg = player.rotDeg + mul * player.dir * player.rotSpeed; // add rotation if player is rotating (player.dir != 0)
 
@@ -1326,12 +1336,6 @@ function move(timeDelta) {
 
   	var newX = player.x + Math.cos(player.rot) * moveStep + Math.sin(player.rot) * moveStepStrafe;	// calculate new player position with simple trigonometry
   	var newY = player.y + Math.sin(player.rot) * moveStep - Math.cos(player.rot) * moveStepStrafe;
-    if(player.isJumping){
-	    if(player.z<=0.05||isBlocking(player.x,player.y,player.z-0.05)){
-	      player.zSpeed = 0.1125;
-				player.isJumping = false;
-	    }
-		}
     player.zSpeed-=mul*gravity;
 		var newZ = player.z+mul*player.zSpeed;
   	var pos = checkCollision(player.x, player.y, newX, newY, 0.05, player.z, newZ);
