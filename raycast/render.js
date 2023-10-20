@@ -620,7 +620,7 @@ function gameCycle() {
 					}
 				}
 			}
-			player.weaponState = new;
+			player.weaponState = newthing;
 		}
 	}
 	var cycleDelay = gameCycleDelay;
