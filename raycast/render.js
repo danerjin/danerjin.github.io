@@ -583,8 +583,6 @@ function gameCycle() {
 				if(player.weapon > 1){
 					if(player.weaponIsActive){
 						player.weaponTimer=2;
-						player.ammo[player.weapon]-=1;
-						//fire bullet
 					}else{
 						if(player.weaponTimer>5){
 							player.weaponTimer = 0;
@@ -595,10 +593,8 @@ function gameCycle() {
 						player.weaponTimer=0;
 					}
 				}else if(player.weaponTimer > 5){
-					player.ammo[1]-=1;
 					player.weaponTimer=0;
 					player.weaponIsActive = false;
-					//fire bullet
 				}
 			}
 			if(Math.floor(player.weaponTimer)!==player.weaponState){
