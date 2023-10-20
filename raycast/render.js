@@ -341,6 +341,7 @@ var player = {
   zSpeed: 0,
   isJumping: false,
   speedMult: 1,
+	isCrouching:false,
   weapon:max,
   weaponState:0,
 	weaponTimer:0,
@@ -733,7 +734,7 @@ function bind() {
 				player.weaponTimer = 0;
         break;
   		case 16: // crouch
-  			player.height = 0.2;
+  			player.isCrouching = true;
   			break;
 			case 82://reload
 				break;
@@ -790,6 +791,7 @@ function bind() {
   			player.weaponIsActive=false;
   			break;
   		case 16:
+				player.isCrouching = false;
   			player.height = 0.5;
         player.speedMult = 1;
   			break;
@@ -1287,9 +1289,11 @@ function move(timeDelta) {
   {
 
 		player.speedMult = 1;
-		if(player.height===0.2){
+		player.height=0.5;
+		if(player.isCrouching){
 			if(player.z<=0.05||isBlocking(player.x,player.y,player.z-0.05)){
 				player.speedMult = 0.3;
+				player.height=0.2;
 			}
 		}
     if (player.y >= 0.001){player.moveSpeed = 0.05;}else{player.moveSpeed = 0.069}
