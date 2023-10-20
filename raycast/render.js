@@ -1311,7 +1311,7 @@ function move(timeDelta) {
 
     var moveStepStrafe = mul * player.strafeSpeed * player.moveSpeed*(player.speedMult+player.momentum);
 
-  	player.rotDeg = player.rotDeg + mul * player.dir * player.rotSpeed; // add rotation if player is rotating (player.dir != 0)
+  	player.rotDeg = player.rotDeg + mul * player.dir * player.rotSpeed * 1.5; // add rotation if player is rotating (player.dir != 0)
 
   	player.rotDeg = player.rotDeg % 360;
     if(true/*ceiling*/){
