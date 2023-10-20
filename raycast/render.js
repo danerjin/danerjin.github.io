@@ -1298,7 +1298,7 @@ function move(timeDelta) {
 			}
 			if(player.isCrouching){
 				player.speedMult = 0.3;
-				player.height=0.2;
+				player.height=0.375;
 				if(player.momentum-0.0075>=0){player.momentum-=0.0075;}
 			}else{
 				player.momentum = 0;
