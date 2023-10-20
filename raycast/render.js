@@ -1288,7 +1288,6 @@ function move(timeDelta) {
     }
   }
   {
-
 		player.speedMult = 1;
 		player.height=0.5;
 		if(player.z<=0.05||isBlocking(player.x,player.y,player.z-0.05)){
@@ -1304,7 +1303,9 @@ function move(timeDelta) {
 				player.momentum = 0;
 			}
 		}else{
-			player.momentum+=0.015;
+			if(player.moveSpeed !== 0 || player.strafeSpeed !== 0){
+				player.momentum+=0.015;
+			}
 		}
     if (player.y >= 0.001){player.moveSpeed = 0.05;}else{player.moveSpeed = 0.069}
   	var moveStep = mul * player.speed * player.moveSpeed*(player.speedMult+player.momentum);	// player will move this far along the current direction vector
