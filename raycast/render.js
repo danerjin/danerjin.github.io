@@ -597,29 +597,30 @@ function gameCycle() {
 					player.weaponIsActive = false;
 				}
 			}
-			if(Math.floor(player.weaponTimer)!==player.weaponState){
+			var newthing = Math.floor(player.weaponTimer);
+			if(newthing!==player.weaponState){
 				if(player.weapon===0){
-					if(Math.floor(player.weaponTimer)==3){
+					if(newthing==3){
 						//fire bullet
 					}
 				}else if(player.weapon===1){
-					if(Math.floor(player.weaponTimer===2)){
+					if(newthing===2){
 						player.ammo[1]-=1;
 						//bullet
 					}
 				}else if(player.weapon===2){
-					if(Math.floor(player.weaponTimer===2)){
+					if(newthing===2){
 						player.ammo[2]-=1;
 						//bullet
 					}
 				}else{
-					if(Math.floor(player.weaponTimer===3)||Math.floor(player.weaponTimer===2)){
+					if(newthing===3||newthing===2){
 						player.ammo[3]-=1;
 						//bullet
 					}
 				}
 			}
-			player.weaponState = Math.floor(player.weaponTimer);
+			player.weaponState = new;
 		}
 	}
 	var cycleDelay = gameCycleDelay;
