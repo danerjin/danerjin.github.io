@@ -735,9 +735,9 @@ function renderCycle() {
 	  ctx.fillText("FPS: "+Math.round(fps),50,50);
 	  ctx.textAlign = "center";
 	  ctx.fillText(player.ammo[player.weapon]+'/'+player.maxAmmo[player.weapon],screenWidth-25,screenHeight);
-		ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-15,50,15);
-		ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-30,50,15);
-		ctx.drawImage(weaponIcons,49*player.maxWeapon,0,48,24,screenWidth-50,screenHeight-45,50,15);
+		ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
+		ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
+		ctx.drawImage(weaponIcons,49*player.maxWeapon,0,48,24,screenWidth-50,screenHeight-60,50,15);
 		ctxfin.drawImage((offcanvas.transferToImageBitmap()),0,0,screenWidth,screenHeight);
 		setTimeout(renderCycle, 1);
 }
