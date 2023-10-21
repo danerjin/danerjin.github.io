@@ -29,7 +29,7 @@ var Sprite = function(x,y,texture,block,hitbox,h,z,vmove){
   this.h = h;
   this.z = z;
 }
-var Enemy = function(x,y,texture,block,hitbox,h,z,vmove){
+var Enemy = function(x,y,texture,block,hitbox,h,z,vmove,hp){
   this.x = x;
   this.y = y;
 	this.vmove = vmove;
@@ -334,7 +334,7 @@ var screenHeight = canvas.height;
 var offcanvas = new OffscreenCanvas(screenWidth,screenHeight);//document.createElement('canvas');//
 var ctxfin = canvas.getContext('2d');
 var ctx = offcanvas.getContext('2d');
-
+var contentpause = $('text');
 var max = 2+((Math.random()>0.5)?1:0);
 var gravity = 0.01;
 var stripWidth = 2;
@@ -389,7 +389,8 @@ var player = {
 				player.weaponState = 0;
 			},750);
 		}
-	}
+	},
+	hp:100
 }
 var miniMapScale = 8;
 var doorIsPresent = false;
@@ -592,7 +593,7 @@ function gameCycle() {
 			player.weaponIsActive = false;
 		}
 		else{
-			player.weaponTimer+=0.2;
+			player.weaponTimer+=0.2*timeDelta / gameCycleDelay;
 			if(player.weaponTimer>4){
 				if(player.weapon > 1){
 					if(player.weaponIsActive){
@@ -728,12 +729,13 @@ function renderCycle() {
 		}
 		lastRenderCycleTime = now;
 		fps = 1000 / timeDelta;
-		drawFillRectangle(screenWidth-50,screenHeight-15,50,15,'rgb(100,100,100)');
+		drawFillRectangleRGBA(screenWidth-50,screenHeight-15,50,15,[170,170,170,0.8]);
 	  ctx.font = "15px monospace";
 	  ctx.fillStyle = "white";
 	  ctx.textAlign = "left";
 	  ctx.fillText("FPS: "+Math.round(fps),50,50);
 	  ctx.textAlign = "center";
+	  ctx.font = "15px monospace";
 	  ctx.fillText(player.ammo[player.weapon]+'/'+player.maxAmmo[player.weapon],screenWidth-25,screenHeight);
 		ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
 		ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
@@ -773,6 +775,13 @@ function bind() {
 				player.weaponState = 0;
 				player.weaponTimer = 0;
         break;
+			case 27:
+				if (contentpause.style.display === "none") {
+			    contentpause.style.display = "block";
+			  } else {
+			    contentpause.style.display = "none";
+			  }
+				break;
   		case 16: // crouch
   			player.isCrouching = true;
   			break;
@@ -1198,6 +1207,7 @@ function castSingleRay(stripIdx,zbuffer) {
 		hits.concat(zbuffer[stripIdx]).sort(function(x,y){return y.dist-x.dist}).forEach((element) => element.draw());
   }
 }
+//function(this){return Math.atan2(this.y-player.y,this.x-player.x)}(this);
 function renderSprites(){
 	var zbuffer=JSON.parse(JSON.stringify(orzbuffer));
   var tempVar = new Array(sprites.length);
