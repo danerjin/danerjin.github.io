@@ -29,16 +29,14 @@ var Sprite = function(x,y,texture,block,hitbox,h,z,vmove){
   this.h = h;
   this.z = z;
 }
-var Enemy = function(x,y,texture,block,hitbox,h,z,vmove,hp){
+var Enemy = function(x,y,texture,hp,dir){
   this.x = x;
   this.y = y;
-	this.vmove = vmove;
   this.texture = new Image();
   this.texture.crossOrigin = "Anonymous";
   this.texture.src = `sprites/enemies/${texture}.png`;
-  this.block = block;
-  this.h = h;
-  this.z = z;
+	this.state = 0;
+	this.dir = dir;
 }
 var SpriteStripe = function(tex,xOffset,stripe,y,height,dist){
   this.tex = tex;
@@ -50,6 +48,20 @@ var SpriteStripe = function(tex,xOffset,stripe,y,height,dist){
   this.draw = function(){
     ctx.drawImage(this.tex, Math.floor((this.xOffset%1)*this.tex.width), 0,
       1, this.tex.height,
+      this.stripe, this.y, stripWidth, this.height);
+  }
+}
+var EnemyStripe = function(tex,xOffset,stripe,y,height,dist,state){
+  this.tex = tex;
+  this.y = y;
+  this.stripe = stripe;
+  this.xOffset = xOffset;
+  this.height = height;
+  this.dist = dist;
+	this.state = state;
+  this.draw = function(){
+    ctx.drawImage(this.tex, Math.floor(this.xOffset), 65*this.state,
+      1, 64,
       this.stripe, this.y, stripWidth, this.height);
   }
 }
@@ -298,6 +310,9 @@ var sprites = [
   new Sprite(9,10,"barrel",true,0.6,0.4,0,0),
   new Sprite(9.5,10,"barrel",true,0.6,0.4,0,0),
   new Sprite(10,10,"barrel",true,0.6,0.4,0,0)
+];
+var enemies = [
+	new Enemy(8,3.1,"dog",50,Math.PI),
 ]
 var weapons_imgs = [];
 var weapon_names = ['knife','pistol','smg','chaingun'];
@@ -735,7 +750,6 @@ function renderCycle() {
 	  ctx.textAlign = "left";
 	  ctx.fillText("FPS: "+Math.round(fps),50,50);
 	  ctx.textAlign = "center";
-	  ctx.font = "15px monospace";
 	  ctx.fillText(player.ammo[player.weapon]+'/'+player.maxAmmo[player.weapon],screenWidth-25,screenHeight);
 		ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
 		ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
@@ -869,8 +883,9 @@ function bind() {
 }
 function castWallRays() {
   var stripIdx = 0;
-	var zbuffer = renderSprites();
+	var zbuffer = renderSprites()/*Enemies();
 	centerStripe = zbuffer[Math.round(numRays/2)];
+	zbuffer.concat(renderSprites());*/
 	for (var i=0;i<numRays;i++) {
     if(!ceiling){
       //skybox
@@ -1208,7 +1223,6 @@ function castSingleRay(stripIdx,zbuffer) {
 		hits.concat(zbuffer[stripIdx]).sort(function(x,y){return y.dist-x.dist}).forEach((element) => element.draw());
   }
 }
-//function(this){return Math.atan2(this.y-player.y,this.x-player.x)}(this);
 function renderSprites(){
 	var zbuffer=JSON.parse(JSON.stringify(orzbuffer));
   var tempVar = new Array(sprites.length);
@@ -1251,6 +1265,53 @@ function renderSprites(){
         //4) ZBuffer, with perpendicular distance
         if(transformY > 0 && stripe >= 0 && stripe < screenWidth){
           zbuffer[Math.round(stripe/stripWidth)].push(new SpriteStripe(sprites[num].texture,texX,stripe,drawStartY,spriteHeight,transformY/Math.tan(fovHalf)))
+        }
+      }
+    }
+	return zbuffer;
+}
+function renderEnemies(){
+	var zbuffer=JSON.parse(JSON.stringify(orzbuffer));
+  var tempVar = new Array(enemies.length);
+  for(var i = 0; i < enemies.length; i++){
+    tempVar[i] = [i,((player.x - enemies[i].x) * (player.x - enemies[i].x) + (player.y - enemies[i].y) * (player.y - enemies[i].y))]; //sqrt not taken, unneeded
+  }
+  tempVar.sort(function(a, b){return b[1] - a[1]});
+  for(var i = 0; i < enemies.length; i++){
+      //translate sprite position to relative to camera
+      var num = tempVar[i][0];
+      var spriteX = enemies[num].x - player.x;
+      var spriteY = enemies[num].y - player.y;
+
+      //transform sprite with the inverse camera matrix
+      // [ planeX   dirX ] -1                                       [ dirY      -dirX ]
+      // [               ]       =  1/(planeX*dirY-dirX*planeY) *   [                 ]
+      // [ planeY   dirY ]                                          [ -planeY  planeX ]
+
+      var transformX = invDet * (dirY * spriteX - dirX * spriteY);
+      var transformY = invDet * (-planeY * spriteX + planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
+      var spriteScreenX = Math.floor((screenWidth / 2) * (1 + transformX / transformY));
+
+      //calculate height of the sprite on screen
+      var spriteHeight = Math.abs(Math.floor(screenHeight) / (transformY)) / 1; //using "transformY" instead of the real distance prevents fisheye
+      //calculate lowest and highest pixel to fill in current stripe
+      var drawStartY = Math.round(screenHeight/2 - (1-(player.z+player.height))*spriteHeight-(player.z+player.height))+player.pitch;
+
+      //calculate width of the sprite
+      var spriteWidth = Math.abs( Math.floor (screenHeight / (transformY)));
+      var drawStartX = spriteScreenX-spriteWidth/2;
+      var drawEndX = drawStartX+spriteWidth;
+			var angleOffset = (Math.round(8*(Math.atan2(enemies[num].y-player.y,enemies[num].x-player.x)-enemies[num].dir)/(2*Math.PI))%8)
+      //loop through every vertical stripe of the sprite on screen
+      for(var stripe = Math.floor(drawStartX/stripWidth)*stripWidth; stripe < drawEndX; stripe+=stripWidth){
+        var texX = Math.floor(64*(stripe - drawStartX) / (spriteWidth))+65*angleOffset;
+        //the conditions in the if are:
+        //1) it's in front of camera plane so you don't see things behind you
+        //2) it's on the screen (left)
+        //3) it's on the screen (right)
+        //4) ZBuffer, with perpendicular distance
+        if(transformY > 0 && stripe >= 0 && stripe < screenWidth){
+          zbuffer[Math.round(stripe/stripWidth)].push(new EnemyStripe(enemies[num].texture,texX,stripe,drawStartY,spriteHeight,transformY/Math.tan(fovHalf),enemies[num].state))
         }
       }
     }
@@ -1346,10 +1407,10 @@ function move(timeDelta) {
 				player.zSpeed = 0.1125;
 				player.isJumping = false;
 			}
-			if(player.isCrouching){
+			if(player.isCrouching && (player.moveSpeed !== 0 || player.strafeSpeed !== 0)){
 				player.speedMult = 0.3;
 				player.height=0.375;
-				if(player.momentum-0.0075>=0){player.momentum-=0.0075;}
+				player.momentum*=0.75;
 			}else{
 				player.momentum = 0;
 			}
