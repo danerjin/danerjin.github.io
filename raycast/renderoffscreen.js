@@ -335,8 +335,8 @@ var sprites = [
   new Sprite(10,10,"barrel",true,0.6,0.4,0,0)
 ];
 var enemies = [
-	new Enemy(8,3.1,"dog",100,Math.PI),
-	new Enemy(3,15,"guard",100,0),
+	new Enemy(8,3.1,"dog",100,0),
+	new Enemy(4.3,15,"guard",100,Math.PI/2),
 ]
 var weapons_imgs = [];
 var weapon_names = ['knife','pistol','smg','chaingun'];
