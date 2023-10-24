@@ -29,6 +29,16 @@ var Sprite = function(x,y,texture,block,hitbox,h,z,vmove){
   this.h = h;
   this.z = z;
 }
+var Pickup = function(x,y,texture,z,vmove){
+  this.x = x;
+  this.y = y;
+	this.vmove = vmove;
+  this.texture = new Image();
+  this.texture.crossOrigin = "Anonymous";
+  this.texture.src = `sprites/objects/${texture}.png`;
+	this.gun = weapon_names.indexOf(texture);
+  this.z = z;
+}
 var Enemy = function(x,y,texture,hp,dir,ai){
   this.x = x;
   this.y = y;
@@ -337,6 +347,10 @@ var sprites = [
 var enemies = [
 	new Enemy(8,3.1,"dog",100,0),
 	new Enemy(4.3,15,"guard",100,Math.PI/2),
+];
+var pickups = [
+	new Pickup(14,3.1,"smg",0,0),
+	new Pickup(4.3,8,"chaingun",0,0),
 ]
 var weapons_imgs = [];
 var weapon_names = ['knife','pistol','smg','chaingun'];
@@ -370,11 +384,12 @@ mobile = window.mobileAndTabletCheck();
 var canvas = $("screen");
 var screenWidth = canvas.width;
 var screenHeight = canvas.height;
+var pickupIsPresent = false;
+var pickupNum;
 var offcanvas = new OffscreenCanvas(screenWidth,screenHeight);//document.createElement('canvas');//
 var ctxfin = canvas.getContext('2d');
 var ctx = offcanvas.getContext('2d');
 var contentpause = $('text');
-var max = 2+((Math.random()>0.5)?1:0);
 var gravity = 0.01;
 var stripWidth = 2;
 var player = {
@@ -396,17 +411,17 @@ var player = {
   isJumping: false,
   speedMult: 1,
 	isCrouching:false,
-  weapon:max,
+  weapon:1,
   weaponState:0,
 	weaponTimer:0,
 	weaponIsActive:false,
-	maxWeapon:max,
+	maxWeapon:1,
 	ammo:['-',10,28,60],
 	maxAmmo:['-',10,28,60],
 	reloadTimes:[0,700,1500,3300],
 	damage:[50,20,23,19],
 	dropoff:[0,10,5,10],
-	range:[15,700,700,700],
+	range:[30,700,700,700],
 	firerate:[250,150,130,90],
 	secondary:function(){
 		if(this.weapon===this.maxWeapon){
@@ -545,7 +560,6 @@ function init() {
 }
 
 
-
 var lastGameCycleTime = 0;
 var gameCycleDelay = 1000 / 60; // aim for 60 fps for game logic
 var mousePos = [0,0];
@@ -646,6 +660,13 @@ function gameCycle() {
     count++;
     if(count>2||Math.floor(y_target)>=mapHeight||Math.floor(y_target)<0||Math.floor(x_target)>=mapWidth||Math.floor(x_target)<0){doorIsPresent = false;break;}
   }
+	pickupIsPresent = false;
+	pickups.forEach(pickup => function(pickup){
+		if(((pickup.x-player.x)**2+(pickup.y-player.y)**2)**0.5 < player.range[0]/24){
+			pickupIsPresent = true;
+			pickupNum = pickups.indexOf(pickup);
+		}
+	}(pickup));
 	move(timeDelta);
 	//handle weapon
 	if(player.weaponIsActive || player.weaponTimer > 0){
@@ -785,6 +806,12 @@ function renderCycle() {
 	      ctx.fillStyle = "#FFFF66";
 	      ctx.textAlign = "center";
 	      ctx.fillText("Press [G] to interact with door", screenWidth/2, screenHeight-25);
+	  }
+	  if(pickupIsPresent){
+	      ctx.font = "bold 20px Courier New";
+	      ctx.fillStyle = "#FFFF66";
+	      ctx.textAlign = "center";
+	      ctx.fillText("Press [G] pick up "+weapon_names[pickups[pickupNum].gun], screenWidth/2, screenHeight-25);
 	  }
 		// time since last rendering
 		var now = new Date().getTime();
@@ -943,10 +970,11 @@ function castWallRays() {
   var stripIdx = 0;
 	var zbufferenem = renderEnemies();
 	centerStripe = zbufferenem[Math.round(numRays/2)];
-	var sprites = renderSprites();
+	var spritesl = renderSprites();
+	var pickupsl = renderPickups();
 	var zbuffer = JSON.parse(JSON.stringify(orzbuffer))
 	for(var thing = 0;thing<zbuffer.length;thing++){
-		zbuffer[thing]=zbufferenem[thing].concat(sprites[thing]);
+		zbuffer[thing]=zbufferenem[thing].concat(spritesl[thing]).concat(pickupsl[thing]);
 	}
 	for (var i=0;i<numRays;i++) {
     if(!ceiling){
@@ -1381,6 +1409,53 @@ function renderEnemies(){
   }
 	return zbuffer;
 }
+function renderPickups(){
+	var zbuffer=JSON.parse(JSON.stringify(orzbuffer));
+  var tempVar = new Array(pickups.length);
+  for(var i = 0; i < pickups.length; i++){
+    tempVar[i] = [i,((player.x - pickups[i].x) * (player.x - pickups[i].x) + (player.y - pickups[i].y) * (player.y - pickups[i].y))]; //sqrt not taken, unneeded
+  }
+  tempVar.sort(function(a, b){return b[1] - a[1]});
+  for(var i = 0; i < pickups.length; i++){
+      //translate sprite position to relative to camera
+      var num = tempVar[i][0];
+      var spriteX = pickups[num].x - player.x;
+      var spriteY = pickups[num].y - player.y;
+
+      //transform sprite with the inverse camera matrix
+      // [ planeX   dirX ] -1                                       [ dirY      -dirX ]
+      // [               ]       =  1/(planeX*dirY-dirX*planeY) *   [                 ]
+      // [ planeY   dirY ]                                          [ -planeY  planeX ]
+
+      var transformX = invDet * (dirY * spriteX - dirX * spriteY);
+      var transformY = invDet * (-planeY * spriteX + planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
+			var vMoveScreen = Math.round(-pickups[num].vmove *screenHeight/ transformY);
+      var spriteScreenX = Math.floor((screenWidth / 2) * (1 + transformX / transformY));
+
+      //calculate height of the sprite on screen
+      var spriteHeight = Math.abs(Math.floor(screenHeight) / (transformY)) / 1; //using "transformY" instead of the real distance prevents fisheye
+      //calculate lowest and highest pixel to fill in current stripe
+      var drawStartY = Math.round(screenHeight/2 - (1-(player.z+player.height))*spriteHeight-(player.z+player.height))+player.pitch+vMoveScreen;
+
+      //calculate width of the sprite
+      var spriteWidth = Math.abs( Math.floor (screenHeight / (transformY)));
+      var drawStartX = spriteScreenX-spriteWidth/2;
+      var drawEndX = drawStartX+spriteWidth;
+      //loop through every vertical stripe of the sprite on screen
+      for(var stripe = Math.floor(drawStartX/stripWidth)*stripWidth; stripe < drawEndX; stripe+=stripWidth){
+        var texX = (stripe - drawStartX) / spriteWidth
+        //the conditions in the if are:
+        //1) it's in front of camera plane so you don't see things behind you
+        //2) it's on the screen (left)
+        //3) it's on the screen (right)
+        //4) ZBuffer, with perpendicular distance
+        if(transformY > 0 && stripe >= 0 && stripe < screenWidth){
+          zbuffer[Math.round(stripe/stripWidth)].push(new SpriteStripe(pickups[num].texture,texX,stripe,drawStartY,spriteHeight,transformY/Math.tan(fovHalf)))
+        }
+      }
+    }
+	return zbuffer;
+}
 function drawRay(rayX, rayY) {
 	var miniMapObjects = $("minimapobjects");
 	var objectCtx = miniMapObjects.getContext("2d");
@@ -1404,6 +1479,11 @@ function move(timeDelta) {
   var mul = timeDelta / gameCycleDelay;
 
   if(isPressingG){
+		if(pickupIsPresent){
+			player.maxWeapon = pickups[pickupNum].gun;
+			pickups.splice(pickupNum, 1);
+			player.primary();
+		}
     var x_target = doorTarget[0];
     var y_target = doorTarget[1];
     if(doorIsPresent){
