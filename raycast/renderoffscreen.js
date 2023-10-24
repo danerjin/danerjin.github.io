@@ -801,17 +801,17 @@ function renderCycle() {
 		  drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
 		  drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
 		}
-	  if(doorIsPresent&&(map[doorTarget[1]][doorTarget[0]] === 8 || map[doorTarget[1]][doorTarget[0]] === 9 || map[doorTarget[1]][doorTarget[0]] === 10)){
+		if(pickupIsPresent){
+				ctx.font = "bold 20px Courier New";
+				ctx.fillStyle = "#FFFF66";
+				ctx.textAlign = "center";
+				ctx.fillText("Press [G] pick up "+weapon_names[pickups[pickupNum].gun], screenWidth/2, screenHeight-25);
+		}
+	  else if(doorIsPresent&&(map[doorTarget[1]][doorTarget[0]] === 8 || map[doorTarget[1]][doorTarget[0]] === 9 || map[doorTarget[1]][doorTarget[0]] === 10)){
 	      ctx.font = "bold 20px Courier New";
 	      ctx.fillStyle = "#FFFF66";
 	      ctx.textAlign = "center";
 	      ctx.fillText("Press [G] to interact with door", screenWidth/2, screenHeight-25);
-	  }
-	  if(pickupIsPresent){
-	      ctx.font = "bold 20px Courier New";
-	      ctx.fillStyle = "#FFFF66";
-	      ctx.textAlign = "center";
-	      ctx.fillText("Press [G] pick up "+weapon_names[pickups[pickupNum].gun], screenWidth/2, screenHeight-25);
 	  }
 		// time since last rendering
 		var now = new Date().getTime();
@@ -833,7 +833,7 @@ function renderCycle() {
 	  ctx.fillText(player.hp+'/100',15+75/2,screenHeight);
 		ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
 		ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
-		ctx.drawImage(weaponIcons,49*player.maxWeapon,0,48,24,screenWidth-50,screenHeight-60,50,15);
+		if(player.maxWeapon > 1) ctx.drawImage(weaponIcons,49*player.maxWeapon,0,48,24,screenWidth-50,screenHeight-60,50,15);
 		drawFillRectangleRGBA(screenWidth-50,screenHeight-15*(2+Math.min(2,player.weapon)),50,15,[170,170,170,0.4]);
 		ctxfin.drawImage((offcanvas.transferToImageBitmap()),0,0,screenWidth,screenHeight);
 		setTimeout(renderCycle, 1);
