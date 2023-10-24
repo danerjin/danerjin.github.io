@@ -824,6 +824,9 @@ function bind() {
 	document.onclick = function(e){
 		if(document.pointerLockElement === canvas){player.weaponIsActive = true;}
 	}
+	document.onrelease = function(e){
+		player.weaponIsActive = false;
+	}
 	document.onkeydown = function(e) {
 		e = e || window.event;
 
