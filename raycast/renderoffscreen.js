@@ -821,10 +821,10 @@ function updateMousePosition(e) {
 
 // bind keyboard events to game functions (movement, etc)
 function bind() {
-	document.onclick = function(e){
+	document.mousedown = function(e){
 		if(document.pointerLockElement === canvas){player.weaponIsActive = true;}
 	}
-	document.onrelease = function(e){
+	document.mouseup = function(e){
 		player.weaponIsActive = false;
 	}
 	document.onkeydown = function(e) {
