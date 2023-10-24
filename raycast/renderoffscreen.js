@@ -691,7 +691,7 @@ function gameCycle() {
 						player.weaponTimer=0;
 					}
 				}else if(player.weaponTimer > 5){
-					player.weaponTimer=0;
+					player.weaponTimer=player.weaponIsActive?2:0;
 					player.weaponIsActive = false;
 				}
 			}
