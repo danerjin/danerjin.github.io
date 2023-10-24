@@ -45,18 +45,18 @@ var Enemy = function(x,y,texture,hp,dir,ai){
 		}else{
 			this.hp = 0;
 			this.state = 5;
-			setTimeout(function(this){
-				this.state = 6;
-				setTimeout(function(this){
-					this.state = 7;
-					setTimeout(function(this){
-						this.state = 8;
-						setTimeout(function(this){
-							this.state = 9;
-						},100)
-					},100)
-				},100)
-			},100)
+			setTimeout(function(thing){
+				thing.state = 6;
+				setTimeout(function(thing){
+					thing.state = 7;
+					setTimeout(function(thing){
+						thing.state = 8;
+						setTimeout(function(thing){
+							thing.state = 9;
+						}(thing),100)
+					}(thing),100)
+				}(thing),100)
+			}(this),100)
 		}
 	}
 }
