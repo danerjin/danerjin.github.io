@@ -351,7 +351,7 @@ var enemies = [
 ];
 var pickups = [
 	new Pickup(14,3.1,"smg",0,0),
-	new Pickup(4.3,9,"chaingun",0,0),
+	new Pickup(6.3,9,"chaingun",0,0),
 ]
 var weapons_imgs = [];
 for(var texture = 0; texture < weapon_names.length;texture++){
@@ -1483,28 +1483,30 @@ function move(timeDelta) {
 			player.maxWeapon = pickups[pickupNum].gun;
 			pickups.splice(pickupNum, 1);
 			player.primary();
+			pickupIsPresent = false;
+		}else{
+	    var x_target = doorTarget[0];
+	    var y_target = doorTarget[1];
+	    if(doorIsPresent){
+	      if(map[Math.floor(y_target)][Math.floor(x_target)]!==11){
+	        doorStates[Math.floor(y_target)][Math.floor(x_target)] = 1-Math.round(doorOffsets[Math.floor(y_target)][Math.floor(x_target)]);
+	      }else{
+	        if(doorDirs[Math.floor(y_target)][Math.floor(x_target)]==1){
+	          if(player.y>y_target){
+	            doorStates[Math.floor(y_target)][Math.floor(x_target)]=1;
+	          }else{
+	            doorStates[Math.floor(y_target)][Math.floor(x_target)]=0;
+	          }
+	        }else{
+	          if(player.x>y_target){
+	            doorStates[Math.floor(y_target)][Math.floor(x_target)]=1
+	          }else{
+	            doorStates[Math.floor(y_target)][Math.floor(x_target)]=0;
+	          }
+	        }
+	      }
+	    }
 		}
-    var x_target = doorTarget[0];
-    var y_target = doorTarget[1];
-    if(doorIsPresent){
-      if(map[Math.floor(y_target)][Math.floor(x_target)]!==11){
-        doorStates[Math.floor(y_target)][Math.floor(x_target)] = 1-Math.round(doorOffsets[Math.floor(y_target)][Math.floor(x_target)]);
-      }else{
-        if(doorDirs[Math.floor(y_target)][Math.floor(x_target)]==1){
-          if(player.y>y_target){
-            doorStates[Math.floor(y_target)][Math.floor(x_target)]=1;
-          }else{
-            doorStates[Math.floor(y_target)][Math.floor(x_target)]=0;
-          }
-        }else{
-          if(player.x>y_target){
-            doorStates[Math.floor(y_target)][Math.floor(x_target)]=1
-          }else{
-            doorStates[Math.floor(y_target)][Math.floor(x_target)]=0;
-          }
-        }
-      }
-    }
   }
   for (var y=0;y<mapHeight;y++) {
     for (var x=0;x<mapWidth;x++) {
