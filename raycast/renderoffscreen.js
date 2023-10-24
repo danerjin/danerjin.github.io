@@ -350,7 +350,7 @@ var enemies = [
 	new Enemy(4.3,15,"guard",100,Math.PI/2),
 ];
 var pickups = [
-	new Pickup(14,3.1,"smg",0,0),
+	new Pickup(14,1.6,"smg",0,0),
 	new Pickup(6.3,9,"chaingun",0,0),
 ]
 var weapons_imgs = [];
