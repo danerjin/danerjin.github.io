@@ -406,7 +406,7 @@ var player = {
 	reloadTimes:[0,700,1500,3300],
 	damage:[50,20,23,19],
 	dropoff:[0,10,5,10],
-	range:[50,700,700,700],
+	range:[15,700,700,700],
 	firerate:[250,150,130,90],
 	secondary:function(){
 		if(this.weapon===this.maxWeapon){
@@ -438,7 +438,7 @@ var player = {
 	fire:function(stripe){
 		if(this.weapon === 0){
 			enemies.forEach(enemy => function(enemy){
-				if(((enemy.x-player.x)**2+(enemy.y-player.y)**2)**0.5 < player.range[player.weapon]/48){
+				if(((enemy.x-player.x)**2+(enemy.y-player.y)**2)**0.5 < player.range[player.weapon]/24){
 					enemy.hurt(player.damage[0]);
 				}
 			}(enemy));
@@ -448,8 +448,8 @@ var player = {
 				num = stripe[i].num;
 				enemy = enemies[num];
 				dist = ((enemy.x-this.x)**2+(enemy.y-this.y)**2)**0.5;
-				if(dist <= this.range[this.weapon]/48){
-					enemy.hurt((this.damage[this.weapon]-(this.dropoff[this.weapon]*dist*48/this.range[this.weapon])));
+				if(dist <= this.range[this.weapon]/24 && stripe[i].y<=screenHeight/2 && stripe[i].y+stripe[i].height>=screenHeight/2){
+					enemy.hurt((this.damage[this.weapon]-(this.dropoff[this.weapon]*dist*24/this.range[this.weapon])));
 				}
 			}
 		}
@@ -1506,11 +1506,6 @@ function move(timeDelta) {
         }
     }
     }
-    var snap = (player.rotDeg+360) % 90
-  	if(snap < 2 || snap > 88) {
-  		player.rotDeg = Math.round(player.rotDeg / 90) * 90;
-  	}
-
   	player.rot = player.rotDeg * Math.PI / 180;
 
   	var newX = player.x + Math.cos(player.rot) * moveStep + Math.sin(player.rot) * moveStepStrafe;	// calculate new player position with simple trigonometry
