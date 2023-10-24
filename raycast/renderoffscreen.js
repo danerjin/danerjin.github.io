@@ -17,6 +17,7 @@ if(!Array.prototype.indexOf) {
 	};
 }
 var debug = false;
+var weapon_names = ['knife','pistol','smg','chaingun'];
 var Sprite = function(x,y,texture,block,hitbox,h,z,vmove){
   this.x = x;
   this.y = y;
@@ -353,7 +354,6 @@ var pickups = [
 	new Pickup(4.3,8,"chaingun",0,0),
 ]
 var weapons_imgs = [];
-var weapon_names = ['knife','pistol','smg','chaingun'];
 for(var texture = 0; texture < weapon_names.length;texture++){
     var weaponTexture = new Image();
   	weaponTexture.crossOrigin = "Anonymous";
