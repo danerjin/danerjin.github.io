@@ -351,7 +351,7 @@ var enemies = [
 ];
 var pickups = [
 	new Pickup(14,3.1,"smg",0,0),
-	new Pickup(4.3,8,"chaingun",0,0),
+	new Pickup(4.3,9,"chaingun",0,0),
 ]
 var weapons_imgs = [];
 for(var texture = 0; texture < weapon_names.length;texture++){
