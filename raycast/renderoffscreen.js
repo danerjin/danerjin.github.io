@@ -29,7 +29,7 @@ var Sprite = function(x,y,texture,block,hitbox,h,z,vmove){
   this.h = h;
   this.z = z;
 }
-var Enemy = function(x,y,texture,hp,dir){
+var Enemy = function(x,y,texture,hp,dir,ai){
   this.x = x;
   this.y = y;
   this.texture = new Image();
@@ -37,6 +37,28 @@ var Enemy = function(x,y,texture,hp,dir){
   this.texture.src = `sprites/enemies/${texture}.png`;
 	this.state = 0;
 	this.dir = dir;
+	this.hp = hp;
+	this.ai = ai;
+	this.hurt = function(amnt){
+		if(this.hp-Math.round(amnt) > 0){
+			this.hp=this.hp-Math.round(amnt);
+		}else{
+			this.hp = 0;
+			this.state = 5;
+			setTimeout(function(this){
+				this.state = 6;
+				setTimeout(function(this){
+					this.state = 7;
+					setTimeout(function(this){
+						this.state = 8;
+						setTimeout(function(this){
+							this.state = 9;
+						},100)
+					},100)
+				},100)
+			},100)
+		}
+	}
 }
 var SpriteStripe = function(tex,xOffset,stripe,y,height,dist){
   this.tex = tex;
@@ -51,7 +73,7 @@ var SpriteStripe = function(tex,xOffset,stripe,y,height,dist){
       this.stripe, this.y, stripWidth, this.height);
   }
 }
-var EnemyStripe = function(tex,xOffset,stripe,y,height,dist,state){
+var EnemyStripe = function(tex,xOffset,stripe,y,height,dist,state,num){
   this.tex = tex;
   this.y = y;
   this.stripe = stripe;
@@ -59,8 +81,9 @@ var EnemyStripe = function(tex,xOffset,stripe,y,height,dist,state){
   this.height = height;
   this.dist = dist;
 	this.state = state;
+	this.num = num;
   this.draw = function(){
-    ctx.drawImage(this.tex, Math.floor(this.xOffset), 65*this.state,
+    ctx.drawImage(this.tex, Math.floor(this.xOffset), Math.floor(65*this.state),
       1, 64,
       this.stripe, this.y, stripWidth, this.height);
   }
@@ -312,7 +335,8 @@ var sprites = [
   new Sprite(10,10,"barrel",true,0.6,0.4,0,0)
 ];
 var enemies = [
-	new Enemy(8,3.1,"dog",50,Math.PI),
+	new Enemy(8,3.1,"dog",100,Math.PI),
+	new Enemy(3,15,"guard",100,0),
 ]
 var weapons_imgs = [];
 var weapon_names = ['knife','pistol','smg','chaingun'];
@@ -377,8 +401,13 @@ var player = {
 	weaponTimer:0,
 	weaponIsActive:false,
 	maxWeapon:max,
-	ammo:['-',10,28,30],
-	maxAmmo:['-',10,28,30],
+	ammo:['-',10,28,60],
+	maxAmmo:['-',10,28,60],
+	reloadTimes:[0,700,1500,3300],
+	damage:[50,20,23,19],
+	dropoff:[0,10,5,10],
+	range:[50,700,700,700],
+	firerate:[250,150,130,90],
 	secondary:function(){
 		if(this.weapon===this.maxWeapon){
 			this.weapon = 1;
@@ -402,10 +431,29 @@ var player = {
 			setTimeout(function(){
 				player.ammo[player.weapon] = player.maxAmmo[player.weapon];
 				player.weaponState = 0;
-			},750);
+			},this.reloadTimes[this.weapon]);
 		}
 	},
-	hp:100
+	hp:100,
+	fire:function(stripe){
+		if(this.weapon === 0){
+			enemies.forEach(enemy => function(enemy){
+				if(((enemy.x-player.x)**2+(enemy.y-player.y)**2)**0.5 < player.range[player.weapon]/48){
+					enemy.hurt(player.damage[0]);
+				}
+			}(enemy));
+		}else{
+			var num,dist,enemy;
+			for(var i = 0; i<stripe.length;i++){
+				num = stripe[i].num;
+				enemy = enemies[num];
+				dist = ((enemy.x-this.x)**2+(enemy.y-this.y)**2)**0.5;
+				if(dist <= this.range[this.weapon]/48){
+					enemy.hurt((this.damage[this.weapon]-(this.dropoff[this.weapon]*dist*48/this.range[this.weapon])));
+				}
+			}
+		}
+	}
 }
 var miniMapScale = 8;
 var doorIsPresent = false;
@@ -413,7 +461,6 @@ var doorTarget = [0,0];
 var fov = 60 * Math.PI / 180;
 var numRays = Math.ceil(screenWidth / stripWidth);
 var fovHalf = fov / 2;
-
 var viewDist = (screenWidth/2) / Math.tan((fov / 2));
 var ceiling = false;
 var twoPI = Math.PI * 2;
@@ -558,11 +605,11 @@ function gameCycle() {
     temp = JSON.parse(JSON.stringify(mousePos));
     diffX = temp[0]-prevMousePos[0];
     diffY = temp[1]-prevMousePos[1];
-    if(diffX > 3){player.dir = 1;}
-    if(diffX < -3){player.dir = -1;}
-    if(-3 <= diffX && diffX <= 3){player.dir = 0;}
-    if(diffY > 0){player.pitchChange = -6;}
-    if(diffY < 0){player.pitchChange = 6;}
+    if(diffX > 0.5){player.dir = 0.05*(diffX-0.5);}
+    if(diffX < -0.5){player.dir = 0.05*(diffX+0.5);}
+    if(Math.abs(diffX)<=0.5){player.dir = 0;}
+    if(diffY > 0){player.pitchChange = -diffY;}
+    if(diffY < 0){player.pitchChange = -diffY;}
     if(diffY === 0){player.pitchChange = 0;}
     prevMousePos = JSON.parse(JSON.stringify(temp));
   }
@@ -608,7 +655,7 @@ function gameCycle() {
 			player.weaponIsActive = false;
 		}
 		else{
-			player.weaponTimer+=0.2*timeDelta / gameCycleDelay;
+			player.weaponTimer+=player.firerate[player.weapon]*timeDelta/10000;
 			if(player.weaponTimer>4){
 				if(player.weapon > 1){
 					if(player.weaponIsActive){
@@ -631,22 +678,26 @@ function gameCycle() {
 			if(newthing!==player.weaponState){
 				if(player.weapon===0){
 					if(newthing==3){
-						//fire bullet
+						//fire knife
+						player.fire(centerStripe);
 					}
 				}else if(player.weapon===1){
 					if(newthing===2){
 						player.ammo[1]-=1;
 						//bullet
+						player.fire(centerStripe);
 					}
 				}else if(player.weapon===2){
 					if(newthing===2){
 						player.ammo[2]-=1;
 						//bullet
+						player.fire(centerStripe);
 					}
 				}else{
 					if(newthing===3||newthing===2){
 						player.ammo[3]-=1;
 						//bullet
+						player.fire(centerStripe);
 					}
 				}
 			}
@@ -745,12 +796,14 @@ function renderCycle() {
 		lastRenderCycleTime = now;
 		fps = 1000 / timeDelta;
 		drawFillRectangleRGBA(screenWidth-50,screenHeight-15,50,15,[170,170,170,0.8]);
+		drawFillRectangleRGBA(15,screenHeight-15,75,15,[170,170,170,0.8]);
 	  ctx.font = "15px monospace";
 	  ctx.fillStyle = "white";
 	  ctx.textAlign = "left";
 	  ctx.fillText("FPS: "+Math.round(fps),50,50);
 	  ctx.textAlign = "center";
 	  ctx.fillText(player.ammo[player.weapon]+'/'+player.maxAmmo[player.weapon],screenWidth-25,screenHeight);
+	  ctx.fillText(player.hp+'/100',15+75/2,screenHeight);
 		ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
 		ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
 		ctx.drawImage(weaponIcons,49*player.maxWeapon,0,48,24,screenWidth-50,screenHeight-60,50,15);
@@ -883,9 +936,13 @@ function bind() {
 }
 function castWallRays() {
   var stripIdx = 0;
-	var zbuffer = renderSprites()/*Enemies();
-	centerStripe = zbuffer[Math.round(numRays/2)];
-	zbuffer.concat(renderSprites());*/
+	var zbufferenem = renderEnemies();
+	centerStripe = zbufferenem[Math.round(numRays/2)];
+	var sprites = renderSprites();
+	var zbuffer = JSON.parse(JSON.stringify(orzbuffer))
+	for(var thing = 0;thing<zbuffer.length;thing++){
+		zbuffer[thing]=zbufferenem[thing].concat(sprites[thing]);
+	}
 	for (var i=0;i<numRays;i++) {
     if(!ceiling){
       //skybox
@@ -1220,7 +1277,8 @@ function castSingleRay(stripIdx,zbuffer) {
         drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,floorX%1,floorY%1,2);
       }
     }
-		hits.concat(zbuffer[stripIdx]).sort(function(x,y){return y.dist-x.dist}).forEach((element) => element.draw());
+		hits = hits.concat(zbuffer[stripIdx]).sort(function(x,y){return y.dist-x.dist});
+		hits.forEach((element) => element.draw());
   }
 }
 function renderSprites(){
@@ -1277,44 +1335,45 @@ function renderEnemies(){
     tempVar[i] = [i,((player.x - enemies[i].x) * (player.x - enemies[i].x) + (player.y - enemies[i].y) * (player.y - enemies[i].y))]; //sqrt not taken, unneeded
   }
   tempVar.sort(function(a, b){return b[1] - a[1]});
-  for(var i = 0; i < enemies.length; i++){
-      //translate sprite position to relative to camera
-      var num = tempVar[i][0];
-      var spriteX = enemies[num].x - player.x;
-      var spriteY = enemies[num].y - player.y;
+  for(var j = 0; j < enemies.length; j++){
+    //translate sprite position to relative to camera
+    var num = tempVar[j][0];
+    var spriteX = enemies[num].x - player.x;
+    var spriteY = enemies[num].y - player.y;
 
-      //transform sprite with the inverse camera matrix
-      // [ planeX   dirX ] -1                                       [ dirY      -dirX ]
-      // [               ]       =  1/(planeX*dirY-dirX*planeY) *   [                 ]
-      // [ planeY   dirY ]                                          [ -planeY  planeX ]
+    //transform sprite with the inverse camera matrix
+    // [ planeX   dirX ] -1                                       [ dirY      -dirX ]
+    // [               ]       =  1/(planeX*dirY-dirX*planeY) *   [                 ]
+    // [ planeY   dirY ]                                          [ -planeY  planeX ]
 
-      var transformX = invDet * (dirY * spriteX - dirX * spriteY);
-      var transformY = invDet * (-planeY * spriteX + planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
-      var spriteScreenX = Math.floor((screenWidth / 2) * (1 + transformX / transformY));
+    var transformX = invDet * (dirY * spriteX - dirX * spriteY);
+    var transformY = invDet * (-planeY * spriteX + planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
+    var spriteScreenX = Math.floor((screenWidth / 2) * (1 + transformX / transformY));
 
-      //calculate height of the sprite on screen
-      var spriteHeight = Math.abs(Math.floor(screenHeight) / (transformY)) / 1; //using "transformY" instead of the real distance prevents fisheye
-      //calculate lowest and highest pixel to fill in current stripe
-      var drawStartY = Math.round(screenHeight/2 - (1-(player.z+player.height))*spriteHeight-(player.z+player.height))+player.pitch;
+    //calculate height of the sprite on screen
+    var spriteHeight = Math.abs(Math.floor(screenHeight) / (transformY)) / 1; //using "transformY" instead of the real distance prevents fisheye
+    //calculate lowest and highest pixel to fill in current stripe
+    var drawStartY = Math.round(screenHeight/2 - (1-(player.z+player.height))*spriteHeight-(player.z+player.height))+player.pitch;
 
-      //calculate width of the sprite
-      var spriteWidth = Math.abs( Math.floor (screenHeight / (transformY)));
-      var drawStartX = spriteScreenX-spriteWidth/2;
-      var drawEndX = drawStartX+spriteWidth;
-			var angleOffset = (Math.round(8*(Math.atan2(enemies[num].y-player.y,enemies[num].x-player.x)-enemies[num].dir)/(2*Math.PI))%8)
-      //loop through every vertical stripe of the sprite on screen
-      for(var stripe = Math.floor(drawStartX/stripWidth)*stripWidth; stripe < drawEndX; stripe+=stripWidth){
-        var texX = Math.floor(64*(stripe - drawStartX) / (spriteWidth))+65*angleOffset;
-        //the conditions in the if are:
-        //1) it's in front of camera plane so you don't see things behind you
-        //2) it's on the screen (left)
-        //3) it's on the screen (right)
-        //4) ZBuffer, with perpendicular distance
-        if(transformY > 0 && stripe >= 0 && stripe < screenWidth){
-          zbuffer[Math.round(stripe/stripWidth)].push(new EnemyStripe(enemies[num].texture,texX,stripe,drawStartY,spriteHeight,transformY/Math.tan(fovHalf),enemies[num].state))
-        }
+    //calculate width of the sprite
+    var spriteWidth = Math.abs( Math.floor (screenHeight / (transformY)));
+    var drawStartX = spriteScreenX-spriteWidth/2;
+    var drawEndX = drawStartX+spriteWidth;
+		if(enemies[num].state > 4){
+			state = 5+Math.floor((enemies[num].state-5)/8)
+			var angleOffset = (enemies[num].state-5)%8;
+		}else{
+			state = enemies[num].state;
+			var angleOffset = (Math.round(8*(-Math.atan2(enemies[num].y-player.y,enemies[num].x-player.x)+enemies[num].dir)/(2*Math.PI))+8)%8;
+		}
+    //loop through every vertical stripe of the sprite on screen
+    for(var stripe = Math.max(Math.floor(drawStartX/stripWidth)*stripWidth,0); stripe < Math.min(screenWidth,drawEndX); stripe+=stripWidth){
+      var texX = Math.max(Math.floor(64*(stripe - drawStartX) / (spriteWidth))%64,0)+65*angleOffset;
+      if(transformY > 0){
+        zbuffer[Math.round(stripe/stripWidth)].push(new EnemyStripe(enemies[num].texture,texX,stripe,drawStartY,spriteHeight,transformY/Math.tan(fovHalf),state,num))
       }
     }
+  }
 	return zbuffer;
 }
 function drawRay(rayX, rayY) {
@@ -1401,22 +1460,24 @@ function move(timeDelta) {
   }
   {
 		player.speedMult = 1;
-		player.height=0.5;
 		if(player.z<=0.05||isBlocking(player.x,player.y,player.z-0.05)){
 			if(player.isJumping){
 				player.zSpeed = 0.1125;
 				player.isJumping = false;
+				//player.isCrouching=false;
 			}
-			if(player.isCrouching && (player.moveSpeed !== 0 || player.strafeSpeed !== 0)){
+			if(player.isCrouching){
 				player.speedMult = 0.3;
 				player.height=0.375;
-				player.momentum*=0.75;
-			}else{
+				player.momentum=Math.max(player.momentum-0.14*player.momentum*mul,0);
+			}
+			else{
+				player.height=0.5;
 				player.momentum = 0;
 			}
 		}else{
 			if(player.moveSpeed !== 0 || player.strafeSpeed !== 0){
-				player.momentum+=0.015;
+				player.momentum=Math.min(player.momentum+0.015*mul,2);
 			}
 		}
     if (player.y >= 0.001){player.moveSpeed = 0.05;}else{player.moveSpeed = 0.069}
@@ -1424,7 +1485,7 @@ function move(timeDelta) {
 
     var moveStepStrafe = mul * player.strafeSpeed * player.moveSpeed*(player.speedMult+player.momentum);
 
-  	player.rotDeg = player.rotDeg + mul * player.dir * player.rotSpeed * 1.5; // add rotation if player is rotating (player.dir != 0)
+  	player.rotDeg = player.rotDeg + mul * player.dir * player.rotSpeed; // add rotation if player is rotating (player.dir != 0)
 
   	player.rotDeg = player.rotDeg % 360;
     if(true/*ceiling*/){
