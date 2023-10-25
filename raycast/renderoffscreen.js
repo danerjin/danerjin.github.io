@@ -17,6 +17,7 @@ if(!Array.prototype.indexOf) {
 	};
 }
 var debug = false;
+var enemy;
 var weapon_names = ['knife','pistol','smg','chaingun'];
 var Sprite = function(x,y,texture,block,hitbox,h,z,vmove){
   this.x = x;
@@ -56,18 +57,19 @@ var Enemy = function(x,y,texture,hp,dir,ai){
 		}else{
 			this.hp = 0;
 			this.state = 5;
-			setTimeout(function(thing){
-				thing.state = 6;
-				setTimeout(function(thing){
-					thing.state = 7;
-					setTimeout(function(thing){
-						thing.state = 8;
-						setTimeout(function(thing){
-							thing.state = 9;
-						}(thing),100)
-					}(thing),100)
-				}(thing),100)
-			}(this),100)
+			enemy = this;
+			setTimeout((function(){
+				enemy.state = 6;
+				setTimeout((function(){
+					enemy.state = 7;
+					setTimeout((function(){
+						enemy.state = 8;
+						setTimeout((function(){
+							enemy.state = 9;
+						}),100)
+					}),100)
+				}),100)
+			}),100)
 		}
 	}
 }
