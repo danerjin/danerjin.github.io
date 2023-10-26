@@ -67,10 +67,10 @@ var Enemy = function(x,y,texture,hp,dir,ai){
 							enemy.state = 8;
 							setTimeout((function(){
 								enemy.state = 9;
-							}),100)
-						}),100)
-					}),100)
-				}),100)
+							}),50)
+						}),50)
+					}),50)
+				}),50)
 			}
 		}
 	}
