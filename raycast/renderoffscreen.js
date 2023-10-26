@@ -275,6 +275,10 @@ skydomeTexture.src = `sprites/pano.png`;
 var weaponIcons = new Image();
 weaponIcons.crossOrigin = "Anonymous";
 weaponIcons.src = `sprites/icons/weapons.png`;
+
+var playerhpIcons = new Image();
+playerhpIcons.crossOrigin = "Anonymous";
+playerhpIcons.src = `sprites/icons/faces.png`;
 var floorlayout = [
   [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
   [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
@@ -827,14 +831,15 @@ function renderCycle() {
 		lastRenderCycleTime = now;
 		fps = 1000 / timeDelta;
 		drawFillRectangleRGBA(screenWidth-50,screenHeight-15,50,15,[170,170,170,0.8]);
-		drawFillRectangleRGBA(15,screenHeight-15,75,15,[170,170,170,0.8]);
+		drawFillRectangleRGBA(27,screenHeight-15,75,15,[170,170,170,0.8]);
 	  ctx.font = "15px monospace";
 	  ctx.fillStyle = "white";
 	  ctx.textAlign = "left";
 	  ctx.fillText("FPS: "+Math.round(fps),50,50);
 	  ctx.textAlign = "center";
 	  ctx.fillText(player.ammo[player.weapon]+'/'+player.maxAmmo[player.weapon],screenWidth-25,screenHeight);
-	  ctx.fillText(player.hp+'/100',15+75/2,screenHeight);
+	  ctx.fillText(player.hp+'/100',27+75/2,screenHeight);
+		ctx.drawImage(playerhpIcons,25,33*(8-Math.round(player.hp*2/25)),24,31,15,screenHeight-15,12,15);
 		ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
 		ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
 		if(player.maxWeapon > 1) ctx.drawImage(weaponIcons,49*player.maxWeapon,0,48,24,screenWidth-50,screenHeight-60,50,15);
