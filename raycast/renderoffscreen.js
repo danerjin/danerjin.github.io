@@ -52,24 +52,26 @@ var Enemy = function(x,y,texture,hp,dir,ai){
 	this.hp = hp;
 	this.ai = ai;
 	this.hurt = function(amnt){
-		if(this.hp-Math.round(amnt) > 0){
-			this.hp=this.hp-Math.round(amnt);
-		}else{
-			this.hp = 0;
-			this.state = 5;
-			enemy = this;
-			setTimeout((function(){
-				enemy.state = 6;
+		if(this.hp > 0){
+			if(this.hp-Math.round(amnt) > 0){
+				this.hp=this.hp-Math.round(amnt);
+			}else{
+				this.hp = 0;
+				this.state = 5;
+				enemy = this;
 				setTimeout((function(){
-					enemy.state = 7;
+					enemy.state = 6;
 					setTimeout((function(){
-						enemy.state = 8;
+						enemy.state = 7;
 						setTimeout((function(){
-							enemy.state = 9;
+							enemy.state = 8;
+							setTimeout((function(){
+								enemy.state = 9;
+							}),100)
 						}),100)
 					}),100)
 				}),100)
-			}),100)
+			}
 		}
 	}
 }
@@ -455,7 +457,7 @@ var player = {
 	fire:function(stripe){
 		if(this.weapon === 0){
 			enemies.forEach(enemy => function(enemy){
-				if(((enemy.x-player.x)**2+(enemy.y-player.y)**2)**0.5 < player.range[player.weapon]/24){
+				if(((enemy.x-player.x)**2+(enemy.y-player.y)**2)**0.5 < player.range[player.weapon]/24 && enemy.hp>0){
 					enemy.hurt(player.damage[0]);
 				}
 			}(enemy));
@@ -465,7 +467,7 @@ var player = {
 				num = stripe[i].num;
 				enemy = enemies[num];
 				dist = ((enemy.x-this.x)**2+(enemy.y-this.y)**2)**0.5;
-				if(dist <= this.range[this.weapon]/24 && stripe[i].y<=screenHeight/2 && stripe[i].y+stripe[i].height>=screenHeight/2){
+				if(dist <= this.range[this.weapon]/24 && stripe[i].y<=screenHeight/2 && stripe[i].y+stripe[i].height>=screenHeight/2 && enemy.hp>0){
 					enemy.hurt((this.damage[this.weapon]-(this.dropoff[this.weapon]*dist*24/this.range[this.weapon])));
 				}
 			}
