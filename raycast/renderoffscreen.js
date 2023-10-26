@@ -839,7 +839,7 @@ function renderCycle() {
 	  ctx.textAlign = "center";
 	  ctx.fillText(player.ammo[player.weapon]+'/'+player.maxAmmo[player.weapon],screenWidth-25,screenHeight);
 	  ctx.fillText(player.hp+'/100',39+75/2,screenHeight);
-		ctx.drawImage(playerhpIcons,25,33*(8-Math.round(player.hp*2/25)),24,31,15,screenHeight-30,24,30);
+		ctx.drawImage(playerhpIcons,25,33*Math.min((8-Math.ceil(player.hp*2/25)),7),24,31,15,screenHeight-30,24,30);
 		ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
 		ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
 		if(player.maxWeapon > 1) ctx.drawImage(weaponIcons,49*player.maxWeapon,0,48,24,screenWidth-50,screenHeight-60,50,15);
