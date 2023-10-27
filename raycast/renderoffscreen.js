@@ -430,7 +430,7 @@ var player = {
 	damage:[50,20,23,19],
 	dropoff:[0,10,5,10],
 	range:[30,700,700,700],
-	firerate:[250,150,130,260],
+	firerate:[125,150,130,260],
 	secondary:function(){
 		if(this.weapon===this.maxWeapon){
 			this.weapon = 1;
