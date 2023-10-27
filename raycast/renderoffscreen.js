@@ -57,20 +57,24 @@ var Enemy = function(x,y,texture,hp,dir,ai){
 				this.hp=this.hp-Math.round(amnt);
 			}else{
 				this.hp = 0;
-				this.state = 5;
-				enemy = this;
-				setTimeout((function(){
-					enemy.state = 6;
+				if(blood){
+					this.state = 5;
+					enemy = this;
 					setTimeout((function(){
-						enemy.state = 7;
+						enemy.state = 6;
 						setTimeout((function(){
-							enemy.state = 8;
+							enemy.state = 7;
 							setTimeout((function(){
-								enemy.state = 9;
+								enemy.state = 8;
+								setTimeout((function(){
+									enemy.state = 9;
+								}),50)
 							}),50)
 						}),50)
 					}),50)
-				}),50)
+				}else{
+					enemies.splice(enemies.indexOf(this),1);
+				}
 			}
 		}
 	}
@@ -400,6 +404,7 @@ var ctx = offcanvas.getContext('2d');
 var contentpause = $('text');
 var gravity = 0.01;
 var stripWidth = 2;
+var blood = false;
 var player = {
 	x : 5.5,		// current x, y position
 	y : 3.1,
