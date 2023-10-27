@@ -430,7 +430,7 @@ var player = {
 	damage:[50,20,23,19],
 	dropoff:[0,10,5,10],
 	range:[30,700,700,700],
-	firerate:[250,150,130,90],
+	firerate:[250,150,130,260],
 	secondary:function(){
 		if(this.weapon===this.maxWeapon){
 			this.weapon = 1;
@@ -684,7 +684,7 @@ function gameCycle() {
 			player.weaponIsActive = false;
 		}
 		else{
-			player.weaponTimer+=player.firerate[player.weapon]*timeDelta/10000;
+			player.weaponTimer+=timeDelta*5/(2*player.firerate[player.weapon]);
 			if(player.weaponTimer>4){
 				if(player.weapon > 1){
 					if(player.weaponIsActive){
