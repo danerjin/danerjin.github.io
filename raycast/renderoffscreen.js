@@ -523,6 +523,9 @@ function updateFOV(){
 function toggleFloor(){
   floor = !floor;
 }
+function toggleBlood(){
+  blood = !blood;
+}
 function init() {
   if(mobile){
     joyMoving = new JoyStick('moving',{
