@@ -41,7 +41,7 @@ var Pickup = function(x,y,texture,z,vmove){
 	this.gun = weapon_names.indexOf(texture);
   this.z = z;
 }
-var Enemy = function(x,y,texture,hp,rot,speed/*,ai,attack*/){
+var Enemy = function(x,y,texture,hp,rot,speed,dmg/*,ai*/){
   this.x = x;
   this.y = y;
 	this.xSpeed = 0;
@@ -54,7 +54,11 @@ var Enemy = function(x,y,texture,hp,rot,speed/*,ai,attack*/){
 	this.hp = hp;
 	this.speed = speed;
 	this.stateTimer = 0;
-	//this.ai = ai;
+	this.dmg = dmg;
+	this.alert = false;
+	this.ai = function(mul){
+		this.fd(mul);
+	};
 	//this.attack = attack;
 	this.fd = function(mul){
 		if(this.hp>0){
@@ -379,7 +383,7 @@ var sprites = [
   new Sprite(10,10,"barrel",true,0.6,0.4,0,0)
 ];
 var enemies = [
-	new Enemy(8,3.1,"dog",20,Math.PI,0.04),
+	new Enemy(15,3.1,"dog",20,Math.PI,0.04),
 	new Enemy(4.3,15,"guard",75,3*Math.PI/2,0.04),
 ];
 var pickups = [
@@ -1445,10 +1449,10 @@ function renderEnemies(){
     var drawStartX = spriteScreenX-spriteWidth/2;
     var drawEndX = drawStartX+spriteWidth;
 		if(enemies[num].state > 4){
-			state = 5+Math.floor((enemies[num].state-5)/8)
+			state = 5+Math.floor((enemies[num].state-5)/8);
 			var angleOffset = (enemies[num].state-5)%8;
 		}else{
-			state = Math.floor(enemies[num].state);
+			state = enemies[num].state;
 			var angleOffset = Math.floor((Math.round(8*(-Math.atan2(-enemies[num].y+player.y,-enemies[num].x+player.x)+enemies[num].rot)/(2*Math.PI))+8)%8);
 		}
     //loop through every vertical stripe of the sprite on screen
@@ -1655,7 +1659,7 @@ function move(timeDelta) {
 }
 function ai(mul){
 	enemies.forEach(enemy => function(enemy){
-		enemy.fd(mul);
+		enemy.ai(mul);
 	}(enemy))
 }
 function checkCollision(fromX,fromY,toX,toY,radius,fromZ,toZ){
