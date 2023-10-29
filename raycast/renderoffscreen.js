@@ -57,7 +57,13 @@ var Enemy = function(x,y,texture,hp,rot,speed,dmg/*,ai*/){
 	this.dmg = dmg;
 	this.alert = false;
 	this.ai = function(mul){
-		this.fd(mul);
+		if(this.alert){
+			this.fd(mul);
+		}else{
+			if(((player.x-this.x)**2+(player.y-this.y)**2)**0.5<5){
+				this.alert = true;
+			}
+		}
 	};
 	//this.attack = attack;
 	this.fd = function(mul){
