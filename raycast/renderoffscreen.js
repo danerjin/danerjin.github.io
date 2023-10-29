@@ -41,16 +41,37 @@ var Pickup = function(x,y,texture,z,vmove){
 	this.gun = weapon_names.indexOf(texture);
   this.z = z;
 }
-var Enemy = function(x,y,texture,hp,dir,ai){
+var Enemy = function(x,y,texture,hp,rot,speed/*,ai,attack*/){
   this.x = x;
   this.y = y;
+	this.xSpeed = 0;
+	this.ySpeed = 0;
   this.texture = new Image();
   this.texture.crossOrigin = "Anonymous";
   this.texture.src = `sprites/enemies/${texture}.png`;
 	this.state = 0;
-	this.dir = dir;
+	this.rot = rot;
 	this.hp = hp;
-	this.ai = ai;
+	this.speed = speed;
+	this.stateTimer = 0;
+	//this.ai = ai;
+	//this.attack = attack;
+	this.fd = function(mul){
+		if(this.hp>0){
+			if(this.state===0) this.state = 1;
+			this.xSpeed = Math.cos(this.rot)*this.speed;
+			this.ySpeed = Math.sin(this.rot)*this.speed;
+			var pos = checkCollisionHor(this.x,this.y,this.x+this.xSpeed*mul,this.y+this.ySpeed*mul,0.05,0);
+			this.x = pos.x;
+			this.y = pos.y;
+			this.stateTimer+=this.speed*3*mul;
+			this.state = Math.floor(this.stateTimer);
+			if(this.stateTimer>=5){
+				this.stateTimer = 1;
+				this.state = 1;
+			}
+		}
+	}
 	this.hurt = function(amnt){
 		if(this.hp !== 0){
 			if(this.hp-Math.round(amnt) > 0){
@@ -358,8 +379,8 @@ var sprites = [
   new Sprite(10,10,"barrel",true,0.6,0.4,0,0)
 ];
 var enemies = [
-	new Enemy(8,3.1,"dog",100,0),
-	new Enemy(4.3,15,"guard",100,Math.PI/2),
+	new Enemy(8,3.1,"dog",20,Math.PI,0.04),
+	new Enemy(4.3,15,"guard",75,3*Math.PI/2,0.04),
 ];
 var pickups = [
 	new Pickup(14,1.6,"smg",0,0),
@@ -409,7 +430,7 @@ var player = {
 	x : 5.5,		// current x, y position
 	y : 3.1,
 	dir : 0,		// the direction that the player is turning, either -1 for left or 1 for right.
-	rotDeg : 90.001,		// the current angle of rotation
+	rotDeg : 45,		// the current angle of rotation
 	rot : 0,		// rotation in radians
 	speed : 0,		// is the playing moving forward (speed = 1) or backwards (speed = -1).
   strafeSpeed : 0, //strafing
@@ -436,6 +457,7 @@ var player = {
 	dropoff:[0,10,5,10],
 	range:[30,700,700,700],
 	firerate:[125,150,130,260],
+	pierce:[0,1,1,1],
 	secondary:function(){
 		if(this.weapon===this.maxWeapon){
 			this.weapon = 1;
@@ -472,12 +494,17 @@ var player = {
 			}(enemy));
 		}else{
 			var num,dist,enemy;
+			var dmgMult = 1;
 			for(var i = 0; i<stripe.length;i++){
-				num = stripe[i].num;
-				enemy = enemies[num];
-				dist = ((enemy.x-this.x)**2+(enemy.y-this.y)**2)**0.5;
-				if(dist <= this.range[this.weapon]/24 && stripe[i].y<=screenHeight/2 && stripe[i].y+stripe[i].height>=screenHeight/2 && enemy.hp!==0){
-					enemy.hurt((this.damage[this.weapon]-(this.dropoff[this.weapon]*dist*24/this.range[this.weapon])));
+				if(stripe[i].state){
+					num = stripe[i].num;
+					enemy = enemies[num];
+					dist = ((enemy.x-this.x)**2+(enemy.y-this.y)**2)**0.5;
+					if(dist <= this.range[this.weapon]/24 && stripe[i].y<=screenHeight/2 && stripe[i].y+stripe[i].height>=screenHeight/2 && enemy.hp!==0){
+						enemy.hurt((this.damage[this.weapon]-(this.dropoff[this.weapon]*dist*24/this.range[this.weapon]))*dmgMult);
+					}
+				}else{
+					dmgMult*=(1-this.pierce[this.weapon]/2);
 				}
 			}
 		}
@@ -791,6 +818,11 @@ var drawCeilRectangle = function(x, y, width, height, xOffset,yOffset,texture){
 		1, 1,
 		x, y, width, height);
 }
+var circle = function(x,y,radius){
+  ctx.beginPath();
+  ctx.arc(x,y,radius,0,Math.PI * 2, false);
+  ctx.fill();
+};
 function renderCycle() {
 	  posZ = (player.height+player.z) * screenHeight;
 	  dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
@@ -816,6 +848,7 @@ function renderCycle() {
 		  drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
 		  drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
 		  drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
+			circle(screenWidth/2,screenHeight/2,4/2);
 		}
 		if(pickupIsPresent){
 				ctx.font = "bold 20px Courier New";
@@ -847,7 +880,7 @@ function renderCycle() {
 	  ctx.textAlign = "center";
 	  ctx.fillText(player.ammo[player.weapon]+'/'+player.maxAmmo[player.weapon],screenWidth-25,screenHeight);
 	  ctx.fillText(player.hp+'/100',39+75/2,screenHeight);
-		ctx.drawImage(playerhpIcons,25,33*(Math.floor(7-player.hp*7/100)),24,31,15,screenHeight-30,24,30);
+		ctx.drawImage(playerhpIcons,25,33*(7-Math.ceil(player.hp*7/100)),24,31,15,screenHeight-30,24,30);
 		ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
 		ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
 		if(player.maxWeapon > 1) ctx.drawImage(weaponIcons,49*player.maxWeapon,0,48,24,screenWidth-50,screenHeight-60,50,15);
@@ -986,7 +1019,6 @@ function bind() {
 function castWallRays() {
   var stripIdx = 0;
 	var zbufferenem = renderEnemies();
-	centerStripe = zbufferenem[Math.round(numRays/2)];
 	var spritesl = renderSprites();
 	var pickupsl = renderPickups();
 	var zbuffer = JSON.parse(JSON.stringify(orzbuffer))
@@ -1329,6 +1361,9 @@ function castSingleRay(stripIdx,zbuffer) {
     }
 		hits = hits.concat(zbuffer[stripIdx]).sort(function(x,y){return y.dist-x.dist});
 		hits.forEach((element) => element.draw());
+		if(stripIdx === Math.floor(numRays/2)){
+			centerStripe = hits.toReversed();
+		}
   }
 }
 function renderSprites(){
@@ -1413,8 +1448,8 @@ function renderEnemies(){
 			state = 5+Math.floor((enemies[num].state-5)/8)
 			var angleOffset = (enemies[num].state-5)%8;
 		}else{
-			state = enemies[num].state;
-			var angleOffset = (Math.round(8*(-Math.atan2(enemies[num].y-player.y,enemies[num].x-player.x)+enemies[num].dir)/(2*Math.PI))+8)%8;
+			state = Math.floor(enemies[num].state);
+			var angleOffset = Math.floor((Math.round(8*(-Math.atan2(-enemies[num].y+player.y,-enemies[num].x+player.x)+enemies[num].rot)/(2*Math.PI))+8)%8);
 		}
     //loop through every vertical stripe of the sprite on screen
     for(var stripe = Math.max(Math.floor(drawStartX/stripWidth)*stripWidth,0); stripe < Math.min(screenWidth,drawEndX); stripe+=stripWidth){
@@ -1494,7 +1529,7 @@ function move(timeDelta) {
   // time timeDelta has passed since we moved last time. We should have moved after time gameCycleDelay,
   // so calculate how much we should multiply our movement to ensure game speed is constant
   var mul = timeDelta / gameCycleDelay;
-
+	ai(mul);
   if(isPressingG){
 		if(pickupIsPresent){
 			player.maxWeapon = pickups[pickupNum].gun;
@@ -1618,7 +1653,11 @@ function move(timeDelta) {
 		if(pos.zSpeed){player.zSpeed = pos.zSpeed;}
   }
 }
-
+function ai(mul){
+	enemies.forEach(enemy => function(enemy){
+		enemy.fd(mul);
+	}(enemy))
+}
 function checkCollision(fromX,fromY,toX,toY,radius,fromZ,toZ){
 	var pos = checkCollisionHor(fromX,fromY,toX,toY,radius,fromZ);
 	var x = pos.x;
