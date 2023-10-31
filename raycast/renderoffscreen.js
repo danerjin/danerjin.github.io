@@ -19,6 +19,22 @@ if(!Array.prototype.indexOf) {
 var debug = false;
 var enemy;
 var weapon_names = ['knife','pistol','smg','chaingun'];
+var dmgdist;
+function neighbors(x,y){
+	var cellX = Math.floor(x);
+	var cellY = Math.floor(y);
+	var val = [];
+	for(var i = cellX-1;i<=cellX+1;i++){
+		for(var j = cellY-1;j<=cellY+1;j++){
+			if(!isBlocking(i+0.5,j+0.5,0) && (cellX-i)^(cellY-j) && i!== cellX && i!==cellY){
+				val.push([i+0.5,j+0.5])
+			}
+		}
+	}
+	return val;
+}
+var astar=false;
+var stuff=[0,1,1,3];
 var Sprite = function(x,y,texture,block,hitbox,h,z,vmove){
   this.x = x;
   this.y = y;
@@ -41,7 +57,7 @@ var Pickup = function(x,y,texture,z,vmove){
 	this.gun = weapon_names.indexOf(texture);
   this.z = z;
 }
-var Enemy = function(x,y,texture,hp,rot,speed,dmg/*,ai*/){
+var Enemy = function(x,y,texture,hp,rot,speed,dmg,melee,cool/*,ai*/){
   this.x = x;
   this.y = y;
 	this.xSpeed = 0;
@@ -55,58 +71,129 @@ var Enemy = function(x,y,texture,hp,rot,speed,dmg/*,ai*/){
 	this.speed = speed;
 	this.stateTimer = 0;
 	this.dmg = dmg;
-	this.alert = false;
+	this.melee = melee;
+	this.target = [Math.floor(this.x)+0.5,Math.floor(this.y)+0.5];
+	this.pos = [Math.floor(this.x)+0.5,Math.floor(this.y)+0.5];
+	this.instate = 0;
+	this.atkooldown = 0;
+	this.cool=cool;
+	this.update=function(mul,dist){
+		this.stateTimer+=this.speed*3*mul*stuff[this.instate];
+		this.state = Math.floor(this.stateTimer);
+		this.atkooldown = Math.max(this.atkooldown-mul*gameCycleDelay,0);
+		if(this.instate===1){
+			if(this.stateTimer>=5){
+				this.stateTimer = 1;
+			}
+		}else if(this.instate===2){
+			if(this.stateTimer>=16){
+				this.stateTimer = 1;
+				this.state = 1;
+				this.instate = 1;
+				if((this.melee&&dist < player.range[0]/36) || (!this.melee&&dist<2)){
+				  if(this.melee){
+				     player.hurt(Math.ceil(16*Math.random()));
+				  }else{
+				    if(true){
+				      player.hurt((player.damage[1]-(player.dropoff[1]*dist*24/player.range[1]))*0.75);
+				    }
+					}
+				}
+				this.atkooldown = this.cool*1000;
+			}
+		}else if(this.instate===3){
+			if(this.stateTimer>=9){
+				this.stateTimer = 9;
+				this.state = 9;
+				this.instate = 3;
+			}
+		}
+	}
 	this.ai = function(mul){
-		if(this.alert){
-			this.fd(mul);
-		}else{
-			if(((player.x-this.x)**2+(player.y-this.y)**2)**0.5<5){
-				this.alert = true;
+		var dist = ((player.x-this.x)**2+(player.y-this.y)**2)**0.5;
+		this.update(mul,dist);
+		if(this.hp>0){
+			if(this.alert){
+				var neighs = neighbors(this.pos[0],this.pos[1]);
+				if(neighs.length){
+					neighs.sort(function(a){return ((a[0]-player.x)**2+(a[1]-player.y)**2)})
+					this.target = neighs[0];
+				}
+				if(this.melee){
+					if(dist < player.range[0]/36 && this.atkooldown === 0){
+						this.attack();
+					}else if (dist>player.range[0]/36){
+						if(astar){this.rot = Math.atan2(this.target[1]-this.pos[1],this.target[0]-this.pos[0]);}
+						else{this.rot = Math.atan2(-this.y+player.y,-this.x+player.x);}
+						this.fd(mul);
+					}else{
+						this.instate=0;
+						this.state=0;
+						this.stateTimer=0;
+					}
+				}else{
+					if(dist<2.5 && this.atkooldown === 0){
+						this.attack();
+					}else if (dist>2.5){
+						if(astar){this.rot = Math.atan2(this.target[1]-this.pos[1],this.target[0]-this.pos[0]);}
+						else{this.rot = Math.atan2(-this.y+player.y,-this.x+player.x);}
+						this.fd(mul);
+					}else{
+						this.instate=0;
+						this.state=0;
+						this.stateTimer=0;
+					}
+				}
+			}else{
+				if(dist<8){
+					this.alert = true;
+				}else{
+					this.alert = false;
+				}
 			}
 		}
 	};
-	//this.attack = attack;
 	this.fd = function(mul){
 		if(this.hp>0){
 			if(this.state===0) this.state = 1;
+			this.instate = 1;
 			this.xSpeed = Math.cos(this.rot)*this.speed;
 			this.ySpeed = Math.sin(this.rot)*this.speed;
+			if(map[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] === 8 ||
+			map[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] === 9 ||
+			map[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] === 10){
+				doorStates[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] = 1-Math.round(doorOffsets[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)]);
+			}
 			var pos = checkCollisionHor(this.x,this.y,this.x+this.xSpeed*mul,this.y+this.ySpeed*mul,0.05,0);
 			this.x = pos.x;
 			this.y = pos.y;
-			this.stateTimer+=this.speed*3*mul;
-			this.state = Math.floor(this.stateTimer);
-			if(this.stateTimer>=5){
-				this.stateTimer = 1;
-				this.state = 1;
-			}
+			this.pos = [Math.floor(this.x)+0.5,Math.floor(this.y)+0.5];
 		}
 	}
 	this.hurt = function(amnt){
 		if(this.hp !== 0){
 			if(this.hp-Math.round(amnt) > 0){
 				this.hp=this.hp-Math.round(amnt);
+				this.state = 1;
+				this.stateTimer=1;
+				this.instate=1;
 			}else{
 				this.hp = 0;
 				if(blood){
 					this.state = 5;
-					enemy = this;
-					setTimeout((function(){
-						enemy.state = 6;
-						setTimeout((function(){
-							enemy.state = 7;
-							setTimeout((function(){
-								enemy.state = 8;
-								setTimeout((function(){
-									enemy.state = 9;
-								}),50)
-							}),50)
-						}),50)
-					}),50)
+					this.stateTimer=5;
+					this.instate = 3;
 				}else{
 					enemies.splice(enemies.indexOf(this),1);
 				}
 			}
+		}
+	}
+	this.attack = function(){
+		if(this.instate!==2){
+			this.state = 13;
+			this.stateTimer=13;
+			this.instate = 2;
 		}
 	}
 }
@@ -389,8 +476,8 @@ var sprites = [
   new Sprite(10,10,"barrel",true,0.6,0.4,0,0)
 ];
 var enemies = [
-	new Enemy(15,3.1,"dog",20,Math.PI,0.04),
-	new Enemy(4.3,15,"guard",75,3*Math.PI/2,0.04),
+	new Enemy(15.5,3.5,"dog",15,Math.PI,0.075,0,true,0.5),
+	new Enemy(4.5,15.5,"guard",75,3*Math.PI/2,0.04,0,false,0.5),
 ];
 var pickups = [
 	new Pickup(14,1.6,"smg",0,0),
@@ -495,6 +582,9 @@ var player = {
 		}
 	},
 	hp:100,
+	lives:5,
+	timer:0,
+	regen:0,
 	fire:function(stripe){
 		if(this.weapon === 0){
 			enemies.forEach(enemy => function(enemy){
@@ -518,6 +608,34 @@ var player = {
 				}
 			}
 		}
+	},
+	hurt:function(amnt){
+		if(this.timer>3000){
+			this.regen=0;
+			this.hp-=Math.floor(amnt);
+			if(this.hp<=0){
+				this.hp=0;
+				this.lives -=1;
+				alert('rip bozo, restarting...');
+				alert('lives: '+this.lives);
+				this.x=5.5;
+				this.y=3.1;
+				if(this.lives>=0){
+					this.hp=100;
+				}
+			}
+		}
+	},
+	update:function(delt){
+		var mul=delt/gameCycleDelay;
+		this.regen=this.regen+1/(100*Math.max(this.hp,50))*delt;
+		if(this.hp+this.regen/gameCycleDelay <= 100){
+			this.hp+=this.regen/gameCycleDelay;
+		}else{
+			this.regen=0;
+			this.hp=100;
+		}
+		this.timer+=delt;
 	}
 }
 var miniMapScale = 8;
@@ -721,6 +839,7 @@ function gameCycle() {
 		}
 	}(pickup));
 	move(timeDelta);
+	player.update(timeDelta);
 	//handle weapon
 	if(player.weaponIsActive || player.weaponTimer > 0){
 		if(player.ammo[player.weapon]<=0){
@@ -784,8 +903,10 @@ function gameCycle() {
 	if(timeDelta > cycleDelay) {
 		cycleDelay = Math.max(1, cycleDelay - (timeDelta - cycleDelay))
 	}
-	setTimeout(gameCycle, cycleDelay);
-	lastGameCycleTime = now;
+	if(player.lives>=0){
+		setTimeout(gameCycle, cycleDelay);
+		lastGameCycleTime = now;
+	}
 }
 function sign(num){
   return Math.round(num/Math.abs(num));
@@ -889,7 +1010,7 @@ function renderCycle() {
 	  ctx.fillText("FPS: "+Math.round(fps),50,50);
 	  ctx.textAlign = "center";
 	  ctx.fillText(player.ammo[player.weapon]+'/'+player.maxAmmo[player.weapon],screenWidth-25,screenHeight);
-	  ctx.fillText(player.hp+'/100',39+75/2,screenHeight);
+	  ctx.fillText(Math.round(player.hp)+'/100',39+75/2,screenHeight);
 		ctx.drawImage(playerhpIcons,25,33*(7-Math.ceil(player.hp*7/100)),24,31,15,screenHeight-30,24,30);
 		ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
 		ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
