@@ -187,7 +187,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst/*,ai*/){
 			if(map[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] === 8 ||
 			map[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] === 9 ||
 			map[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] === 10){
-				doorStates[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] = 1-Math.round(doorOffsets[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)]);
+				doorStates[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] = 1;
 			}
 			var pos = checkCollision(this.x,this.y,this.x+this.xSpeed*mul,this.y+this.ySpeed*mul,0.05,0);
 			this.x = pos.x;
