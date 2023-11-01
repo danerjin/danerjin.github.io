@@ -57,7 +57,7 @@ var Pickup = function(x,y,texture,z,vmove){
 	this.gun = weapon_names.indexOf(texture);
   this.z = z;
 }
-var Enemy = function(x,y,texture,hp,rot,speed,dmg,melee,cool/*,ai*/){
+var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool/*,ai*/){
   this.x = x;
   this.y = y;
 	this.xSpeed = 0;
@@ -77,6 +77,7 @@ var Enemy = function(x,y,texture,hp,rot,speed,dmg,melee,cool/*,ai*/){
 	this.instate = 0;
 	this.atkooldown = 0;
 	this.cool=cool;
+	this.z = z;
 	this.update=function(mul,dist){
 		this.stateTimer+=this.speed*3*mul*stuff[this.instate];
 		this.state = Math.floor(this.stateTimer);
@@ -164,9 +165,10 @@ var Enemy = function(x,y,texture,hp,rot,speed,dmg,melee,cool/*,ai*/){
 			map[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] === 10){
 				doorStates[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] = 1-Math.round(doorOffsets[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)]);
 			}
-			var pos = checkCollisionHor(this.x,this.y,this.x+this.xSpeed*mul,this.y+this.ySpeed*mul,0.05,0);
+			var pos = checkCollisionHor(this.x,this.y,this.x+this.xSpeed*mul,this.y+this.ySpeed*mul,0.05,this.z);
 			this.x = pos.x;
 			this.y = pos.y;
+			this.z = pos.z;
 			this.pos = [Math.floor(this.x)+0.5,Math.floor(this.y)+0.5];
 		}
 	}
@@ -476,15 +478,15 @@ var sprites = [
   new Sprite(10,10,"barrel",true,0.6,0.4,0,0)
 ];
 var enemies = [
-	new Enemy(15.5,4.5,"dog",15,Math.PI,0.075,0,true,0.5),
-	new Enemy(15.6,4.5,"dog",15,Math.PI,0.075,0,true,0.5),
-	new Enemy(15.7,4.5,"dog",15,Math.PI,0.075,0,true,0.5),
-	new Enemy(15.8,4.5,"dog",15,Math.PI,0.075,0,true,0.5),
-	new Enemy(15.2,4.5,"dog",15,Math.PI,0.075,0,true,0.5),
-	new Enemy(15.4,4.5,"dog",15,Math.PI,0.075,0,true,0.5),
-	new Enemy(15.3,4.5,"dog",15,Math.PI,0.075,0,true,0.5),
-	new Enemy(4.5,7.5,"guard",75,3*Math.PI/2,0.02,0,false,0.5),
-	new Enemy(4.5,15.5,"ss",100,3*Math.PI/2,0.035,0,false,0.5),
+	new Enemy(15.5,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5),
+	new Enemy(15.6,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5),
+	new Enemy(15.7,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5),
+	new Enemy(15.8,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5),
+	new Enemy(15.2,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5),
+	new Enemy(15.4,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5),
+	new Enemy(15.3,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5),
+	new Enemy(4.5,7.5,0,"guard",75,3*Math.PI/2,0.02,0,false,0.5),
+	new Enemy(4.5,15.5,0,"ss",100,3*Math.PI/2,0.035,0,false,0.5),
 ];
 var pickups = [
 	new Pickup(14,1.6,"smg",0,0),
@@ -1571,12 +1573,13 @@ function renderEnemies(){
 
     var transformX = invDet * (dirY * spriteX - dirX * spriteY);
     var transformY = invDet * (-planeY * spriteX + planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
-    var spriteScreenX = Math.floor((screenWidth / 2) * (1 + transformX / transformY));
+		var vMoveScreen = Math.round(-enemies[num].vmove *screenHeight/ transformY);
+		var spriteScreenX = Math.floor((screenWidth / 2) * (1 + transformX / transformY));
 
     //calculate height of the sprite on screen
     var spriteHeight = Math.abs(Math.floor(screenHeight) / (transformY)) / 1; //using "transformY" instead of the real distance prevents fisheye
     //calculate lowest and highest pixel to fill in current stripe
-    var drawStartY = Math.round(screenHeight/2 - (1-(player.z+player.height))*spriteHeight-(player.z+player.height))+player.pitch;
+    var drawStartY = Math.round(screenHeight/2 - (1-(player.z+player.height))*spriteHeight-(player.z+player.height))+player.pitch+vMoveScreen;
 
     //calculate width of the sprite
     var spriteWidth = Math.abs( Math.floor (screenHeight / (transformY)));
