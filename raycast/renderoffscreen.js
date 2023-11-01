@@ -92,10 +92,10 @@ var Enemy = function(x,y,texture,hp,rot,speed,dmg,melee,cool/*,ai*/){
 				this.instate = 1;
 				if((this.melee&&dist < player.range[0]/36) || (!this.melee&&dist<2)){
 				  if(this.melee){
-				     player.hurt(Math.ceil(16*Math.random()));
+				     player.hurt(Math.ceil(8+8*Math.random()));
 				  }else{
-				    if(true){
-				      player.hurt((player.damage[1]-(player.dropoff[1]*dist*24/player.range[1]))*0.75);
+				    if(256*Math.random()<(256-dist*16)){
+				      player.hurt((player.damage[1]-(player.dropoff[1]*dist*24/player.range[1])));
 				    }
 					}
 				}
