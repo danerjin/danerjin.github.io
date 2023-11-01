@@ -92,7 +92,7 @@ var Enemy = function(x,y,texture,hp,rot,speed,dmg,melee,cool/*,ai*/){
 				this.instate = 1;
 				if((this.melee&&dist < player.range[0]/36) || (!this.melee&&dist<2)){
 				  if(this.melee){
-				     player.hurt(Math.ceil(8+8*Math.random()));
+				     if (Math.random>0.5) player.hurt(Math.ceil(8+8*Math.random()));
 				  }else{
 				    if(256*Math.random()<(256-dist*16)){
 				      player.hurt((player.damage[1]-(player.dropoff[1]*dist*24/player.range[1])));
@@ -476,8 +476,15 @@ var sprites = [
   new Sprite(10,10,"barrel",true,0.6,0.4,0,0)
 ];
 var enemies = [
-	new Enemy(15.5,3.5,"dog",15,Math.PI,0.075,0,true,0.5),
-	new Enemy(4.5,15.5,"guard",75,3*Math.PI/2,0.04,0,false,0.5),
+	new Enemy(15.5,4.5,"dog",15,Math.PI,0.075,0,true,0.5),
+	new Enemy(15.6,4.5,"dog",15,Math.PI,0.075,0,true,0.5),
+	new Enemy(15.7,4.5,"dog",15,Math.PI,0.075,0,true,0.5),
+	new Enemy(15.8,4.5,"dog",15,Math.PI,0.075,0,true,0.5),
+	new Enemy(15.2,4.5,"dog",15,Math.PI,0.075,0,true,0.5),
+	new Enemy(15.4,4.5,"dog",15,Math.PI,0.075,0,true,0.5),
+	new Enemy(15.3,4.5,"dog",15,Math.PI,0.075,0,true,0.5),
+	new Enemy(4.5,7.5,"guard",75,3*Math.PI/2,0.02,0,false,0.5),
+	new Enemy(4.5,15.5,"ss",100,3*Math.PI/2,0.035,0,false,0.5),
 ];
 var pickups = [
 	new Pickup(14,1.6,"smg",0,0),
