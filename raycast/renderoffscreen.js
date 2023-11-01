@@ -60,6 +60,7 @@ var Pickup = function(x,y,texture,z,vmove){
 var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool/*,ai*/){
   this.x = x;
   this.y = y;
+	this.z = z;
 	this.xSpeed = 0;
 	this.ySpeed = 0;
   this.texture = new Image();
@@ -77,7 +78,6 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool/*,ai*/){
 	this.instate = 0;
 	this.atkooldown = 0;
 	this.cool=cool;
-	this.z = z;
 	this.update=function(mul,dist){
 		this.stateTimer+=this.speed*3*mul*stuff[this.instate];
 		this.state = Math.floor(this.stateTimer);
@@ -165,7 +165,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool/*,ai*/){
 			map[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] === 10){
 				doorStates[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] = 1-Math.round(doorOffsets[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)]);
 			}
-			var pos = checkCollisionHor(this.x,this.y,this.x+this.xSpeed*mul,this.y+this.ySpeed*mul,0.05,this.z);
+			var pos = checkCollision(this.x,this.y,this.x+this.xSpeed*mul,this.y+this.ySpeed*mul,0.05,this.z);
 			this.x = pos.x;
 			this.y = pos.y;
 			this.z = pos.z;
@@ -1020,6 +1020,7 @@ function renderCycle() {
 	  ctx.textAlign = "center";
 	  ctx.fillText(player.ammo[player.weapon]+'/'+player.maxAmmo[player.weapon],screenWidth-25,screenHeight);
 	  ctx.fillText(Math.round(player.hp)+'/100',39+75/2,screenHeight);
+	  ctx.fillText('LIVES: '+player.lives,screenWidth/2-25/2,screenHeight-5);
 		ctx.drawImage(playerhpIcons,25,33*(7-Math.ceil(player.hp*7/100)),24,31,15,screenHeight-30,24,30);
 		ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
 		ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
@@ -1573,7 +1574,7 @@ function renderEnemies(){
 
     var transformX = invDet * (dirY * spriteX - dirX * spriteY);
     var transformY = invDet * (-planeY * spriteX + planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
-		var vMoveScreen = Math.round(-enemies[num].vmove *screenHeight/ transformY);
+		var vMoveScreen = Math.round(-enemies[num].z * screenHeight/ transformY);
 		var spriteScreenX = Math.floor((screenWidth / 2) * (1 + transformX / transformY));
 
     //calculate height of the sprite on screen
