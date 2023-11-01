@@ -108,7 +108,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst/*,ai*/){
 				  }else{
 				    if(256*Math.random()<(256-dist*16)){
 							console.log('hit');
-				      player.hurt((player.damage[1]-(player.dropoff[1]*dist*24/player.range[1])));
+				      player.hurt((player.damage[1]-(player.dropoff[1]*dist*24/player.range[1]))*0.75);
 				    }
 					}
 				}
@@ -187,9 +187,9 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst/*,ai*/){
 		if(this.hp !== 0){
 			if(this.hp-Math.round(amnt) > 0){
 				this.hp=this.hp-Math.round(amnt);
-				this.state = 0;
+				this.state = 13;
 				this.stateTimer=13;
-				this.instate=13;
+				this.instate=0;
 			}else{
 				this.hp = 0;
 				if(blood){
