@@ -90,6 +90,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst/*,ai*/){
 			}
 		}else if(this.instate===2){
 			if(this.stateTimer>=16){
+				this.burstTimer++;
 				if(this.burstTimer >= this.burst){
 					this.burstTimer=0;
 					this.stateTimer = 1;
@@ -97,7 +98,6 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst/*,ai*/){
 					this.instate = 1;
 					this.atkooldown = this.cool*1000;
 				}else{
-					this.burstTimer++;
 					this.stateTimer=14;
 					this.state=14;
 					this.instate=2;
