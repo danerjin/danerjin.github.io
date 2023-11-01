@@ -35,6 +35,20 @@ function neighbors(x,y){
 }
 var astar=false;
 var stuff=[0,1,1,3];
+function sound(src) {
+	this.sound = document.createElement("audio");
+	this.sound.src = src;
+	this.sound.setAttribute("preload", "auto");
+	this.sound.setAttribute("controls", "none");
+	this.sound.style.display = "none";
+	document.body.appendChild(this.sound);
+	this.play = function(){
+			this.sound.play();
+	}
+	this.stop = function(){
+			this.sound.pause();
+	}
+}
 var Sprite = function(x,y,texture,block,hitbox,h,z,vmove){
   this.x = x;
   this.y = y;
@@ -107,7 +121,6 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst/*,ai*/){
 				     player.hurt(Math.ceil(8+8*Math.random()));
 				  }else{
 				    if(256*Math.random()<(256-dist*16)){
-							console.log('hit');
 				      player.hurt((player.damage[1]-(player.dropoff[1]*dist*24/player.range[1]))*0.75);
 				    }
 					}
@@ -493,9 +506,10 @@ var enemies = [
 	new Enemy(16.0,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
 	new Enemy(16.5,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
 	new Enemy(17.0,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
-	new Enemy(15.0,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
-	new Enemy(14.5,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
-	new Enemy(14.0,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
+	new Enemy(15.5,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
+	new Enemy(16.0,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
+	new Enemy(16.5,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
+	new Enemy(17.0,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
 	new Enemy(4.5,7.5,0,"guard",75,3*Math.PI/2,0.02,0,false,0.5,1),
 	new Enemy(4.5,15.5,0,"ss",100,3*Math.PI/2,0.035,0,false,0.4,3),
 ];
