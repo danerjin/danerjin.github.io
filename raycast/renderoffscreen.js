@@ -102,7 +102,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst/*,ai*/){
 					this.state=14;
 					this.instate=2;
 				}
-				if((this.melee&&dist < player.range[0]/36) || (!this.melee&&dist<2)){
+				if((this.melee&&dist < player.range[0]/36) || (!this.melee)){
 				  if(this.melee){
 				     player.hurt(Math.ceil(8+8*Math.random()));
 				  }else{
@@ -727,6 +727,7 @@ function init() {
 
   canvas.addEventListener("click", async () => {
     await canvas.requestPointerLock();
+		contentpause.style.display = "none";
     document.addEventListener("mousemove", updateMousePosition, false);
   });
   drawFillRectangle(0,0,screenWidth,screenHeight/2,'#429bf5');
