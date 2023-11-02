@@ -47,6 +47,8 @@ function playsound(src) {
 	//document.body.appendChild(sound);
 	sound.play();
 }
+gameIsOn=false;
+text='Get Ready!';
 var Sprite = function(x,y,texture,block,hitbox,h,z,vmove){
   this.x = x;
   this.y = y;
@@ -656,12 +658,15 @@ var player = {
 			if(this.hp<=0){
 				this.hp=0;
 				this.lives -=1;
-				alert('rip bozo, restarting...');
+				gameIsOn=false;
 				this.x=5.5;
 				this.y=3.1;
 				if(this.lives>=0){
 					this.hp=100;
 					this.timer=0;
+					setTimeout(function(){
+						gameIsOn=true;
+					},1000)
 				}
 			}
 		}
@@ -760,6 +765,7 @@ function init() {
     await canvas.requestPointerLock();
 		contentpause.style.display = "none";
     document.addEventListener("mousemove", updateMousePosition, false);
+		gameIsOn=true;
   });
   drawFillRectangle(0,0,screenWidth,screenHeight/2,'#429bf5');
   drawFillRectangle(0,screenHeight/2,screenWidth,screenHeight/2,'#c0a570');
@@ -787,176 +793,178 @@ var gameCycleDelay = 1000 / 60; // aim for 60 fps for game logic
 var mousePos = [0,0];
 var prevMousePos = [0,0];
 function gameCycle() {
-  if(mobile){
-    if(joyMoving.GetDir() !== joyMovingDir){
-      joyMovingDir = joyMoving.GetDir();
-      switch(joyMovingDir){
-        case 'N': // up, move player forward, ie. increase speed
-  				player.speed = 1;
-          player.strafeSpeed = 0;
-  				break;
-
-  			case 'S': // down, move player backward, set negative speed
-  				player.speed = -1;
-          player.strafeSpeed = 0;
-  				break;
-
-        case 'W': // strafe left
-    			player.speed = 0;
-  				player.strafeSpeed = 1;
-  				break;
-
-  			case 'E': // strafe right
-    			player.speed = 0;
-  				player.strafeSpeed = -1;
-          break;
-        case 'NW': // up, move player forward, ie. increase speed
-  				player.speed = 1;
-          player.strafeSpeed = 1;
-  				break;
-
-  			case 'NE': // down, move player backward, set negative speed
-  				player.speed = 1;
-          player.strafeSpeed = -1;
-  				break;
-
-        case 'SW': // strafe left
-    			player.speed = -1;
-  				player.strafeSpeed = 1;
-  				break;
-
-  			case 'SE': // strafe right
-    			player.speed = -1;
-  				player.strafeSpeed = -1;
-  				break;
-        case 'C':
-          player.speed = 0;
-          player.strafeSpeed = 0;
-          break;
-
-      }
-    }
-  }
-  if(document.pointerLockElement === canvas){
-    temp = JSON.parse(JSON.stringify(mousePos));
-    diffX = temp[0]-prevMousePos[0];
-    diffY = temp[1]-prevMousePos[1];
-    if(diffX > 0.5){player.dir = 0.05*(diffX*sens-0.5);}
-    if(diffX < -0.5){player.dir = 0.05*(diffX*sens+0.5);}
-    if(Math.abs(diffX)<=0.5){player.dir = 0;}
-    if(diffY > 0){player.pitchChange = -diffY*sens;}
-    if(diffY < 0){player.pitchChange = -diffY*sens;}
-    if(diffY === 0){player.pitchChange = 0;}
-    prevMousePos = JSON.parse(JSON.stringify(temp));
-  }
 	var now = new Date().getTime();
 	// time since last game logic
 	var timeDelta = now - lastGameCycleTime;
-  var x_target,y_target;
-  var x_move,y_move;
-  x_target = Math.floor(player.x);
-  y_target = Math.floor(player.y);
-  if(Math.abs(dirX)>Math.abs(dirY)){
-    x_move = Math.round(dirX/Math.abs(dirX));
-    y_move = Math.round(dirY/Math.abs(dirX));
-  }
-  else if(Math.abs(dirX)<=Math.abs(dirY)){
-    x_move = Math.round(dirX/Math.abs(dirY));
-    y_move = Math.round(dirY/Math.abs(dirY));
-  }
-  count = 0;
-  x_target+=x_move;
-  y_target+=y_move;
-  while(1){
-		if(y_target < 0 || y_target >= mapHeight || x_target < 0 || x_target >= mapWidth){
-			break;
+	if(gameIsOn){
+	  if(mobile){
+	    if(joyMoving.GetDir() !== joyMovingDir){
+	      joyMovingDir = joyMoving.GetDir();
+	      switch(joyMovingDir){
+	        case 'N': // up, move player forward, ie. increase speed
+	  				player.speed = 1;
+	          player.strafeSpeed = 0;
+	  				break;
+
+	  			case 'S': // down, move player backward, set negative speed
+	  				player.speed = -1;
+	          player.strafeSpeed = 0;
+	  				break;
+
+	        case 'W': // strafe left
+	    			player.speed = 0;
+	  				player.strafeSpeed = 1;
+	  				break;
+
+	  			case 'E': // strafe right
+	    			player.speed = 0;
+	  				player.strafeSpeed = -1;
+	          break;
+	        case 'NW': // up, move player forward, ie. increase speed
+	  				player.speed = 1;
+	          player.strafeSpeed = 1;
+	  				break;
+
+	  			case 'NE': // down, move player backward, set negative speed
+	  				player.speed = 1;
+	          player.strafeSpeed = -1;
+	  				break;
+
+	        case 'SW': // strafe left
+	    			player.speed = -1;
+	  				player.strafeSpeed = 1;
+	  				break;
+
+	  			case 'SE': // strafe right
+	    			player.speed = -1;
+	  				player.strafeSpeed = -1;
+	  				break;
+	        case 'C':
+	          player.speed = 0;
+	          player.strafeSpeed = 0;
+	          break;
+
+	      }
+	    }
 	  }
-    if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 9 || map[Math.floor(y_target)][Math.floor(x_target)] === 10 || map[Math.floor(y_target)][Math.floor(x_target)] === 11){
-      doorIsPresent = true;
-      doorTarget = [x_target,y_target];
-      break;
-    }else{
-      x_target+=x_move;
-      y_target+=y_move;
-    }
-    count++;
-    if(count>2||Math.floor(y_target)>=mapHeight||Math.floor(y_target)<0||Math.floor(x_target)>=mapWidth||Math.floor(x_target)<0){doorIsPresent = false;break;}
-  }
-	pickupIsPresent = false;
-	pickups.forEach(pickup => function(pickup){
-		if(((pickup.x-player.x)**2+(pickup.y-player.y)**2)**0.5 < player.range[0]/24){
-			pickupIsPresent = true;
-			pickupNum = pickups.indexOf(pickup);
-		}
-	}(pickup));
-	move(timeDelta);
-	player.update(timeDelta);
-	//handle weapon
-	if(player.weaponIsActive || player.weaponTimer > 0){
-		if(player.ammo[player.weapon]<=0){
-			player.weaponTimer=Math.min(player.weaponTimer,0);
-			player.weaponState=Math.min(player.weaponState,0);
-			player.weaponIsActive = false;
-		}
-		else{
-			player.weaponTimer+=timeDelta*5/(2*player.firerate[player.weapon]);
-			if(player.weaponTimer>4){
-				if(player.weapon > 1){
-					if(player.weaponIsActive){
-						player.weaponTimer=2;
+	  if(document.pointerLockElement === canvas){
+	    temp = JSON.parse(JSON.stringify(mousePos));
+	    diffX = temp[0]-prevMousePos[0];
+	    diffY = temp[1]-prevMousePos[1];
+	    if(diffX > 0.5){player.dir = 0.05*(diffX*sens-0.5);}
+	    if(diffX < -0.5){player.dir = 0.05*(diffX*sens+0.5);}
+	    if(Math.abs(diffX)<=0.5){player.dir = 0;}
+	    if(diffY > 0){player.pitchChange = -diffY*sens;}
+	    if(diffY < 0){player.pitchChange = -diffY*sens;}
+	    if(diffY === 0){player.pitchChange = 0;}
+	    prevMousePos = JSON.parse(JSON.stringify(temp));
+	  }
+	  var x_target,y_target;
+	  var x_move,y_move;
+	  x_target = Math.floor(player.x);
+	  y_target = Math.floor(player.y);
+	  if(Math.abs(dirX)>Math.abs(dirY)){
+	    x_move = Math.round(dirX/Math.abs(dirX));
+	    y_move = Math.round(dirY/Math.abs(dirX));
+	  }
+	  else if(Math.abs(dirX)<=Math.abs(dirY)){
+	    x_move = Math.round(dirX/Math.abs(dirY));
+	    y_move = Math.round(dirY/Math.abs(dirY));
+	  }
+	  count = 0;
+	  x_target+=x_move;
+	  y_target+=y_move;
+	  while(1){
+			if(y_target < 0 || y_target >= mapHeight || x_target < 0 || x_target >= mapWidth){
+				break;
+		  }
+	    if(map[Math.floor(y_target)][Math.floor(x_target)] === 8 || map[Math.floor(y_target)][Math.floor(x_target)] === 9 || map[Math.floor(y_target)][Math.floor(x_target)] === 10 || map[Math.floor(y_target)][Math.floor(x_target)] === 11){
+	      doorIsPresent = true;
+	      doorTarget = [x_target,y_target];
+	      break;
+	    }else{
+	      x_target+=x_move;
+	      y_target+=y_move;
+	    }
+	    count++;
+	    if(count>2||Math.floor(y_target)>=mapHeight||Math.floor(y_target)<0||Math.floor(x_target)>=mapWidth||Math.floor(x_target)<0){doorIsPresent = false;break;}
+	  }
+		pickupIsPresent = false;
+		pickups.forEach(pickup => function(pickup){
+			if(((pickup.x-player.x)**2+(pickup.y-player.y)**2)**0.5 < player.range[0]/24){
+				pickupIsPresent = true;
+				pickupNum = pickups.indexOf(pickup);
+			}
+		}(pickup));
+		move(timeDelta);
+		player.update(timeDelta);
+		//handle weapon
+		if(player.weaponIsActive || player.weaponTimer > 0){
+			if(player.ammo[player.weapon]<=0){
+				player.weaponTimer=Math.min(player.weaponTimer,0);
+				player.weaponState=Math.min(player.weaponState,0);
+				player.weaponIsActive = false;
+			}
+			else{
+				player.weaponTimer+=timeDelta*5/(2*player.firerate[player.weapon]);
+				if(player.weaponTimer>4){
+					if(player.weapon > 1){
+						if(player.weaponIsActive){
+							player.weaponTimer=2;
+						}else{
+							if(player.weaponTimer>5){
+								player.weaponTimer = 0;
+							}
+						}
+					}else if(player.weapon < 1){
+						if(player.weaponTimer > 5){
+							player.weaponTimer=0;
+						}
+					}else if(player.weaponTimer > 5){
+						player.weaponTimer=0;
+						player.weaponIsActive = false;
+					}
+				}
+				var newthing = Math.floor(player.weaponTimer);
+				if(newthing!==player.weaponState){
+					if(player.weapon===0){
+						if(newthing==3){
+							//fire knife
+							player.fire(centerStripe);
+						}
+					}else if(player.weapon===1){
+						if(newthing===2){
+							player.ammo[1]-=1;
+							//bullet
+							player.fire(centerStripe);
+						}
+					}else if(player.weapon===2){
+						if(newthing===2){
+							player.ammo[2]-=1;
+							//bullet
+							player.fire(centerStripe);
+						}
 					}else{
-						if(player.weaponTimer>5){
-							player.weaponTimer = 0;
+						if(newthing===3||newthing===2){
+							player.ammo[3]-=1;
+							//bullet
+							player.fire(centerStripe);
 						}
 					}
-				}else if(player.weapon < 1){
-					if(player.weaponTimer > 5){
-						player.weaponTimer=0;
-					}
-				}else if(player.weaponTimer > 5){
-					player.weaponTimer=0;
-					player.weaponIsActive = false;
 				}
+				player.weaponState = newthing;
 			}
-			var newthing = Math.floor(player.weaponTimer);
-			if(newthing!==player.weaponState){
-				if(player.weapon===0){
-					if(newthing==3){
-						//fire knife
-						player.fire(centerStripe);
-					}
-				}else if(player.weapon===1){
-					if(newthing===2){
-						player.ammo[1]-=1;
-						//bullet
-						player.fire(centerStripe);
-					}
-				}else if(player.weapon===2){
-					if(newthing===2){
-						player.ammo[2]-=1;
-						//bullet
-						player.fire(centerStripe);
-					}
-				}else{
-					if(newthing===3||newthing===2){
-						player.ammo[3]-=1;
-						//bullet
-						player.fire(centerStripe);
-					}
-				}
-			}
-			player.weaponState = newthing;
 		}
+	}
+	if(player.lives>=0){
+		setTimeout(gameCycle, cycleDelay);
+		lastGameCycleTime = now;
 	}
 	var cycleDelay = gameCycleDelay;
 	// the timer will likely not run that fast due to the rendering cycle hogging the cpu
 	// so figure out how much time was lost since last cycle
 	if(timeDelta > cycleDelay) {
 		cycleDelay = Math.max(1, cycleDelay - (timeDelta - cycleDelay))
-	}
-	if(player.lives>=0){
-		setTimeout(gameCycle, cycleDelay);
-		lastGameCycleTime = now;
 	}
 }
 function sign(num){
@@ -1006,68 +1014,77 @@ var circle = function(x,y,radius){
   ctx.fill();
 };
 function renderCycle() {
-	  posZ = (player.height+player.z) * screenHeight;
-	  dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
-	  dirY = Math.sin(player.rot)/(Math.tan(fovHalf));
-	  planeX = -Math.sin(player.rot);
-	  planeY = Math.cos(player.rot);
-		for(var y = 0; y<=screenHeight; y+=stripWidth){
-			if(y===screenHeight/2+player.pitch){break;}
-			rowdistlookup[y] = posZ/(y - screenHeight / 2 - player.pitch);
+		if(gameIsOn){
+			ctx.clearRect(0,0,screenWidth,screenHeight);
+		  posZ = (player.height+player.z) * screenHeight;
+		  dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
+		  dirY = Math.sin(player.rot)/(Math.tan(fovHalf));
+		  planeX = -Math.sin(player.rot);
+		  planeY = Math.cos(player.rot);
+			for(var y = 0; y<=screenHeight; y+=stripWidth){
+				if(y===screenHeight/2+player.pitch){break;}
+				rowdistlookup[y] = posZ/(y - screenHeight / 2 - player.pitch);
+			}
+		  updateMiniMap();
+			drawFillRectangle(0,0,screenWidth,screenHeight,fill="#FFFFFF");
+		  if(!floor){
+				drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');
+			}
+			drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#87CEEB');
+			castWallRays();
+			//weapon
+			ctx.drawImage(weapons_imgs[player.weapon],65*player.weaponState,0,64,64,screenWidth/2-weapon_size/2,screenHeight-weapon_size,weapon_size,weapon_size);
+			//crosshair
+		  {
+				drawFillRectangle(screenWidth/2-50/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
+			  drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
+			  drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
+			  drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
+				circle(screenWidth/2,screenHeight/2,4/2);
+			}
+			if(pickupIsPresent){
+					ctx.font = "bold 20px Courier New";
+					ctx.fillStyle = "#FFFF66";
+					ctx.textAlign = "center";
+					ctx.fillText("Press [G] pick up "+weapon_names[pickups[pickupNum].gun], screenWidth/2, screenHeight-25);
+			}
+		  else if(doorIsPresent&&(map[doorTarget[1]][doorTarget[0]] === 8 || map[doorTarget[1]][doorTarget[0]] === 9 || map[doorTarget[1]][doorTarget[0]] === 10)){
+		      ctx.font = "bold 20px Courier New";
+		      ctx.fillStyle = "#FFFF66";
+		      ctx.textAlign = "center";
+		      ctx.fillText("Press [G] to interact with door", screenWidth/2, screenHeight-25);
+		  }
+			// time since last rendering
+			var now = new Date().getTime();
+			var timeDelta = now - lastRenderCycleTime;
+			var cycleDelay = 1000 / 60;
+			if(timeDelta > cycleDelay) {
+				cycleDelay = Math.max(1, cycleDelay - (timeDelta - cycleDelay))
+			}
+			lastRenderCycleTime = now;
+			fps = 1000 / timeDelta;
+			drawFillRectangleRGBA(screenWidth-50,screenHeight-15,50,15,[170,170,170,0.8]);
+			drawFillRectangleRGBA(39,screenHeight-15,75,15,[170,170,170,0.8]);
+		  ctx.font = "15px monospace";
+		  ctx.fillStyle = "white";
+		  ctx.textAlign = "left";
+		  ctx.fillText("FPS: "+Math.round(fps),50,50);
+		  ctx.textAlign = "center";
+		  ctx.fillText(player.ammo[player.weapon]+'/'+player.maxAmmo[player.weapon],screenWidth-25,screenHeight);
+		  ctx.fillText(Math.round(player.hp)+'/100',39+75/2,screenHeight);
+		  ctx.fillText('LIVES: '+player.lives,screenWidth/2-25/2,screenHeight-5);
+			ctx.drawImage(playerhpIcons,25,33*(7-Math.ceil(player.hp*7/100)),24,31,15,screenHeight-30,24,30);
+			ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
+			ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
+			if(player.maxWeapon > 1) ctx.drawImage(weaponIcons,49*player.maxWeapon,0,48,24,screenWidth-50,screenHeight-60,50,15);
+			drawFillRectangleRGBA(screenWidth-50,screenHeight-15*(2+Math.min(2,player.weapon)),50,15,[170,170,170,0.4]);
 		}
-	  updateMiniMap();
-		drawFillRectangle(0,0,screenWidth,screenHeight,fill="#FFFFFF");
-	  if(!floor){
-			drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');
+		else if(player.timer <= 3000){
+			//draw the text thing
+			drawFillRectangle(0,0,screenWidth,screenHeight,'rgb(8,144,144)');
+		  ctx.fillText('You Died',screenWidth/2-25/2,screenHeight/2-5);
+		  ctx.fillText('LIVES: '+player.lives,screenWidth/2-25/2,screenHeight*3/4);
 		}
-		drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#87CEEB');
-		castWallRays();
-		//weapon
-		ctx.drawImage(weapons_imgs[player.weapon],65*player.weaponState,0,64,64,screenWidth/2-weapon_size/2,screenHeight-weapon_size,weapon_size,weapon_size);
-		//crosshair
-	  {
-			drawFillRectangle(screenWidth/2-50/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
-		  drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
-		  drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
-		  drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
-			circle(screenWidth/2,screenHeight/2,4/2);
-		}
-		if(pickupIsPresent){
-				ctx.font = "bold 20px Courier New";
-				ctx.fillStyle = "#FFFF66";
-				ctx.textAlign = "center";
-				ctx.fillText("Press [G] pick up "+weapon_names[pickups[pickupNum].gun], screenWidth/2, screenHeight-25);
-		}
-	  else if(doorIsPresent&&(map[doorTarget[1]][doorTarget[0]] === 8 || map[doorTarget[1]][doorTarget[0]] === 9 || map[doorTarget[1]][doorTarget[0]] === 10)){
-	      ctx.font = "bold 20px Courier New";
-	      ctx.fillStyle = "#FFFF66";
-	      ctx.textAlign = "center";
-	      ctx.fillText("Press [G] to interact with door", screenWidth/2, screenHeight-25);
-	  }
-		// time since last rendering
-		var now = new Date().getTime();
-		var timeDelta = now - lastRenderCycleTime;
-		var cycleDelay = 1000 / 60;
-		if(timeDelta > cycleDelay) {
-			cycleDelay = Math.max(1, cycleDelay - (timeDelta - cycleDelay))
-		}
-		lastRenderCycleTime = now;
-		fps = 1000 / timeDelta;
-		drawFillRectangleRGBA(screenWidth-50,screenHeight-15,50,15,[170,170,170,0.8]);
-		drawFillRectangleRGBA(39,screenHeight-15,75,15,[170,170,170,0.8]);
-	  ctx.font = "15px monospace";
-	  ctx.fillStyle = "white";
-	  ctx.textAlign = "left";
-	  ctx.fillText("FPS: "+Math.round(fps),50,50);
-	  ctx.textAlign = "center";
-	  ctx.fillText(player.ammo[player.weapon]+'/'+player.maxAmmo[player.weapon],screenWidth-25,screenHeight);
-	  ctx.fillText(Math.round(player.hp)+'/100',39+75/2,screenHeight);
-	  ctx.fillText('LIVES: '+player.lives,screenWidth/2-25/2,screenHeight-5);
-		ctx.drawImage(playerhpIcons,25,33*(7-Math.ceil(player.hp*7/100)),24,31,15,screenHeight-30,24,30);
-		ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
-		ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
-		if(player.maxWeapon > 1) ctx.drawImage(weaponIcons,49*player.maxWeapon,0,48,24,screenWidth-50,screenHeight-60,50,15);
-		drawFillRectangleRGBA(screenWidth-50,screenHeight-15*(2+Math.min(2,player.weapon)),50,15,[170,170,170,0.4]);
 		ctxfin.drawImage((offcanvas.transferToImageBitmap()),0,0,screenWidth,screenHeight);
 		setTimeout(renderCycle, 1);
 }
@@ -1110,11 +1127,8 @@ function bind() {
 				player.weaponTimer = 0;
         break;
 			case 27:
-				if (contentpause.style.display === "none") {
 			    contentpause.style.display = "block";
-			  } else {
-			    contentpause.style.display = "none";
-			  }
+					gameIsOn=false;
 				break;
   		case 16: // crouch
   			player.isCrouching = true;
