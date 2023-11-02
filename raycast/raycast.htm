@@ -89,6 +89,10 @@
   <div class="slidecontainer">
     <input type="range" min="30" max="120" value="60" class="slider" id="myRange" onInput="updateFOV()">
     <p>FOV: <span id="fov">60</span></p>
+    <input type="range" min="0" max="1" value="0.5" class="slider" id="volslider" onInput='updateVol()'>
+    <p>Volume: <span id="vol">50</span>%</p>
+    <input type="range" min="0" max="5" value="1" class="slider" id="sensslider" onInput='updateSens()'>
+    <p>Sensitivity: <span id="sens">1</span></p>
     <input type="checkbox" id="floor" name="floor" value="floor" oninput = "toggleFloor()" checked>
     <label for="floor"> Floor and Ceiling Texturing</label><br>
     <input type="checkbox" id="blood" name="blood" value="blood" oninput = "toggleBlood()">
