@@ -39,7 +39,7 @@ var astar=false;
 var stuff=[0,1,1,3];
 function playsound(src) {
 	var sound = document.createElement("audio");
-	sound.src = 'sounds/weapons/'+src+'.mp3';
+	sound.src = 'sounds/'+src+'.mp3';
 	//sound.setAttribute("preload", "auto");
 	sound.setAttribute("controls", "none");
 	sound.style.display = "none";
@@ -124,7 +124,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 				  if(this.melee){
 				     player.hurt(Math.ceil(8+8*Math.random()));
 				  }else{
-				    if(256*Math.random()<(256-dist*16)){
+				    if(256*Math.random()<(256-dist*16)&&canSee(this)){
 				      player.hurt((player.damage[1]-(player.dropoff[1]*dist*72/player.range[1]))*0.75);
 				    }
 					}
@@ -162,7 +162,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 							this.stateTimer=13;
 						}
 					}else{
-						if(Math.random()<1/(1+2*dist)&&this.atkooldown===0){
+						if(Math.random()<1/(1+2*dist)&&this.atkooldown===0&&canSee(this)){
 							this.attack();
 						}else{
 							if(astar){this.rot = Math.atan2(this.target[1]-this.pos[1],this.target[0]-this.pos[0]);}
@@ -199,6 +199,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 		}
 	}
 	this.hurt = function(amnt){
+		playsound('hp/hit_0');
 		if(this.hp !== 0){
 			if(this.hp-Math.round(amnt) > 0){
 				this.hp=this.hp-Math.round(amnt);
@@ -208,6 +209,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 					this.instate=0;
 				}
 			}else{
+				playsound('hp/headshot_0');
 				this.hp = 0;
 				if(blood){
 					this.state = 5;
@@ -627,7 +629,7 @@ var player = {
 	timer:0,
 	regen:0,
 	fire:function(stripe){
-		playsound(sounds[this.weapon]);
+		playsound('weapons/'+sounds[this.weapon]);
 		if(this.weapon === 0){
 			enemies.forEach(enemy => function(enemy){
 				if(((enemy.x-player.x)**2+(enemy.y-player.y)**2)**0.5 < player.range[player.weapon]/24 && enemy.hp!==0){
@@ -655,6 +657,7 @@ var player = {
 		if(this.timer>3000){
 			this.regen=0;
 			this.hp-=Math.floor(amnt);
+			playsound('hp/takedmg_0');
 			if(this.hp<=0){
 				this.hp=0;
 				this.lives -=1;
@@ -1018,7 +1021,7 @@ var circle = function(x,y,radius){
   ctx.fill();
 };
 function renderCycle() {
-		if(gameIsOn){
+		if(true){
 			ctx.clearRect(0,0,screenWidth,screenHeight);
 		  posZ = (player.height+player.z) * screenHeight;
 		  dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
@@ -1082,11 +1085,11 @@ function renderCycle() {
 			ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
 			if(player.maxWeapon > 1) ctx.drawImage(weaponIcons,49*player.maxWeapon,0,48,24,screenWidth-50,screenHeight-60,50,15);
 			drawFillRectangleRGBA(screenWidth-50,screenHeight-15*(2+Math.min(2,player.weapon)),50,15,[170,170,170,0.4]);
+			drawFillRectangleRGBA(0,0,screenWidth,screenHeight,[255,0,0,Math.max(1-player.hp/75],0));
 		}
-		else if(player.timer <= 3000){
+		if(!gameIsOn){
 			//draw the text thing
-			drawFillRectangle(0,0,screenWidth,screenHeight,'rgb(8,144,144)');
-
+			//drawFillRectangle(0,0,screenWidth,screenHeight,'rgb(8,144,144)');
 		  ctx.font = "15px monospace";
 		  ctx.fillStyle = "white";
 		  ctx.textAlign = "left";
@@ -1110,6 +1113,7 @@ function bind() {
 	document.onmousedown = function(e){
 		if(document.pointerLockElement === canvas){
 			if(e.which === 3 || e.which===2){
+				playsound('weapons/aim_0')
 				adsmul=0.8;
 				fov=truefov*adsmul;
 			  fovHalf = fov/2;
@@ -1122,6 +1126,7 @@ function bind() {
 	}
 	document.onmouseup = function(e){
 		if(e.which===3 || e.which===2){
+			playsound('weapons/aim_1');
 			adsmul=1;
 			fov=truefov*adsmul;
 			fovHalf = fov/2;
@@ -1590,6 +1595,117 @@ function castSingleRay(stripIdx,zbuffer) {
 		}
   }
 }
+function canSee(enemy) {
+	if(Math.floor(enemy.x)===Math.floor(player.x)&&Math.floor(enemy.y)===Math.floor(player.y)) return true;
+  // determine the hit point
+  {
+		var dist = ((enemy.x-player.x)**2+(enemy.y-player.y)**2)**0.5
+		var rayDirX = (player.x-enemy.x)/dist;
+		var rayDirY = (player.y-enemy.y)/dist;
+		var right = (rayDirX>=0);
+		var up = (rayDirY<=0);
+    //WALL CASTING
+  	var wallType = 0;
+		var deltaDistX = Math.abs(1 / rayDirX);
+		var deltaDistY = Math.abs(1 / rayDirY);
+		//length of ray from current position to next x or y-side
+		//var sideDistX = right?((mapX + 1.0 - player.x) * deltaDistX):((player.x - mapX) * deltaDistX);
+		//var sideDistY = up?((player.y - mapY) * deltaDistY):((mapY + 1.0 - player.y) * deltaDistY);
+  	// first check against the vertical map/wall lines
+  	// we do this by moving to the right or left edge of the block we're standing in
+  	// and then moving in 1 map unit steps horizontally. The amount we have to move vertically
+  	// is determined by the slope of the ray, which is simply defined as sin(angle) / cos(angle).
+    var slope = rayDirY / rayDirX; 	// the slope of the straight line made by the ray
+  	var dXVer = right ? 1 : -1; 	// we move either 1 map unit to the left or right
+  	var dYVer = dXVer * slope; 	// how much to move up or down
+  	var dYHor = up ? -1 : 1;
+  	var dXHor = dYHor / slope;
+    var x = right ? Math.ceil(enemy.x) : Math.floor(enemy.x);	// starting horizontal position, at one of the edges of the current map block
+    var y = enemy.y + (x - enemy.x) * slope;// starting vertical position. We add the small horizontal step we just made, multiplied by the slope.
+    while (x > 0 && x < mapWidth && y > 0 && y < mapHeight) {
+    		var wallX = Math.floor(x + (right ? 0 : -1));
+    		var wallY = Math.floor(y);
+				if(Math.floor(x)===Math.floor(player.x)&&Math.floor(y)===Math.floor(player.y)) return true;
+    		// is this point inside a wall block?
+    		if(map[wallY][wallX] !== 0){
+          if(map[wallY][wallX]===8||map[wallY][wallX]===9 ||map[wallY][wallX]===10){
+						if(doorDirs[wallY][wallX]===0){
+	            x_maybe=x+dXVer/2;
+	            y_maybe=y+dYVer/2;
+	            if((y_maybe-wallY) <= 1-doorOffsets[wallY][wallX]){
+	              return false;
+	            }
+	          }
+					}
+          else if(map[wallY][wallX]===11){
+              x_maybe=x+dXVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
+              y_maybe=y+dYVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
+            if(y_maybe-wallY <= 1 && y_maybe-wallY >= 0){
+              return false;
+            }
+          }
+					else if(map[wallY][wallX]===12){
+						if(doorDirs[wallY][wallX]===0){
+							var x_maybe=x+dXVer/2;
+							var y_maybe=y+dYVer/2;
+							if(y_maybe<=1+wallY){
+								return false;
+							}
+						}
+					}
+					else if(map[wallY][wallX]<8){
+	          return false;
+					}
+    		}
+        x += dXVer;
+    		y += dYVer;
+  	}
+  	// now check against horizontal lines. It's basically the same, just "turned around".
+  	// the only difference here is that once we hit a map block,
+  	// we check if there we also found one in the earlier, vertical run. We'll know that if dist != 0.
+  	// If so, we only register this hit if this distance is smaller.
+      var y = up ? Math.floor(enemy.y) : Math.ceil(enemy.y);
+    var x = enemy.x + (y - enemy.y) / slope;
+  	while (x > 0 && x < mapWidth && y > 0 && y < mapHeight) {
+  		var wallY = Math.floor(y + (up ? -1 : 0));
+  		var wallX = Math.floor(x);
+			if(Math.floor(x)===Math.floor(player.x)&&Math.floor(y)===Math.floor(player.y)) return true;
+  		if(map[wallY][wallX]  !== 0) {
+        if(map[wallY][wallX]===8 || map[wallY][wallX]===9 || map[wallY][wallX]===10){
+					if(doorDirs[wallY][wallX]===1){
+	          x_maybe=x+dXHor/2;
+	          y_maybe=y+dYHor/2;
+	          if(x_maybe-wallX <= 1-doorOffsets[wallY][wallX] && x_maybe-wallX >= 0){
+	            return false;
+	          }
+					}
+        }
+        else if(map[wallY][wallX]===11){
+            x_maybe=x+dXHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX]);
+            y_maybe=y+dYHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX]);
+          if(x_maybe-wallX <= 1 && x_maybe-wallX >= 0){
+						return false;
+          }
+        }
+				else if(map[wallY][wallX]===12){
+					if(doorDirs[wallY][wallX]===1){
+						var x_maybe=x+dXHor/2;
+						var y_maybe=y+dYHor/2;
+						if(x_maybe<=wallX+1){
+							return false;
+						}
+					}
+				}
+				else if(map[wallY][wallX]<8){
+          return false;
+        }
+  		}
+  		x += dXHor;
+  		y += dYHor;
+  	}
+  }
+	return true;
+}
 function renderSprites(){
 	var zbuffer=JSON.parse(JSON.stringify(orzbuffer));
   var tempVar = new Array(sprites.length);
@@ -1828,6 +1944,7 @@ function move(timeDelta) {
 			if(player.isJumping){
 				player.zSpeed = 0.1125;
 				player.isJumping = false;
+				playsound('misc/jump_0');
 				//player.isCrouching=false;
 			}
 			if(player.isCrouching){
@@ -1845,9 +1962,9 @@ function move(timeDelta) {
 			}
 		}
     if (player.y >= 0.001){player.moveSpeed = 0.05;}else{player.moveSpeed = 0.069}
-  	var moveStep = mul * player.speed * player.moveSpeed*(player.speedMult+player.momentum);	// player will move this far along the current direction vector
+  	var moveStep = mul * player.speed * player.moveSpeed*(player.speedMult+player.momentum)*Math.max((3*adsmul-2),0.1);	// player will move this far along the current direction vector
 
-    var moveStepStrafe = mul * player.strafeSpeed * player.moveSpeed*(player.speedMult+player.momentum);
+    var moveStepStrafe = mul * player.strafeSpeed * player.moveSpeed*(player.speedMult+player.momentum)*Math.max((3*adsmul-2),0.1);
 
   	player.rotDeg = player.rotDeg + mul * player.dir * player.rotSpeed; // add rotation if player is rotating (player.dir != 0)
 
@@ -1876,6 +1993,7 @@ function move(timeDelta) {
 		player.x = pos.x;
 		player.y = pos.y;
 		if(pos.zSpeed){player.zSpeed = pos.zSpeed;}
+		if (player.zSpeed===0) playsound('misc/land_1')
   }
 }
 function ai(mul){
