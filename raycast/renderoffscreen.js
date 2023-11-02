@@ -40,7 +40,7 @@ function playsound(src) {
 	sound.src = 'sounds/weapons/'+src+'.mp3';
 	//sound.setAttribute("preload", "auto");
 	sound.setAttribute("controls", "none");
-	ssound.style.display = "none";
+	sound.style.display = "none";
 	//document.body.appendChild(sound);
 	sound.play();
 }
