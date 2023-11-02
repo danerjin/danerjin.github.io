@@ -1118,6 +1118,10 @@ function bind() {
 				fov=truefov*adsmul;
 			  fovHalf = fov/2;
 			  viewDist = (screenWidth/2) / Math.tan((fov / 2));
+			  dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
+			  dirY = Math.sin(player.rot)/(Math.tan(fovHalf));
+			  planeX = -Math.sin(player.rot);
+			  planeY = Math.cos(player.rot);
 				invDet = 1.0 / (planeX * dirY - dirX * planeY);
 			}else if(e.which===1){
 				player.weaponIsActive = true;
@@ -1131,6 +1135,10 @@ function bind() {
 			fov=truefov*adsmul;
 			fovHalf = fov/2;
 			viewDist = (screenWidth/2) / Math.tan((fov / 2));
+			dirX = Math.cos(player.rot)/(Math.tan(fovHalf));
+			dirY = Math.sin(player.rot)/(Math.tan(fovHalf));
+			planeX = -Math.sin(player.rot);
+			planeY = Math.cos(player.rot);
 			invDet = 1.0 / (planeX * dirY - dirX * planeY);
 		}else if(e.which===1){
 			player.weaponIsActive = false;
