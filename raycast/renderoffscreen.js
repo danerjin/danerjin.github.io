@@ -48,7 +48,7 @@ function playsound(src) {
 	sound.play();
 }
 gameIsOn=false;
-text='Get Ready!';
+textscreen='Get Ready!';
 var Sprite = function(x,y,texture,block,hitbox,h,z,vmove){
   this.x = x;
   this.y = y;
@@ -659,6 +659,7 @@ var player = {
 				this.hp=0;
 				this.lives -=1;
 				gameIsOn=false;
+				textscreen='You Died';
 				this.x=5.5;
 				this.y=3.1;
 				if(this.lives>=0){
@@ -1087,7 +1088,7 @@ function renderCycle() {
 		  ctx.fillStyle = "white";
 		  ctx.textAlign = "left";
 		  ctx.textAlign = "center";
-		  ctx.fillText('You Died',screenWidth/2-25/2,screenHeight/2-5);
+		  ctx.fillText(textscreen,screenWidth/2-25/2,screenHeight/2-5);
 		  ctx.fillText('LIVES: '+player.lives,screenWidth/2-25/2,screenHeight*3/4);
 		}
 		ctxfin.drawImage((offcanvas.transferToImageBitmap()),0,0,screenWidth,screenHeight);
