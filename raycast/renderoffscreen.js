@@ -689,7 +689,9 @@ var player = {
 var miniMapScale = 8;
 var doorIsPresent = false;
 var doorTarget = [0,0];
-var fov = 60 * Math.PI / 180;
+var truefov=60 * Math.PI / 180;
+var adsmul = 1;
+var fov = truefov*adsmul;
 var numRays = Math.ceil(screenWidth / stripWidth);
 var fovHalf = fov / 2;
 var viewDist = (screenWidth/2) / Math.tan((fov / 2));
@@ -717,10 +719,11 @@ for(var i = 0; i < numRays+10;i++){
   orzbuffer[i]=[];
 }
 function updateFOV(){
-  fov = slider.value*Math.PI/180;
+  truefov = slider.value*Math.PI/180;
+	fov=truefov*adsmul;
   fovHalf = fov/2;
   viewDist = (screenWidth/2) / Math.tan((fov / 2));
-  $("fov").innerText = Math.round(fov*180/Math.PI);
+  $("fov").innerText = Math.round(truefov*180/Math.PI);
 	invDet = 1.0 / (planeX * dirY - dirX * planeY);
 }
 function updateVol(){
@@ -1105,10 +1108,28 @@ function updateMousePosition(e) {
 // bind keyboard events to game functions (movement, etc)
 function bind() {
 	document.onmousedown = function(e){
-		if(document.pointerLockElement === canvas){player.weaponIsActive = true;}
+		if(document.pointerLockElement === canvas){
+			if(e.which === 3 || e.which===2){
+				adsmul=0.8;
+				fov=truefov*adsmul;
+			  fovHalf = fov/2;
+			  viewDist = (screenWidth/2) / Math.tan((fov / 2));
+				invDet = 1.0 / (planeX * dirY - dirX * planeY);
+			}else if(e.which===1){
+				player.weaponIsActive = true;
+			}
+		}
 	}
 	document.onmouseup = function(e){
-		player.weaponIsActive = false;
+		if(e.which===3 || e.which===2){
+			adsmul=1;
+			fov=truefov*adsmul;
+			fovHalf = fov/2;
+			viewDist = (screenWidth/2) / Math.tan((fov / 2));
+			invDet = 1.0 / (planeX * dirY - dirX * planeY);
+		}else if(e.which===1){
+			player.weaponIsActive = false;
+		}
 	}
 	document.onkeydown = function(e) {
 		e = e || window.event;
