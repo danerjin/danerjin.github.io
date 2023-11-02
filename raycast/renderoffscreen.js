@@ -160,8 +160,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 							this.stateTimer=13;
 						}
 					}else{
-						if(Math.random()<1/(2*dist)&&this.atkooldown===0){
-							console.log('attacking');
+						if(Math.random()<1/(1+2*dist)&&this.atkooldown===0){
 							this.attack();
 						}else{
 							if(astar){this.rot = Math.atan2(this.target[1]-this.pos[1],this.target[0]-this.pos[0]);}
