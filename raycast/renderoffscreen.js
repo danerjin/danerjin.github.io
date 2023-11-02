@@ -69,7 +69,7 @@ var Pickup = function(x,y,texture,z,vmove){
 	this.gun = weapon_names.indexOf(texture);
   this.z = z;
 }
-var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flich,weapon/*,ai*/){
+var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weapon/*,ai*/){
   this.x = x;
   this.y = y;
 	this.z = z;
