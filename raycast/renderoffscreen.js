@@ -1082,6 +1082,11 @@ function renderCycle() {
 		else if(player.timer <= 3000){
 			//draw the text thing
 			drawFillRectangle(0,0,screenWidth,screenHeight,'rgb(8,144,144)');
+
+		  ctx.font = "15px monospace";
+		  ctx.fillStyle = "white";
+		  ctx.textAlign = "left";
+		  ctx.textAlign = "center";
 		  ctx.fillText('You Died',screenWidth/2-25/2,screenHeight/2-5);
 		  ctx.fillText('LIVES: '+player.lives,screenWidth/2-25/2,screenHeight*3/4);
 		}
