@@ -95,7 +95,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 	this.flinch=flinch;
 	this.weapon=weapon;
 	this.update=function(mul,dist){
-		this.stateTimer+=this.speed*3*mul*stuff[this.instate];
+		this.stateTimer+=(this.instate===2?0.05:this.speed)*3*mul*stuff[this.instate];
 		this.state = Math.floor(this.stateTimer);
 		this.atkooldown = Math.max(this.atkooldown-mul*gameCycleDelay,0);
 		if(this.instate===1){
@@ -141,34 +141,33 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 		this.update(mul,dist);
 		if(this.hp>0){
 			if(this.alert){
-				var neighs = neighbors(this.pos[0],this.pos[1]);
-				if(neighs.length){
-					neighs.sort(function(a){return ((a[0]-player.x)**2+(a[1]-player.y)**2)})
-					this.target = neighs[0];
-				}
-				if(this.melee){
-					if(dist < player.range[0]/36 && this.atkooldown === 0){
-						this.attack();
-					}else if (dist>player.range[0]/36){
-						if(astar){this.rot = Math.atan2(this.target[1]-this.pos[1],this.target[0]-this.pos[0]);}
-						else{this.rot = Math.atan2(-this.y+player.y,-this.x+player.x);}
-						this.fd(mul);
-					}else{
-						this.instate=0;
-						this.state=13;
-						this.stateTimer=13;
+				if(this.instate!==2){
+					var neighs = neighbors(this.pos[0],this.pos[1]);
+					if(neighs.length){
+						neighs.sort(function(a){return ((a[0]-player.x)**2+(a[1]-player.y)**2)})
+						this.target = neighs[0];
 					}
-				}else{
-					if(dist<2.5 && this.atkooldown === 0){
-						this.attack();
-					}else if (dist>2.5){
-						if(astar){this.rot = Math.atan2(this.target[1]-this.pos[1],this.target[0]-this.pos[0]);}
-						else{this.rot = Math.atan2(-this.y+player.y,-this.x+player.x);}
-						this.fd(mul);
+					if(this.melee){
+						if(dist < player.range[0]/36&&this.atkooldown===0){
+							this.attack();
+						}else if (dist>player.range[0]/36){
+							if(astar){this.rot = Math.atan2(this.target[1]-this.pos[1],this.target[0]-this.pos[0]);}
+							else{this.rot = Math.atan2(-this.y+player.y,-this.x+player.x);}
+							this.fd(mul);
+						}else{
+							this.instate=0;
+							this.state=13;
+							this.stateTimer=13;
+						}
 					}else{
-						this.instate=0;
-						this.state=13;
-						this.stateTimer=13;
+						if(Math.random()<1/(2*dist)&&this.atkooldown===0){
+							console.log('attacking');
+							this.attack();
+						}else{
+							if(astar){this.rot = Math.atan2(this.target[1]-this.pos[1],this.target[0]-this.pos[0]);}
+							else{this.rot = Math.atan2(-this.y+player.y,-this.x+player.x);}
+							this.fd(mul);
+						}
 					}
 				}
 			}else{
@@ -1966,10 +1965,10 @@ function checkCollisionHor(fromX, fromY, toX, toY, radius,fromZ) {
 	pos.x = toX;
 	pos.y = toY;
 
-	var blockTop = isBlocking(blockX,blockY-1,fromZ+0.25);
-	var blockBottom = isBlocking(blockX,blockY+1,fromZ+0.25);
-	var blockLeft = isBlocking(blockX-1,blockY,fromZ+0.25);
-	var blockRight = isBlocking(blockX+1,blockY,fromZ+0.25);
+	var blockTop = isBlocking(blockX+0.5,blockY-1+0.5,fromZ+0.25);
+	var blockBottom = isBlocking(blockX+0.5,blockY+1+0.5,fromZ+0.25);
+	var blockLeft = isBlocking(blockX-1+0.5,blockY+0.5,fromZ+0.25);
+	var blockRight = isBlocking(blockX+1+0.5,blockY+0.5,fromZ+0.25);
 
 	if(blockTop && toY - blockY < radius) {
 		toY = pos.y = blockY + radius;
@@ -1985,7 +1984,7 @@ function checkCollisionHor(fromX, fromY, toX, toY, radius,fromZ) {
 	}
 
 	// is tile to the top-left a wall
-	if(isBlocking(blockX-1,blockY-1,fromZ+0.25) && !(blockTop && blockLeft)) {
+	if(isBlocking(blockX-1+0.5,blockY-1+0.5,fromZ+0.25) && !(blockTop && blockLeft)) {
 		var dx = toX - blockX;
 		var dy = toY - blockY;
 		if(dx*dx+dy*dy < radius*radius) {
@@ -1997,7 +1996,7 @@ function checkCollisionHor(fromX, fromY, toX, toY, radius,fromZ) {
 		return pos;
 	}
 	// is tile to the top-right a wall
-	if(isBlocking(blockX+1,blockY-1,fromZ+0.25) && !(blockTop && blockRight)) {
+	if(isBlocking(blockX+1.5,blockY-0.5,fromZ+0.25) && !(blockTop && blockRight)) {
 		var dx = toX - (blockX+1);
 		var dy = toY - blockY;
 		if(dx*dx+dy*dy < radius*radius) {
@@ -2009,7 +2008,7 @@ function checkCollisionHor(fromX, fromY, toX, toY, radius,fromZ) {
 		return pos;
 	}
 	// is tile to the bottom-left a wall
-	if(isBlocking(blockX-1,blockY+1,fromZ+0.25) && !(blockBottom && blockLeft)) {
+	if(isBlocking(blockX-1+0.5,blockY+1+0.5,fromZ+0.25) && !(blockBottom && blockLeft)) {
 		var dx = toX - blockX;
 		var dy = toY - (blockY+1);
 		if(dx*dx+dy*dy < radius*radius) {
@@ -2021,7 +2020,7 @@ function checkCollisionHor(fromX, fromY, toX, toY, radius,fromZ) {
 		return pos;
 	}
 	// is tile to the bottom-right a wall
-	if(isBlocking(blockX+1,blockY+1,fromZ+0.25) && !(blockBottom && blockRight)) {
+	if(isBlocking(blockX+1+0.5,blockY+1+0.5,fromZ+0.25) && !(blockBottom && blockRight)) {
 		var dx = toX - (blockX+1);
 		var dy = toY - (blockY+1);
 		if(dx*dx+dy*dy < radius*radius) {
