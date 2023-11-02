@@ -35,19 +35,14 @@ function neighbors(x,y){
 }
 var astar=false;
 var stuff=[0,1,1,3];
-function sound(src) {
-	this.sound = document.createElement("audio");
-	this.sound.src = src;
-	this.sound.setAttribute("preload", "auto");
-	this.sound.setAttribute("controls", "none");
-	this.sound.style.display = "none";
-	document.body.appendChild(this.sound);
-	this.play = function(){
-			this.sound.play();
-	}
-	this.stop = function(){
-			this.sound.pause();
-	}
+function playsound(src) {
+	var sound = document.createElement("audio");
+	sound.src = 'sounds/weapons/'+src+'.mp3';
+	//sound.setAttribute("preload", "auto");
+	sound.setAttribute("controls", "none");
+	ssound.style.display = "none";
+	//document.body.appendChild(sound);
+	sound.play();
 }
 var Sprite = function(x,y,texture,block,hitbox,h,z,vmove){
   this.x = x;
@@ -513,6 +508,7 @@ var enemies = [
 	new Enemy(4.5,7.5,0,"guard",75,3*Math.PI/2,0.02,0,false,0.5,1),
 	new Enemy(4.5,15.5,0,"ss",100,3*Math.PI/2,0.035,0,false,0.4,3),
 ];
+var sounds=['swsh_0_0','weapon_3','weapon_2','weapon_7'];
 var pickups = [
 	new Pickup(14,1.6,"smg",0,0),
 	new Pickup(6.3,9,"chaingun",0,0),
@@ -557,6 +553,8 @@ var contentpause = $('text');
 var gravity = 0.01;
 var stripWidth = 2;
 var blood = false;
+
+
 var player = {
 	x : 5.5,		// current x, y position
 	y : 3.1,
@@ -620,6 +618,7 @@ var player = {
 	timer:0,
 	regen:0,
 	fire:function(stripe){
+		playsound(sounds[this.weapon]);
 		if(this.weapon === 0){
 			enemies.forEach(enemy => function(enemy){
 				if(((enemy.x-player.x)**2+(enemy.y-player.y)**2)**0.5 < player.range[player.weapon]/24 && enemy.hp!==0){
@@ -671,6 +670,8 @@ var player = {
 		this.timer+=delt;
 	}
 }
+
+
 var miniMapScale = 8;
 var doorIsPresent = false;
 var doorTarget = [0,0];
