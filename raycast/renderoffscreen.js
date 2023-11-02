@@ -712,11 +712,11 @@ function updateFOV(){
   $("fov").innerText = Math.round(fov*180/Math.PI);
 	invDet = 1.0 / (planeX * dirY - dirX * planeY);
 }
-function updateSens(){
+function updateVol(){
   vol = $('volslider').value;
   $("vol").innerText = 100*vol;
 }
-function updateVol(){
+function updateSens(){
   sens = $('sensslider').value;
   $("sens").innerText = sens;
 }
