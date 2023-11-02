@@ -1085,7 +1085,7 @@ function renderCycle() {
 			ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
 			if(player.maxWeapon > 1) ctx.drawImage(weaponIcons,49*player.maxWeapon,0,48,24,screenWidth-50,screenHeight-60,50,15);
 			drawFillRectangleRGBA(screenWidth-50,screenHeight-15*(2+Math.min(2,player.weapon)),50,15,[170,170,170,0.4]);
-			drawFillRectangleRGBA(0,0,screenWidth,screenHeight,[255,0,0,Math.max(1-player.hp/75],0));
+			drawFillRectangleRGBA(0,0,screenWidth,screenHeight,[255,0,0,Math.max(1-player.hp/75],0);
 		}
 		if(!gameIsOn){
 			//draw the text thing
