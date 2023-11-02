@@ -663,6 +663,7 @@ var player = {
 				this.y=3.1;
 				if(this.lives>=0){
 					this.hp=100;
+					this.timer=0;
 				}
 			}
 		}
