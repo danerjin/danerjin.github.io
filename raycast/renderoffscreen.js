@@ -69,7 +69,7 @@ var Pickup = function(x,y,texture,z,vmove){
 	this.gun = weapon_names.indexOf(texture);
   this.z = z;
 }
-var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst/*,ai*/){
+var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flich,weapon/*,ai*/){
   this.x = x;
   this.y = y;
 	this.z = z;
@@ -92,6 +92,8 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst/*,ai*/){
 	this.cool=cool;
 	this.burstTimer=0;
 	this.burst=burst;
+	this.flinch=flinch;
+	this.weapon=weapon;
 	this.update=function(mul,dist){
 		this.stateTimer+=this.speed*3*mul*stuff[this.instate];
 		this.state = Math.floor(this.stateTimer);
@@ -109,11 +111,13 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst/*,ai*/){
 					this.state = 1;
 					this.instate = 1;
 					this.atkooldown = this.cool*1000;
+
 				}else{
 					this.stateTimer=14;
 					this.state=14;
 					this.instate=2;
 				}
+				playsound(sounds[this.weapon]);
 				if((this.melee&&dist < player.range[0]/36) || (!this.melee)){
 				  if(this.melee){
 				     player.hurt(Math.ceil(8+8*Math.random()));
@@ -198,9 +202,11 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst/*,ai*/){
 		if(this.hp !== 0){
 			if(this.hp-Math.round(amnt) > 0){
 				this.hp=this.hp-Math.round(amnt);
-				this.state = 13;
-				this.stateTimer=13;
-				this.instate=0;
+				if(this.flinch){
+					this.state = 13;
+					this.stateTimer=13;
+					this.instate=0;
+				}
 			}else{
 				this.hp = 0;
 				if(blood){
@@ -500,16 +506,16 @@ var sprites = [
   new Sprite(10,10,"barrel",true,0.6,0.4,0,0)
 ];
 var enemies = [
-	new Enemy(15.5,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
-	new Enemy(16.0,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
-	new Enemy(16.5,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
-	new Enemy(17.0,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
-	new Enemy(15.5,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
-	new Enemy(16.0,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
-	new Enemy(16.5,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
-	new Enemy(17.0,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1),
-	new Enemy(4.5,7.5,0,"guard",75,3*Math.PI/2,0.02,0,false,0.5,1),
-	new Enemy(4.5,15.5,0,"ss",100,3*Math.PI/2,0.035,0,false,0.4,3),
+	new Enemy(15.5,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
+	new Enemy(16.0,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
+	new Enemy(16.5,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
+	new Enemy(17.0,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
+	new Enemy(15.5,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
+	new Enemy(16.0,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
+	new Enemy(16.5,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
+	new Enemy(17.0,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
+	new Enemy(4.5,7.5,0,"guard",75,3*Math.PI/2,0.02,0,false,0.5,1,true,1),
+	new Enemy(4.5,15.5,0,"ss",100,3*Math.PI/2,0.035,0,false,0.4,3,true,2),
 ];
 var sounds=['swsh_0_0','weapon_3','weapon_2','weapon_7'];
 var pickups = [
