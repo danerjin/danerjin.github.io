@@ -20,6 +20,8 @@ var debug = false;
 var enemy;
 var weapon_names = ['knife','pistol','smg','chaingun'];
 var dmgdist;
+var vol = 0.5;
+var sens = 1;
 function neighbors(x,y){
 	var cellX = Math.floor(x);
 	var cellY = Math.floor(y);
@@ -41,6 +43,7 @@ function playsound(src) {
 	//sound.setAttribute("preload", "auto");
 	sound.setAttribute("controls", "none");
 	sound.style.display = "none";
+	sound.volume=vol;
 	//document.body.appendChild(sound);
 	sound.play();
 }
@@ -709,6 +712,14 @@ function updateFOV(){
   $("fov").innerText = Math.round(fov*180/Math.PI);
 	invDet = 1.0 / (planeX * dirY - dirX * planeY);
 }
+function updateSens(){
+  vol = $('volslider').value;
+  $("vol").innerText = 100*vol;
+}
+function updateVol(){
+  sens = $('sensslider').value;
+  $("sens").innerText = sens;
+}
 function toggleFloor(){
   floor = !floor;
 }
@@ -825,11 +836,11 @@ function gameCycle() {
     temp = JSON.parse(JSON.stringify(mousePos));
     diffX = temp[0]-prevMousePos[0];
     diffY = temp[1]-prevMousePos[1];
-    if(diffX > 0.5){player.dir = 0.05*(diffX-0.5);}
-    if(diffX < -0.5){player.dir = 0.05*(diffX+0.5);}
+    if(diffX > 0.5){player.dir = 0.05*(diffX*sens-0.5);}
+    if(diffX < -0.5){player.dir = 0.05*(diffX*sens+0.5);}
     if(Math.abs(diffX)<=0.5){player.dir = 0;}
-    if(diffY > 0){player.pitchChange = -diffY;}
-    if(diffY < 0){player.pitchChange = -diffY;}
+    if(diffY > 0){player.pitchChange = -diffY*sens;}
+    if(diffY < 0){player.pitchChange = -diffY*sens;}
     if(diffY === 0){player.pitchChange = 0;}
     prevMousePos = JSON.parse(JSON.stringify(temp));
   }
