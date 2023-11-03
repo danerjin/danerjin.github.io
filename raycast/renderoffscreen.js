@@ -125,7 +125,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 				     player.hurt(Math.ceil(8+8*Math.random()));
 				  }else{
 				    if(256*Math.random()<(256-dist*16)&&canSee(this)){
-				      player.hurt((player.damage[1]-(player.dropoff[1]*dist*72/player.range[1]))*0.75);
+				      player.hurt((player.damage[1]-(player.dropoff[1]*dist*24/player.range[1]))*0.75);
 				    }
 					}
 				}
