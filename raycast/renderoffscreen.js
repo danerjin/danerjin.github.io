@@ -37,13 +37,13 @@ function neighbors(x,y){
 }
 var astar=false;
 var stuff=[0,1,1,3];
-function playsound(src) {
+function playsound(src,mul=1) {
 	var sound = document.createElement("audio");
 	sound.src = 'sounds/'+src+'.mp3';
 	//sound.setAttribute("preload", "auto");
 	sound.setAttribute("controls", "none");
 	sound.style.display = "none";
-	sound.volume=vol;
+	sound.volume=Math.min(vol*mul,1);
 	//document.body.appendChild(sound);
 	sound.play();
 }
@@ -583,6 +583,7 @@ var player = {
   height: 0.5, // player height
   zSpeed: 0,
   isJumping: false,
+	isFloor:true,
   speedMult: 1,
 	isCrouching:false,
   weapon:1,
@@ -1040,7 +1041,7 @@ function renderCycle() {
 			drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#87CEEB');
 			castWallRays();
 			//weapon
-			ctx.drawImage(weapons_imgs[player.weapon],65*player.weaponState,0,64,64,screenWidth/2-weapon_size/2*1/adsmul,screenHeight-weapon_size,weapon_size*1/adsmul,weapon_size*1/adsmul);
+			ctx.drawImage(weapons_imgs[player.weapon],65*player.weaponState,0,64,64,screenWidth/2-weapon_size/2*1/adsmul,screenHeight-weapon_size*(1.5-0.5*adsmul),weapon_size*1/adsmul,weapon_size*1/adsmul);
 			//crosshair
 		  {
 				drawFillRectangle(screenWidth/2-50/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
@@ -1113,7 +1114,7 @@ function bind() {
 	document.onmousedown = function(e){
 		if(document.pointerLockElement === canvas){
 			if(e.which === 3 || e.which===2){
-				playsound('weapons/aim_0')
+				playsound('weapons/aim_1')
 				adsmul=0.8;
 				fov=truefov*adsmul;
 			  fovHalf = fov/2;
@@ -1130,7 +1131,7 @@ function bind() {
 	}
 	document.onmouseup = function(e){
 		if(e.which===3 || e.which===2){
-			playsound('weapons/aim_1');
+			playsound('weapons/aim_0');
 			adsmul=1;
 			fov=truefov*adsmul;
 			fovHalf = fov/2;
@@ -1896,7 +1897,12 @@ function move(timeDelta) {
   }
   {
 		player.speedMult = 1;
-		if(player.z<=0.05||isBlocking(player.x,player.y,player.z-0.05)){
+		var newfloor=player.z<=0.05||isBlocking(player.x,player.y,player.z-0.05);
+		if(!player.isFloor&&newfloor){
+			playsound('misc/land_1',5);
+		}
+		player.isFloor=newfloor;
+		if(player.isFloor){
 			if(player.isJumping){
 				player.zSpeed = 0.1125;
 				player.isJumping = false;
@@ -1949,7 +1955,6 @@ function move(timeDelta) {
 		player.x = pos.x;
 		player.y = pos.y;
 		if(pos.zSpeed){player.zSpeed = pos.zSpeed;}
-		if (player.zSpeed===0) playsound('misc/land_1')
   }
 }
 function ai(mul){
@@ -1970,12 +1975,14 @@ function checkCollision(fromX,fromY,toX,toY,radius,fromZ,toZ){
 				if(toZ<=heightMap[iy][ix]){
 					pos.z = heightMap[iy][ix];
 					pos.zSpeed = 0;
+
 					return pos;
 				}
 			}else{
 				if(Math.abs(heightMap[iy][ix]-fromZ) <= 0.25){
 					pos.z = heightMap[iy][ix];
 					pos.zSpeed = 0;
+
 					return pos;
 				}
 			}
@@ -2040,11 +2047,13 @@ function checkCollision(fromX,fromY,toX,toY,radius,fromZ,toZ){
 					if(toZ>=sprite.z||fromZ>=sprite.z+sprite.h){
 							pos.z = sprite.z+sprite.h;
 							pos.zSpeed = 0;
+
 							return pos;
 					}else{
 						if(toZ+player.height>=sprite.z){
 							pos.z = sprite.z;
 							pos.zSpeed = 0;
+
 							return pos;
 						}
 					}
