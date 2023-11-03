@@ -619,6 +619,7 @@ var player = {
 	reload:function(){
 		if(this.weapon!==0 && this.ammo[this.weapon]!==this.maxAmmo[this.weapon]){
 			this.weaponState = -1;
+			playsound('weapons/reload_3');
 			setTimeout(function(){
 				player.ammo[player.weapon] = player.maxAmmo[player.weapon];
 				player.weaponState = 0;
