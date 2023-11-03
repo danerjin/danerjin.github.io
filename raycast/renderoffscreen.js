@@ -1040,7 +1040,7 @@ function renderCycle() {
 			drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#87CEEB');
 			castWallRays();
 			//weapon
-			ctx.drawImage(weapons_imgs[player.weapon],65*player.weaponState,0,64,64,screenWidth/2-weapon_size/2,screenHeight-weapon_size,weapon_size,weapon_size);
+			ctx.drawImage(weapons_imgs[player.weapon],65*player.weaponState,0,64,64,screenWidth/2-weapon_size/2*1/adsmul,screenHeight-weapon_size,weapon_size*1/adsmul,weapon_size*1/adsmul);
 			//crosshair
 		  {
 				drawFillRectangle(screenWidth/2-50/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
@@ -1307,7 +1307,7 @@ function castSingleRay(stripIdx,zbuffer) {
   	var dYVer = dXVer * slope; 	// how much to move up or down
   	var dYHor = up ? -1 : 1;
   	var dXHor = dYHor / slope;
-    var x = right ? Math.ceil(player.x) : Math.floor(player.x);	// starting horizontal position, at one of the edges of the current map block
+    var x = (right) ? Math.ceil(player.x) : Math.floor(player.x);	// starting horizontal position, at one of the edges of the current map block
     var y = player.y + (x - player.x) * slope;// starting vertical position. We add the small horizontal step we just made, multiplied by the slope.
     while (x > 0 && x < mapWidth && y > 0 && y < mapHeight) {
     		var wallX = Math.floor(x + (right ? 0 : -1));
@@ -1414,7 +1414,7 @@ function castSingleRay(stripIdx,zbuffer) {
   	// the only difference here is that once we hit a map block,
   	// we check if there we also found one in the earlier, vertical run. We'll know that if dist != 0.
   	// If so, we only register this hit if this distance is smaller.
-    var y = up ? Math.floor(player.y) : Math.ceil(player.y);
+    var y = (up) ? Math.floor(player.y) : Math.ceil(player.y);
     var x = player.x + (y - player.y) / slope;
   	while (x > 0 && x < mapWidth && y > 0 && y < mapHeight) {
   		var wallY = Math.floor(y + (up ? -1 : 0));
