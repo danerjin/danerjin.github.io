@@ -119,7 +119,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 					this.state=14;
 					this.instate=2;
 				}
-				playsound(sounds[this.weapon]);
+				playsound('weapons/'+sounds[this.weapon]);
 				if((this.melee&&dist < player.range[0]/36) || (!this.melee)){
 				  if(this.melee){
 				     player.hurt(Math.ceil(8+8*Math.random()));
@@ -1307,33 +1307,7 @@ function castSingleRay(stripIdx,zbuffer) {
   	var dYVer = dXVer * slope; 	// how much to move up or down
   	var dYHor = up ? -1 : 1;
   	var dXHor = dYHor / slope;
-    /*if(player.currSquare===8||player.currSquare===9||player.currSquare===10){
-      if(right){
-        if(player.x%1>=0.5){
-          var x = !right ? Math.ceil(player.x) : Math.floor(player.x);
-        }
-      }
-      else{
-        if(player.x%1<=0.5){
-          var x = !right ? Math.ceil(player.x) : Math.floor(player.x);
-        }
-      }
-    }
-    else if(player.currSquare===11){
-      if(right){
-        if(player.x%1>=1-doorOffsets[Math.floor(player.y)][Math.floor(player.x)]){
-          var x = !right ? Math.ceil(player.x) : Math.floor(player.x);
-        }
-      }
-      else{
-        if(player.x%1<=doorOffsets[Math.floor(player.y)][Math.floor(player.x)]){
-          var x = !right ? Math.ceil(player.x) : Math.floor(player.x);
-        }
-      }
-    }
-    else{*/
-      var x = right ? Math.ceil(player.x) : Math.floor(player.x);	// starting horizontal position, at one of the edges of the current map block
-    //}
+    var x = right ? Math.ceil(player.x) : Math.floor(player.x);	// starting horizontal position, at one of the edges of the current map block
     var y = player.y + (x - player.x) * slope;// starting vertical position. We add the small horizontal step we just made, multiplied by the slope.
     while (x > 0 && x < mapWidth && y > 0 && y < mapHeight) {
     		var wallX = Math.floor(x + (right ? 0 : -1));
@@ -1440,33 +1414,7 @@ function castSingleRay(stripIdx,zbuffer) {
   	// the only difference here is that once we hit a map block,
   	// we check if there we also found one in the earlier, vertical run. We'll know that if dist != 0.
   	// If so, we only register this hit if this distance is smaller.
-    /*if(player.currSquare===8||player.currSquare===9||player.currSquare===10){
-      if(up){
-        if(player.y%1<=0.5){
-          var y = !up ? Math.floor(player.y) : Math.ceil(player.y);
-        }
-      }
-      else{
-        if(player.y%1>=0.5){
-          var y = !up ? Math.floor(player.y) : Math.ceil(player.y);
-        }
-      }
-    }
-    else if(player.currSquare===11){
-      if(up){
-        if(player.y%1>=1-doorOffsets[Math.floor(player.y)][Math.floor(player.x)]){
-          var y = !up ? Math.floor(player.y) : Math.ceil(player.y);
-        }
-      }
-      else{
-        if(player.y%1<=doorOffsets[Math.floor(player.y)][Math.floor(player.x)]){
-          var y = !up ? Math.floor(player.y) : Math.ceil(player.y);
-        }
-      }
-    }
-    else{*/
-      var y = up ? Math.floor(player.y) : Math.ceil(player.y);
-    //}
+    var y = up ? Math.floor(player.y) : Math.ceil(player.y);
     var x = player.x + (y - player.y) / slope;
   	while (x > 0 && x < mapWidth && y > 0 && y < mapHeight) {
   		var wallY = Math.floor(y + (up ? -1 : 0));
