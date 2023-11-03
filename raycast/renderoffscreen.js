@@ -173,7 +173,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 					}
 				}
 			}else{
-				if(dist<8){
+				if(dist<(player.isCrouching?8:15)&&canSee(this)){
 					this.alert = true;
 				}else{
 					this.alert = false;
