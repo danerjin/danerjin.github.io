@@ -199,8 +199,8 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 		}
 	}
 	this.hurt = function(amnt){
-		playsound('hp/hit_0');
 		if(this.hp !== 0){
+			playsound('hp/hit_0');
 			if(this.hp-Math.round(amnt) > 0){
 				this.hp=this.hp-Math.round(amnt);
 				if(this.flinch){
