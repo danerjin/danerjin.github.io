@@ -97,6 +97,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 	this.flinch=flinch;
 	this.weapon=weapon;
 	this.update=function(mul,dist){
+		dist=dist*Math.abs(this.z-player.z);
 		this.stateTimer+=(this.instate===2?0.05:this.speed)*3*mul*stuff[this.instate];
 		this.state = Math.floor(this.stateTimer);
 		this.atkooldown = Math.max(this.atkooldown-mul*gameCycleDelay,0);
@@ -191,7 +192,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 			map[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] === 10){
 				doorStates[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] = 1;
 			}
-			var pos = checkCollision(this.x,this.y,this.x+this.xSpeed*mul,this.y+this.ySpeed*mul,0.05,0);
+			var pos = checkCollision(this.x,this.y,this.x+this.xSpeed*mul,this.y+this.ySpeed*mul,0.05,this.z-gravity);
 			this.x = pos.x;
 			this.y = pos.y;
 			this.z = pos.z;
