@@ -22,13 +22,13 @@ var weapon_names = ['knife','pistol','smg','chaingun'];
 var dmgdist;
 var vol = 0.5;
 var sens = 1;
-function neighbors(x,y){
+function neighbors(x,y,z){
 	var cellX = Math.floor(x);
 	var cellY = Math.floor(y);
 	var val = [];
 	for(var i = cellX-1;i<=cellX+1;i++){
 		for(var j = cellY-1;j<=cellY+1;j++){
-			if(!isBlocking(i+0.5,j+0.5,0) && (cellX-i)^(cellY-j) && i!== cellX && i!==cellY){
+			if(i!== cellX && i!==cellY){
 				val.push([i+0.5,j+0.5])
 			}
 		}
@@ -145,7 +145,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 		if(this.hp>0){
 			if(this.alert){
 				if(this.instate!==2){
-					var neighs = neighbors(this.pos[0],this.pos[1]);
+					var neighs = neighbors(this.x,this.y,this.z);
 					if(neighs.length){
 						neighs.sort(function(a){return ((a[0]-player.x)**2+(a[1]-player.y)**2)})
 						this.target = neighs[0];
@@ -154,7 +154,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 						if(dist < player.range[0]/36&&this.atkooldown===0){
 							this.attack();
 						}else if (dist>player.range[0]/36){
-							if(astar){this.rot = Math.atan2(this.target[1]-this.pos[1],this.target[0]-this.pos[0]);}
+							if(astar){this.rot = Math.atan2(this.target[1]-this.y,this.target[0]-this.x);}
 							else{this.rot = Math.atan2(-this.y+player.y,-this.x+player.x);}
 							this.fd(mul);
 						}else{
@@ -166,7 +166,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 						if(Math.random()<1/(1+2*dist)&&this.atkooldown===0&&canSee(this)){
 							this.attack();
 						}else{
-							if(astar){this.rot = Math.atan2(this.target[1]-this.pos[1],this.target[0]-this.pos[0]);}
+							if(astar){this.rot = Math.atan2(this.target[1]-this.y,this.target[0]-this.x);}
 							else{this.rot = Math.atan2(-this.y+player.y,-this.x+player.x);}
 							this.fd(mul);
 						}
@@ -615,6 +615,7 @@ var player = {
 			this.weapon=this.maxWeapon;
 		}else{
 			this.weapon = 0;
+			playsound('weapons/melee_equip');
 		}
 	},
 	reload:function(){
