@@ -538,14 +538,14 @@ var enemies = [
 	new Enemy(17.0,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
 	new Enemy(4.5,7.5,0,"guard",75,3*Math.PI/2,0.02,0,false,0.5,1,true,1),
 	new Enemy(4.5,15.5,0,"ss",100,3*Math.PI/2,0.035,0,false,0.4,3,true,2),
-	new Enemy(5.5,14.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(6.0,14.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(6.5,14.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(7.0,14.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(5.5,13.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(6.0,13.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(6.5,13.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(7.0,13.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
+	new Enemy(5.5,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
+	new Enemy(6.0,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
+	new Enemy(6.5,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
+	new Enemy(7.0,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
+	new Enemy(5.5,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
+	new Enemy(6.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
+	new Enemy(6.5,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
+	new Enemy(7.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
 ];
 var sounds=[['swsh_0_0','swsh_0_1'],'weapon_3','weapon_2','weapon_7'];
 var pickups = [
