@@ -202,19 +202,31 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 			this.pos = [Math.floor(this.x)+0.5,Math.floor(this.y)+0.5];
 		}
 	}
-	this.hurt = function(amnt){
+	this.hurt = function(amnt,dist){
+		var headshot=Math.random()>0.5;
 		if(this.hp !== 0){
 			playsound('hp/hit_0');
-			if(this.hp-Math.round(amnt) > 0){
-				this.hp=this.hp-Math.round(amnt);
+			if(this.hp-Math.round(amnt*(headshot?1.5:1)) > 0){
+				this.hp=this.hp-Math.round(amnt*(headshot?1.5:1));
 				if(this.flinch){
 					this.state = 13;
 					this.stateTimer=13;
 					this.instate=0;
 				}
 			}else{
-				playsound('hp/headshot_0');
+				if(headshot){
+					playsound('hp/headshot_0');
+				}else{
+					playsound('hp/hit_0');
+				}
 				this.hp = 0;
+				if(player.weapon===0){
+					player.score+=((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0)+150)
+				}else if(player.weapon===1){
+					player.score+=((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0)+25)
+				}else{
+					player.score+=((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0))
+				}
 				if(blood){
 					this.state = 5;
 					this.stateTimer=5;
@@ -650,7 +662,7 @@ var player = {
 		if(this.weapon === 0){
 			enemies.forEach(enemy => function(enemy){
 				if(((enemy.x-player.x)**2+(enemy.y-player.y)**2)**0.5 < player.range[player.weapon]/24 && enemy.hp!==0){
-					enemy.hurt(player.damage[0]);
+					enemy.hurt(player.damage[0],0);
 				}
 			}(enemy));
 		}else{
@@ -662,7 +674,7 @@ var player = {
 					enemy = enemies[num];
 					dist = ((enemy.x-this.x)**2+(enemy.y-this.y)**2)**0.5;
 					if(dist <= this.range[this.weapon]/24 && stripe[i].y<=screenHeight/2 && stripe[i].y+stripe[i].height>=screenHeight/2 && enemy.hp!==0){
-						enemy.hurt((this.damage[this.weapon]-(this.dropoff[this.weapon]*dist*24/this.range[this.weapon]))*dmgMult);
+						enemy.hurt((this.damage[this.weapon]-(this.dropoff[this.weapon]*dist*24/this.range[this.weapon]))*dmgMult,dist);
 					}
 				}else{
 					dmgMult*=(1-this.pierce[this.weapon]/2);
@@ -1097,7 +1109,8 @@ function renderCycle() {
 		  ctx.textAlign = "center";
 		  ctx.fillText(player.ammo[player.weapon]+'/'+player.maxAmmo[player.weapon],screenWidth-25,screenHeight);
 		  ctx.fillText(Math.round(player.hp)+'/100',39+75/2,screenHeight);
-		  ctx.fillText('LIVES: '+player.lives,screenWidth/2-25/2,screenHeight-5);
+		  ctx.fillText('LIVES: '+player.lives,screenWidth/2-25/2-100,screenHeight-5);
+		  ctx.fillText('SCORE: '+player.score,screenWidth/2-25/2+100,screenHeight-5);
 			ctx.drawImage(playerhpIcons,25,33*(7-Math.ceil(player.hp*7/100)),24,31,15,screenHeight-30,24,30);
 			ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
 			ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
