@@ -21,6 +21,7 @@ var enemy;
 var weapon_names = ['knife','pistol','smg','chaingun'];
 var dmgdist;
 var vol = 0.5;
+var scoretext='';
 var sens = 1;
 function neighbors(x,y,z){
 	var cellX = Math.floor(x);
@@ -221,11 +222,11 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 				}
 				this.hp = 0;
 				if(player.weapon===0){
-					player.score+=((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0)+150)
+					player.increaseScore((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0)+150);
 				}else if(player.weapon===1){
-					player.score+=((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0)+25)
+					player.increaseScore((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0)+25);
 				}else{
-					player.score+=((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0))
+					player.increaseScore((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0));
 				}
 				if(blood){
 					this.state = 5;
@@ -653,6 +654,13 @@ var player = {
 	regen:0,
 	atkount:0,
 	score:0,
+	increaseScore:function(amnt){
+		this.score+=amnt;
+		scoretext='+'+'amnt';
+		setTimeout(function(){
+			scoretext=''
+		},500)
+	},
 	fire:function(stripe){
 		if(this.weapon===0){
 			playsound('weapons/'+sounds[this.weapon][this.atkount%2]);
@@ -887,8 +895,8 @@ function gameCycle() {
 	    temp = JSON.parse(JSON.stringify(mousePos));
 	    diffX = temp[0]-prevMousePos[0];
 	    diffY = temp[1]-prevMousePos[1];
-	    if(diffX > 0.5){player.dir = 0.05*(diffX*sens-0.5);}
-	    if(diffX < -0.5){player.dir = 0.05*(diffX*sens+0.5);}
+	    if(diffX > 0.5){player.dir = 0.05*(diffX*sens*(4*adsmul-3)-0.5);}
+	    if(diffX < -0.5){player.dir = 0.05*(diffX*sens*(4*adsmul-3)+0.5);}
 	    if(Math.abs(diffX)<=0.5){player.dir = 0;}
 	    if(diffY > 0){player.pitchChange = -diffY*sens;}
 	    if(diffY < 0){player.pitchChange = -diffY*sens;}
@@ -1115,6 +1123,7 @@ function renderCycle() {
 			ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
 			ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
 			if(player.maxWeapon > 1) ctx.drawImage(weaponIcons,49*player.maxWeapon,0,48,24,screenWidth-50,screenHeight-60,50,15);
+		  ctx.fillText(scoretext,screenWidth/2-25/2,screenHeight/2-5);
 			drawFillRectangleRGBA(screenWidth-50,screenHeight-15*(2+Math.min(2,player.weapon)),50,15,[170,170,170,0.4]);
 			drawFillRectangleRGBA(0,0,screenWidth,screenHeight,[255,0,0,0.5*Math.max(1-player.hp/75,0)]);
 		}
