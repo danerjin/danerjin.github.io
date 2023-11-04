@@ -656,10 +656,10 @@ var player = {
 	score:0,
 	increaseScore:function(amnt){
 		this.score+=amnt;
-		scoretext='+'+'amnt';
+		scoretext='+'+amnt;
 		setTimeout(function(){
-			scoretext=''
-		},500)
+			scoretext='';
+		},1000)
 	},
 	fire:function(stripe){
 		if(this.weapon===0){
