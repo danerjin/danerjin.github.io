@@ -36,6 +36,12 @@ function neighbors(x,y,z){
 	}
 	return val;
 }
+function getimagedata(v) {
+  const w = v.width, h = v.height;
+  const context = new OffscreenCanvas(w, h).getContext('2d');
+  context.drawImage(v, 0, 0, w, h);
+  return context.getImageData(0, 0, w, h);
+}
 var astar=false;
 var stuff=[0,1,1,3];
 function playsound(src,mul=1) {
@@ -405,6 +411,8 @@ var heightMap = [
 var maxHeight = 2;
 var mapWidth = map[0].length;
 var mapHeight = map.length;
+var useGPU = false;
+var lode=false;
 var doorStates = new Array(mapHeight);
 // 1 is opening, 0 is closing, 0.5 is for stationary
 for (var i = 0; i < mapHeight; i++) {
@@ -579,6 +587,7 @@ for(var texture = 1; texture < 11;texture++){
   	floorTexture.src = `floor_${texture}.png`;
     floorTextures.push(floorTexture);
 }
+var floorData=getimagedata(floorTextures[1]);
 var weapon_size = screenWidth*2/3;
 mobile = window.mobileAndTabletCheck();
 var canvas = $("screen");
@@ -1074,14 +1083,56 @@ function renderCycle() {
 		  dirY = Math.sin(player.rot)/(Math.tan(fovHalf));
 		  planeX = -Math.sin(player.rot);
 		  planeY = Math.cos(player.rot);
-			for(var y = 0; y<=screenHeight; y+=stripWidth){
-				if(y===screenHeight/2+player.pitch){break;}
-				rowdistlookup[y] = posZ/(y - screenHeight / 2 - player.pitch);
+			if(!lode){
+				for(var y = 0; y<=screenHeight; y+=stripWidth){
+					if(y===screenHeight/2+player.pitch){break;}
+					rowdistlookup[y] = posZ/(y - screenHeight / 2 - player.pitch);
+				}
 			}
 		  updateMiniMap();
 			drawFillRectangle(0,0,screenWidth,screenHeight,fill="#FFFFFF");
 		  if(!floor){
 				drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');
+			}else{
+				if(useGPU){
+				  var rayDirX0 = dirX - planeX;
+				  var rayDirY0 = dirY - planeY;
+				  var rayDirX1 = dirX + planeX;
+				  var rayDirY1 = dirY + planeY;
+					var floorImage = renderFloorCeilLode(player,screenHeight,screenWidth,planeX,planeY,rayDirX0,rayDirY0,floorData).getCanvas();
+					ctx.drawImage(floorImage,0,0);
+				}
+				if(lode){
+				  var rayDirX0 = dirX - planeX;
+				  var rayDirY0 = dirY - planeY;
+				  var rayDirX1 = dirX + planeX;
+				  var rayDirY1 = dirY + planeY;
+				  // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
+				  var posZ = (player.height+player.z) * screenHeight;
+				  for(var y = screenHeight/2+player.pitch+stripWidth; y < screenHeight; y+=stripWidth){
+				    var p = y - screenHeight / 2 - player.pitch;
+				    // Vertical position of the camera.
+				    // Horizontal distance from the camera to the floor for the current row.
+				    // 0.5 is the z position exactly in the middle between floor and ceiling.
+				    var rowDistance = (posZ)/ (p);
+				    // calculate the real world step vector we have to add for each x (parallel to camera plane)
+				    // adding step by step avoids multiplications with a weight in the inner loop
+				    var floorStepX = stripWidth * rowDistance * (2*0.847826*planeX) / (screenWidth);
+				  	var floorStepY = stripWidth * rowDistance * (2*0.847826*planeY) / (screenWidth);
+				    // real world coordinates of the leftmost column. This will be updated as we step to the right.
+				    var floorX = player.x + rowDistance * 0.847826 * rayDirX0;
+				    var floorY = player.y + rowDistance * 0.847826 * rayDirY0;
+
+				    for(var x = 0; x < screenWidth; x+=stripWidth){
+				      var tx = floorX%1;
+				      var ty = floorY%1;
+				      floorX += floorStepX;
+			      	floorY += floorStepY;
+			        // floor drawing
+			        drawFloorRectangle(x,y,stripWidth,stripWidth,tx,ty,2);
+					  }
+					}
+				}
 			}
 			drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#87CEEB');
 			castWallRays();
@@ -1301,6 +1352,36 @@ function bind() {
 		}
 	}
 }
+const gpu = new GPU.GPU();
+const renderFloorCeilLode = gpu.createKernel(function(player,screenHeight,screenWidth,planeX,planeY,rayDirX0,rayDirY0,data){
+  // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
+  const posZ = (player.height+player.z) * screenHeight;
+  const is_floor = this.thread.y > screenHeight / 2 + player.pitch;
+  // Current y position compared to the center of the screen (the horizon)
+  const p = is_floor?(this.thread.y - screenHeight / 2 - player.pitch):(screenHeight / 2 - this.thread.y + player.pitch);
+  // Vertical position of the camera.
+  // Horizontal distance from the camera to the floor for the current row.
+  // 0.5 is the z position exactly in the middle between floor and ceiling.
+  const rowDistance = (is_floor?(posZ):(screenHeight-posZ)) / (p);
+  // calculate the real world step vector we have to add for each x (parallel to camera plane)
+  // adding step by step avoids multiplications with a weight in the inner loop
+  const floorStepX = stripWidth * rowDistance * (2*0.847826*planeX) / (screenWidth);
+	const floorStepY = stripWidth * rowDistance * (2*0.847826*planeY) / (screenWidth);
+  // real world coordinates of the leftmost column. This will be updated as we step to the right.
+  let floorX;
+  let floorY;
+  floorX = player.x + rowDistance * ((2*this.thread.x/screenWidth-1)*planeX);
+  floorY = player.y + rowDistance * ((2*this.thread.x/screenWidth-1)*planeY);
+  // choose texture and draw the pixel
+  if(is_floor){
+    //drawFloorRectangle(this.thread.x,this.thread.y,stripWidth,stripWidth,floorX%1,floorY%1,2);
+		this.color(100,8,100);
+		var n = 4 * (this.thread.x + this.constants.w * (this.constants.h - this.thread.y) );
+		this.color(data[n]/256, data[n+1]/256,data[n+2]/256,1);
+  }else{
+    //drawCeilRectangle(x,y,stripWidth,stripWidth,tx,ty,4);
+  }
+}).setOutput([screenWidth,screenHeight]).setGraphical(true);
 function castWallRays() {
   var stripIdx = 0;
 	var zbufferenem = renderEnemies();
@@ -1576,22 +1657,24 @@ function castSingleRay(stripIdx,zbuffer) {
 			}
 		}
 		//permadi floorcasting
-    if(floor){
-			var floorX,floorY,floorTexture;
-      for(var y = Math.round(top+height-stripWidth); y < screenHeight; y+=stripWidth){
-        var rowDistance = rowdistlookup[Math.round(y/stripWidth)*stripWidth];
-        // calculate the real world step vector we have to add for each x (parallel to camera plane)
-        // adding step by step avoids multiplications with a weight in the inner loop
-        // real world coordinates of the leftmost column. This will be updated as we step to the right.
-        floorX = player.x + rowDistance * (dirX+cameraX*planeX);
-        floorY = player.y + rowDistance * (dirY+cameraX*planeY);
-        // choose texture and draw the pixel
-        /*if((floorX >= mapWidth || floorY >= mapHeight) || (floorX < 0 || floorY < 0) || floorlayout[cellY] === undefined){floorTexture = 2;}else{floorTexture = floorlayout[cellY][cellX];}
-        if(floorTexture === 0 || floorTexture === undefined){floorTexture = 2;}*/
-        // floor drawing
-        drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,floorX%1,floorY%1,2);
-      }
-    }
+		if(!useGPU && !lode){
+			if(floor){
+				var floorX,floorY,floorTexture;
+	      for(var y = Math.round(top+height-stripWidth); y < screenHeight; y+=stripWidth){
+	        var rowDistance = rowdistlookup[Math.round(y/stripWidth)*stripWidth];
+	        // calculate the real world step vector we have to add for each x (parallel to camera plane)
+	        // adding step by step avoids multiplications with a weight in the inner loop
+	        // real world coordinates of the leftmost column. This will be updated as we step to the right.
+	        floorX = player.x + rowDistance * (dirX+cameraX*planeX);
+	        floorY = player.y + rowDistance * (dirY+cameraX*planeY);
+	        // choose texture and draw the pixel
+	        /*if((floorX >= mapWidth || floorY >= mapHeight) || (floorX < 0 || floorY < 0) || floorlayout[cellY] === undefined){floorTexture = 2;}else{floorTexture = floorlayout[cellY][cellX];}
+	        if(floorTexture === 0 || floorTexture === undefined){floorTexture = 2;}*/
+	        // floor drawing
+	        drawFloorRectangle(stripIdx*stripWidth,y,stripWidth,stripWidth,floorX%1,floorY%1,2);
+	      }
+	    }
+		}
 		hits = hits.concat(zbuffer[stripIdx]).sort(function(x,y){return y.dist-x.dist});
 		hits.forEach((element) => element.draw());
 		if(stripIdx === Math.floor(numRays/2)){
