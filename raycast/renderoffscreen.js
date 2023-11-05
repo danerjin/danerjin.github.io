@@ -1352,8 +1352,9 @@ function bind() {
 		}
 	}
 }
-const gpu = new GPU.GPU();
-const renderFloorCeilLode = gpu.createKernel(function(player,screenHeight,screenWidth,planeX,planeY,rayDirX0,rayDirY0,data){
+if(useGPU){
+	const gpu = new GPU.GPU();
+	const renderFloorCeilLode = gpu.createKernel(function(player,screenHeight,screenWidth,planeX,planeY,rayDirX0,rayDirY0,data){
   // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
   const posZ = (player.height+player.z) * screenHeight;
   const is_floor = this.thread.y > screenHeight / 2 + player.pitch;
@@ -1380,8 +1381,8 @@ const renderFloorCeilLode = gpu.createKernel(function(player,screenHeight,screen
 		this.color(data[n]/256, data[n+1]/256,data[n+2]/256,1);
   }else{
     //drawCeilRectangle(x,y,stripWidth,stripWidth,tx,ty,4);
-  }
-}).setOutput([screenWidth,screenHeight]).setGraphical(true);
+  }}).setOutput([screenWidth,screenHeight]).setGraphical(true);
+}
 function castWallRays() {
   var stripIdx = 0;
 	var zbufferenem = renderEnemies();
