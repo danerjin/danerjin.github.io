@@ -920,6 +920,10 @@ function gameCycle() {
 	    if(diffY === 0){player.pitchChange = 0;}
 	    prevMousePos = JSON.parse(JSON.stringify(temp));
 	  }
+		else{
+			contentpause.style.display = "block";
+			gameIsOn=false;
+		}
 	  var x_target,y_target;
 	  var x_move,y_move;
 	  x_target = Math.floor(player.x);
