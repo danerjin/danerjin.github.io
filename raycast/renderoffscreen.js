@@ -81,7 +81,7 @@ var Pickup = function(x,y,texture,z,vmove){
 	this.gun = weapon_names.indexOf(texture);
   this.z = z;
 }
-var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weapon/*,ai*/){
+var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weapon,drop=-1/*,ai*/){
   this.x = x;
   this.y = y;
 	this.z = z;
@@ -97,6 +97,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 	this.stateTimer = 0;
 	this.dmg = dmg;
 	this.melee = melee;
+	this.drop=drop;
 	this.target = [Math.floor(this.x)+0.5,Math.floor(this.y)+0.5];
 	this.pos = [Math.floor(this.x)+0.5,Math.floor(this.y)+0.5];
 	this.instate = 0;
@@ -233,6 +234,10 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 					player.increaseScore((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0)+25);
 				}else{
 					player.increaseScore((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0));
+				}
+				if(this.drop>0){
+					//add drop to pickupslist
+					pickups.push(new Pickup(this.x,this.y,weapon_names[this.drop],this.z,this.z))
 				}
 				if(blood){
 					this.state = 5;
@@ -545,7 +550,7 @@ var enemies = [
 	new Enemy(16.5,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
 	new Enemy(17.0,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
 	new Enemy(4.5,7.5,0,"guard",75,3*Math.PI/2,0.02,0,false,0.5,1,true,1),
-	new Enemy(4.5,15.5,0,"ss",100,3*Math.PI/2,0.035,0,false,0.4,3,true,2),
+	new Enemy(4.5,15.5,0,"ss",100,3*Math.PI/2,0.035,0,false,0.4,3,true,2,2),
 	new Enemy(5.5,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
 	new Enemy(6.0,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
 	new Enemy(6.5,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
@@ -556,10 +561,7 @@ var enemies = [
 	new Enemy(7.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
 ];
 var sounds=[['swsh_0_0','swsh_0_1'],'weapon_3','weapon_2','weapon_7'];
-var pickups = [
-	new Pickup(14,1.6,"smg",0,0),
-	new Pickup(6.3,9,"chaingun",0,0),
-]
+var pickups = [];
 var weapons_imgs = [];
 for(var texture = 0; texture < weapon_names.length;texture++){
     var weaponTexture = new Image();
