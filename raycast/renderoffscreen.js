@@ -90,7 +90,7 @@ var Pickup = function(x,y,texture,z,vmove,type){
 	}
   this.z = z;
 }
-var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weapon,drop=-1/*,ai*/){
+var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weapon,drop=-1,droptype=-/*,ai*/){
   this.x = x;
   this.y = y;
 	this.z = z;
@@ -116,6 +116,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 	this.burst=burst;
 	this.flinch=flinch;
 	this.weapon=weapon;
+	this.droptype=droptype;
 	this.update=function(mul,dist){
 		dist=dist*Math.abs(this.z-player.z);
 		this.stateTimer+=(this.instate===2?0.05:this.speed)*3*mul*stuff[this.instate];
@@ -247,7 +248,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 				}
 				if(this.drop>0){
 					//add drop to pickupslist
-					pickups.push(new Pickup(this.x,this.y,weapon_names[this.drop],this.z,this.z,0))
+					pickups.push(new Pickup(this.x,this.y,this.drop,this.z,this.z,this.droptype))
 				}
 				if(blood){
 					this.state = 5;
@@ -575,15 +576,15 @@ var enemies = [
 	new Enemy(7.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
 	new Enemy(10.0,20.0,0,"guard",50,Math.PI,0.075,0,true,0.5,1,true,1),
 	new Enemy(11.0,20.0,0,"guard",50,Math.PI,0.075,0,true,0.5,1,true,1),
-	new Enemy(10.0,21.0,0,"ss",100,Math.PI,0.075,0,true,0.5,1,true,2,2),
-	new Enemy(11.0,21.0,0,"ss",100,Math.PI,0.075,0,true,0.5,1,true,2,2),
+	new Enemy(10.0,21.0,0,"ss",100,Math.PI,0.075,0,true,0.5,1,true,2,'smg',0),
+	new Enemy(11.0,21.0,0,"ss",100,Math.PI,0.075,0,true,0.5,1,true,2,'smg',0),
 	new Enemy(7.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
 	new Enemy(21.5,8.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1),
 	new Enemy(19.5,8.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1),
 	new Enemy(21.5,6.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1),
 	new Enemy(19.5,6.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1),
-	new Enemy(21.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.5,1,true,2,2),
-	new Enemy(20.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.5,1,true,2,2),
+	new Enemy(21.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.5,1,true,2,'smg',0),
+	new Enemy(20.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.5,1,true,2,'smg',0),
 ]
 var sounds=[['swsh_0_0','swsh_0_1'],'weapon_3','weapon_2','weapon_7'];
 var pickups = [
