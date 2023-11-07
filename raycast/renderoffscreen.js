@@ -131,12 +131,13 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 					this.state=14;
 					this.instate=2;
 				}
-				playsound('weapons/'+sounds[this.weapon]);
 				if((this.melee&&dist < player.range[0]/36) || (!this.melee)){
 				  if(this.melee){
-				     player.hurt(Math.ceil(8+8*Math.random()));
+						playsound('weapons/'+sounds[this.weapon][0]);
+				  	player.hurt(Math.ceil(8+8*Math.random()));
 				  }else{
 				    if(256*Math.random()<(256-dist*16)&&canSee(this)){
+							playsound('weapons/'+sounds[this.weapon]);
 				      player.hurt((player.damage[1]-(player.dropoff[1]*dist*24/player.range[1]))*0.75);
 				    }
 					}
@@ -231,9 +232,9 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 				if(player.weapon===0){
 					player.increaseScore((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0)+150);
 				}else if(player.weapon===1){
-					player.increaseScore((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0)+25);
+					player.increaseScore((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0)+75);
 				}else{
-					player.increaseScore((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0));
+					player.increaseScore((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0)+50);
 				}
 				if(this.drop>0){
 					//add drop to pickupslist
@@ -561,7 +562,9 @@ var enemies = [
 	new Enemy(7.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
 ];
 var sounds=[['swsh_0_0','swsh_0_1'],'weapon_3','weapon_2','weapon_7'];
-var pickups = [];
+var pickups = [
+	new Pickup(15.5,7.5,'chaingun',0,0)
+];
 var weapons_imgs = [];
 for(var texture = 0; texture < weapon_names.length;texture++){
     var weaponTexture = new Image();
