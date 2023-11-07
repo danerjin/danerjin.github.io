@@ -476,6 +476,10 @@ weaponIcons.src = `sprites/icons/weapons.png`;
 var playerhpIcons = new Image();
 playerhpIcons.crossOrigin = "Anonymous";
 playerhpIcons.src = `sprites/icons/faces.png`;
+
+var playerKeysIcons = new Image();
+playerKeysIcons.crossOrigin = "Anonymous";
+playerKeysIcons.src = `sprites/icons/keys.png`;
 var floorlayout = [
   [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
   [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
@@ -1995,16 +1999,16 @@ function move(timeDelta) {
 	ai(mul);
   if(isPressingG){
 		if(pickupIsPresent){
-			if(pickups[pickupNum]===0){
+			if(pickups[pickupNum].type===0){
 				player.maxWeapon = pickups[pickupNum].gun;
 				pickups.splice(pickupNum, 1);
 				player.primary();
 				pickupIsPresent = false;
-			}else if(pickups[pickupNum]===1){
+			}else if(pickups[pickupNum].type===1){
 				player.keys++;
-			}else if(pickups[pickupNum]===2){
+			}else if(pickups[pickupNum].type===2){
 				player.ammoPack+=8;
-			}else if(pickups[pickupNum]===3){
+			}else if(pickups[pickupNum].type===3){
 				player.hp=Math.min(player.hp+20,100);
 			}
 		}else{
