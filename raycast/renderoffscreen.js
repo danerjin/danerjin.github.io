@@ -71,14 +71,23 @@ var Sprite = function(x,y,texture,block,hitbox,h,z,vmove){
   this.h = h;
   this.z = z;
 }
-var Pickup = function(x,y,texture,z,vmove){
+var Pickup = function(x,y,texture,z,vmove,type){
   this.x = x;
   this.y = y;
 	this.vmove = vmove;
   this.texture = new Image();
   this.texture.crossOrigin = "Anonymous";
   this.texture.src = `sprites/objects/${texture}.png`;
-	this.gun = weapon_names.indexOf(texture);
+	this.type=type;
+	if(this.type===0){
+		this.gun = weapon_names.indexOf(texture);
+	}else if(this.type===1){
+		//key
+	}else if(this.type===2){
+		//ammo
+	}else if(this.type===3){
+		//health
+	}
   this.z = z;
 }
 var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weapon,drop=-1/*,ai*/){
@@ -238,7 +247,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 				}
 				if(this.drop>0){
 					//add drop to pickupslist
-					pickups.push(new Pickup(this.x,this.y,weapon_names[this.drop],this.z,this.z))
+					pickups.push(new Pickup(this.x,this.y,weapon_names[this.drop],this.z,this.z,0))
 				}
 				if(blood){
 					this.state = 5;
@@ -574,7 +583,7 @@ var enemies = [
 ]
 var sounds=[['swsh_0_0','swsh_0_1'],'weapon_3','weapon_2','weapon_7'];
 var pickups = [
-	new Pickup(15.5,7.5,'chaingun',0,0)
+	new Pickup(15.5,7.5,'chaingun',0,0,0),
 ];
 var weapons_imgs = [];
 for(var texture = 0; texture < weapon_names.length;texture++){
@@ -647,6 +656,7 @@ var player = {
 	maxWeapon:1,
 	ammo:['-',10,28,60],
 	maxAmmo:['-',10,28,60],
+	ammoPack:100,
 	reloadTimes:[0,700,1500,3300],
 	damage:[50,20,23,19],
 	dropoff:[0,10,5,10],
@@ -672,10 +682,11 @@ var player = {
 		}
 	},
 	reload:function(){
-		if(this.weapon!==0 && this.ammo[this.weapon]!==this.maxAmmo[this.weapon]){
+		if(this.weapon!==0 && this.ammo[this.weapon]!==this.maxAmmo[this.weapon] && player.ammoPack >= (player.maxAmmo[player.weapon]-player.ammo[player.weapon])){
 			this.weaponState = -1;
 			playsound('weapons/reload_3');
 			setTimeout(function(){
+				player.ammoPack -= (player.maxAmmo[player.weapon]-player.ammo[player.weapon]);
 				player.ammo[player.weapon] = player.maxAmmo[player.weapon];
 				player.weaponState = 0;
 			},this.reloadTimes[this.weapon]);
@@ -755,7 +766,8 @@ var player = {
 			this.hp=100;
 		}
 		this.timer+=delt;
-	}
+	},
+	keys:0,
 }
 
 
@@ -1202,6 +1214,9 @@ function renderCycle() {
 			ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
 			ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
 			if(player.maxWeapon > 1) ctx.drawImage(weaponIcons,49*player.maxWeapon,0,48,24,screenWidth-50,screenHeight-60,50,15);
+			for(var i = 0; i < player.keys; i++){
+				ctx.drawImage(playerKeysIcons,i*9,0,8,16,screenWidth-58,screenHeight-15*(2-i),8,15);
+			}
 		  ctx.fillText(scoretext,screenWidth/2-25/2,screenHeight/2-5);
 			drawFillRectangleRGBA(screenWidth-50,screenHeight-15*(2+Math.min(2,player.weapon)),50,15,[170,170,170,0.4]);
 			drawFillRectangleRGBA(0,0,screenWidth,screenHeight,[255,0,0,0.5*Math.max(1-player.hp/75,0)]);
@@ -1974,17 +1989,24 @@ function drawRay(rayX, rayY) {
 }
 
 function move(timeDelta) {
-
   // time timeDelta has passed since we moved last time. We should have moved after time gameCycleDelay,
   // so calculate how much we should multiply our movement to ensure game speed is constant
   var mul = timeDelta / gameCycleDelay;
 	ai(mul);
   if(isPressingG){
 		if(pickupIsPresent){
-			player.maxWeapon = pickups[pickupNum].gun;
-			pickups.splice(pickupNum, 1);
-			player.primary();
-			pickupIsPresent = false;
+			if(pickups[pickupNum]===0){
+				player.maxWeapon = pickups[pickupNum].gun;
+				pickups.splice(pickupNum, 1);
+				player.primary();
+				pickupIsPresent = false;
+			}else if(pickups[pickupNum]===1){
+				player.keys++;
+			}else if(pickups[pickupNum]===2){
+				player.ammoPack+=8;
+			}else if(pickups[pickupNum]===3){
+				player.hp=Math.min(player.hp+20,100);
+			}
 		}else{
 	    var x_target = doorTarget[0];
 	    var y_target = doorTarget[1];
