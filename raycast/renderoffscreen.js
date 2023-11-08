@@ -248,11 +248,9 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 				}else{
 					player.increaseScore((player.hp<20?20:0)+(player.isFloor?0:25)+(dist>8?0:25)+(headshot?50:0)+50);
 				}
-				if(this.drop>0){
-					//add drop to pickupslist
-					for(var i = 0; i < this.drops.length;i++){
-						pickups.push(new Pickup(this.x,this.y,this.drops[i][0],this.z,this.z,this.drops[i][1]))
-					}
+				//add drop to pickupslist
+				for(var i = 0; i < this.drops.length;i++){
+					pickups.push(new Pickup(this.x,this.y,this.drops[i][0],this.z,this.z,this.drops[i][1]))
 				}
 				if(blood){
 					this.state = 5;
@@ -2007,13 +2005,13 @@ function move(timeDelta) {
 	ai(mul);
   if(isPressingG){
 		if(pickupIsPresent){
+			pickups.splice(pickupNum, 1);
+			pickupIsPresent = false;
 			if(pickups[pickupNum].type===0){
 				player.maxWeapon = pickups[pickupNum].gun;
-				pickups.splice(pickupNum, 1);
 				player.primary();
-				pickupIsPresent = false;
 			}else if(pickups[pickupNum].type===1){
-				player.keys++;
+				player.keys+=1;
 			}else if(pickups[pickupNum].type===2){
 				player.ammoPack+=8;
 			}else if(pickups[pickupNum].type===3){
