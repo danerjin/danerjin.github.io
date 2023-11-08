@@ -426,8 +426,8 @@ var heightMap = [
   [2,1,0.8,0.6,0.4,0.2,0,2,2,2,0,0,0,2,2,0,2,0,2,0,1,0,1,2],
   [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
 ];
-var endX=22;
-var endY=22;
+var endX=21;
+var endY=21;
 var maxHeight = 2;
 var mapWidth = map[0].length;
 var mapHeight = map.length;
@@ -863,10 +863,12 @@ function init() {
   }
 
   canvas.addEventListener("click", async () => {
-    await canvas.requestPointerLock();
-		contentpause.style.display = "none";
-    document.addEventListener("mousemove", updateMousePosition, false);
-		gameIsOn=true;
+		if(screenText!=='You Won!'){
+	    await canvas.requestPointerLock();
+			contentpause.style.display = "none";
+	    document.addEventListener("mousemove", updateMousePosition, false);
+			gameIsOn=true;
+		}
   });
   drawFillRectangle(0,0,screenWidth,screenHeight/2,'#429bf5');
   drawFillRectangle(0,screenHeight/2,screenWidth,screenHeight/2,'#c0a570');
