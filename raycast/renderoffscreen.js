@@ -863,7 +863,7 @@ function init() {
   }
 
   canvas.addEventListener("click", async () => {
-		if(screenText!=='You Won!'){
+		if(textscreen!=='You Won!'){
 	    await canvas.requestPointerLock();
 			contentpause.style.display = "none";
 	    document.addEventListener("mousemove", updateMousePosition, false);
