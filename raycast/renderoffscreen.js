@@ -567,7 +567,7 @@ var enemies = [
 	new Enemy(16.5,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
 	new Enemy(17.0,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
 	new Enemy(4.5,7.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
-	new Enemy(4.5,15.5,0,"ss",100,3*Math.PI/2,0.035,0,false,0.4,3,true,2,2,[['ammo',2],['smg',0]]),
+	new Enemy(4.5,15.5,0,"ss",100,3*Math.PI/2,0.035,0,false,0.4,3,true,2,[['ammo',2],['smg',0]]),
 	new Enemy(5.5,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
 	new Enemy(6.0,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
 	new Enemy(6.5,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
