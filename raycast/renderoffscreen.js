@@ -756,10 +756,12 @@ var player = {
 				this.lives -=1;
 				gameIsOn=false;
 				textscreen='You Died';
-				this.x=5.5;
-				this.y=3.1;
 				if(this.lives>=0){
 					this.hp=100;
+					this.x=5.5;
+					this.y=3.1;
+					this.maxWeapon=1;
+					this.weapon=1;
 					this.timer=0;
 					setTimeout(function(){
 						gameIsOn=true;
