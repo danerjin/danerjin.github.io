@@ -2004,6 +2004,7 @@ function move(timeDelta) {
   var mul = timeDelta / gameCycleDelay;
 	ai(mul);
   if(isPressingG){
+		isPressingG=false;
 		if(pickupIsPresent){
 			if(pickups[pickupNum].type===0){
 				player.maxWeapon = pickups[pickupNum].gun;
