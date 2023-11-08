@@ -88,7 +88,7 @@ var Pickup = function(x,y,texture,z,vmove,type){
 		//ammo
 	}else if(this.type===3){
 		//health
-	}else if(this.type====4){
+	}else if(this.type===4){
 		///more lives
 	}
   this.z = z;
