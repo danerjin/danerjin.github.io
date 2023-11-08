@@ -2089,7 +2089,7 @@ function move(timeDelta) {
 		if(Math.floor(player.x)===endX && Math.floor(player.y)===endY){
 			setTimeout(function(){
 				gameIsOn=false;
-				textScreen='You Won!';
+				textscreen='You Won!';
 			},1000);
 		}
 		player.speedMult = 1;
