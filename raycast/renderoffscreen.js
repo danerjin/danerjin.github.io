@@ -2005,8 +2005,6 @@ function move(timeDelta) {
 	ai(mul);
   if(isPressingG){
 		if(pickupIsPresent){
-			pickups.splice(pickupNum, 1);
-			pickupIsPresent = false;
 			if(pickups[pickupNum].type===0){
 				player.maxWeapon = pickups[pickupNum].gun;
 				player.primary();
@@ -2019,6 +2017,8 @@ function move(timeDelta) {
 			}else if(pickups[pickupNum].type===4){
 				player.lives++;
 			}
+			pickups.splice(pickupNum, 1);
+			pickupIsPresent = false;
 		}else{
 	    var x_target = doorTarget[0];
 	    var y_target = doorTarget[1];
