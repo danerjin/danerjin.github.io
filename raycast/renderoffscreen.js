@@ -78,6 +78,7 @@ var Pickup = function(x,y,texture,z,vmove,type){
   this.texture = new Image();
   this.texture.crossOrigin = "Anonymous";
   this.texture.src = `sprites/objects/${texture}.png`;
+	this.name=texture;
 	this.type=type;
 	if(this.type===0){
 		this.gun = weapon_names.indexOf(texture);
@@ -87,10 +88,12 @@ var Pickup = function(x,y,texture,z,vmove,type){
 		//ammo
 	}else if(this.type===3){
 		//health
+	}else if(this.type====4){
+		///more lives
 	}
   this.z = z;
 }
-var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weapon,drop=-1,droptype=-/*,ai*/){
+var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weapon,drops=[]/*,ai*/){
   this.x = x;
   this.y = y;
 	this.z = z;
@@ -106,7 +109,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 	this.stateTimer = 0;
 	this.dmg = dmg;
 	this.melee = melee;
-	this.drop=drop;
+	this.drops=drops;
 	this.target = [Math.floor(this.x)+0.5,Math.floor(this.y)+0.5];
 	this.pos = [Math.floor(this.x)+0.5,Math.floor(this.y)+0.5];
 	this.instate = 0;
@@ -116,7 +119,6 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 	this.burst=burst;
 	this.flinch=flinch;
 	this.weapon=weapon;
-	this.droptype=droptype;
 	this.update=function(mul,dist){
 		dist=dist*Math.abs(this.z-player.z);
 		this.stateTimer+=(this.instate===2?0.05:this.speed)*3*mul*stuff[this.instate];
@@ -248,7 +250,9 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 				}
 				if(this.drop>0){
 					//add drop to pickupslist
-					pickups.push(new Pickup(this.x,this.y,this.drop,this.z,this.z,this.droptype))
+					for(var i = 0; i < this.drops.length;i++){
+						pickups.push(new Pickup(this.x,this.y,this.drops[i][0],this.z,this.z,this.drops[i][1]))
+					}
 				}
 				if(blood){
 					this.state = 5;
@@ -564,8 +568,8 @@ var enemies = [
 	new Enemy(16.0,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
 	new Enemy(16.5,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
 	new Enemy(17.0,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
-	new Enemy(4.5,7.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1),
-	new Enemy(4.5,15.5,0,"ss",100,3*Math.PI/2,0.035,0,false,0.4,3,true,2,2),
+	new Enemy(4.5,7.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2],['smg',0]]),
+	new Enemy(4.5,15.5,0,"ss",100,3*Math.PI/2,0.035,0,false,0.4,3,true,2,2,[['ammo',2],['smg',0]]),
 	new Enemy(5.5,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
 	new Enemy(6.0,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
 	new Enemy(6.5,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
@@ -574,21 +578,24 @@ var enemies = [
 	new Enemy(6.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
 	new Enemy(6.5,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
 	new Enemy(7.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(10.0,20.0,0,"guard",50,Math.PI,0.075,0,true,0.5,1,true,1),
-	new Enemy(11.0,20.0,0,"guard",50,Math.PI,0.075,0,true,0.5,1,true,1),
-	new Enemy(10.0,21.0,0,"ss",100,Math.PI,0.075,0,true,0.5,1,true,2,'smg',0),
-	new Enemy(11.0,21.0,0,"ss",100,Math.PI,0.075,0,true,0.5,1,true,2,'smg',0),
+	new Enemy(10.0,20.0,0,"guard",50,Math.PI,0.075,0,true,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(11.0,20.0,0,"guard",50,Math.PI,0.075,0,true,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(10.0,21.0,0,"ss",100,Math.PI,0.075,0,true,0.5,1,true,2,[['ammo',2],['smg',0]]),
+	new Enemy(11.0,21.0,0,"ss",100,Math.PI,0.075,0,true,0.5,1,true,2,[['ammo',2],['smg',0]]),
 	new Enemy(7.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(21.5,8.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1),
-	new Enemy(19.5,8.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1),
-	new Enemy(21.5,6.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1),
-	new Enemy(19.5,6.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1),
-	new Enemy(21.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.5,1,true,2,'smg',0),
-	new Enemy(20.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.5,1,true,2,'smg',0),
+	new Enemy(21.5,8.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(19.5,8.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(21.5,6.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(19.5,6.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(21.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.5,1,true,2,[['ammo',2],['smg',0]]),
+	new Enemy(20.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.5,1,true,2,[['ammo',2],['smg',0]]),
+	new Enemy(19.0,15.5,0,"ss",500,3*Math.PI/2,0.02,0,false,0.5,1,true,2,[['ammo',2],['smg',0],['bluekey',1]]),
 ]
 var sounds=[['swsh_0_0','swsh_0_1'],'weapon_3','weapon_2','weapon_7'];
 var pickups = [
 	new Pickup(15.5,7.5,'chaingun',0,0,0),
+	new Pickup(15.5,7.5,'lives',0,0,4),
+	new Pickup(15.5,7.5,'goldkey',0,0,1),
 ];
 var weapons_imgs = [];
 for(var texture = 0; texture < weapon_names.length;texture++){
@@ -1187,7 +1194,7 @@ function renderCycle() {
 					ctx.font = "bold 20px Courier New";
 					ctx.fillStyle = "#FFFF66";
 					ctx.textAlign = "center";
-					ctx.fillText("Press [G] pick up "+weapon_names[pickups[pickupNum].gun], screenWidth/2, screenHeight-25);
+					ctx.fillText("Press [G] pick up "+pickups[pickupNum].name, screenWidth/2, screenHeight-25);
 			}
 		  else if(doorIsPresent&&(map[doorTarget[1]][doorTarget[0]] === 8 || map[doorTarget[1]][doorTarget[0]] === 9 || map[doorTarget[1]][doorTarget[0]] === 10)){
 		      ctx.font = "bold 20px Courier New";
@@ -2011,6 +2018,8 @@ function move(timeDelta) {
 				player.ammoPack+=8;
 			}else if(pickups[pickupNum].type===3){
 				player.hp=Math.min(player.hp+20,100);
+			}else if(pickups[pickupNum].type===4){
+				player.lives++;
 			}
 		}else{
 	    var x_target = doorTarget[0];
