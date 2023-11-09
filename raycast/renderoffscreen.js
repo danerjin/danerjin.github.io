@@ -906,6 +906,7 @@ function gameCycle() {
 	if(panorama){
 		player.dir=0.05;
 		player.pitchChange=0;
+		player.pitch=0;
 		player.xSpeed=0;
 		player.ySpeed=0;
 		move(timeDelta);
