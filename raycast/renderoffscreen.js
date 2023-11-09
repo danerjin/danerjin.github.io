@@ -639,7 +639,7 @@ var contentpause = $('text');
 var gravity = 0.01;
 var stripWidth = 2;
 var blood = false;
-
+var panorama=false;
 
 var player = {
 	x : 5.5,		// current x, y position
@@ -763,8 +763,10 @@ var player = {
 					this.maxWeapon=1;
 					this.weapon=1;
 					this.timer=0;
+					panorama=true;
 					setTimeout(function(){
 						gameIsOn=true;
+						panorama=false;
 					},1000)
 				}
 			}
@@ -901,6 +903,14 @@ function gameCycle() {
 	var now = new Date().getTime();
 	// time since last game logic
 	var timeDelta = now - lastGameCycleTime;
+	if(panorama){
+		player.dir=0.05;
+		player.pitchChange=0;
+		player.xSpeed=0;
+		player.ySpeed=0;
+		move(timeDelta);
+		console.log('pano')
+	}
 	if(gameIsOn){
 	  if(mobile){
 	    if(joyMoving.GetDir() !== joyMovingDir){
@@ -2008,7 +2018,7 @@ function move(timeDelta) {
   // time timeDelta has passed since we moved last time. We should have moved after time gameCycleDelay,
   // so calculate how much we should multiply our movement to ensure game speed is constant
   var mul = timeDelta / gameCycleDelay;
-	ai(mul);
+	if(gameIsOn) ai(mul);
   if(isPressingG){
 		isPressingG=false;
 		if(pickupIsPresent){
@@ -2030,9 +2040,9 @@ function move(timeDelta) {
 	    var x_target = doorTarget[0];
 	    var y_target = doorTarget[1];
 	    if(doorIsPresent){
-	      if(map[Math.floor(y_target)][Math.floor(x_target)]!==11){
+	      if(map[Math.floor(y_target)][Math.floor(x_target)]!==11&&(map[Math.floor(y_target)][Math.floor(x_target)]!==10||player.keys>=2)){
 	        doorStates[Math.floor(y_target)][Math.floor(x_target)] = 1-Math.round(doorOffsets[Math.floor(y_target)][Math.floor(x_target)]);
-	      }else if(map[Math.floor(y_target)][Math.floor(x_target)]!==10 || player.keys>=2){
+	      }else if(true){
 	        if(doorDirs[Math.floor(y_target)][Math.floor(x_target)]==1){
 	          if(player.y>y_target){
 	            doorStates[Math.floor(y_target)][Math.floor(x_target)]=1;
@@ -2092,6 +2102,7 @@ function move(timeDelta) {
 			setTimeout(function(){
 				gameIsOn=false;
 				textscreen='You Won!';
+				panorama=true;
 			},1000);
 		}
 		player.speedMult = 1;
