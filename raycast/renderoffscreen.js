@@ -698,9 +698,11 @@ var player = {
 			this.weaponState = -1;
 			playsound('weapons/reload_3');
 			setTimeout(function(){
-				player.ammoPack -= (player.maxAmmo[player.weapon]-player.ammo[player.weapon]);
-				player.ammo[player.weapon] = player.maxAmmo[player.weapon];
-				player.weaponState = 0;
+				if(player.weapon !== 0){
+					player.ammoPack -= (player.maxAmmo[player.weapon]-player.ammo[player.weapon]);
+					player.ammo[player.weapon] = player.maxAmmo[player.weapon];
+					player.weaponState = 0;
+				}
 			},this.reloadTimes[this.weapon]);
 		}
 	},
