@@ -2452,6 +2452,16 @@ function updateMiniMap() {
 	);
 	objectCtx.closePath();
 	objectCtx.stroke();
+	for (var i=0;i<enemies.length;i++) {
+		var enemy = enemies[i];
+
+		objectCtx.fillStyle = "blue";
+		objectCtx.fillRect(		// draw a dot at the enemy position
+			enemy.x * miniMapScale - 1,
+			enemy.y * miniMapScale - 1,
+			2, 2
+		);
+	}
 }
 
 function drawMiniMap() {
