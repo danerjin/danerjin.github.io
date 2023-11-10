@@ -639,7 +639,7 @@ var contentpause = $('text');
 var gravity = 0.01;
 var stripWidth = 2;
 var blood = false;
-var panorama=false;
+var panorama=true;
 
 var player = {
 	x : 5.5,		// current x, y position
@@ -871,6 +871,7 @@ function init() {
   canvas.addEventListener("click", async () => {
 		if(textscreen!=='You Won!'){
 	    await canvas.requestPointerLock();
+			panorama=false;
 			contentpause.style.display = "none";
 	    document.addEventListener("mousemove", updateMousePosition, false);
 			gameIsOn=true;
