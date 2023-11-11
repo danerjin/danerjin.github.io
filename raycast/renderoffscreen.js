@@ -2045,7 +2045,7 @@ function move(timeDelta) {
 				playsoundWAV('pickups/ALGETKEY');
 			}else if(pickups[pickupNum].type===2){
 				player.ammoPack+=8;
-				playsoundWAV('pickups/ALCGUNUP');
+				//playsoundWAV('pickups/ALCGUNUP');
 			}else if(pickups[pickupNum].type===3){
 				player.hp=Math.min(player.hp+10,100);
 				playsoundWAV('pickups/ALFOODUP');
