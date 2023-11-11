@@ -1025,8 +1025,10 @@ function gameCycle() {
 		pickupIsPresent = false;
 		pickups.forEach(pickup => function(pickup){
 			if(((pickup.x-player.x)**2+(pickup.y-player.y)**2)**0.5 < player.range[0]/24){
-				pickupIsPresent = true;
-				pickupNum = pickups.indexOf(pickup);
+				if((pickup.type===0&&pickup.gun!==player.maxWeapon)||pickup.type!==0){
+					pickupIsPresent = true;
+					pickupNum = pickups.indexOf(pickup);
+				}
 			}
 		}(pickup));
 		move(timeDelta);
