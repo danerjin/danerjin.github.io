@@ -54,6 +54,16 @@ function playsound(src,mul=1) {
 	//document.body.appendChild(sound);
 	sound.play();
 }
+function playsoundWAV(src,mul=1) {
+	var sound = document.createElement("audio");
+	sound.src = 'sounds/'+src+'.wav';
+	//sound.setAttribute("preload", "auto");
+	sound.setAttribute("controls", "none");
+	sound.style.display = "none";
+	sound.volume=Math.min(vol*mul,1);
+	//document.body.appendChild(sound);
+	sound.play();
+}
 gameIsOn=false;
 textscreen='Get Ready!';
 function rgb(csscolor){
@@ -2029,14 +2039,21 @@ function move(timeDelta) {
 			if(pickups[pickupNum].type===0){
 				player.maxWeapon = pickups[pickupNum].gun;
 				player.primary();
+				playsoundWAV('pickups/ALCGUNUP');
 			}else if(pickups[pickupNum].type===1){
 				player.keys+=1;
+				playsoundWAV('pickups/ALGETKEY');
 			}else if(pickups[pickupNum].type===2){
 				player.ammoPack+=8;
+				playsoundWAV('pickups/ALCGUNUP');
 			}else if(pickups[pickupNum].type===3){
-				player.hp=Math.min(player.hp+20,100);
+				player.hp=Math.min(player.hp+10,100);
+				playsoundWAV('pickups/ALFOODUP');
 			}else if(pickups[pickupNum].type===4){
 				player.lives++;
+				player.hp=100;
+				player.ammoPack+=25;
+				playsoundWAV('pickups/ALBNS1UP');
 			}
 			pickups.splice(pickupNum, 1);
 			pickupIsPresent = false;
