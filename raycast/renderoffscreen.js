@@ -548,14 +548,14 @@ var ceilinglayout = [
   [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]
 ];
 var sprites = [
-  new Sprite(21.5,10,"greenlight",false,0.6,0,0,0),
-  new Sprite(18,3,"greenlight",false,0.6,0,0,0),
-  new Sprite(9.5,3.5,"greenlight",false,0.6,0,0,0),
-  new Sprite(9.5,10,"greenlight",false,0.6,0,0,0),
-  new Sprite(3,3.5,"greenlight",false,0.6,0,0,0),
-  new Sprite(3,19.5,"greenlight",false,0.6,0,0,0),
-  new Sprite(3,13,"greenlight",false,0.6,0,0,0),
-  new Sprite(14,19,"greenlight",false,0.6,0,0,0),
+  new Sprite(21.5,10,"lamp",false,0.6,0,0,0),
+  new Sprite(18,3,"lamp",false,0.6,0,0,0),
+  new Sprite(9.5,3.5,"lamp",false,0.6,0,0,0),
+  new Sprite(9.5,10,"lamp",false,0.6,0,0,0),
+  new Sprite(3,3.5,"lamp",false,0.6,0,0,0),
+  new Sprite(3,19.5,"lamp",false,0.6,0,0,0),
+  new Sprite(3,13,"lamp",false,0.6,0,0,0),
+  new Sprite(14,19,"lamp",false,0.6,0,0,0),
   new Sprite(2,8,"pillar",true,0.6,1,0,0),
   new Sprite(2,9,"pillar",true,0.6,1,0,0),
   new Sprite(2,10,"pillar",true,0.6,1,0,0),
