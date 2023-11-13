@@ -112,6 +112,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
   this.texture = new Image();
   this.texture.crossOrigin = "Anonymous";
   this.texture.src = `sprites/enemies/${texture}.png`;
+	this.name=texture;
 	this.state = 0;
 	this.rot = rot;
 	this.hp = hp;
@@ -209,6 +210,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 			}else{
 				if(dist<(player.isCrouching?4:10)&&canSee(this)){
 					this.alert = true;
+					playsoundWAV('enemies/'+this.name+'alert');
 				}else{
 					this.alert = false;
 				}
@@ -245,6 +247,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 					this.instate=0;
 				}
 			}else{
+				playsoundWAV('enemies/'+this.name+'death');
 				if(headshot){
 					playsound('hp/headshot_0');
 				}else{
