@@ -2182,11 +2182,13 @@ function move(timeDelta) {
   	var newY = player.y + Math.sin(player.rot) * moveStep - Math.cos(player.rot) * moveStepStrafe;
     player.zSpeed-=mul*gravity;
 		var newZ = player.z+mul*player.zSpeed;
-  	var pos = checkCollision(player.x, player.y, newX, newY, 0.05, player.z, newZ);
-  	player.z = pos.z;
-		player.x = pos.x;
-		player.y = pos.y;
-		if(pos.zSpeed){player.zSpeed = pos.zSpeed;}
+		if(!panorama){
+	  	var pos = checkCollision(player.x, player.y, newX, newY, 0.05, player.z, newZ);
+	  	player.z = pos.z;
+			player.x = pos.x;
+			player.y = pos.y;
+			if(pos.zSpeed){player.zSpeed = pos.zSpeed;}
+		}
   }
 }
 function ai(mul){
