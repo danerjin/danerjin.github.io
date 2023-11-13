@@ -2047,7 +2047,7 @@ function move(timeDelta) {
 				playsoundWAV('pickups/ALGETKEY');
 			}else if(pickups[pickupNum].type===2){
 				player.ammoPack+=8;
-				//playsoundWAV('pickups/ALCGUNUP');
+				playsoundWAV('pickups/ALAMMOUP');
 			}else if(pickups[pickupNum].type===3){
 				player.hp=Math.min(player.hp+10,100);
 				playsoundWAV('pickups/ALFOODUP');
@@ -2065,6 +2065,7 @@ function move(timeDelta) {
 	    if(doorIsPresent){
 	      if(map[Math.floor(y_target)][Math.floor(x_target)]!==11&&(map[Math.floor(y_target)][Math.floor(x_target)]!==10||player.keys>=2)){
 	        doorStates[Math.floor(y_target)][Math.floor(x_target)] = 1-Math.round(doorOffsets[Math.floor(y_target)][Math.floor(x_target)]);
+					playsoundWAV('environ/Door');
 	      }else if(true){
 	        if(doorDirs[Math.floor(y_target)][Math.floor(x_target)]==1){
 	          if(player.y>y_target){
