@@ -923,7 +923,6 @@ function gameCycle() {
 		player.xSpeed=0;
 		player.ySpeed=0;
 		move(timeDelta);
-		console.log('pano')
 	}
 	if(gameIsOn){
 	  if(mobile){
