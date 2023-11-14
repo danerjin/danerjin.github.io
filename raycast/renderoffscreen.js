@@ -100,6 +100,8 @@ var Pickup = function(x,y,texture,z,vmove,type){
 		//health
 	}else if(this.type===4){
 		///more lives
+	}else if(this.type===5){
+		//backpack
 	}
   this.z = z;
 }
@@ -609,6 +611,7 @@ var pickups = [
 	new Pickup(15.5,7.5,'chaingun',0,0,0),
 	new Pickup(15.5,7.5,'lives',0,0,4),
 	new Pickup(15.5,7.5,'goldkey',0,0,1),
+	new Pickup(15.5,3.5,'backpack',0,0,5),
 ];
 var weapons_imgs = [];
 for(var texture = 0; texture < weapon_names.length;texture++){
@@ -681,7 +684,7 @@ var player = {
 	maxWeapon:1,
 	ammo:['-',10,28,60],
 	maxAmmo:['-',10,28,60],
-	ammoPack:8,
+	ammoPack:-1,
 	reloadTimes:[0,700,1500,3300],
 	damage:[50,20,23,19],
 	dropoff:[0,10,5,10],
@@ -2048,8 +2051,14 @@ function move(timeDelta) {
 				player.keys+=1;
 				playsoundWAV('pickups/ALGETKEY');
 			}else if(pickups[pickupNum].type===2){
-				player.ammoPack+=8;
-				playsoundWAV('pickups/ALAMMOUP');
+				if(player.ammoPack>=0){
+					player.ammoPack+=8;
+					playsoundWAV('pickups/ALAMMOUP');
+				}else{
+					//stuff
+					player.ammo[player.weapon] = Math.min(player.ammo[player.weapon]+8,player.maxAmmo[player.weapon]);
+					playsoundWAV('pickups/ALAMMOUP');
+				}
 			}else if(pickups[pickupNum].type===3){
 				player.hp=Math.min(player.hp+10,100);
 				playsoundWAV('pickups/ALFOODUP');
@@ -2058,6 +2067,10 @@ function move(timeDelta) {
 				player.hp=100;
 				player.ammoPack+=25;
 				playsoundWAV('pickups/ALBNS1UP');
+			}
+			}else if(pickups[pickupNum].type===5){
+				player.ammoPack=10;
+				playsoundWAV('pickups/ALAMMOUP');
 			}
 			pickups.splice(pickupNum, 1);
 			pickupIsPresent = false;
