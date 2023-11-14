@@ -2067,7 +2067,6 @@ function move(timeDelta) {
 				player.hp=100;
 				player.ammoPack+=25;
 				playsoundWAV('pickups/ALBNS1UP');
-			}
 			}else if(pickups[pickupNum].type===5){
 				player.ammoPack=10;
 				playsoundWAV('pickups/ALAMMOUP');
