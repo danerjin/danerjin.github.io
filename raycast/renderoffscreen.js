@@ -681,7 +681,7 @@ var player = {
 	maxWeapon:1,
 	ammo:['-',10,28,60],
 	maxAmmo:['-',10,28,60],
-	ammoPack:100,
+	ammoPack:8,
 	reloadTimes:[0,700,1500,3300],
 	damage:[50,20,23,19],
 	dropoff:[0,10,5,10],
