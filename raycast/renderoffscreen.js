@@ -2054,7 +2054,7 @@ function move(timeDelta) {
 				if(player.ammoPack>=0){
 					player.ammoPack+=8;
 					playsoundWAV('pickups/ALAMMOUP');
-				}else{
+				}else if(player.weapon!==0){
 					//stuff
 					player.ammo[player.weapon] = Math.min(player.ammo[player.weapon]+8,player.maxAmmo[player.weapon]);
 					playsoundWAV('pickups/ALAMMOUP');
