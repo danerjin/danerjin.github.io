@@ -831,10 +831,10 @@ var rayDirY1;
 var floor=true;
 var slider = document.getElementById("myRange");
 var floorToggle = document.getElementById("floor");
-var rowdistlookup = new Array(Math.ceil(screenHeight/stripWidth));
-var orzbuffer = new Array(numRays);
+var rowdistlookup = new Array(Math.ceil(screenHeight));
+var orzbuffer = new Array(screenWidth);
 var centerStripe = [];
-for(var i = 0; i < numRays+10;i++){
+for(var i = 0; i < screenWidth+10;i++){
   orzbuffer[i]=[];
 }
 function updateFOV(){
@@ -1471,7 +1471,7 @@ function castWallRays() {
 	var spritesl = renderSprites();
 	var pickupsl = renderPickups();
 	var zbuffer = JSON.parse(JSON.stringify(orzbuffer))
-	for(var thing = 0;thing<zbuffer.length;thing++){
+	for(var thing = 0;thing<numRays;thing++){
 		zbuffer[thing]=zbufferenem[thing].concat(spritesl[thing]).concat(pickupsl[thing]);
 	}
 	for (var i=0;i<numRays;i++) {
