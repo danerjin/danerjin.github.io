@@ -808,7 +808,6 @@ var player = {
 	keys:0,
 }
 
-
 var miniMapScale = 8;
 var doorIsPresent = false;
 var doorTarget = [0,0];
@@ -848,6 +847,14 @@ function updateFOV(){
   viewDist = (screenWidth/2) / Math.tan((fov / 2));
   $("fov").innerText = Math.round(truefov*180/Math.PI);
 	invDet = 1.0 / (planeX * dirY - dirX * planeY);
+	setTimeout(function(){
+	  truefov = slider.value*Math.PI/180;
+		fov=truefov*adsmul;
+	  fovHalf = fov/2;
+	  viewDist = (screenWidth/2) / Math.tan((fov / 2));
+	  $("fov").innerText = Math.round(truefov*180/Math.PI);
+		invDet = 1.0 / (planeX * dirY - dirX * planeY);
+	},5)
 }
 function updateVol(){
   vol = $('volslider').value;
