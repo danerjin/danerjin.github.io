@@ -244,8 +244,8 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 			if(this.hp-Math.round(amnt*(headshot?1.5:1)) > 0){
 				this.hp=this.hp-Math.round(amnt*(headshot?1.5:1));
 				if(this.flinch){
-					this.state = 13;
-					this.stateTimer=13;
+					this.state = 12;
+					this.stateTimer=12;
 					this.instate=0;
 				}
 			}else{
