@@ -936,7 +936,7 @@ function gameCycle() {
 	// time since last game logic
 	var timeDelta = now - lastGameCycleTime;
 	if(panorama){
-		player.dir=0.05;
+		player.dir=0.03;
 		player.pitchChange=0;
 		player.pitch=0;
 		player.xSpeed=0;
