@@ -163,7 +163,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 				  }else{
 				    if(256*Math.random()<(256-dist*16)&&canSee(this)){
 							playsound('weapons/'+sounds[this.weapon]);
-				      player.hurt((player.damage[1]-(player.dropoff[1]*dist*24/player.range[1]))*0.75);
+				      player.hurt((player.damage[1]-(player.dropoff[1]*dist*24/player.range[1]))*0.5);
 				    }
 					}
 				}
@@ -246,7 +246,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 				if(this.flinch){
 					this.state = 12;
 					this.stateTimer=12;
-					this.instate=0;
+					this.instate=2;
 				}
 			}else{
 				playsoundWAV('enemies/'+this.name+'death');
@@ -723,10 +723,12 @@ var player = {
 		}
 	},
 	hp:100,
+	maxHp:100,
 	lives:5,
 	timer:0,
 	regen:0,
 	atkount:0,
+	doesRegen:true,
 	score:0,
 	increaseScore:function(amnt){
 		this.score+=amnt;
@@ -792,12 +794,14 @@ var player = {
 	},
 	update:function(delt){
 		var mul=delt/gameCycleDelay;
-		this.regen=this.regen+1/(100*Math.max(this.hp,50))*delt;
-		if(this.hp+this.regen/gameCycleDelay <= 100){
-			this.hp+=this.regen/gameCycleDelay;
-		}else{
-			this.regen=0;
-			this.hp=100;
+		if(this.doesRegen){
+			this.regen=this.regen+1/(this.maxHp*Math.max(this.hp,this.maxHp/2))*delt;
+			if(this.hp+this.regen/gameCycleDelay <= this.maxHp){
+				this.hp+=this.regen/gameCycleDelay;
+			}else{
+				this.regen=0;
+				this.hp=this.maxHp;
+			}
 		}
 		this.timer+=delt;
 	},
@@ -2060,7 +2064,7 @@ function move(timeDelta) {
 					playsoundWAV('pickups/ALAMMOUP');
 				}
 			}else if(pickups[pickupNum].type===3){
-				player.hp=Math.min(player.hp+10,100);
+				player.hp=Math.min(player.hp+10,player.maxHp);
 				playsoundWAV('pickups/ALFOODUP');
 			}else if(pickups[pickupNum].type===4){
 				player.lives++;
