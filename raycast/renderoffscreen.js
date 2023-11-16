@@ -1747,8 +1747,8 @@ function castSingleRay(stripIdx,zbuffer) {
 		if(!useGPU && !lode){
 			if(floor){
 				var floorX,floorY,floorTexture;
-	      for(var y = Math.round(top+height-stripWidth); y < screenHeight; y+=stripWidth){
-	        var rowDistance = rowdistlookup[Math.round(y/stripWidth)*stripWidth];
+	      for(var y = stripWidth*Math.round((top+height-stripWidth)/stripWidth); y < screenHeight; y+=stripWidth){
+	        var rowDistance = rowdistlookup[y];
 	        // calculate the real world step vector we have to add for each x (parallel to camera plane)
 	        // adding step by step avoids multiplications with a weight in the inner loop
 	        // real world coordinates of the leftmost column. This will be updated as we step to the right.
