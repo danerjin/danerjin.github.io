@@ -667,7 +667,7 @@ var player = {
   strafeSpeed : 0, //strafing
 	momentum:0,//momentum for slidehop
 	moveSpeed : 0.05,	// how far (in map units) does the player move each step/update
-	rotSpeed : 3,		// how much does the player rotate each step/update (in degrees)
+	rotSpeed : 5,		// how much does the player rotate each step/update (in degrees)
   pitch : 0, // pitch
   pitchChange : 0,
   z: 0, //feet to floor dist
