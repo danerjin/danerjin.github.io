@@ -859,6 +859,8 @@ function updateSens(){
 }
 function toggleFloor(){
   floor = !floor;
+	stripWidth=3-stripWidth;
+	numRays=Math.round(screenWidth/stripWidth);
 }
 function toggleBlood(){
   blood = !blood;
