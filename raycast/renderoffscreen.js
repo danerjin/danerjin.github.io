@@ -994,8 +994,8 @@ function gameCycle() {
 	    if(diffX > 0.5){player.dir = 0.05*(diffX*sens*(4*adsmul-3)-0.5);}
 	    if(diffX < -0.5){player.dir = 0.05*(diffX*sens*(4*adsmul-3)+0.5);}
 	    if(Math.abs(diffX)<=0.5){player.dir = 0;}
-	    if(diffY > 0){player.pitchChange = -diffY*sens;}
-	    if(diffY < 0){player.pitchChange = -diffY*sens;}
+	    if(diffY > 0){player.pitchChange = -diffY*sens*0.75;}
+	    if(diffY < 0){player.pitchChange = -diffY*sens*0.75;}
 	    if(diffY === 0){player.pitchChange = 0;}
 	    prevMousePos = JSON.parse(JSON.stringify(temp));
 	  }
