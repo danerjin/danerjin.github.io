@@ -1267,10 +1267,10 @@ function renderCycle() {
 		  ctx.fillText("FPS: "+Math.round(fps),50,50);
 		  ctx.textAlign = "center";
 		  ctx.fillText(player.ammo[player.weapon]+'/'+player.maxAmmo[player.weapon],screenWidth-25,screenHeight);
-		  ctx.fillText(Math.round(player.hp)+'/100',39+75/2,screenHeight);
+		  ctx.fillText(Math.round(player.hp)+'/'+player.maxHp,39+75/2,screenHeight);
 		  ctx.fillText('LIVES: '+player.lives,screenWidth/2-75,screenHeight);
 		  ctx.fillText('SCORE: '+player.score,screenWidth/2-25/2+75,screenHeight);
-			ctx.drawImage(playerhpIcons,25,33*(7-Math.ceil(player.hp*7/100)),24,31,15,screenHeight-30,24,30);
+			ctx.drawImage(playerhpIcons,25,33*(7-Math.ceil(player.hp*7/player.maxHp)),24,31,15,screenHeight-30,24,30);
 			ctx.drawImage(weaponIcons,0,0,48,24,screenWidth-50,screenHeight-30,50,15);
 			ctx.drawImage(weaponIcons,49*1,0,48,24,screenWidth-50,screenHeight-45,50,15);
 			if(player.maxWeapon > 1) ctx.drawImage(weaponIcons,49*player.maxWeapon,0,48,24,screenWidth-50,screenHeight-60,50,15);
@@ -1279,7 +1279,7 @@ function renderCycle() {
 			}
 		  ctx.fillText(scoretext,screenWidth/2-25/2,screenHeight/2-5);
 			drawFillRectangleRGBA(screenWidth-50,screenHeight-15*(2+Math.min(2,player.weapon)),50,15,[170,170,170,0.4]);
-			drawFillRectangleRGBA(0,0,screenWidth,screenHeight,[255,0,0,0.5*Math.max(1-player.hp/75,0)]);
+			drawFillRectangleRGBA(0,0,screenWidth,screenHeight,[255,0,0,0.5*Math.max(1-player.hp/player.maxHp*3/4,0)]);
 		}
 		if(!gameIsOn){
 			//draw the text thing
