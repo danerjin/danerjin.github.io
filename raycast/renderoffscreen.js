@@ -688,7 +688,7 @@ var player = {
 	reloadTimes:[0,700,1500,3300],
 	damage:[50,20,23,19],
 	dropoff:[0,10,5,10],
-	range:[30,700,700,700],
+	range:[12,700,700,700],
 	firerate:[125,90,130,200],
 	pierce:[0,1,1,1],
 	secondary:function(){
