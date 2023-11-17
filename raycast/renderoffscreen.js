@@ -1279,7 +1279,7 @@ function renderCycle() {
 			}
 		  ctx.fillText(scoretext,screenWidth/2-25/2,screenHeight/2-5);
 			drawFillRectangleRGBA(screenWidth-50,screenHeight-15*(2+Math.min(2,player.weapon)),50,15,[170,170,170,0.4]);
-			drawFillRectangleRGBA(0,0,screenWidth,screenHeight,[255,0,0,0.5*Math.max(1-player.hp/player.maxHp*3/4,0)]);
+			drawFillRectangleRGBA(0,0,screenWidth,screenHeight,[255,0,0,0.5*Math.max(1-player.hp/(player.maxHp*3/4),0)]);
 		}
 		if(!gameIsOn){
 			//draw the text thing
