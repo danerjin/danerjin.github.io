@@ -606,7 +606,7 @@ var enemies = [
 	new Enemy(20.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.4,3,true,2,[['ammo',2],['smg',0]]),
 	new Enemy(19.0,15.5,0,"ss",500,3*Math.PI/2,0.02,0,false,0.4,3,true,2,[['ammo',2],['smg',0],['bluekey',1]]),
 ];
-var sounds=[['swsh_0_0','swsh_0_1'],'weapon_3','weapon_2','weapon_7'];
+var sounds=[['swsh_0_0','swsh_0_1'],'weapon_3','weapon_2','weapon_26'];
 var pickups = [
 	new Pickup(15.5,7.5,'chaingun',0,0,0),
 	new Pickup(15.5,7.5,'lives',0,0,4),
