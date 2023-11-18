@@ -27,10 +27,14 @@ function neighbors(x,y,z){
 	var cellX = Math.floor(x);
 	var cellY = Math.floor(y);
 	var val = [];
-	for(var i = cellX-1;i<=cellX+1;i++){
-		for(var j = cellY-1;j<=cellY+1;j++){
+	var startX=(cellX>0)?(cellX-1):(cellX);
+	var endX=(cellX<mapWidth)?(cellX+1):(cellX);
+	var startY=(cellY>0)?(cellY-1):(cellY);
+	var endY=(cellX<mapHeight)?(cellY+1):(cellY);
+	for(var j = startY;j<=endY;j++){
+		for(var i = startX;i<=endX;i++){
 			if(i!== cellX && i!==cellY){
-				val.push([i+0.5,j+0.5])
+				if(!isBlocking(i+0.5,j+0.5,z+0.25) || map[j][i]===8 || map[j][i]===9) val.push([i+0.5,j+0.5])
 			}
 		}
 	}
@@ -42,7 +46,7 @@ function getimagedata(v) {
   context.drawImage(v, 0, 0, w, h);
   return context.getImageData(0, 0, w, h);
 }
-var astar=false;
+var astar=true;
 var stuff=[0,1,1,3];
 function playsound(src,mul=1) {
 	var sound = document.createElement("audio");
@@ -124,7 +128,6 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 	this.melee = melee;
 	this.drops=drops;
 	this.target = [Math.floor(this.x)+0.5,Math.floor(this.y)+0.5];
-	this.pos = [Math.floor(this.x)+0.5,Math.floor(this.y)+0.5];
 	this.instate = 0;
 	this.atkooldown = 0;
 	this.cool=cool;
@@ -184,7 +187,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 				if(this.instate!==2){
 					var neighs = neighbors(this.x,this.y,this.z);
 					if(neighs.length){
-						neighs.sort(function(a){return ((a[0]-player.x)**2+(a[1]-player.y)**2)})
+						neighs=neighs.toSorted(function(a,b){return ((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5})
 						this.target = neighs[0];
 					}
 					if(this.melee){
