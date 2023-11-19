@@ -1043,7 +1043,7 @@ function gameCycle() {
 	  }
 		pickupIsPresent = false;
 		pickups.forEach(pickup => function(pickup){
-			if(((pickup.x-player.x)**2+(pickup.y-player.y)**2)**0.5 < player.range[0]/24){
+			if(((pickup.x-player.x)**2+(pickup.y-player.y)**2)**0.5 < 1){
 				if((pickup.type===0&&pickup.gun!==player.maxWeapon)||pickup.type!==0){
 					pickupIsPresent = true;
 					pickupNum = pickups.indexOf(pickup);
@@ -2065,7 +2065,7 @@ function move(timeDelta) {
 				player.keys+=1;
 				playsoundWAV('pickups/ALGETKEY');
 			}else if(pickups[pickupNum].type===2){
-				if(player.ammoPack>=0){
+				if(player.ammoPack>=0&&(player.maxAmmo[player.weapon]-player.ammo[player.weapon])<8){
 					player.ammoPack+=8;
 					playsoundWAV('pickups/ALAMMOUP');
 				}else if(player.weapon!==0){
