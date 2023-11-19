@@ -33,9 +33,7 @@ function neighbors(x,y,z){
 	var endY=(cellX<mapHeight)?(cellY+1):(cellY);
 	for(var j = startY;j<=endY;j++){
 		for(var i = startX;i<=endX;i++){
-			if(i!== cellX && i!==cellY){
-				if(!isBlocking(i+0.5,j+0.5,z+0.25) || map[j][i]===8 || map[j][i]===9) val.push([i+0.5,j+0.5])
-			}
+			if(!isBlocking(i+0.5,j+0.5,z+0.25) || map[j][i]===8 || map[j][i]===9) val.push([i+0.5,j+0.5])
 		}
 	}
 	return val;
