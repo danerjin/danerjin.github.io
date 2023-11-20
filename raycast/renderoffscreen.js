@@ -23,7 +23,7 @@ var dmgdist;
 var vol = 0.5;
 var scoretext='';
 var sens = 1;
-function neighbors(x,y,z){
+function neighbors(x,y,z,traveled=[]){
 	var cellX = Math.floor(x);
 	var cellY = Math.floor(y);
 	var val = [];
@@ -33,7 +33,7 @@ function neighbors(x,y,z){
 	var endY=(cellX<mapHeight)?(cellY+1):(cellY);
 	for(var j = startY;j<=endY;j++){
 		for(var i = startX;i<=endX;i++){
-			if(!isBlocking(i+0.5,j+0.5,z+0.25) || map[j][i]===8 || map[j][i]===9) val.push([i+0.5,j+0.5])
+			if((!isBlocking(i+0.5,j+0.5,z+0.25) || map[j][i]===8 || map[j][i]===9)/* && !traveled.includes([i,j])*/) val.push([i+0.5,j+0.5])
 		}
 	}
 	return val;
@@ -133,6 +133,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 	this.burst=burst;
 	this.flinch=flinch;
 	this.weapon=weapon;
+	this.traveled=[[Math.floor(this.x),Math.floor(this.y)]];
 	this.update=function(mul,dist){
 		dist=dist*Math.abs(this.z-player.z);
 		this.stateTimer+=(this.instate===2?0.05:this.speed)*3*mul*stuff[this.instate];
@@ -183,7 +184,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 		if(this.hp>0){
 			if(this.alert){
 				if(this.instate!==2){
-					var neighs = neighbors(this.x,this.y,this.z);
+					var neighs = neighbors(this.x,this.y,this.z,this.traveled);
 					if(neighs.length){
 						neighs=neighs.toSorted(function(a,b){return ((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5})
 						this.target = neighs[0];
@@ -235,7 +236,10 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 			this.x = pos.x;
 			this.y = pos.y;
 			this.z = pos.z;
-			this.pos = [Math.floor(this.x)+0.5,Math.floor(this.y)+0.5];
+			var newpos=[Math.floor(this.x),Math.floor(this.y)];
+			if(!this.traveled.includes(newpos)){
+				this.traveled.push(newpos);
+			}
 		}
 	}
 	this.hurt = function(amnt,dist){
