@@ -33,7 +33,7 @@ function neighbors(x,y,z,traveled=[]){
 	var endY=(cellX<mapHeight)?(cellY+1):(cellY);
 	for(var j = startY;j<=endY;j++){
 		for(var i = startX;i<=endX;i++){
-			if((!isBlocking(i+0.5,j+0.5,z+0.25) || map[j][i]===8 || map[j][i]===9)/* && !traveled.includes([i,j])*/) val.push([i+0.5,j+0.5])
+			if((!isBlocking(i+0.5,j+0.5,z+0.25) || map[j][i]===8 || map[j][i]===9) && !traveled.includes([i,j])) val.push([i+0.5,j+0.5])
 		}
 	}
 	return val;
@@ -134,7 +134,13 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 	this.flinch=flinch;
 	this.weapon=weapon;
 	this.traveled=[[Math.floor(this.x),Math.floor(this.y)]];
+	this.playerpos=[Math.floor(player.x),Math.floor(player.y)];
 	this.update=function(mul,dist){
+		var newpos=[Math.floor(player.x),Math.floor(player.y)];
+		if(newpos!==this.playerpos){
+			this.playerpos=[Math.floor(player.x),Math.floor(player.y)];
+			this.traveled=[];
+		}
 		dist=dist*Math.abs(this.z-player.z);
 		this.stateTimer+=(this.instate===2?0.05:this.speed)*3*mul*stuff[this.instate];
 		this.state = Math.floor(this.stateTimer);
