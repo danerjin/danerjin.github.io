@@ -1384,6 +1384,7 @@ function bind() {
 			case 27:
 			    contentpause.style.display = "block";
 					gameIsOn=false;
+					textscreen='Paused';
 				break;
   		case 16: // crouch
   			player.isCrouching = true;
