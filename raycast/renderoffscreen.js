@@ -681,17 +681,20 @@ var player = {
 			if(this.hp<=0){
 				this.hp=0;
 				this.lives -=1;
+				if(this.maxWeapon!==1){
+					pickups.push(new Pickup(this.x,this.y,weapon_names[this.maxWeapon],this.z,this.z,0))
+				}
 				gameIsOn=false;
 				textscreen='You Died';
 				if(this.lives>=0){
-					this.hp=100;
-					this.x=5.5;
-					this.y=3.1;
-					this.maxWeapon=1;
-					this.weapon=1;
-					this.timer=0;
 					panorama=true;
 					setTimeout(function(){
+						this.timer=0;
+						this.hp=100;
+						this.x=5.5;
+						this.y=3.1;
+						this.maxWeapon=1;
+						this.weapon=1;
 						gameIsOn=true;
 						panorama=false;
 					},1000)
