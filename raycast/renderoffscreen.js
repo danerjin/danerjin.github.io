@@ -198,7 +198,21 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 				if(this.instate!==2){
 					var neighs = neighbors(this.x,this.y,this.z,this.traveled);
 					if(neighs.length){
-						neighs=neighs.toSorted(function(a,b){return ((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5})
+						if(this.melee){
+							neighs=neighs.toSorted(function(a,b){
+								return ((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
+							})
+						}else{
+							if(((this.x-player.x)**2+(this.y-player.y)**2))**0.5 > 4){
+								neighs=neighs.toSorted(function(a,b){
+									return ((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
+								})
+							}else{
+								neighs=neighs.toSorted(function(a,b){
+									return -((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
+								})
+							}
+						}
 						this.target = neighs[0];
 					}
 					if(this.melee){
