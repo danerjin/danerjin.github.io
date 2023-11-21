@@ -684,6 +684,8 @@ var player = {
 				if(this.maxWeapon!==1){
 					pickups.push(new Pickup(this.x,this.y,weapon_names[this.maxWeapon],this.z,this.z,0))
 				}
+				this.maxWeapon=1;
+				this.weapon=1;
 				gameIsOn=false;
 				textscreen='You Died';
 				if(this.lives>=0){
@@ -693,8 +695,6 @@ var player = {
 						this.hp=100;
 						this.x=5.5;
 						this.y=3.1;
-						this.maxWeapon=1;
-						this.weapon=1;
 						gameIsOn=true;
 						panorama=false;
 					},1000)
