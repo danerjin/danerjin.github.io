@@ -690,6 +690,7 @@ var player = {
 				textscreen='You Died';
 				if(this.lives>=0){
 					panorama=true;
+					this.timer=0;
 					setTimeout(function(){
 						this.timer=0;
 						this.hp=100;
@@ -713,7 +714,7 @@ var player = {
 				this.hp=this.maxHp;
 			}
 		}
-		this.timer+=delt;
+		if(this.hp>0) this.timer+=delt;
 	},
 	keys:0,
 }
