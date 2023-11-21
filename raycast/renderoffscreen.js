@@ -33,7 +33,7 @@ function neighbors(x,y,z,traveled=[]){
 	var endY=(cellX<mapHeight)?(cellY+1):(cellY);
 	for(var j = startY;j<=endY;j++){
 		for(var i = startX;i<=endX;i++){
-			if((!isBlocking(i+0.5,j+0.5,z+0.25) || map[j][i]===8 || map[j][i]===9) && !traveled.includes([i,j])){
+			if((!isBlocking(i+0.5,j+0.5,z+0.25) || map[j][i]===8 || map[j][i]===9)/* && !traveled.includes([i,j])*/){
 				if(Math.floor(player.x)===i&&Math.floor(player.y)===j){
 					val.push(player.x,player.y)
 				}else{
