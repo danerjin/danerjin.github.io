@@ -1361,8 +1361,19 @@ function bind() {
 	}
 	document.onkeydown = function(e) {
 		e = e || window.event;
-
 		switch (e.keyCode) { // which key was pressed?
+			case 49:
+				player.weapon=Math.min(player.maxWeapon,0);
+				break;
+			case 50:
+				player.weapon=Math.min(player.maxWeapon,1);
+				break;
+			case 51:
+				player.weapon=Math.min(player.maxWeapon,2);
+				break;
+			case 52:
+				player.weapon=Math.min(player.maxWeapon,3);
+				break;
       case 71:
         isPressingG = true;
         break;
@@ -1395,39 +1406,30 @@ function bind() {
 			case 13: // fire
   			player.weaponIsActive=true;
   			break;
-
 			case 32: // jump
         player.isJumping = true;
 				break;
-
 			case 38: // up
 				player.pitchChange = 2;
 				break;
-
 			case 40: // down
 				player.pitchChange = -2;
 				break;
-
       case 87: // up, move player forward, ie. increase speed
   				player.speed = 1;
   				break;
-
 			case 83: // down, move player backward, set negative speed
 				player.speed = -1;
 				break;
-
       case 65: // strafe left
 				player.strafeSpeed = 1;
 				break;
-
 			case 68: // strafe right
 				player.strafeSpeed = -1;
 				break;
-
 			case 37: // left, rotate player left
 				player.dir = -1;
 				break;
-
 			case 39: // right, rotate player right
 				player.dir = 1;
 				break;
