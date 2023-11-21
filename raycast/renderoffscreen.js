@@ -741,29 +741,29 @@ var sprites = [
   new Sprite(10,10,"barrel",true,0.6,0.4,0,0)
 ];
 var enemies = [
-	new Enemy(15.5,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
-	new Enemy(16.0,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
-	new Enemy(16.5,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
-	new Enemy(17.0,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
-	new Enemy(15.5,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
-	new Enemy(16.0,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
-	new Enemy(16.5,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
-	new Enemy(17.0,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,true,0),
+	new Enemy(15.5,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,false,0),
+	new Enemy(16.0,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,false,0),
+	new Enemy(16.5,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,false,0),
+	new Enemy(17.0,4.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,false,0),
+	new Enemy(15.5,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,false,0),
+	new Enemy(16.0,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,false,0),
+	new Enemy(16.5,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,false,0),
+	new Enemy(17.0,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,false,0),
 	new Enemy(4.5,7.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
 	new Enemy(4.5,15.5,0,"ss",100,3*Math.PI/2,0.035,0,false,0.4,3,true,2,[['ammo',2],['smg',0]]),
-	new Enemy(5.5,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(6.0,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(6.5,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(7.0,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(5.5,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(6.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(6.5,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
-	new Enemy(7.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
+	new Enemy(5.5,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
+	new Enemy(6.0,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
+	new Enemy(6.5,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
+	new Enemy(7.0,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
+	new Enemy(5.5,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
+	new Enemy(6.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
+	new Enemy(6.5,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
+	new Enemy(7.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
 	new Enemy(10.0,20.0,0,"guard",50,Math.PI,0.075,0,true,0.5,1,true,1,[['ammo',2]]),
 	new Enemy(11.0,20.0,0,"guard",50,Math.PI,0.075,0,true,0.5,1,true,1,[['ammo',2]]),
 	new Enemy(10.0,21.0,0,"ss",100,Math.PI,0.075,0,true,0.5,1,true,2,[['ammo',2],['smg',0]]),
 	new Enemy(11.0,21.0,0,"ss",100,Math.PI,0.075,0,true,0.5,1,true,2,[['ammo',2],['smg',0]]),
-	new Enemy(7.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,true,0),
+	new Enemy(7.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
 	new Enemy(21.5,8.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
 	new Enemy(19.5,8.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
 	new Enemy(21.5,6.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
@@ -2066,7 +2066,7 @@ function move(timeDelta) {
   // time timeDelta has passed since we moved last time. We should have moved after time gameCycleDelay,
   // so calculate how much we should multiply our movement to ensure game speed is constant
   var mul = timeDelta / gameCycleDelay;
-	if(gameIsOn) ai(mul);
+	if(gameIsOn&&!panorama) ai(mul);
   if(isPressingG){
 		isPressingG=false;
 		if(pickupIsPresent){
