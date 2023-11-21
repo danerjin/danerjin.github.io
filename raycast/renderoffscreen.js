@@ -1363,6 +1363,7 @@ function bind() {
 		e = e || window.event;
 		switch (e.keyCode) { // which key was pressed?
 			case 49:
+				playsound('weapons/melee_equip');
 				player.weapon=Math.min(player.maxWeapon,0);
 				break;
 			case 50:
