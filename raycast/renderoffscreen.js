@@ -2515,6 +2515,7 @@ function isBlocking(x,y,z) {
 		return true;
 	var ix = Math.floor(x);
 	var iy = Math.floor(y);
+	if(map[iy]===undefined) return false;
 	// return true if the map block is not 0, ie. if there is a blocking wall.
 	if(map[iy][ix] !== 0&&((heightMap[iy][ix]===0)?1:heightMap[iy][ix])>z){
     if(map[iy][ix] !== 8 && map[iy][ix] !== 9 && map[iy][ix] !== 10 && map[iy][ix] !== 11){return true;}
