@@ -23,15 +23,15 @@ var dmgdist;
 var vol = 0.5;
 var scoretext='';
 var sens = 1;
-var Node = function(state){
+var Node = function(state,parent){
 	this.state=state;
 	this.parent=parent;
 }
-function neighbors(in){
-	var x=in[0];
-	var y=in[1];
-	var z=in[2];
-	var traveled=in[3];
+function neighbors(input){
+	var x=input[0];
+	var y=input[1];
+	var z=input[2];
+	var traveled=input[3];
 	var cellX = Math.floor(x);
 	var cellY = Math.floor(y);
 	var val = [];
@@ -43,7 +43,7 @@ function neighbors(in){
 		for(var i = startX;i<=endX;i++){
 			if((!isBlocking(i+0.5,j+0.5,z+0.25) || map[j][i]===8 || map[j][i]===9)/* && !traveled.includes([i,j])*/){
 				if(Math.floor(player.x)===i&&Math.floor(player.y)===j){
-					val.push(player.x,player.y)
+					val.push(player.x,player.y);
 				}else{
 					val.push([i+0.5,j+0.5])
 				}
@@ -56,34 +56,33 @@ function solve(player,starter){
 	//Keep track of number of states explored
 	var num_explored = 0;
 	//Initialize frontier to just the starting position
-	var start = Node(starter, parent=None)
-	frontier = [];
-	frontier.push(start)
+	var start = new Node(starter, parent=undefined)
+	var frontier = [start];
 	// Initialize an empty explored set
 	var explored = [];
 	// Keep looping until solution found
 	while(1){
 		// If nothing left in frontier, then no path
-		if frontier.length===0:
-				return [];
+		if(frontier.length===0)	return [];
 		// Choose a node from the frontier
-		var node = frontier.pop()
-		num_explored++
+		var node = frontier.pop();
+		num_explored++;
 		// If node is the player, then we have a solution
 		if(node.state === player){
 			var cells = []
-			while node.parent is not None:
-					cells.append(node.state)
-					node = node.parent
+			while(node.parent !== undefined){
+				cells.append(node.state)
+				node = node.parent;
+			}
 			//cells=cells[::-1]
 			return cells
 		}
 		// Mark node as explored
 		explored.push(node.state)
 		// Add neighbors to frontier
-		for action, state in neighbors(node.state){
+		for(state of neighbors(node.state)){
 			if(!frontier.includes(state) && !explored.includes(state)){
-					var child = Node(state, node)
+					var child = new Node(state, node)
 					frontier.add(child)
 			}
 		}
@@ -194,9 +193,6 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 			this.playerpos=[Math.floor(player.x),Math.floor(player.y)];
 			//this.traveled=[];
 		}
-		if(this.playerpos===[Math.floor(this.target[0]),Math.floor(this.target[1])]){
-			this.target=this.path.pop();
-		}
 		dist=dist*Math.abs(this.z-player.z);
 		this.stateTimer+=(this.instate===2?0.05:this.speed)*3*mul*stuff[this.instate];
 		this.state = Math.floor(this.stateTimer);
@@ -246,7 +242,6 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 		if(this.hp>0){
 			if(this.alert){
 				if(this.instate!==2){
-					/*
 					var neighs = neighbors([this.x,this.y,this.z,this.traveled]);
 					if(neighs.length){
 						if(this.melee){
@@ -254,19 +249,19 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 								return ((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
 							})
 						}else{
-							if(((this.x-player.x)**2+(this.y-player.y)**2))**0.5 > 4){
+							if(((this.x-player.x)**2+(this.y-player.y)**2)**0.5 > 4){
 								neighs=neighs.toSorted(function(a,b){
 									return ((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
 								})
 							}else{
 								neighs=neighs.toSorted(function(a,b){
-									return -((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
+									return -(((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5)
 								})
 							}
 						}
 						this.target = neighs[0];
 					}
-					*/
+
 					if(this.melee){
 						if(dist < player.range[0]/36&&this.atkooldown===0){
 							this.attack();
@@ -305,18 +300,20 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 			this.instate = 1;
 			this.xSpeed = Math.cos(this.rot)*this.speed;
 			this.ySpeed = Math.sin(this.rot)*this.speed;
-			if(map[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] === 8 ||
-			map[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] === 9 ||
-			map[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] === 10){
-				doorStates[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] = 1;
+			if(map[Math.floor(this.y+this.ySpeed*mul)]!==undefined){
+				if(map[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] === 8 ||
+				map[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] === 9 ||
+				map[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] === 10){
+					doorStates[Math.floor(this.y+this.ySpeed*mul)][Math.floor(this.x+this.xSpeed*mul)] = 1;
+				}
 			}
 			var pos = checkCollision(this.x,this.y,this.x+this.xSpeed*mul,this.y+this.ySpeed*mul,0.05,this.z-gravity);
 			this.x = pos.x;
 			this.y = pos.y;
 			this.z = pos.z;
 			var newpos=[Math.floor(this.x),Math.floor(this.y)];
-			if(!this.traveled.includes(newpos)){
-				this.traveled.push(newpos);
+			if(this.playerpos===[Math.floor(this.target[0]),Math.floor(this.target[1])]){
+				this.target=this.path.pop();
 			}
 		}
 	}
@@ -1269,9 +1266,9 @@ function renderCycle() {
 				}
 			}
 		  updateMiniMap();
-			drawFillRectangle(0,0,screenWidth,screenHeight,fill="//FFFFFF");
+			drawFillRectangle(0,0,screenWidth,screenHeight,fill="#FFFFFF");
 		  if(!floor){
-				drawFillRectangle(0,0,screenWidth,screenHeight,'//787878');
+				drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');
 			}else{
 				if(useGPU){
 				  var rayDirX0 = dirX - planeX;
@@ -1313,27 +1310,27 @@ function renderCycle() {
 					}
 				}
 			}
-			drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'//87CEEB');
+			drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#87CEEB');
 			castWallRays();
 			//weapon
 			ctx.drawImage(weapons_imgs[player.weapon],65*player.weaponState,0,64,64,screenWidth/2-weapon_size/2*1/adsmul,screenHeight-weapon_size*(1.5-0.5*adsmul),weapon_size*1/adsmul,weapon_size*1/adsmul);
 			//crosshair
 		  {
-				drawFillRectangle(screenWidth/2-50/2,screenHeight/2-2/2,40/2,4/2,'//00FF00');
-			  drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'//00FF00');
-			  drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'//00FF00');
-			  drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'//00FF00');
+				drawFillRectangle(screenWidth/2-50/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
+			  drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
+			  drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
+			  drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
 				circle(screenWidth/2,screenHeight/2,4/2);
 			}
 			if(pickupIsPresent){
 					ctx.font = "bold 20px Courier New";
-					ctx.fillStyle = "//FFFF66";
+					ctx.fillStyle = "#FFFF66";
 					ctx.textAlign = "center";
 					ctx.fillText("Press [G] pick up "+pickups[pickupNum].name, screenWidth/2, screenHeight-25);
 			}
 		  else if(doorIsPresent&&(map[doorTarget[1]][doorTarget[0]] === 8 || map[doorTarget[1]][doorTarget[0]] === 9 || map[doorTarget[1]][doorTarget[0]] === 10)){
 		      ctx.font = "bold 20px Courier New";
-		      ctx.fillStyle = "//FFFF66";
+		      ctx.fillStyle = "#FFFF66";
 		      ctx.textAlign = "center";
 		      ctx.fillText("Press [G] to interact with door", screenWidth/2, screenHeight-25);
 		  }
@@ -2148,7 +2145,7 @@ function move(timeDelta) {
 		isPressingG=false;
 		if(pickupIsPresent){
 			if(pickups[pickupNum].type===0){
-				player.maxWeapon = pickups[pickupNum].gun;
+				player.maxWeapon = Math.max(player.maxWeapon,pickups[pickupNum].gun);
 				player.primary();
 				playsoundWAV('pickups/ALCGUNUP');
 			}else if(pickups[pickupNum].type===1){
@@ -2321,6 +2318,7 @@ function checkCollision(fromX,fromY,toX,toY,radius,fromZ,toZ){
 	var y = pos.y;
 	var ix = Math.floor(x);
 	var iy = Math.floor(y);
+	if(map[iy]===undefined) return;
 	// return true if the map block is not 0, ie. if there is a blocking wall.
 	if(map[iy][ix] !== 0){
 		if(map[iy][ix] !== 8 && map[iy][ix] !== 9 && map[iy][ix] !== 10 && map[iy][ix] !== 11){
