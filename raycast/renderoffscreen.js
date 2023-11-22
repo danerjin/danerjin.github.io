@@ -18,7 +18,8 @@ if(!Array.prototype.indexOf) {
 }
 var debug = false;
 var enemy;
-var weapon_names = ['knife','pistol','smg','chaingun'];
+var weapon_names = ['knife','pistol','smg','chaingun']//, 'rifle'];
+var weapon_sizes = [64,      64,      64,        64]//,      128,    ]
 var dmgdist;
 var vol = 0.5;
 var scoretext='';
@@ -1313,7 +1314,7 @@ function renderCycle() {
 			drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#87CEEB');
 			castWallRays();
 			//weapon
-			ctx.drawImage(weapons_imgs[player.weapon],65*player.weaponState,0,64,64,screenWidth/2-weapon_size/2*1/adsmul,screenHeight-weapon_size*(1.5-0.5*adsmul),weapon_size*1/adsmul,weapon_size*1/adsmul);
+			ctx.drawImage(weapons_imgs[player.weapon],(1+weapon_sizes[player.weapon])*player.weaponState,0,weapon_sizes[player.weapon],weapon_sizes[player.weapon],screenWidth/2-weapon_size/2*1/adsmul,screenHeight-weapon_size*(1.5-0.5*adsmul),weapon_size*1/adsmul,weapon_size*1/adsmul);
 			//crosshair
 		  {
 				drawFillRectangle(screenWidth/2-50/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
