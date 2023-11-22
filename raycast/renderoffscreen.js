@@ -761,10 +761,10 @@ var player = {
 					panorama=true;
 					this.timer=0;
 					setTimeout(function(){
-						this.timer=0;
-						this.hp=100;
-						this.x=5.5;
-						this.y=3.1;
+						player.timer=0;
+						player.hp=100;
+						player.x=5.5;
+						player.y=3.1;
 						gameIsOn=true;
 						panorama=false;
 					},1000)
