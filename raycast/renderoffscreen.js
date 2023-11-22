@@ -733,9 +733,11 @@ var player = {
 				if(stripe[i].state){
 					num = stripe[i].num;
 					enemy = enemies[num];
-					dist = ((enemy.x-this.x)**2+(enemy.y-this.y)**2)**0.5;
-					if(dist <= this.range[this.weapon]/24 && stripe[i].y<=screenHeight/2 && stripe[i].y+stripe[i].height>=screenHeight/2 && enemy.hp!==0){
-						enemy.hurt((this.damage[this.weapon]-(this.dropoff[this.weapon]*dist*24/this.range[this.weapon]))*dmgMult,dist);
+					if(enemy!==undefined){
+						dist = ((enemy.x-this.x)**2+(enemy.y-this.y)**2)**0.5;
+						if(dist <= this.range[this.weapon]/24 && stripe[i].y<=screenHeight/2 && stripe[i].y+stripe[i].height>=screenHeight/2 && enemy.hp!==0){
+							enemy.hurt((this.damage[this.weapon]-(this.dropoff[this.weapon]*dist*24/this.range[this.weapon]))*dmgMult,dist);
+						}
 					}
 				}else{
 					dmgMult*=(1-this.pierce[this.weapon]/2);
@@ -763,7 +765,7 @@ var player = {
 					this.timer=0;
 					setTimeout(function(){
 						player.timer=0;
-						player.hp=100;
+						player.hp=player.maxHp;
 						player.x=5.5;
 						player.y=3.1;
 						gameIsOn=true;
@@ -841,7 +843,7 @@ var enemies = [
 	new Enemy(19.5,6.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
 	new Enemy(21.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.4,3,true,2,[['ammo',2],['smg',0]]),
 	new Enemy(20.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.4,3,true,2,[['ammo',2],['smg',0]]),
-	new Enemy(19.0,15.5,0,"ss",500,3*Math.PI/2,0.02,0,false,0.4,3,true,2,[['ammo',2],['smg',0],['bluekey',1]]),
+	new Enemy(19.0,15.5,0,"ss",500,3*Math.PI/2,0.02,0,false,0.4,3,false,2,[['ammo',2],['smg',0],['bluekey',1]]),
 ];
 var sounds=[['swsh_0_0','swsh_0_1'],'weapon_3','weapon_2','weapon_26'];
 var pickups = [
@@ -2319,7 +2321,7 @@ function checkCollision(fromX,fromY,toX,toY,radius,fromZ,toZ){
 	var y = pos.y;
 	var ix = Math.floor(x);
 	var iy = Math.floor(y);
-	if(map[iy]===undefined) return;
+	if(map[iy]===undefined) return pos;
 	// return true if the map block is not 0, ie. if there is a blocking wall.
 	if(map[iy][ix] !== 0){
 		if(map[iy][ix] !== 8 && map[iy][ix] !== 9 && map[iy][ix] !== 10 && map[iy][ix] !== 11){
