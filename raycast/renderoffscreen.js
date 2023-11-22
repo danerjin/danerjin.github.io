@@ -23,7 +23,15 @@ var dmgdist;
 var vol = 0.5;
 var scoretext='';
 var sens = 1;
-function neighbors(x,y,z,traveled=[]){
+var Node = function(state){
+	this.state=state;
+	this.parent=parent;
+}
+function neighbors(in){
+	var x=in[0];
+	var y=in[1];
+	var z=in[2];
+	var traveled=in[3];
 	var cellX = Math.floor(x);
 	var cellY = Math.floor(y);
 	var val = [];
@@ -43,6 +51,43 @@ function neighbors(x,y,z,traveled=[]){
 		}
 	}
 	return val;
+}
+function solve(player,starter){
+	//Keep track of number of states explored
+	var num_explored = 0;
+	//Initialize frontier to just the starting position
+	var start = Node(starter, parent=None)
+	frontier = [];
+	frontier.push(start)
+	// Initialize an empty explored set
+	var explored = [];
+	// Keep looping until solution found
+	while(1){
+		// If nothing left in frontier, then no path
+		if frontier.length===0:
+				return [];
+		// Choose a node from the frontier
+		var node = frontier.pop()
+		num_explored++
+		// If node is the player, then we have a solution
+		if(node.state === player){
+			var cells = []
+			while node.parent is not None:
+					cells.append(node.state)
+					node = node.parent
+			//cells=cells[::-1]
+			return cells
+		}
+		// Mark node as explored
+		explored.push(node.state)
+		// Add neighbors to frontier
+		for action, state in neighbors(node.state){
+			if(!frontier.includes(state) && !explored.includes(state)){
+					var child = Node(state, node)
+					frontier.add(child)
+			}
+		}
+	}
 }
 function getimagedata(v) {
   const w = v.width, h = v.height;
@@ -140,12 +185,17 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 	this.flinch=flinch;
 	this.weapon=weapon;
 	this.traveled=[[Math.floor(this.x),Math.floor(this.y)]];
+	this.path=[];
 	this.playerpos=[Math.floor(player.x),Math.floor(player.y)];
 	this.update=function(mul,dist){
 		var newpos=[Math.floor(player.x),Math.floor(player.y)];
 		if(newpos!==this.playerpos){
+			this.path=solve(player,this);
 			this.playerpos=[Math.floor(player.x),Math.floor(player.y)];
-			this.traveled=[];
+			//this.traveled=[];
+		}
+		if(this.playerpos===[Math.floor(this.target[0]),Math.floor(this.target[1])]){
+			this.target=this.path.pop();
 		}
 		dist=dist*Math.abs(this.z-player.z);
 		this.stateTimer+=(this.instate===2?0.05:this.speed)*3*mul*stuff[this.instate];
@@ -196,7 +246,8 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 		if(this.hp>0){
 			if(this.alert){
 				if(this.instate!==2){
-					var neighs = neighbors(this.x,this.y,this.z,this.traveled);
+					/*
+					var neighs = neighbors([this.x,this.y,this.z,this.traveled]);
 					if(neighs.length){
 						if(this.melee){
 							neighs=neighs.toSorted(function(a,b){
@@ -215,6 +266,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 						}
 						this.target = neighs[0];
 					}
+					*/
 					if(this.melee){
 						if(dist < player.range[0]/36&&this.atkooldown===0){
 							this.attack();
@@ -916,15 +968,15 @@ function init() {
         width: 100,
         height: 100,
         // varernal color of Stick
-        varernalFillColor: '#00AA00',
+        varernalFillColor: '//00AA00',
         // Border width of Stick
         varernalLineWidth: 2,
         // Border color of Stick
-        varernalStrokeColor: '#003300',
+        varernalStrokeColor: '//003300',
         // External reference circonference width
         externalLineWidth: 2,
         //External reference circonference color
-        externalStrokeColor: '#008000',
+        externalStrokeColor: '//008000',
         // Sets the behavior of the stick
         autoReturnToCenter: true
 
@@ -941,8 +993,8 @@ function init() {
 			gameIsOn=true;
 		}
   });
-  drawFillRectangle(0,0,screenWidth,screenHeight/2,'#429bf5');
-  drawFillRectangle(0,screenHeight/2,screenWidth,screenHeight/2,'#c0a570');
+  drawFillRectangle(0,0,screenWidth,screenHeight/2,'//429bf5');
+  drawFillRectangle(0,screenHeight/2,screenWidth,screenHeight/2,'//c0a570');
 	bind();
 	weapon_size = screenWidth/2;
   for (var y=0;y<mapHeight;y++) {
@@ -1217,9 +1269,9 @@ function renderCycle() {
 				}
 			}
 		  updateMiniMap();
-			drawFillRectangle(0,0,screenWidth,screenHeight,fill="#FFFFFF");
+			drawFillRectangle(0,0,screenWidth,screenHeight,fill="//FFFFFF");
 		  if(!floor){
-				drawFillRectangle(0,0,screenWidth,screenHeight,'#787878');
+				drawFillRectangle(0,0,screenWidth,screenHeight,'//787878');
 			}else{
 				if(useGPU){
 				  var rayDirX0 = dirX - planeX;
@@ -1261,27 +1313,27 @@ function renderCycle() {
 					}
 				}
 			}
-			drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'#87CEEB');
+			drawFillRectangle(0,0,screenWidth,screenHeight/2+player.pitch+25*(player.height+player.z-0.5),'//87CEEB');
 			castWallRays();
 			//weapon
 			ctx.drawImage(weapons_imgs[player.weapon],65*player.weaponState,0,64,64,screenWidth/2-weapon_size/2*1/adsmul,screenHeight-weapon_size*(1.5-0.5*adsmul),weapon_size*1/adsmul,weapon_size*1/adsmul);
 			//crosshair
 		  {
-				drawFillRectangle(screenWidth/2-50/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
-			  drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'#00FF00');
-			  drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'#00FF00');
-			  drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'#00FF00');
+				drawFillRectangle(screenWidth/2-50/2,screenHeight/2-2/2,40/2,4/2,'//00FF00');
+			  drawFillRectangle(screenWidth/2+10/2,screenHeight/2-2/2,40/2,4/2,'//00FF00');
+			  drawFillRectangle(screenWidth/2-2/2,screenHeight/2-50/2,4/2,40/2,'//00FF00');
+			  drawFillRectangle(screenWidth/2-2/2,screenHeight/2+10/2,4/2,40/2,'//00FF00');
 				circle(screenWidth/2,screenHeight/2,4/2);
 			}
 			if(pickupIsPresent){
 					ctx.font = "bold 20px Courier New";
-					ctx.fillStyle = "#FFFF66";
+					ctx.fillStyle = "//FFFF66";
 					ctx.textAlign = "center";
 					ctx.fillText("Press [G] pick up "+pickups[pickupNum].name, screenWidth/2, screenHeight-25);
 			}
 		  else if(doorIsPresent&&(map[doorTarget[1]][doorTarget[0]] === 8 || map[doorTarget[1]][doorTarget[0]] === 9 || map[doorTarget[1]][doorTarget[0]] === 10)){
 		      ctx.font = "bold 20px Courier New";
-		      ctx.fillStyle = "#FFFF66";
+		      ctx.fillStyle = "//FFFF66";
 		      ctx.textAlign = "center";
 		      ctx.fillText("Press [G] to interact with door", screenWidth/2, screenHeight-25);
 		  }
