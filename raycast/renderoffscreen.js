@@ -250,7 +250,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 								return ((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
 							})
 						}else{
-							if(((this.x-player.x)**2+(this.y-player.y)**2)**0.5 > 4){
+							if(((this.x-player.x)**2+(this.y-player.y)**2)**0.5 > 2){
 								neighs=neighs.toSorted(function(a,b){
 									return ((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
 								})
