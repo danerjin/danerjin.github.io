@@ -1899,7 +1899,7 @@ function canSee(enemy) {
     while (x > 0 && x < mapWidth && y > 0 && y < mapHeight) {
     		var wallX = Math.floor(x + (right ? 0 : -1));
     		var wallY = Math.floor(y);
-				if(wallX===Math.floor(player.x)&&wallY===Math.floor(player.y)) return true;
+				if(wallX===Math.floor(player.x)&&wallY===Math.floor(player.y)) break;
     		// is this point inside a wall block?
     		if(map[wallY][wallX] !== 0){
           if(map[wallY][wallX]===8||map[wallY][wallX]===9 ||map[wallY][wallX]===10){
@@ -1943,7 +1943,7 @@ function canSee(enemy) {
   	while (x > 0 && x < mapWidth && y > 0 && y < mapHeight) {
   		var wallY = Math.floor(y + (up ? -1 : 0));
   		var wallX = Math.floor(x);
-			if(wallX===Math.floor(player.x)&&wallY===Math.floor(player.y)) return true;
+			if(wallX===Math.floor(player.x)&&wallY===Math.floor(player.y)) break;
   		if(map[wallY][wallX]  !== 0) {
         if(map[wallY][wallX]===8 || map[wallY][wallX]===9 || map[wallY][wallX]===10){
 					if(doorDirs[wallY][wallX]===1){
@@ -1978,7 +1978,7 @@ function canSee(enemy) {
   		y += dYHor;
   	}
   }
-	return false;
+	return true;
 }
 function renderSprites(){
 	var zbuffer=JSON.parse(JSON.stringify(orzbuffer));
