@@ -730,10 +730,11 @@ var player = {
 			var num,dist,enemy;
 			var dmgMult = 1;
 			for(var i = 0; i<stripe.length;i++){
-				if(stripe[i].state){
+				if(stripe[i].state!==undefined){
 					num = stripe[i].num;
 					enemy = enemies[num];
 					if(enemy!==undefined){
+						console.log(enemy);
 						dist = ((enemy.x-this.x)**2+(enemy.y-this.y)**2)**0.5;
 						if(dist <= this.range[this.weapon]/24 && stripe[i].y<=screenHeight/2 && stripe[i].y+stripe[i].height>=screenHeight/2 && enemy.hp!==0){
 							enemy.hurt((this.damage[this.weapon]-(this.dropoff[this.weapon]*dist*24/this.range[this.weapon]))*dmgMult,dist);
