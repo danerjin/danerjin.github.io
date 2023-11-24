@@ -159,6 +159,7 @@ var Pickup = function(x,y,texture,z,vmove,type){
   this.z = z;
 }
 var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weapon,drops=[]/*,ai*/){
+	this.name=texture;
   this.x = x;
   this.y = y;
 	this.z = z;
@@ -167,7 +168,6 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
   this.texture = new Image();
   this.texture.crossOrigin = "Anonymous";
   this.texture.src = `sprites/enemies/${texture}.png`;
-	this.name=texture;
 	this.state = 0;
 	this.rot = rot;
 	this.hp = hp;
