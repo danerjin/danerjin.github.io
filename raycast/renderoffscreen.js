@@ -2322,7 +2322,7 @@ function checkCollision(fromX,fromY,toX,toY,radius,fromZ,toZ){
 	var y = pos.y;
 	var ix = Math.floor(x);
 	var iy = Math.floor(y);
-	if(map[iy]===undefined) return pos;
+	if(map[iy]===undefined) return {x:fromX,y:fromY,z:fromZ}//pos;
 	// return true if the map block is not 0, ie. if there is a blocking wall.
 	if(map[iy][ix] !== 0){
 		if(map[iy][ix] !== 8 && map[iy][ix] !== 9 && map[iy][ix] !== 10 && map[iy][ix] !== 11){
