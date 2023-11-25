@@ -322,6 +322,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 		var headshot=Math.random()>0.5;
 		if(this.hp !== 0){
 			playsound('hp/hit_0');
+			this.alert=true;
 			if(this.hp-Math.round(amnt*(headshot?1.5:1)) > 0){
 				this.hp=this.hp-Math.round(amnt*(headshot?1.5:1));
 				if(this.flinch){
