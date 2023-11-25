@@ -321,8 +321,8 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 	this.hurt = function(amnt,dist){
 		var headshot=Math.random()>0.5;
 		if(this.hp !== 0){
-			playsound('hp/hit_0');
 			this.alert=true;
+			playsound('hp/hit_0');
 			if(this.hp-Math.round(amnt*(headshot?1.5:1)) > 0){
 				this.hp=this.hp-Math.round(amnt*(headshot?1.5:1));
 				if(this.flinch){
@@ -825,7 +825,7 @@ var enemies = [
 	new Enemy(16.5,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,false,0),
 	new Enemy(17.0,3.5,0,"dog",15,Math.PI,0.075,0,true,0.5,1,false,0),
 	new Enemy(4.5,7.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
-	new Enemy(4.5,15.5,0,"ss",100,3*Math.PI/2,0.035,0,false,0.4,3,true,2,[['ammo',2],['smg',0]]),
+	new Enemy(4.5,15.5,0,"ss",100,3*Math.PI/2,0.035,0,false,0.4,4,true,2,[['ammo',2],['smg',0]]),
 	new Enemy(5.5,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
 	new Enemy(6.0,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
 	new Enemy(6.5,17.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
@@ -834,18 +834,33 @@ var enemies = [
 	new Enemy(6.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
 	new Enemy(6.5,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
 	new Enemy(7.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
-	new Enemy(10.0,20.0,0,"guard",50,Math.PI,0.075,0,true,0.5,1,true,1,[['ammo',2]]),
-	new Enemy(11.0,20.0,0,"guard",50,Math.PI,0.075,0,true,0.5,1,true,1,[['ammo',2]]),
-	new Enemy(10.0,21.0,0,"ss",100,Math.PI,0.075,0,true,0.5,1,true,2,[['ammo',2],['smg',0]]),
-	new Enemy(11.0,21.0,0,"ss",100,Math.PI,0.075,0,true,0.5,1,true,2,[['ammo',2],['smg',0]]),
+	new Enemy(10.0,20.0,0,"guard",50,Math.PI,0.075,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(11.0,20.0,0,"guard",50,Math.PI,0.075,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(10.0,21.0,0,"ss",100,Math.PI,0.075,0,false,0.4,4,true,2,[['ammo',2],['smg',0]]),
+	new Enemy(11.0,21.0,0,"ss",100,Math.PI,0.075,0,false,0.4,4,true,2,[['ammo',2],['smg',0]]),
 	new Enemy(7.0,16.5,0,"dog",15,3*Math.PI/2,0.075,0,true,0.5,1,false,0),
 	new Enemy(21.5,8.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(12.5,9.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(12.5,10.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(12.5,11.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(12.5,12.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(12.5,13.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(12.5,14.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(12.5,15.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(11.5,14.5,0,"guard",50,0*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(11.5,15.5,0,"guard",50,0*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(13.5,14.5,0,"guard",50,2*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(13.5,15.5,0,"guard",50,2*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(10.5,14.5,0,"guard",50,0*Math.PI,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(10.5,15.5,0,"guard",50,0*Math.PI,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(14.5,14.5,0,"guard",50,Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
+	new Enemy(14.5,15.5,0,"guard",50,Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
 	new Enemy(19.5,8.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
 	new Enemy(21.5,6.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
 	new Enemy(19.5,6.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
-	new Enemy(21.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.4,3,true,2,[['ammo',2],['smg',0]]),
-	new Enemy(20.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.4,3,true,2,[['ammo',2],['smg',0]]),
-	new Enemy(19.0,15.5,0,"ss",500,3*Math.PI/2,0.02,0,false,0.4,3,false,2,[['ammo',2],['smg',0],['bluekey',1]]),
+	new Enemy(21.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.4,4,true,2,[['ammo',2],['smg',0]]),
+	new Enemy(20.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.4,4,true,2,[['ammo',2],['smg',0]]),
+	new Enemy(19.0,15.5,0,"ss",500,3*Math.PI/2,0.02,0,false,0.4,10,false,2,[['ammo',2],['chaingun',0],['bluekey',1]]),
 ];
 var sounds=[['swsh_0_0','swsh_0_1'],'weapon_3','weapon_2','weapon_26'];
 var pickups = [
