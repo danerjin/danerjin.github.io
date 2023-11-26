@@ -638,6 +638,8 @@ var ceilinglayout = [
 var player = {
 	x : 5.5,		// current x, y position
 	y : 3.1,
+	camerax : 5.5,		// current x, y position
+	cameray : 3.1,
 	dir : 0,		// the direction that the player is turning, either -1 for left or 1 for right.
 	rotDeg : 45,		// the current angle of rotation
 	rot : 0,		// rotation in radians
@@ -1642,8 +1644,8 @@ function castSingleRay(stripIdx,zbuffer) {
   	var dYVer = dXVer * slope; 	// how much to move up or down
   	var dYHor = up ? -1 : 1;
   	var dXHor = dYHor / slope;
-    var x = (right) ? Math.ceil(player.x) : Math.floor(player.x);	// starting horizontal position, at one of the edges of the current map block
-    var y = player.y + (x - player.x) * slope;// starting vertical position. We add the small horizontal step we just made, multiplied by the slope.
+    var x = (right) ? Math.ceil(player.camerax) : Math.floor(player.camerax);	// starting horizontal position, at one of the edges of the current map block
+    var y = player.cameray + (x - player.camerax) * slope;// starting vertical position. We add the small horizontal step we just made, multiplied by the slope.
     while (x > 0 && x < mapWidth && y > 0 && y < mapHeight) {
     		var wallX = Math.floor(x + (right ? 0 : -1));
     		var wallY = Math.floor(y);
@@ -1654,8 +1656,8 @@ function castSingleRay(stripIdx,zbuffer) {
 	            x_maybe=x+dXVer/2;
 	            y_maybe=y+dYVer/2;
 	            if((y_maybe-wallY) <= 1-doorOffsets[wallY][wallX]){
-	              var distX = x_maybe - player.x;
-	        			var distY = y_maybe - player.y;
+	              var distX = x_maybe - player.camerax;
+	        			var distY = y_maybe - player.cameray;
 	        			textureX = (y_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
 	        			textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 								var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,planeY * distX - planeX * distY);
@@ -1670,26 +1672,26 @@ function castSingleRay(stripIdx,zbuffer) {
               x_maybe=x+dXVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
               y_maybe=y+dYVer*doorOffsets[wallY][wallX]*(1-doorDirs[wallY][wallX]);
             if(y_maybe-wallY <= 1 && y_maybe-wallY >= 0){
-              var distX = x_maybe - player.x;
-              var distY = y_maybe - player.y;
+              var distX = x_maybe - player.camerax;
+              var distY = y_maybe - player.cameray;
                 textureX = (y_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
                 if(!right) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 								var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,planeY * distX - planeX * distY);
 								if(up){
 									if(Math.abs(dXVer)>Math.abs(dXHor*(y%1))){
-										var distXNew = x+dXHor*(y%1)-player.x;
-										var distYNew = y+dYHor*(y%1)-player.y;
+										var distXNew = x+dXHor*(y%1)-player.camerax;
+										var distYNew = y+dYHor*(y%1)-player.cameray;
 									}else{
-										var distXNew = x+dXVer-player.x;
-										var distYNew = y+dYVer-player.y;
+										var distXNew = x+dXVer-player.camerax;
+										var distYNew = y+dYVer-player.cameray;
 									}
 								}else{
 									if(Math.abs(dXVer)>Math.abs(dXHor*(1-y%1))){
-										var distXNew = x+dXHor*(1-y%1)-player.x;
-										var distYNew = y+dYHor*(1-y%1)-player.y;
+										var distXNew = x+dXHor*(1-y%1)-player.camerax;
+										var distYNew = y+dYHor*(1-y%1)-player.cameray;
 									}else{
-										var distXNew = x+dXVer-player.x;
-										var distYNew = y+dYVer-player.y;
+										var distXNew = x+dXVer-player.camerax;
+										var distYNew = y+dYVer-player.cameray;
 									}
 								}
 								var back = planeY * distXNew - planeX * distYNew;
@@ -1704,8 +1706,8 @@ function castSingleRay(stripIdx,zbuffer) {
 							var x_maybe=x+dXVer/2;
 							var y_maybe=y+dYVer/2;
 							if(y_maybe<=1+wallY){
-								var distX = x_maybe - player.x;
-								var distY = y_maybe - player.y;
+								var distX = x_maybe - player.camerax;
+								var distY = y_maybe - player.cameray;
 								var front = new GlassPaneStripe(wallX,wallY,stripIdx*stripWidth,planeY * distX - planeX * distY);
 								hits.push(front);
 							}
@@ -1719,19 +1721,19 @@ function castSingleRay(stripIdx,zbuffer) {
 							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,true,planeY * distX - planeX * distY);
 							if(up){
 								if(Math.abs(dXVer)>Math.abs(dXHor*(y%1))){
-									var distXNew = x+dXHor*(y%1)-player.x;
-									var distYNew = y+dYHor*(y%1)-player.y;
+									var distXNew = x+dXHor*(y%1)-player.camerax;
+									var distYNew = y+dYHor*(y%1)-player.cameray;
 								}else{
-									var distXNew = x+dXVer-player.x;
-									var distYNew = y+dYVer-player.y;
+									var distXNew = x+dXVer-player.camerax;
+									var distYNew = y+dYVer-player.cameray;
 								}
 							}else{
 								if(Math.abs(dXVer)>Math.abs(dXHor*(1-y%1))){
-									var distXNew = x+dXHor*(1-y%1)-player.x;
-									var distYNew = y+dYHor*(1-y%1)-player.y;
+									var distXNew = x+dXHor*(1-y%1)-player.camerax;
+									var distYNew = y+dYHor*(1-y%1)-player.cameray;
 								}else{
-									var distXNew = x+dXVer-player.x;
-									var distYNew = y+dYVer-player.y;
+									var distXNew = x+dXVer-player.camerax;
+									var distYNew = y+dYVer-player.cameray;
 								}
 							}
 							var back = planeY * distXNew - planeX * distYNew;
@@ -1749,8 +1751,8 @@ function castSingleRay(stripIdx,zbuffer) {
   	// the only difference here is that once we hit a map block,
   	// we check if there we also found one in the earlier, vertical run. We'll know that if dist != 0.
   	// If so, we only register this hit if this distance is smaller.
-    var y = (up) ? Math.floor(player.y) : Math.ceil(player.y);
-    var x = player.x + (y - player.y) / slope;
+    var y = (up) ? Math.floor(player.cameray) : Math.ceil(player.cameray);
+    var x = player.camerax + (y - player.cameray) / slope;
   	while (x > 0 && x < mapWidth && y > 0 && y < mapHeight) {
   		var wallY = Math.floor(y + (up ? -1 : 0));
   		var wallX = Math.floor(x);
@@ -1760,8 +1762,8 @@ function castSingleRay(stripIdx,zbuffer) {
 	          x_maybe=x+dXHor/2;
 	          y_maybe=y+dYHor/2;
 	          if(x_maybe-wallX <= 1-doorOffsets[wallY][wallX] && x_maybe-wallX >= 0){
-	            var distX = x_maybe - player.x;
-	            var distY = y_maybe - player.y;
+	            var distX = x_maybe - player.camerax;
+	            var distY = y_maybe - player.cameray;
 	              textureX = (x_maybe+doorOffsets[wallY][wallX]) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
 	              textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 
@@ -1777,26 +1779,26 @@ function castSingleRay(stripIdx,zbuffer) {
             x_maybe=x+dXHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX]);
             y_maybe=y+dYHor*doorOffsets[wallY][wallX]*(doorDirs[wallY][wallX]);
           if(x_maybe-wallX <= 1 && x_maybe-wallX >= 0){
-            var distX = x_maybe - player.x;
-            var distY = y_maybe - player.y;
+            var distX = x_maybe - player.camerax;
+            var distY = y_maybe - player.cameray;
               textureX = (x_maybe) % 1;	// where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use later when texturing the wall.
               if(up) textureX = 1 - textureX; // if we're looking to the left side of the map, the texture should be reversed
 							var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,planeY * distX - planeX * distY);
 							if(!right){
 								if(Math.abs(dYHor)>Math.abs(dYVer*(x%1))){
-									var distXNew = x+dXVer*(x%1)-player.x;
-									var distYNew = y+dYVer*(x%1)-player.y;
+									var distXNew = x+dXVer*(x%1)-player.camerax;
+									var distYNew = y+dYVer*(x%1)-player.cameray;
 								}else{
-									var distXNew = x+dXHor-player.x;
-									var distYNew = y+dYHor-player.y;
+									var distXNew = x+dXHor-player.camerax;
+									var distYNew = y+dYHor-player.cameray;
 								}
 							}else{
 								if(Math.abs(dYHor)>Math.abs(dYVer*(1-x%1))){
-									var distXNew = x+dXVer*(1-x%1)-player.x;
-									var distYNew = y+dYVer*(1-x%1)-player.y;
+									var distXNew = x+dXVer*(1-x%1)-player.camerax;
+									var distYNew = y+dYVer*(1-x%1)-player.cameray;
 								}else{
-									var distXNew = x+dXHor-player.x;
-									var distYNew = y+dYHor-player.y;
+									var distXNew = x+dXHor-player.camerax;
+									var distYNew = y+dYHor-player.cameray;
 								}
 							}
 							var back = planeY * distXNew - planeX * distYNew;
@@ -1811,8 +1813,8 @@ function castSingleRay(stripIdx,zbuffer) {
 						var x_maybe=x+dXHor/2;
 						var y_maybe=y+dYHor/2;
 						if(x_maybe<=wallX+1){
-							var distX = x_maybe - player.x;
-							var distY = y_maybe - player.y;
+							var distX = x_maybe - player.camerax;
+							var distY = y_maybe - player.cameray;
 							var front = new GlassPaneStripe(wallX,wallY,stripIdx*stripWidth,planeY * distX - planeX * distY);
 							hits.push(front);
 						}
@@ -1826,19 +1828,19 @@ function castSingleRay(stripIdx,zbuffer) {
 						var front = new WallStripeHalf(wallX,wallY,textureX,stripIdx*stripWidth,false,planeY * distX - planeX * distY);
 						if(!right){
 							if(Math.abs(dXHor)>Math.abs(dXVer*(x%1))){
-								var distXNew = x+dXVer*(x%1)-player.x;
-								var distYNew = y+dYVer*(x%1)-player.y;
+								var distXNew = x+dXVer*(x%1)-player.camerax;
+								var distYNew = y+dYVer*(x%1)-player.cameray;
 							}else{
-								var distXNew = x+dXHor-player.x;
-								var distYNew = y+dYHor-player.y;
+								var distXNew = x+dXHor-player.camerax;
+								var distYNew = y+dYHor-player.cameray;
 							}
 						}else{
 							if(Math.abs(dXHor)>Math.abs(dXVer*(1-x%1))){
-								var distXNew = x+dXVer*(1-x%1)-player.x;
-								var distYNew = y+dYVer*(1-x%1)-player.y;
+								var distXNew = x+dXVer*(1-x%1)-player.camerax;
+								var distYNew = y+dYVer*(1-x%1)-player.cameray;
 							}else{
-								var distXNew = x+dXHor-player.x;
-								var distYNew = y+dYHor-player.y;
+								var distXNew = x+dXHor-player.camerax;
+								var distYNew = y+dYHor-player.cameray;
 							}
 						}
 						var back = planeY * distXNew - planeX * distYNew;
@@ -2004,14 +2006,14 @@ function renderSprites(){
 	var zbuffer=JSON.parse(JSON.stringify(orzbuffer));
   var tempVar = new Array(sprites.length);
   for(var i = 0; i < sprites.length; i++){
-    tempVar[i] = [i,((player.x - sprites[i].x) * (player.x - sprites[i].x) + (player.y - sprites[i].y) * (player.y - sprites[i].y))]; //sqrt not taken, unneeded
+    tempVar[i] = [i,((player.camerax - sprites[i].x) * (player.camerax - sprites[i].x) + (player.cameray - sprites[i].y) * (player.cameray - sprites[i].y))]; //sqrt not taken, unneeded
   }
   tempVar.sort(function(a, b){return b[1] - a[1]});
   for(var i = 0; i < sprites.length; i++){
       //translate sprite position to relative to camera
       var num = tempVar[i][0];
-      var spriteX = sprites[num].x - player.x;
-      var spriteY = sprites[num].y - player.y;
+      var spriteX = sprites[num].x - player.camerax;
+      var spriteY = sprites[num].y - player.cameray;
 
       //transform sprite with the inverse camera matrix
       // [ planeX   dirX ] -1                                       [ dirY      -dirX ]
@@ -2051,14 +2053,14 @@ function renderEnemies(){
 	var zbuffer=JSON.parse(JSON.stringify(orzbuffer));
   var tempVar = new Array(enemies.length);
   for(var i = 0; i < enemies.length; i++){
-    tempVar[i] = [i,((player.x - enemies[i].x) * (player.x - enemies[i].x) + (player.y - enemies[i].y) * (player.y - enemies[i].y))]; //sqrt not taken, unneeded
+    tempVar[i] = [i,((player.camerax - enemies[i].x) * (player.camerax - enemies[i].x) + (player.cameray - enemies[i].y) * (player.cameray - enemies[i].y))]; //sqrt not taken, unneeded
   }
   tempVar.sort(function(a, b){return b[1] - a[1]});
   for(var j = 0; j < enemies.length; j++){
     //translate sprite position to relative to camera
     var num = tempVar[j][0];
-    var spriteX = enemies[num].x - player.x;
-    var spriteY = enemies[num].y - player.y;
+    var spriteX = enemies[num].x - player.camerax;
+    var spriteY = enemies[num].y - player.cameray;
 
     //transform sprite with the inverse camera matrix
     // [ planeX   dirX ] -1                                       [ dirY      -dirX ]
@@ -2084,7 +2086,7 @@ function renderEnemies(){
 			var angleOffset = (enemies[num].state-5)%8;
 		}else{
 			state = enemies[num].state;
-			var angleOffset = Math.floor((Math.round(8*(-Math.atan2(-enemies[num].y+player.y,-enemies[num].x+player.x)+enemies[num].rot)/(2*Math.PI))+8)%8);
+			var angleOffset = Math.floor((Math.round(8*(-Math.atan2(-enemies[num].y+player.cameray,-enemies[num].x+player.camerax)+enemies[num].rot)/(2*Math.PI))+8)%8);
 		}
     //loop through every vertical stripe of the sprite on screen
     for(var stripe = Math.max(Math.floor(drawStartX/stripWidth)*stripWidth,0); stripe < Math.min(screenWidth,drawEndX); stripe+=stripWidth){
@@ -2100,14 +2102,14 @@ function renderPickups(){
 	var zbuffer=JSON.parse(JSON.stringify(orzbuffer));
   var tempVar = new Array(pickups.length);
   for(var i = 0; i < pickups.length; i++){
-    tempVar[i] = [i,((player.x - pickups[i].x) * (player.x - pickups[i].x) + (player.y - pickups[i].y) * (player.y - pickups[i].y))]; //sqrt not taken, unneeded
+    tempVar[i] = [i,((player.camerax - pickups[i].x) * (player.camerax - pickups[i].x) + (player.cameray - pickups[i].y) * (player.cameray - pickups[i].y))]; //sqrt not taken, unneeded
   }
   tempVar.sort(function(a, b){return b[1] - a[1]});
   for(var i = 0; i < pickups.length; i++){
       //translate sprite position to relative to camera
       var num = tempVar[i][0];
-      var spriteX = pickups[num].x - player.x;
-      var spriteY = pickups[num].y - player.y;
+      var spriteX = pickups[num].x - player.camerax;
+      var spriteY = pickups[num].y - player.cameray;
 
       //transform sprite with the inverse camera matrix
       // [ planeX   dirX ] -1                                       [ dirY      -dirX ]
@@ -2329,6 +2331,8 @@ function move(timeDelta) {
 			if(pos.zSpeed){player.zSpeed = pos.zSpeed;}
 		}
   }
+	player.cameray=player.y;
+	player.camerax=player.x;
 }
 function ai(mul){
 	enemies.forEach(enemy => function(enemy){
