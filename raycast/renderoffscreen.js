@@ -868,7 +868,7 @@ var sounds=[['swsh_0_0','swsh_0_1'],'weapon_3','weapon_2','weapon_26'];
 var pickups = [
 	new Pickup(15.5,7.5,'chaingun',0,0,0),
 	new Pickup(15.5,7.5,'lives',0,0,4),
-	new Pickup(15.5,7.5,'goldkey',0,0,1),
+	//new Pickup(15.5,7.5,'goldkey',0,0,1),
 	new Pickup(15.5,16.5,'goldkey',0,0,1),
 	new Pickup(15.5,13.5,'chaingun',0,0,0),
 	new Pickup(15.5,3.5,'backpack',0,0,5),
