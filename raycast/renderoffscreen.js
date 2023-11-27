@@ -36,12 +36,9 @@ function neighbors(input){
 	var cellX = Math.floor(x);
 	var cellY = Math.floor(y);
 	var val = [];
-	var startX=(cellX>0)?(cellX-1):(cellX);
-	var endX=(cellX<mapWidth)?(cellX+1):(cellX);
-	var startY=(cellY>0)?(cellY-1):(cellY);
-	var endY=(cellX<mapHeight)?(cellY+1):(cellY);
-	for(var j = startY;j<=endY;j++){
-		for(var i = startX;i<=endX;i++){
+	for(var j = cellY-1;j<=cellY+1;j++){
+		if(map[j]===undefined) continue;
+		for(var i = cellX-1;i<=cellX+1;i++){
 			if((!isBlocking(i+0.5,j+0.5,z+0.25) || map[j][i]===8 || map[j][i]===9)/* && !traveled.includes([i,j])*/){
 				if(Math.floor(player.x)===i&&Math.floor(player.y)===j){
 					val.push([player.x,player.y]);
@@ -54,37 +51,40 @@ function neighbors(input){
 	return val;
 }
 function solve(player,starter){
-	//Keep track of number of states explored
-	var num_explored = 0;
 	//Initialize frontier to just the starting position
-	var start = new Node(starter, parent=undefined)
+	var start = new Node([starter.x,starter.y], parent=undefined)
 	var frontier = [start];
 	// Initialize an empty explored set
 	var explored = [];
 	// Keep looping until solution found
 	while(1){
+		frontier=frontier.toSorted(function(a,b){
+			return ((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
+		})
 		// If nothing left in frontier, then no path
 		if(frontier.length===0)	return [];
 		// Choose a node from the frontier
-		var node = frontier.pop();
-		num_explored++;
+		var node = frontier.shift();
 		// If node is the player, then we have a solution
-		if(node.state === player){
-			var cells = []
+		if([Math.floor(node.state[0]),Math.floor(node.state[1])] === [Math.floor(player.x),Math.floor(player.y)]){
+			var cells = [];
 			while(node.parent !== undefined){
-				cells.append(node.state)
+				cells.push(node.state)
 				node = node.parent;
 			}
 			//cells=cells[::-1]
-			return cells
+			console.log(cells);
+			return cells;
 		}
 		// Mark node as explored
 		explored.push(node.state)
 		// Add neighbors to frontier
-		for(state of neighbors(node.state)){
-			if(!frontier.includes(state) && !explored.includes(state)){
-					var child = new Node(state, node)
-					frontier.add(child)
+		var neighs=neighbors(node.state);
+		for(var i = 0;i<neighs.length;i++){
+			state=neighs[i];
+			if(!explored.includes(state)){
+				var child = new Node(state, node)
+				frontier.push(child)
 			}
 		}
 	}
@@ -190,7 +190,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 	this.update=function(mul,dist){
 		var newpos=[Math.floor(player.x),Math.floor(player.y)];
 		if(newpos!==this.playerpos){
-			this.path=solve(player,this);
+			/*this.path=solve(player,this);*/
 			this.playerpos=[Math.floor(player.x),Math.floor(player.y)];
 			//this.traveled=[];
 		}
@@ -245,20 +245,21 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 		if(this.hp>0){
 			if(this.alert){
 				if(this.instate!==2){
+
 					var neighs = neighbors([this.x,this.y,this.z,this.traveled]);
 					if(neighs.length){
 						if(this.melee){
 							neighs=neighs.toSorted(function(a,b){
-								return ((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
+								return Math.abs(this.x-player.x)*((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
 							})
 						}else{
 							if(((this.x-player.x)**2+(this.y-player.y)**2)**0.5 > 2){
 								neighs=neighs.toSorted(function(a,b){
-									return ((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
+									return Math.abs(this.x-player.x)*((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
 								})
 							}else{
 								neighs=neighs.toSorted(function(a,b){
-									return -(((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5)
+									return -Math.abs(this.x-player.x)*(((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5)
 								})
 							}
 						}
