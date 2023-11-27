@@ -39,6 +39,7 @@ function neighbors(input){
 	for(var j = cellY-1;j<=cellY+1;j++){
 		if(map[j]===undefined) continue;
 		for(var i = cellX-1;i<=cellX+1;i++){
+			if(map[j][i]===undefined) continue;
 			if((!isBlocking(i+0.5,j+0.5,z+0.25) || map[j][i]===8 || map[j][i]===9)/* && !traveled.includes([i,j])*/){
 				if(Math.floor(player.x)===i&&Math.floor(player.y)===j){
 					val.push([player.x,player.y]);
@@ -245,21 +246,20 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 		if(this.hp>0){
 			if(this.alert){
 				if(this.instate!==2){
-
 					var neighs = neighbors([this.x,this.y,this.z,this.traveled]);
 					if(neighs.length){
 						if(this.melee){
 							neighs=neighs.toSorted(function(a,b){
-								return Math.abs(this.x-player.x)*((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
+								return Math.abs(this.z-player.z)*((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
 							})
 						}else{
 							if(((this.x-player.x)**2+(this.y-player.y)**2)**0.5 > 2){
 								neighs=neighs.toSorted(function(a,b){
-									return Math.abs(this.x-player.x)*((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
+									return Math.abs(this.z-player.z)*((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
 								})
 							}else{
 								neighs=neighs.toSorted(function(a,b){
-									return -Math.abs(this.x-player.x)*(((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5)
+									return -Math.abs(this.z-player.z)*(((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5)
 								})
 							}
 						}
@@ -317,7 +317,7 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 			this.z = pos.z;
 			var newpos=[Math.floor(this.x),Math.floor(this.y)];
 			if(this.playerpos===[Math.floor(this.target[0]),Math.floor(this.target[1])]){
-				this.target=this.path.pop();
+				//this.target=this.path.pop();
 			}
 		}
 	}
