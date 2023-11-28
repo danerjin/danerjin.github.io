@@ -42,9 +42,9 @@ function neighbors(input){
 			if(map[j][i]===undefined) continue;
 			if((!isBlocking(i+0.5,j+0.5,z+0.25) || map[j][i]===8 || map[j][i]===9)/* && !traveled.includes([i,j])*/){
 				if(Math.floor(player.x)===i&&Math.floor(player.y)===j){
-					val.push([player.x,player.y]);
+					val.push([player.x,player.y,heightMap[j][i]]);
 				}else{
-					val.push([i+0.5,j+0.5])
+					val.push([i+0.5,j+0.5,heightMap[j][i]])
 				}
 			}
 		}
@@ -250,16 +250,16 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 					if(neighs.length){
 						if(this.melee){
 							neighs=neighs.toSorted(function(a,b){
-								return /*(Math.abs(this.z-player.z)+1)**/((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
+								return /*(Math.abs(a[2]-player.z)+1)**/((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-/*(Math.abs(b[2]-player.z)+1)**/((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
 							})
 						}else{
 							if(((this.x-player.x)**2+(this.y-player.y)**2)**0.5 > 2){
 								neighs=neighs.toSorted(function(a,b){
-									return /*(Math.abs(this.z-player.z)+1)*/((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
+									return /*(Math.abs(a[2]-player.z)+1)**/((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-/*(Math.abs(b[2]-player.z)+1)**/((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5
 								})
 							}else{
 								neighs=neighs.toSorted(function(a,b){
-									return -/*(Math.abs(this.z-player.z)+1)*/(((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5)
+									return -/*(Math.abs(a[2]-player.z)+1)**/(((a[0]-player.x)**2+(a[1]-player.y)**2)**0.5-/*(Math.abs(b[2]-player.z)+1)**/((b[0]-player.x)**2+(b[1]-player.y)**2)**0.5)
 								})
 							}
 						}
