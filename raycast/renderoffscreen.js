@@ -23,6 +23,7 @@ var weapon_sizes = [64,      64,      64,        64]//,      128,    ]
 var dmgdist;
 var vol = 0.5;
 var scoretext='';
+var chromebook = true;
 var sens = 1;
 var Node = function(state,parent){
 	this.state=state;
@@ -977,8 +978,10 @@ function updateSens(){
 }
 function toggleFloor(){
   floor = !floor;
-	stripWidth=3-stripWidth;
-	numRays=Math.round(screenWidth/stripWidth);
+	if(!chromebook){
+		stripWidth=3-stripWidth;
+		numRays=Math.round(screenWidth/stripWidth);
+	}
 }
 function toggleBlood(){
   blood = !blood;
