@@ -972,6 +972,9 @@ function updateVol(){
   vol = $('volslider').value;
   $("vol").innerText = 100*vol;
 }
+function togglefps(){
+	chromebook=!chromebook;
+}
 function updateSens(){
   sens = $('sensslider').value;
   $("sens").innerText = sens;
