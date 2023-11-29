@@ -23,7 +23,7 @@ var weapon_sizes = [64,      64,      64,        64]//,      128,    ]
 var dmgdist;
 var vol = 0.5;
 var scoretext='';
-var chromebook = true;
+var chromebook = false;
 var sens = 1;
 var Node = function(state,parent){
 	this.state=state;
