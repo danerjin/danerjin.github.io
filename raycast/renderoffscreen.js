@@ -330,6 +330,13 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 		}
 	}
 	this.hurt = function(amnt,dist){
+		for(var i = 0; i < enemies.length;i++){
+			enemy=enemies[i];
+			if(canSee(enemy,this)){
+				enemy.alert=true;
+				playsoundWAV('enemies/'+enemy.name+'alert');
+			}
+		}
 		var headshot=Math.random()>0.5;
 		if(this.hp !== 0){
 			this.alert=true;
@@ -366,14 +373,6 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 					this.instate = 3;
 				}else{
 					enemies.splice(enemies.indexOf(this),1);
-				}
-
-				for(var i = 0; i < enemies.length;i++){
-					enemy=enemies[i];
-					if(canSee(enemy,this)){
-						enemy.alert=true;
-						playsoundWAV('enemies/'+enemy.name+'alert');
-					}
 				}
 			}
 		}
