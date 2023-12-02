@@ -293,6 +293,13 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 				if(dist<(player.isCrouching?4:10)&&canSee(this)){
 					this.alert = true;
 					playsoundWAV('enemies/'+this.name+'alert');
+					for(var i = 0; i < enemies.length;i++){
+						enemy=enemies[i];
+						if(canSee(enemy,this)){
+							enemy.alert=true;
+							playsoundWAV('enemies/'+enemy.name+'alert');
+						}
+					}
 				}else{
 					this.alert = false;
 				}
@@ -359,6 +366,14 @@ var Enemy = function(x,y,z,texture,hp,rot,speed,dmg,melee,cool,burst,flinch,weap
 					this.instate = 3;
 				}else{
 					enemies.splice(enemies.indexOf(this),1);
+				}
+
+				for(var i = 0; i < enemies.length;i++){
+					enemy=enemies[i];
+					if(canSee(enemy,this)){
+						enemy.alert=true;
+						playsoundWAV('enemies/'+enemy.name+'alert');
+					}
 				}
 			}
 		}
