@@ -18,8 +18,8 @@ if(!Array.prototype.indexOf) {
 }
 var debug = false;
 var enemy;
-var weapon_names = ['knife','pistol','smg','chaingun']//, 'rifle'];
-var weapon_sizes = [64,      64,      64,        64]//,      128,    ]
+var weapon_names = ['knife','pistol','smg','chaingun', 'rifle'];
+var weapon_sizes = [64,      64,      64,        64,      128]
 var dmgdist;
 var vol = 0.5;
 var scoretext='';
@@ -680,15 +680,15 @@ var player = {
 	weaponTimer:0,
 	weaponIsActive:false,
 	maxWeapon:1,
-	ammo:['-',10,28,60],
-	maxAmmo:['-',10,28,60],
+	ammo:['-',10,28,60,2],
+	maxAmmo:['-',10,28,60,2],
 	ammoPack:-1,
-	reloadTimes:[0,700,1500,3300],
-	damage:[50,20,23,19],
-	dropoff:[0,10,5,10],
-	range:[12,700,700,700],
-	firerate:[125,90,130,200],
-	pierce:[0,1,1,1],
+	reloadTimes:[0,700,1500,3300,1100],
+	damage:[50,20,23,19,250],
+	dropoff:[0,10,5,10,50],
+	range:[12,700,700,700,160],
+	firerate:[125,90,130,200,450],
+	pierce:[0,1,1,1,0],
 	secondary:function(){
 		if(this.weapon===1){
 			this.weapon = this.maxWeapon;
@@ -880,7 +880,7 @@ var enemies = [
 	new Enemy(19.5,6.5,0,"guard",50,3*Math.PI/2,0.02,0,false,0.5,1,true,1,[['ammo',2]]),
 	new Enemy(21.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.4,4,true,2,[['ammo',2],['smg',0]]),
 	new Enemy(20.0,15.5,0,"ss",100,3*Math.PI/2,0.02,0,false,0.4,4,true,2,[['ammo',2],['smg',0]]),
-	new Enemy(19.0,15.5,0,"ss",500,3*Math.PI/2,0.02,0,false,0.4,10,false,2,[['ammo',2],['chaingun',0],['bluekey',1]]),
+	new Enemy(19.0,15.5,0,"boss",500,3*Math.PI/2,0.02,0,false,0.4,10,false,2,[['ammo',2],['chaingun',0],['bluekey',1]]),
 ];
 var sounds=[['swsh_0_0','swsh_0_1'],'weapon_3','weapon_2','weapon_26'];
 var pickups = [
@@ -1053,6 +1053,7 @@ function init() {
   }
 	ctx.imageSmoothingEnabled = false;
 	drawMiniMap();
+	playsound('background/track1');
 	gameCycle();
 	renderCycle();
 }
