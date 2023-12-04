@@ -755,7 +755,6 @@ var player = {
 					num = stripe[i].num;
 					enemy = enemies[num];
 					if(enemy!==undefined){
-						console.log(enemy);
 						dist = ((enemy.x-this.x)**2+(enemy.y-this.y)**2)**0.5;
 						if(dist <= this.range[this.weapon]/24 && stripe[i].y<=screenHeight/2 && stripe[i].y+stripe[i].height>=screenHeight/2 && enemy.hp!==0){
 							enemy.hurt((this.damage[this.weapon]-(this.dropoff[this.weapon]*dist*24/this.range[this.weapon]))*dmgMult,dist);
@@ -1053,7 +1052,15 @@ function init() {
   }
 	ctx.imageSmoothingEnabled = false;
 	drawMiniMap();
-	playsound('background/track1');
+	var bgsound = document.createElement("audio");
+	bgsound.src = 'sounds/'+'background/track1'+'.mp3';
+	//sound.setAttribute("preload", "auto");
+	bgsound.setAttribute("controls", "none");
+	bgsound.style.display = "none";
+	bgsound.volume=Math.min(vol,1);
+	bgsound.loop=true;
+	//document.body.appendChild(sound);
+	bgsound.play();
 	gameCycle();
 	renderCycle();
 }
