@@ -1053,14 +1053,14 @@ function init() {
 	ctx.imageSmoothingEnabled = false;
 	drawMiniMap();
 	var bgsound = document.createElement("audio");
-	bgsound.src = 'sounds/'+'background/track1'+'.mp3';
+	//bgsound.src = 'sounds/'+'background/track1'+'.mp3';
 	//sound.setAttribute("preload", "auto");
-	bgsound.setAttribute("controls", "none");
-	bgsound.style.display = "none";
-	bgsound.volume=Math.min(vol,1);
-	bgsound.loop=true;
+	//bgsound.setAttribute("controls", "none");
+	//bgsound.style.display = "none";
+	//bgsound.volume=Math.min(vol,1);
+	//bgsound.loop=true;
 	//document.body.appendChild(sound);
-	bgsound.play();
+	//bgsound.play();
 	gameCycle();
 	renderCycle();
 }
