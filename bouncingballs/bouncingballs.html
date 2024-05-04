@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bouncing ball</title>
+</head>
+<body>
+
+<h1>Bouncing ball thing</h1>
+<canvas width="400" height="400" id="canvas"></canvas>
+<button onclick="add()">Click</button>
+<script>
+        var t=10;
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var balls=[];
+        var radius=200;
+        var damp=0.99;
+        var time=0;
+        var bounces=0;
+        function playsound(src) {
+        	var sound = document.createElement("audio");
+        	sound.src = src;
+        	//sound.setAttribute("preload", "auto");
+        	sound.setAttribute("controls", "none");
+        	sound.style.display = "none";
+        	//document.body.appendChild(sound);
+        	sound.play();
+        }
+        function sq(x){
+          return x**2
+        }
+        function sqrt(x){
+          return x**0.5
+        }
+        function random(x){
+          return Math.floor(Math.random()*x)
+        }
+        function ellipse(x,y,w,h){
+            ctx.beginPath();
+            ctx.arc(x,y,w/2,0,Math.PI * 2, false);
+            ctx.fill();
+        }
+        function fill(r,g,b){
+          ctx.fillStyle=`rgb(${r},${g},${b})`;
+        }
+        function rect(x,y,w,h){
+          ctx.rect(x,y,w,h)
+        }
+        function Ball(x,y,xSpeed,ySpeed){
+            this.x=x;
+            this.y=y;
+            this.xSpeed=xSpeed;
+            this.ySpeed=ySpeed;
+            this.r=10;
+            this.color=[random(255),random(255),random(255)];
+        }
+        Ball.prototype.draw=function(){
+            fill(this.color[0],this.color[1],this.color[2]);
+            ellipse(this.x,this.y,this.r*2,this.r*2);
+        };
+        Ball.prototype.update=function(){
+            var pythag=(((this.x+this.xSpeed-radius)**2)+((this.y+this.ySpeed-radius)**2));
+            if((pythag)**0.5>=200-this.r){
+                bounces+=1;
+                //make it bounce
+                var dot=(this.xSpeed*(this.x+this.xSpeed-200))+(this.ySpeed*(this.y+this.ySpeed-200));
+                var scale_val=dot/pythag;
+                var normal_x=scale_val*(this.x+this.xSpeed-200);
+                var normal_y=scale_val*(this.y+this.ySpeed-200);
+                this.xSpeed=(-2*normal_x+this.xSpeed);
+                this.ySpeed=(-2*normal_y+this.ySpeed);
+                if(bounces<50){playsound('bounce.wav');console.log(bounces);}
+            }else{
+              this.ySpeed+=0.05*t;
+            }
+            this.x+=this.xSpeed;
+            this.y+=this.ySpeed;
+        };
+
+        balls.push(new Ball(200,200,0.3*t,-0.8*t));
+        function draw(){
+            time+=t;
+            if(time>=1000){time=time%1000;bounces=0;}
+            ctx.clearRect(0,0,400,400);
+            ctx.fillStyle='black';
+            ctx.rect(0,0,400,400);
+            ctx.fill()
+            ctx.fillStyle='white';
+            ellipse(200,200,2*radius,2*radius);
+            ctx.fill()
+            fill(0,0,0);
+            for(var i=0;i<balls.length;i++){
+                var ball=balls[i];
+                ball.draw();
+                ball.update();
+            }
+        }
+        function add(){
+          balls.push(new Ball(150+random(100),150+random(100),-0.05*t+random(0.1*t),-0.05*t+random(0.1*t)))
+        }
+        setInterval(draw,t);
+    </script>
+</body>
+</html>

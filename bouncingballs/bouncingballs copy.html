@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bouncing ball</title>
+    <style>
+    #head{
+      color:white;
+      font-family: arial;
+      margin-bottom:5em;
+    }
+    body{
+      background-color:black;
+      display: flex;
+      justify-content: center;
+    }
+    #content{
+      padding:3em;
+      justify-content: center;
+
+    }
+    #canvas{
+      margin-bottom:8em;
+    }
+    </style>
+</head>
+<body>
+
+<div id='content'>
+  <h1 id='head'>Bouncing ball thing</h1>
+  <canvas width="400" height="400" id="canvas"></canvas>
+  <button onclick="add()">Click</button>
+</div>
+<script>
+        var t=1;
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var balls=[];
+        var radius=200;
+        var damp=0.99;
+        var gravity=0//9.8;
+        var time=0;
+        var bounces=0;
+        function playsound(src) {
+        	var sound = document.createElement("audio");
+        	sound.src = src;
+        	//sound.setAttribute("preload", "auto");
+        	sound.setAttribute("controls", "none");
+        	sound.style.display = "none";
+        	//document.body.appendChild(sound);
+        	sound.play();
+        }
+        function sq(x){
+          return x**2
+        }
+        function sqrt(x){
+          return x**0.5
+        }
+        function random(x){
+          return Math.floor(Math.random()*x)
+        }
+        function ellipse(x,y,w,h){
+            ctx.beginPath();
+            ctx.arc(x,y,w/2,0,Math.PI * 2, false);
+            ctx.fill();
+        }
+        function fill(r,g,b){
+          ctx.fillStyle=`rgb(${r},${g},${b})`;
+        }
+        function rect(x,y,w,h){
+          ctx.rect(x,y,w,h)
+        }
+        var balls=[];
+        var radius=200;
+        var cap=20;
+        function scaleValProj(v1x,v1y,v2x,v2y){
+            return (v1x*v2x+v1y*v2y)/(v2x*v2x+v2y*v2y);
+        }
+        function Ball(x,y,xSpeed,ySpeed){
+            this.x=x;
+            this.y=y;
+            this.xSpeed=xSpeed;
+            this.ySpeed=ySpeed;
+            this.r=10;
+            this.color=[random(255),random(255),random(255)];
+        }
+        Ball.prototype.draw=function() {
+            fill(this.color[0],this.color[1],this.color[2]);
+            ellipse(this.x,this.y,this.r*2,this.r*2);
+        };
+        Ball.prototype.update=function(){
+            if(((this.x-200)**2+(this.y-200)**2)**0.5>radius+this.r){balls.splice(balls.indexOf(this),1)}
+            var pythag=((sq(this.x+this.xSpeed-radius))+(sq(this.y+this.ySpeed-radius)))+this.r;
+            if(sqrt(pythag)>=radius-this.r){
+                //make it bounce
+                var scale_val=scaleValProj(this.xSpeed,this.ySpeed,(this.x+this.xSpeed-200),(this.y+this.ySpeed-200));
+                var normal_x=scale_val*(this.x+this.xSpeed-200);
+                var normal_y=scale_val*(this.y+this.ySpeed-200);
+                this.xSpeed=(-2*normal_x+this.xSpeed)*damp**0.1;
+                this.ySpeed=(-2*normal_y+this.ySpeed)*damp**0.1;
+
+                if(bounces<50){playsound('bounce.wav');bounces+=1;}
+
+                /*
+                if(random(1)<(1-1/(1+pow(pow(2.7,balls.length),-balls.length+cap)))*0.3){
+                    var x=new Ball(random(100,300),random(100,300),random(2)-1,random(2)-1);
+                    balls.push(x);
+                }
+                if(random(1)<(0.3/(1+pow(2.7,(-balls.length+cap)/balls.length)))){
+                    balls.splice(random((balls.length)),1);
+                }
+                */
+                //playSound(getSound("rpg/hit-thud"));
+            }else{
+                this.ySpeed+=0.05*t*gravity/9.8;
+            }
+            for(var i = 0; i<balls.indexOf(this);i++){
+                var ball=balls[i];
+                var dist=sqrt(sq(ball.x-this.x)+sq(ball.y-this.y));
+                if(dist<2*this.r && dist>0){
+                    var tangent_x=this.y-ball.y;
+                    var tangent_y=ball.x-this.x;
+                    var rad_x=ball.x-this.x;
+                    var rad_y=ball.y-this.y;
+                    //messy vector stuff
+
+                    var scale_tangentself=scaleValProj(this.xSpeed,this.ySpeed,tangent_x,tangent_y);
+                    var scale_tangentother=scaleValProj(ball.xSpeed,ball.ySpeed,tangent_x,tangent_y);
+                    var scale_radself=scaleValProj(this.xSpeed,this.ySpeed,rad_x,rad_y);
+                    var scale_radother=scaleValProj(ball.xSpeed,ball.ySpeed,rad_x,rad_y);
+
+                    var tangent_selfx=scale_tangentself*tangent_x;
+                    var tangent_selfy=scale_tangentself*tangent_y;
+                    var tangent_otherx=scale_tangentother*tangent_x;
+                    var tangent_othery=scale_tangentother*tangent_y;
+                    var rad_selfx=scale_radself*rad_x;
+                    var rad_selfy=scale_radself*rad_y;
+                    var rad_otherx=scale_radother*rad_x;
+                    var rad_othery=scale_radother*rad_y;
+
+                    this.xSpeed=(tangent_selfx+rad_otherx);
+                    this.ySpeed=(tangent_selfy+rad_othery);
+                    ball.xSpeed=(tangent_otherx+rad_selfx);
+                    ball.ySpeed=(tangent_othery+rad_selfy);
+
+                    if(bounces<50){playsound('bounce.wav');bounces+=1;}
+
+                }
+            }
+            this.x+=this.xSpeed;
+            this.y+=this.ySpeed;
+        };
+        balls.push(new Ball(200,300,0.5*t,0));
+        balls.push(new Ball(100,200,-0.5*t,0));
+        function draw(){
+            time+=t;
+            if(time>=1000){time=time%1000;bounces=0;}
+            ctx.clearRect(0,0,400,400);
+            ctx.fillStyle='black';
+            ctx.rect(0,0,400,400);
+            ctx.fill()
+            ctx.fillStyle='white';
+            ellipse(200,200,2*radius,2*radius);
+            ctx.fill()
+            fill(0,0,0);
+            for(var i=0;i<balls.length;i++){
+                var ball=balls[i];
+                ball.draw();
+                ball.update();
+            }
+        }
+        function add(){
+          balls.push(new Ball(150+random(100),150+random(100),-0.5*t+random(0.1*t),-0.5*t+random(0.1*t)))
+        }
+        setInterval(draw,t);
+    </script>
+</body>
+</html>
