@@ -170,7 +170,7 @@
             }
         }
         function add(){
-          balls.push(new Ball(150+random(100),150+random(100),-0.5*t+random(1*t),-0.5*t+random(1*t)))
+          balls.push(new Ball(150+random(100),150+random(100),-0.5*t+Math.random()*1*t,-0.5*t+Math.random()*1*t))
         }
         setInterval(draw,t);
     </script>
