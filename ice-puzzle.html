@@ -1,0 +1,2296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLACIAL — Ice Puzzle</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --ice: #d6f0ff;
+    --ice-visited: #a8d8f0;
+    --ice-shine: #eef8ff;
+    --wall: #1a2a3a;
+    --wall-edge: #0d1a26;
+    --start: #00e5a0;
+    --end: #ff6b35;
+    --player: #fff;
+    --player-shadow: #4ad8ff;
+    --bg: #08111a;
+    --panel: #0e1e2b;
+    --panel-border: #1c3448;
+    --accent: #4ad8ff;
+    --accent2: #ff6b35;
+    --text: #c8e8f8;
+    --text-dim: #4a7a9a;
+    --timer-good: #00e5a0;
+    --timer-run: #4ad8ff;
+    --sweep: #c678ff;
+  --portal-a: #c678ff;
+  --portal-b: #ff6bcc;
+  --portal-c: #6bffc6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 60% 40% at 20% 80%, rgba(74,216,255,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 80% 20%, rgba(198,120,255,0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #app {
+    display: flex;
+    height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── LEFT PANEL ─── */
+  #left-panel {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--panel);
+    border-right: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow-y: auto;
+  }
+
+  .logo {
+    padding: 20px 18px 16px;
+    border-bottom: 1px solid var(--panel-border);
+  }
+  .logo h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(74,216,255,0.5);
+  }
+  .logo p {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    margin-top: 2px;
+    text-transform: uppercase;
+  }
+
+  .panel-section {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--panel-border);
+  }
+
+  .section-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* Timer */
+  #timer-display {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.8rem;
+    color: var(--timer-run);
+    text-shadow: 0 0 15px rgba(74,216,255,0.4);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  #timer-display.stopped { color: var(--text-dim); }
+  #timer-display.finished { color: var(--timer-good); text-shadow: 0 0 15px rgba(0,229,160,0.5); }
+
+  .pb-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    margin-top: 3px;
+  }
+  .pb-row span:last-child {
+    font-family: 'Space Mono', monospace;
+    color: var(--timer-good);
+  }
+
+  /* Objectives */
+  .obj-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    font-size: 0.75rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid transparent;
+    transition: all 0.3s;
+  }
+  .obj-item.complete {
+    border-color: rgba(0,229,160,0.3);
+    background: rgba(0,229,160,0.05);
+  }
+  .obj-item .obj-check {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid var(--text-dim);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+    font-size: 0.6rem;
+  }
+  .obj-item.complete .obj-check {
+    border-color: var(--timer-good);
+    background: var(--timer-good);
+    color: #08111a;
+    font-size: 0.55rem;
+  }
+  .obj-item .obj-label { color: var(--text); }
+  .obj-item.complete .obj-label { color: var(--timer-good); }
+  .obj-item .obj-sub {
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    margin-top: 1px;
+  }
+  .obj-item .obj-sub.updated { color: var(--sweep); }
+
+  /* Controls info */
+  .key-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    margin-bottom: 8px;
+  }
+  .key {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    text-align: center;
+    padding: 5px 2px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+  }
+  .key.active-key { background: rgba(74,216,255,0.1); border-color: var(--accent); color: var(--accent); }
+  .key.empty { background: transparent; border-color: transparent; }
+
+  /* Buttons */
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--panel-border);
+    background: rgba(255,255,255,0.03);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    margin-bottom: 4px;
+  }
+  .btn:hover { background: rgba(74,216,255,0.08); border-color: rgba(74,216,255,0.3); color: var(--accent); }
+  .btn.btn-primary {
+    background: rgba(74,216,255,0.12);
+    border-color: rgba(74,216,255,0.4);
+    color: var(--accent);
+  }
+  .btn.btn-primary:hover { background: rgba(74,216,255,0.2); }
+  .btn.btn-danger { border-color: rgba(255,107,53,0.3); color: var(--accent2); }
+  .btn.btn-danger:hover { background: rgba(255,107,53,0.08); }
+  .btn.btn-sweep { border-color: rgba(198,120,255,0.3); color: var(--sweep); }
+  .btn.btn-sweep:hover { background: rgba(198,120,255,0.08); }
+
+  /* ─── CENTER: GAME AREA ─── */
+  #center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px;
+    position: relative;
+  }
+
+  #mode-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 4px;
+  }
+  .mode-tab {
+    padding: 6px 18px;
+    border-radius: 5px;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-family: 'Space Mono', monospace;
+    cursor: pointer;
+    color: var(--text-dim);
+    border: none;
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .mode-tab.active {
+    background: rgba(74,216,255,0.12);
+    color: var(--accent);
+    box-shadow: 0 0 10px rgba(74,216,255,0.1);
+  }
+
+  #game-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #game-canvas {
+    display: block;
+    image-rendering: pixelated;
+  }
+
+  /* Particle overlay */
+  #particle-canvas {
+    position: absolute;
+    top: 0; left: 0;
+    pointer-events: none;
+  }
+
+  /* Flash overlay */
+  #flash-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s;
+  }
+
+  /* ─── RIGHT PANEL ─── */
+  #right-panel {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--panel);
+    border-left: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  /* Editor tools */
+  .tool-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: all 0.2s;
+    margin-bottom: 3px;
+  }
+  .tool-btn:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+  .tool-btn.active {
+    background: rgba(74,216,255,0.08);
+    border-color: rgba(74,216,255,0.25);
+    color: var(--accent);
+  }
+  .tool-swatch {
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  /* Map code area */
+  #map-code {
+    width: 100%;
+    height: 80px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    padding: 8px;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  #map-code:focus { border-color: rgba(74,216,255,0.4); }
+
+  /* Grid size controls */
+  .size-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .size-row label { font-size: 0.7rem; color: var(--text-dim); width: 40px; }
+  .size-input {
+    width: 50px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    padding: 4px 6px;
+    outline: none;
+  }
+  .size-input:focus { border-color: rgba(74,216,255,0.4); }
+
+  /* Complete overlay */
+  #complete-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(8,17,26,0.85);
+    backdrop-filter: blur(4px);
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 100;
+  }
+  #complete-overlay.show { display: flex; }
+  #complete-overlay h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    letter-spacing: 0.15em;
+    color: var(--timer-good);
+    text-shadow: 0 0 30px rgba(0,229,160,0.6);
+  }
+  #complete-overlay .complete-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.5rem;
+    color: var(--accent);
+  }
+  #complete-overlay .complete-pb {
+    font-size: 0.8rem;
+    color: var(--timer-good);
+    letter-spacing: 0.1em;
+  }
+  #complete-overlay .complete-sub {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 5px;
+    letter-spacing: 0.1em;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 2px; }
+
+  /* Toast */
+  #toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 999;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .moves-count {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--text-dim);
+  }
+  .moves-count span { color: var(--accent); }
+  .btn.btn-ai {
+    border-color: rgba(198,120,255,0.4);
+    color: var(--sweep);
+    background: rgba(198,120,255,0.06);
+  }
+  .btn.btn-ai:hover { background: rgba(198,120,255,0.14); }
+
+  /* ─── MODAL ─── */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(8,17,26,0.85);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-backdrop.open { display: flex; }
+
+  .modal-box {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    width: 480px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(198,120,255,0.08);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+    color: var(--sweep);
+    text-shadow: 0 0 15px rgba(198,120,255,0.4);
+  }
+  .modal-sub { font-size: 0.72rem; color: var(--text-dim); margin-top: 2px; }
+  .modal-close {
+    background: none; border: none; color: var(--text-dim); font-size: 1rem;
+    cursor: pointer; padding: 2px 6px; border-radius: 4px; transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .modal-close:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+
+  .drop-zone {
+    border: 1.5px dashed var(--panel-border);
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+  }
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: rgba(198,120,255,0.5);
+    background: rgba(198,120,255,0.04);
+  }
+  .drop-zone.has-image {
+    border-color: rgba(74,216,255,0.3);
+    padding: 12px;
+  }
+  .drop-icon { font-size: 2rem; color: var(--sweep); opacity: 0.5; line-height: 1; }
+  .drop-title { font-size: 0.85rem; color: var(--text); font-weight: 500; }
+  .drop-hint { font-size: 0.68rem; color: var(--text-dim); }
+
+  .ai-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(198,120,255,0.06);
+    border: 1px solid rgba(198,120,255,0.2);
+    border-radius: 8px;
+    font-size: 0.78rem;
+    color: var(--sweep);
+  }
+  .ai-status-icon { font-size: 1.1rem; }
+  .spinning { animation: spin 1s linear infinite; display: inline-block; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  .result-label { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; font-family: 'Space Mono', monospace; }
+  .result-code {
+    width: 100%;
+    height: 70px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    padding: 8px;
+    resize: none;
+    outline: none;
+  }
+  .result-info {
+    margin-top: 6px;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .result-info .tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    margin-right: 4px;
+    font-family: 'Space Mono', monospace;
+  }
+  .tag-ok { background: rgba(0,229,160,0.12); color: var(--timer-good); border: 1px solid rgba(0,229,160,0.25); }
+  .tag-warn { background: rgba(255,107,53,0.12); color: var(--accent2); border: 1px solid rgba(255,107,53,0.25); }
+
+  .apikey-row { display:none; } /* removed */
+
+  /* ─── IMPORT MODAL ─── */
+  .drop-zone {
+    border: 1.5px dashed var(--panel-border);
+    border-radius: 10px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: rgba(198,120,255,0.5);
+    background: rgba(198,120,255,0.04);
+  }
+  .drop-icon { font-size: 2rem; color: var(--sweep); opacity: 0.5; line-height: 1; }
+  .drop-title { font-size: 0.85rem; color: var(--text); font-weight: 500; }
+  .drop-hint { font-size: 0.68rem; color: var(--text-dim); }
+
+  .imp-type-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--panel-border);
+    background: rgba(255,255,255,0.02);
+    color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .imp-type-btn:hover { border-color: rgba(74,216,255,0.3); color: var(--text); }
+  .imp-type-btn.active { border-color: rgba(74,216,255,0.6); background: rgba(74,216,255,0.1); color: var(--accent); }
+  .imp-type-swatch {
+    width: 14px; height: 14px; border-radius: 3px;
+    border: 1px solid rgba(255,255,255,0.15); flex-shrink: 0;
+  }
+
+  .imp-cluster {
+    width: 60px; height: 60px;
+    border-radius: 6px;
+    border: 2px solid var(--panel-border);
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+    transition: border-color 0.15s, transform 0.1s;
+    image-rendering: pixelated;
+  }
+  .imp-cluster:hover { border-color: rgba(74,216,255,0.5); transform: scale(1.05); }
+  .imp-cluster.labeled-0 { border-color: rgba(180,220,255,0.7); }
+  .imp-cluster.labeled-1 { border-color: rgba(74,120,160,0.7); }
+  .imp-cluster.labeled-2 { border-color: rgba(0,229,160,0.8); }
+  .imp-cluster.labeled-3 { border-color: rgba(255,107,53,0.8); }
+  .imp-cluster-badge {
+    position: absolute; bottom: 2px; right: 2px;
+    font-size: 0.5rem; font-family: 'Space Mono', monospace;
+    background: rgba(0,0,0,0.7); color: #fff;
+    border-radius: 3px; padding: 1px 3px;
+    pointer-events: none;
+  }
+  .imp-cluster-count {
+    position: absolute; top: 2px; left: 2px;
+    font-size: 0.48rem; font-family: 'Space Mono', monospace;
+    background: rgba(0,0,0,0.55); color: var(--text-dim);
+    border-radius: 3px; padding: 1px 3px;
+    pointer-events: none;
+  }
+
+  input[type=range] {
+    -webkit-appearance: none; appearance: none;
+    height: 4px; border-radius: 2px;
+    background: var(--panel-border); outline: none; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 12px; height: 12px;
+    border-radius: 50%; background: var(--accent); cursor: pointer;
+  }
+  .modal-actions {
+    display: flex; gap: 6px; justify-content: flex-end;
+  }
+  .modal-actions .btn { margin-bottom: 0; width: auto; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- LEFT PANEL -->
+  <div id="left-panel">
+    <div class="logo">
+      <h1>GLACIAL</h1>
+      <p>Ice Puzzle Engine</p>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">Speedrun Timer</div>
+      <div id="timer-display" class="stopped">00:00.000</div>
+      <div class="pb-row">
+        <span>REACH END PB</span>
+        <span id="pb-end">—</span>
+      </div>
+      <div class="pb-row">
+        <span>SWEEP PB</span>
+        <span id="pb-sweep">—</span>
+      </div>
+      <div class="moves-count" style="margin-top:8px">Moves: <span id="moves-display">0</span></div>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">Objectives</div>
+      <div class="obj-item" id="obj-end">
+        <div class="obj-check">✓</div>
+        <div>
+          <div class="obj-label">Reach the End</div>
+          <div class="obj-sub" id="obj-end-time">—</div>
+        </div>
+      </div>
+      <div class="obj-item" id="obj-sweep">
+        <div class="obj-check">✓</div>
+        <div>
+          <div class="obj-label">Sweep All Ice</div>
+          <div class="obj-sub updated" id="obj-sweep-count">0 / 0 tiles</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">Controls</div>
+      <div class="key-grid">
+        <div class="key empty"></div>
+        <div class="key" id="key-w">W / ↑</div>
+        <div class="key empty"></div>
+        <div class="key" id="key-a">A / ←</div>
+        <div class="key" id="key-s">S / ↓</div>
+        <div class="key" id="key-d">D / →</div>
+      </div>
+      <button class="btn btn-primary" onclick="resetGame()">↺ Reset (R)</button>
+      <button class="btn" id="camera-mode-btn" onclick="toggleCameraMode()" style="margin-top:2px; font-size:0.7rem;">🎥 Camera: Follow</button>
+    </div>
+
+    <div class="panel-section" style="margin-top:auto">
+      <div class="section-label">Presets</div>
+      <button class="btn" onclick="loadPreset(0)">Tutorial 1</button>
+      <button class="btn" onclick="loadPreset(1)">Labyrinth</button>
+      <button class="btn" onclick="loadPreset(2)">Spiral</button>
+      <button class="btn btn-sweep" onclick="loadPreset(3)">Sweep Challenge</button>
+      <button class="btn" onclick="loadPreset(4)" style="border-color:rgba(198,120,255,0.4);color:#c678ff">Portal Maze</button>
+    </div>
+  </div>
+
+  <!-- CENTER -->
+  <div id="center">
+    <div id="mode-tabs">
+      <button class="mode-tab active" onclick="setMode('play')" id="tab-play">Play</button>
+      <button class="mode-tab" onclick="setMode('edit')" id="tab-edit">Editor</button>
+    </div>
+
+    <div id="game-container">
+      <canvas id="game-canvas"></canvas>
+      <canvas id="particle-canvas"></canvas>
+      <div id="flash-overlay"></div>
+      <div id="complete-overlay">
+        <h2 id="complete-title">COMPLETE!</h2>
+        <div class="complete-time" id="complete-time"></div>
+        <div class="complete-pb" id="complete-pb"></div>
+        <div class="complete-sub" style="margin-top:10px; font-size:0.7rem">Press R to restart</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div id="right-panel">
+    <div class="panel-section">
+      <div class="section-label">Editor Tools</div>
+      <button class="tool-btn active" id="tool-ice" onclick="selectTool('ice')">
+        <div class="tool-swatch" style="background:#d6f0ff"></div>Ice (Floor)
+      </button>
+      <button class="tool-btn" id="tool-wall" onclick="selectTool('wall')">
+        <div class="tool-swatch" style="background:#1a2a3a; border-color:#4a7a9a"></div>Wall
+      </button>
+      <button class="tool-btn" id="tool-start" onclick="selectTool('start')">
+        <div class="tool-swatch" style="background:#00e5a0"></div>Start
+      </button>
+      <button class="tool-btn" id="tool-end" onclick="selectTool('end')">
+        <div class="tool-swatch" style="background:#ff6b35"></div>End
+      </button>
+      <div class="section-label" style="margin-top:8px">Portals (paired)</div>
+      <button class="tool-btn" id="tool-portal-a1" onclick="selectTool('portal-a1')">
+        <div class="tool-swatch" style="background:#c678ff"></div>Portal A①
+      </button>
+      <button class="tool-btn" id="tool-portal-a2" onclick="selectTool('portal-a2')">
+        <div class="tool-swatch" style="background:#c678ff; opacity:0.55"></div>Portal A②
+      </button>
+      <button class="tool-btn" id="tool-portal-b1" onclick="selectTool('portal-b1')">
+        <div class="tool-swatch" style="background:#ff6bcc"></div>Portal B①
+      </button>
+      <button class="tool-btn" id="tool-portal-b2" onclick="selectTool('portal-b2')">
+        <div class="tool-swatch" style="background:#ff6bcc; opacity:0.55"></div>Portal B②
+      </button>
+      <button class="tool-btn" id="tool-portal-c1" onclick="selectTool('portal-c1')">
+        <div class="tool-swatch" style="background:#6bffc6"></div>Portal C①
+      </button>
+      <button class="tool-btn" id="tool-portal-c2" onclick="selectTool('portal-c2')">
+        <div class="tool-swatch" style="background:#6bffc6; opacity:0.55"></div>Portal C②
+      </button>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">Grid Size</div>
+      <div class="size-row">
+        <label>Width</label>
+        <input class="size-input" id="grid-w" type="number" min="4" max="100" value="10">
+      </div>
+      <div class="size-row">
+        <label>Height</label>
+        <input class="size-input" id="grid-h" type="number" min="4" max="100" value="10">
+      </div>
+      <button class="btn btn-primary" onclick="resizeGrid()">Resize Grid</button>
+      <button class="btn btn-danger" onclick="clearGrid()">Clear Grid</button>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-label">Map Code</div>
+      <textarea id="map-code" placeholder="Map code appears here..."></textarea>
+      <button class="btn btn-primary" onclick="exportMap()" style="margin-top:4px">Export Code</button>
+      <button class="btn" onclick="importMap()">Import Code</button>
+      <button class="btn btn-ai" onclick="openScreenshotImport()" style="margin-top:2px">✦ Import from Screenshot</button>
+    </div>
+
+    <div class="panel-section" style="font-size:0.68rem; color:var(--text-dim); line-height:1.6">
+      <div class="section-label">Legend</div>
+      <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px">
+        <div style="width:12px;height:12px;background:#d6f0ff;border-radius:2px;flex-shrink:0"></div>Ice — slide forever
+      </div>
+      <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px">
+        <div style="width:12px;height:12px;background:#a8d8f0;border-radius:2px;flex-shrink:0"></div>Visited ice
+      </div>
+      <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px">
+        <div style="width:12px;height:12px;background:#1a2a3a;border-radius:2px;flex-shrink:0;border:1px solid #4a7a9a"></div>Wall — stops you
+      </div>
+      <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px">
+        <div style="width:12px;height:12px;background:#00e5a0;border-radius:2px;flex-shrink:0"></div>Start position
+      </div>
+      <div style="display:flex; align-items:center; gap:6px">
+        <div style="width:12px;height:12px;background:#ff6b35;border-radius:2px;flex-shrink:0"></div>End goal
+      </div>
+      <div style="display:flex; align-items:center; gap:6px; margin-top:3px">
+        <div style="width:12px;height:12px;background:#c678ff;border-radius:2px;flex-shrink:0"></div>Portal — teleports & slides
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Screenshot Import Modal -->
+<div id="screenshot-modal" class="modal-backdrop">
+  <div class="modal-box" id="imp-modal-box">
+
+    <!-- STEP 1: Upload -->
+    <div id="imp-step-upload">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">✦ Import from Screenshot</div>
+          <div class="modal-sub">Auto-detects tiles · you label each unique type · instant map</div>
+        </div>
+        <button class="modal-close" onclick="closeScreenshotImport()">✕</button>
+      </div>
+      <div id="drop-zone" class="drop-zone" onclick="document.getElementById('file-input').click()">
+        <input type="file" id="file-input" accept="image/*" style="display:none" onchange="impHandleFile(event)">
+        <div id="drop-content">
+          <div class="drop-icon">⬡</div>
+          <div class="drop-title">Drop screenshot here</div>
+          <div class="drop-hint">or click to browse — PNG, JPG, WebP</div>
+        </div>
+      </div>
+      <div style="font-size:0.68rem; color:var(--text-dim); margin-top:8px; line-height:1.6">
+        Works with any Pokémon-style ice puzzle screenshot. No internet needed.
+      </div>
+    </div>
+
+    <!-- STEP 2: Crop / grid-detect -->
+    <div id="imp-step-crop" style="display:none">
+      <div class="modal-header">
+        <div><div class="modal-title">Detect Grid</div>
+          <div class="modal-sub">Adjust sliders until the grid lines snap to tile edges</div></div>
+        <button class="modal-close" onclick="closeScreenshotImport()">✕</button>
+      </div>
+      <!-- Fixed-size canvas fills modal width -->
+      <canvas id="imp-crop-canvas" style="border:1px solid var(--panel-border); border-radius:6px; width:100%; display:block; cursor:crosshair; image-rendering:pixelated;"></canvas>
+      <!-- Controls below in a 2-col grid -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px 16px; margin-top:10px;">
+        <div>
+          <div class="section-label">Tile Size (px)</div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <input type="range" id="imp-tile-size" min="4" max="128" value="16" style="flex:1" oninput="impUpdateCropPreview()">
+            <span id="imp-tile-size-val" style="font-family:'Space Mono',monospace; font-size:0.7rem; color:var(--accent); width:32px; text-align:right">16</span>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Cluster Sensitivity</div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <input type="range" id="imp-threshold" min="5" max="80" value="20" style="flex:1">
+            <span id="imp-threshold-val" style="font-family:'Space Mono',monospace; font-size:0.7rem; color:var(--accent); width:32px; text-align:right">20</span>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Offset X</div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <input type="range" id="imp-offset-x" min="0" max="128" value="0" style="flex:1" oninput="impUpdateCropPreview()">
+            <span id="imp-offset-x-val" style="font-family:'Space Mono',monospace; font-size:0.7rem; color:var(--accent); width:32px; text-align:right">0</span>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Offset Y</div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <input type="range" id="imp-offset-y" min="0" max="128" value="0" style="flex:1" oninput="impUpdateCropPreview()">
+            <span id="imp-offset-y-val" style="font-family:'Space Mono',monospace; font-size:0.7rem; color:var(--accent); width:32px; text-align:right">0</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px;">
+        <div id="imp-grid-info" style="font-family:'Space Mono',monospace; font-size:0.72rem; color:var(--accent)">–</div>
+        <button class="btn btn-primary" style="width:auto" onclick="impGoToLabel()">Next: Label Tiles →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Label unique tiles -->
+    <div id="imp-step-label" style="display:none">
+      <div class="modal-header">
+        <div><div class="modal-title">Label Tile Types</div>
+          <div class="modal-sub">Click each unique tile to assign its type</div></div>
+        <button class="modal-close" onclick="closeScreenshotImport()">✕</button>
+      </div>
+      <!-- Tile type selector bar -->
+      <div id="imp-type-bar" style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+        <button class="imp-type-btn active" data-type="0" onclick="impSelectType(0)">
+          <div class="imp-type-swatch" style="background:#d6f0ff"></div>Ice
+        </button>
+        <button class="imp-type-btn" data-type="1" onclick="impSelectType(1)">
+          <div class="imp-type-swatch" style="background:#1a2a3a; border-color:#4a7a9a"></div>Wall
+        </button>
+        <button class="imp-type-btn" data-type="2" onclick="impSelectType(2)">
+          <div class="imp-type-swatch" style="background:#00e5a0"></div>Start
+        </button>
+        <button class="imp-type-btn" data-type="3" onclick="impSelectType(3)">
+          <div class="imp-type-swatch" style="background:#ff6b35"></div>End
+        </button>
+      </div>
+      <div style="font-size:0.68rem; color:var(--text-dim); margin-bottom:8px;">
+        Select a tile type above, then click tiles below to assign. All tiles in a cluster get labeled at once.
+        <span style="float:right"><button class="btn" style="width:auto;padding:3px 8px;font-size:0.65rem" onclick="impGoToLabel()">↺ Re-segment</button></span>
+      </div>
+      <!-- Unique tile clusters -->
+      <div id="imp-cluster-grid" style="display:flex; flex-wrap:wrap; gap:6px; max-height:220px; overflow-y:auto; padding:2px;"></div>
+      <!-- Fixed-size preview map -->
+      <div style="margin-top:10px;">
+        <div class="section-label">Map Preview</div>
+        <canvas id="imp-preview-canvas" style="margin-top:4px; border:1px solid var(--panel-border); border-radius:4px; width:100%; display:block; image-rendering:pixelated;"></canvas>
+      </div>
+      <!-- Grid size + load -->
+      <div style="margin-top:10px; padding:10px; background:rgba(0,0,0,0.2); border:1px solid var(--panel-border); border-radius:8px;">
+        <div class="section-label" style="margin-bottom:8px;">Game Grid Size (detected: <span id="imp-detected-size">–</span>)</div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--text-dim);">
+            W <input type="number" id="imp-out-w" min="4" max="200" style="width:54px; background:rgba(0,0,0,0.4); border:1px solid var(--panel-border); border-radius:4px; color:var(--accent); font-family:'Space Mono',monospace; font-size:0.7rem; padding:4px 6px; outline:none; text-align:center;">
+          </div>
+          <div style="display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--text-dim);">
+            H <input type="number" id="imp-out-h" min="4" max="200" style="width:54px; background:rgba(0,0,0,0.4); border:1px solid var(--panel-border); border-radius:4px; color:var(--accent); font-family:'Space Mono',monospace; font-size:0.7rem; padding:4px 6px; outline:none; text-align:center;">
+          </div>
+          <div style="font-size:0.62rem; color:var(--text-dim); flex:1">Map will be cropped or padded with walls to fit. No size limit — 50×50 or bigger works!</div>
+        </div>
+      </div>
+      <div class="modal-actions" style="margin-top:10px;">
+        <button class="btn" onclick="impGoToCrop()">← Back</button>
+        <button class="btn btn-primary" id="imp-load-btn" onclick="impFinish()">▶ Load Map</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─── CONSTANTS ───────────────────────────────────────────────────────────────
+const TILE = {
+  ICE: 0,
+  WALL: 1,
+  START: 2,
+  END: 3,
+  // Portals come in linked pairs: PORTAL_A_IN=4 ↔ PORTAL_A_OUT=5, B: 6↔7, C: 8↔9
+  PORTAL_A: 4,
+  PORTAL_B: 6,
+  PORTAL_C: 8,
+};
+
+// Portal pair lookup: tile value → partner tile value
+function portalPartner(t) {
+  if (t === 4) return 5; if (t === 5) return 4;
+  if (t === 6) return 7; if (t === 7) return 6;
+  if (t === 8) return 9; if (t === 9) return 8;
+  return null;
+}
+function isPortal(t) { return t >= 4 && t <= 9; }
+function portalPairIndex(t) { return Math.floor((t - 4) / 2); } // 0=A,1=B,2=C
+function portalEntry(t) { return t % 2 === 0; } // even = "1st" of pair, odd = "2nd"
+const PORTAL_COLORS = ['#c678ff', '#ff6bcc', '#6bffc6'];
+const PORTAL_LABELS = ['A', 'B', 'C'];
+
+// Find the position of a tile type in the grid
+function findTile(tileVal) {
+  for (let y = 0; y < state.gridH; y++)
+    for (let x = 0; x < state.gridW; x++)
+      if (state.grid[y][x] === tileVal) return { x, y };
+  return null;
+}
+
+const CELL_SIZE = 52;
+const BORDER_RADIUS = 5;
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let state = {
+  mode: 'play', // 'play' | 'edit'
+  tool: 'ice',
+  grid: [],
+  gridW: 10,
+  gridH: 10,
+  playerX: 0,
+  playerY: 0,
+  moving: false,
+  visited: new Set(),
+  totalIce: 0,
+  startX: 0,
+  startY: 0,
+  endReached: false,
+  sweepComplete: false,
+  // timer
+  timerRunning: false,
+  timerStart: 0,
+  timerElapsed: 0,
+  pbEnd: null,
+  pbSweep: null,
+  endTime: null,
+  moves: 0,
+  // editor painting
+  painting: false,
+  paintTool: null,
+};
+
+let particles = [];
+let animFrame;
+let playerAnim = { x: 0, y: 0, targetX: 0, targetY: 0, progress: 1, trail: [] };
+let flashTimeout;
+let portalAngle = 0; // rotating animation angle for portal rings
+
+function tickPortalAngle() {
+  portalAngle += 0.04;
+  // Re-render each frame if any portals are on the map (keeps them spinning)
+  if (state.grid && state.grid.some(row => row.some(isPortal))) render();
+  requestAnimationFrame(tickPortalAngle);
+}
+tickPortalAngle();
+
+// ─── CANVAS SETUP ────────────────────────────────────────────────────────────
+const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+const pCanvas = document.getElementById('particle-canvas');
+const pCtx = pCanvas.getContext('2d');
+
+// ─── CAMERA STATE ────────────────────────────────────────────────────────────
+let cameraMode = 'follow'; // 'follow' | 'fit'
+let camera = { x: 0, y: 0 }; // top-left of viewport in canvas-space pixels
+
+function toggleCameraMode() {
+  cameraMode = cameraMode === 'follow' ? 'fit' : 'follow';
+  const btn = document.getElementById('camera-mode-btn');
+  if (btn) btn.textContent = cameraMode === 'follow' ? '🎥 Camera: Follow' : '🗺 Camera: Fit';
+  resizeCanvas();
+  render();
+}
+
+function getViewport() {
+  // Available space for the canvas
+  const availW = window.innerWidth - 460;
+  const availH = window.innerHeight - 100;
+  const fullW = state.gridW * CELL_SIZE;
+  const fullH = state.gridH * CELL_SIZE;
+
+  const fits = fullW <= availW && fullH <= availH;
+
+  if (fits || cameraMode === 'fit') {
+    // Fit mode: scale down so whole map is visible
+    const scale = Math.min(1, availW / fullW, availH / fullH);
+    return { viewW: Math.round(fullW * scale), viewH: Math.round(fullH * scale), scale, follow: false };
+  } else {
+    // Follow mode: fixed viewport, camera pans to player
+    const viewW = Math.min(availW, fullW);
+    const viewH = Math.min(availH, fullH);
+    return { viewW, viewH, scale: 1, follow: true };
+  }
+}
+
+function updateCamera() {
+  const vp = getViewport();
+  if (!vp.follow) { camera.x = 0; camera.y = 0; return; }
+  const fullW = state.gridW * CELL_SIZE;
+  const fullH = state.gridH * CELL_SIZE;
+  // Center on player
+  const px = state.playerX * CELL_SIZE + CELL_SIZE / 2;
+  const py = state.playerY * CELL_SIZE + CELL_SIZE / 2;
+  camera.x = Math.max(0, Math.min(fullW - vp.viewW, px - vp.viewW / 2));
+  camera.y = Math.max(0, Math.min(fullH - vp.viewH, py - vp.viewH / 2));
+}
+
+function resizeCanvas() {
+  const vp = getViewport();
+  // The canvas element always shows the viewport slice
+  canvas.width = vp.viewW;
+  canvas.height = vp.viewH;
+  pCanvas.width = vp.viewW;
+  pCanvas.height = vp.viewH;
+  canvas.style.borderRadius = '8px';
+  pCanvas.style.borderRadius = '8px';
+  document.getElementById('flash-overlay').style.borderRadius = '8px';
+  // Show/hide camera toggle based on whether map is larger than screen
+  const btn = document.getElementById('camera-mode-btn');
+  if (btn) {
+    const fullW = state.gridW * CELL_SIZE;
+    const fullH = state.gridH * CELL_SIZE;
+    const availW = window.innerWidth - 460;
+    const availH = window.innerHeight - 100;
+    btn.style.display = (fullW > availW || fullH > availH) ? 'block' : 'none';
+    btn.textContent = cameraMode === 'follow' ? '🎥 Camera: Follow' : '🗺 Camera: Fit';
+  }
+}
+
+// ─── PRESET MAPS ─────────────────────────────────────────────────────────────
+const PRESETS = [
+  // Tutorial 1 — simple intro
+  "10x10|1111111111|1200000001|1000000001|1000100001|1000100001|1000100001|1000000001|1000000031|1000000001|1111111111",
+  // Labyrinth
+  "12x10|111111111111|120000000001|101110111101|100010000101|101110111101|100000100001|111101101111|100001000001|100000000031|111111111111",
+  // Spiral
+  "11x11|11111111111|12000000001|10111111101|10100000101|10101110101|10100030101|10101111101|10100000001|10111111111|10000000001|11111111111",
+  // Sweep Challenge
+  "10x10|1111111111|1200000001|1010101001|1000000001|1011101001|1000100001|1010100001|1000000001|1000000031|1111111111",
+  // Portal Maze
+  "12x12|111111111111|120000000001|100011100001|100000000001|101000010001|100040000001|100000050001|100010001001|100000000001|100000110001|100000000031|111111111111",
+];
+
+// ─── MAP LOGIC ────────────────────────────────────────────────────────────────
+function createGrid(w, h, fill = TILE.ICE) {
+  return Array.from({length: h}, (_, y) =>
+    Array.from({length: w}, (_, x) => {
+      if (x === 0 || x === w-1 || y === 0 || y === h-1) return TILE.WALL;
+      return fill;
+    })
+  );
+}
+
+function findStartEnd() {
+  for (let y = 0; y < state.gridH; y++) {
+    for (let x = 0; x < state.gridW; x++) {
+      if (state.grid[y][x] === TILE.START) {
+        state.startX = x; state.startY = y;
+      }
+    }
+  }
+}
+
+function countIce() {
+  let n = 0;
+  for (let y = 0; y < state.gridH; y++)
+    for (let x = 0; x < state.gridW; x++) {
+      const t = state.grid[y][x];
+      if (t === TILE.ICE || t === TILE.START || t === TILE.END || isPortal(t)) n++;
+    }
+  state.totalIce = n;
+}
+
+function initGame() {
+  findStartEnd();
+  countIce();
+  state.playerX = state.startX;
+  state.playerY = state.startY;
+  state.visited = new Set([`${state.startX},${state.startY}`]);
+  state.endReached = false;
+  state.sweepComplete = false;
+  state.moves = 0;
+  state.timerRunning = false;
+  state.timerElapsed = 0;
+  state.endTime = null;
+  playerAnim.x = state.startX * CELL_SIZE;
+  playerAnim.y = state.startY * CELL_SIZE;
+  playerAnim.targetX = playerAnim.x;
+  playerAnim.targetY = playerAnim.y;
+  playerAnim.progress = 1;
+  playerAnim.trail = [];
+  document.getElementById('complete-overlay').classList.remove('show');
+  updateUI();
+  resizeCanvas();
+  updateCamera();
+  render();
+}
+
+function loadPreset(idx) {
+  importMapCode(PRESETS[idx]);
+  setMode('play');
+}
+
+// ─── MOVEMENT ────────────────────────────────────────────────────────────────
+const DIRS = {
+  up:    [0, -1],
+  down:  [0,  1],
+  left:  [-1, 0],
+  right: [ 1, 0],
+};
+
+function move(dir) {
+  if (state.mode !== 'play') return;
+  if (state.moving) return;
+
+  const [dx, dy] = DIRS[dir];
+  let x = state.playerX, y = state.playerY;
+
+  // Start timer on first move
+  if (!state.timerRunning && !state.endReached) {
+    state.timerRunning = true;
+    state.timerStart = performance.now() - state.timerElapsed;
+  }
+
+  // Slide until wall
+  let moved = false;
+  const portalUsed = new Set(); // prevent infinite portal loops
+  while (true) {
+    const nx = x + dx, ny = y + dy;
+    if (nx < 0 || ny < 0 || nx >= state.gridW || ny >= state.gridH) break;
+    if (state.grid[ny][nx] === TILE.WALL) break;
+    x = nx; y = ny;
+    moved = true;
+    state.visited.add(`${x},${y}`);
+    // Portal teleport
+    if (isPortal(state.grid[y][x])) {
+      const partnerVal = portalPartner(state.grid[y][x]);
+      const portalKey = `${state.grid[y][x]}`;
+      if (partnerVal !== null && !portalUsed.has(portalKey)) {
+        portalUsed.add(portalKey);
+        portalUsed.add(String(partnerVal));
+        const dest = findTile(partnerVal);
+        if (dest) {
+          x = dest.x; y = dest.y;
+          state.visited.add(`${x},${y}`);
+          spawnPortalParticles(x * CELL_SIZE + CELL_SIZE/2, y * CELL_SIZE + CELL_SIZE/2, state.grid[y][x]);
+          // continue sliding from exit portal
+          continue;
+        }
+      }
+    }
+    if (state.grid[y][x] === TILE.END) break;
+  }
+
+  if (!moved) return;
+
+  state.moves++;
+  flashKey(dir);
+
+  // Animate slide
+  state.moving = true;
+  const startPX = state.playerX * CELL_SIZE;
+  const startPY = state.playerY * CELL_SIZE;
+  const endPX = x * CELL_SIZE;
+  const endPY = y * CELL_SIZE;
+  const dist = Math.abs(x - state.playerX) + Math.abs(y - state.playerY);
+  const duration = Math.min(80 + dist * 25, 350);
+
+  playerAnim.trail = [];
+  const startTime = performance.now();
+
+  function animStep(now) {
+    const t = Math.min((now - startTime) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    playerAnim.x = startPX + (endPX - startPX) * ease;
+    playerAnim.y = startPY + (endPY - startPY) * ease;
+
+    // Trail
+    if (Math.random() < 0.4) {
+      playerAnim.trail.push({ x: playerAnim.x, y: playerAnim.y, alpha: 0.6 });
+    }
+    playerAnim.trail = playerAnim.trail.filter(t => t.alpha > 0);
+    playerAnim.trail.forEach(t => t.alpha -= 0.06);
+
+    render();
+    if (t < 1) {
+      requestAnimationFrame(animStep);
+    } else {
+      playerAnim.x = endPX;
+      playerAnim.y = endPY;
+      state.playerX = x;
+      state.playerY = y;
+      state.moving = false;
+      playerAnim.trail = [];
+
+      // Spawn particles on stop
+      spawnIceParticles(x * CELL_SIZE + CELL_SIZE/2, y * CELL_SIZE + CELL_SIZE/2);
+
+      checkObjectives();
+      updateUI();
+      render();
+    }
+  }
+  requestAnimationFrame(animStep);
+}
+
+function checkObjectives() {
+  const tile = state.grid[state.playerY][state.playerX];
+  const visitedCount = state.visited.size;
+  const now = state.timerStart ? performance.now() - state.timerStart : 0;
+
+  // End reached
+  if (tile === TILE.END && !state.endReached) {
+    state.endReached = true;
+    state.endTime = now;
+    if (!state.pbEnd || now < state.pbEnd) {
+      state.pbEnd = now;
+      document.getElementById('pb-end').textContent = formatTime(state.pbEnd);
+    }
+    document.getElementById('obj-end').classList.add('complete');
+    document.getElementById('obj-end-time').textContent = formatTime(now);
+    triggerFlash('#ff6b35');
+  }
+
+  // Sweep check
+  if (visitedCount >= state.totalIce && !state.sweepComplete) {
+    state.sweepComplete = true;
+    const sweepTime = state.timerStart ? performance.now() - state.timerStart : 0;
+    if (!state.pbSweep || sweepTime < state.pbSweep) {
+      state.pbSweep = sweepTime;
+      document.getElementById('pb-sweep').textContent = formatTime(state.pbSweep);
+    }
+    if (!state.endReached) {
+      document.getElementById('obj-sweep').classList.add('complete');
+    }
+  }
+
+  // Both done
+  if (state.endReached && state.sweepComplete && state.timerRunning) {
+    state.timerRunning = false;
+    state.timerElapsed = now;
+    showComplete(now);
+  } else if (state.endReached && !state.sweepComplete) {
+    // Only end reached
+    if (state.timerRunning) {
+      state.timerRunning = false;
+      state.timerElapsed = now;
+    }
+    showComplete(now, false);
+  }
+}
+
+function showComplete(time, full = (state.endReached && state.sweepComplete)) {
+  const overlay = document.getElementById('complete-overlay');
+  if (full) {
+    document.getElementById('complete-title').textContent = 'PERFECT RUN!';
+    document.getElementById('complete-title').style.color = 'var(--sweep)';
+    document.getElementById('complete-title').style.textShadow = '0 0 30px rgba(198,120,255,0.6)';
+    document.getElementById('complete-pb').textContent = 'All tiles swept!';
+  } else {
+    document.getElementById('complete-title').textContent = 'COMPLETE!';
+    document.getElementById('complete-title').style.color = 'var(--timer-good)';
+    document.getElementById('complete-title').style.textShadow = '0 0 30px rgba(0,229,160,0.6)';
+    document.getElementById('complete-pb').textContent = `Visited: ${state.visited.size}/${state.totalIce} tiles`;
+  }
+  document.getElementById('complete-time').textContent = formatTime(time);
+  overlay.classList.add('show');
+  triggerFlash(full ? '#c678ff' : '#00e5a0');
+}
+
+function resetGame() {
+  state.timerRunning = false;
+  state.timerElapsed = 0;
+  document.getElementById('complete-overlay').classList.remove('show');
+  document.getElementById('obj-end').classList.remove('complete');
+  document.getElementById('obj-end-time').textContent = '—';
+  document.getElementById('obj-sweep').classList.remove('complete');
+  initGame();
+}
+
+// ─── TIMER LOOP ───────────────────────────────────────────────────────────────
+function timerLoop() {
+  if (state.timerRunning) {
+    const elapsed = performance.now() - state.timerStart;
+    document.getElementById('timer-display').textContent = formatTime(elapsed);
+    document.getElementById('timer-display').className = 'timer-display';
+  } else if (state.timerElapsed > 0) {
+    document.getElementById('timer-display').textContent = formatTime(state.timerElapsed);
+    document.getElementById('timer-display').className = 'finished';
+  }
+  requestAnimationFrame(timerLoop);
+}
+
+function formatTime(ms) {
+  const m = Math.floor(ms / 60000).toString().padStart(2, '0');
+  const s = Math.floor((ms % 60000) / 1000).toString().padStart(2, '0');
+  const ms3 = Math.floor(ms % 1000).toString().padStart(3, '0');
+  return `${m}:${s}.${ms3}`;
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  updateCamera();
+  const vp = getViewport();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const { grid, gridW, gridH, mode } = state;
+
+  ctx.save();
+  if (vp.follow) {
+    ctx.translate(-camera.x, -camera.y);
+  } else {
+    ctx.scale(vp.scale, vp.scale);
+  }
+
+  for (let y = 0; y < gridH; y++) {
+    for (let x = 0; x < gridW; x++) {
+      const px = x * CELL_SIZE, py = y * CELL_SIZE;
+      const tile = grid[y][x];
+      const visited = state.visited.has(`${x},${y}`);
+
+      // Cell background
+      drawCell(ctx, px, py, CELL_SIZE, tile, visited);
+
+      // Editor hover indicator
+      if (mode === 'edit') {
+        // Draw grid lines lightly
+        ctx.strokeStyle = 'rgba(74,216,255,0.05)';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(px, py, CELL_SIZE, CELL_SIZE);
+      }
+    }
+  }
+
+  // Draw player trail
+  playerAnim.trail.forEach(t => {
+    ctx.save();
+    ctx.globalAlpha = t.alpha * 0.4;
+    ctx.fillStyle = '#4ad8ff';
+    const s = CELL_SIZE * 0.35;
+    ctx.beginPath();
+    ctx.ellipse(t.x + CELL_SIZE/2, t.y + CELL_SIZE/2, s, s * 0.6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+
+  // Draw player (only in play mode)
+  if (mode === 'play') {
+    drawPlayer(ctx, playerAnim.x, playerAnim.y);
+  }
+
+  ctx.restore();
+
+  // Particles (drawn in viewport space)
+  renderParticles();
+}
+
+function drawCell(ctx, px, py, size, tile, visited) {
+  const r = BORDER_RADIUS;
+
+  if (tile === TILE.WALL) {
+    // Wall — dark with edge highlight
+    ctx.fillStyle = '#0d1a26';
+    roundRect(ctx, px, py, size, size, r);
+    ctx.fill();
+    // Inner shadow
+    ctx.fillStyle = '#1a2a3a';
+    roundRect(ctx, px + 2, py + 2, size - 4, size - 4, r - 1);
+    ctx.fill();
+    // Top-left edge
+    ctx.strokeStyle = 'rgba(74,216,255,0.08)';
+    ctx.lineWidth = 1;
+    roundRect(ctx, px + 0.5, py + 0.5, size - 1, size - 1, r);
+    ctx.stroke();
+  } else if (tile === TILE.ICE) {
+    // Ice — white/light blue
+    const c = visited ? '#b8d8ee' : '#d6f0ff';
+    ctx.fillStyle = c;
+    roundRect(ctx, px, py, size, size, r);
+    ctx.fill();
+    if (!visited) {
+      // Shine
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      roundRect(ctx, px + 3, py + 3, size * 0.3, size * 0.12, 2);
+      ctx.fill();
+    }
+    // Subtle border
+    ctx.strokeStyle = visited ? 'rgba(100,180,220,0.3)' : 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 0.5;
+    roundRect(ctx, px + 0.5, py + 0.5, size - 1, size - 1, r);
+    ctx.stroke();
+    if (visited) {
+      // Visited pattern — small cross
+      ctx.strokeStyle = 'rgba(100,160,200,0.25)';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(px + size/2 - 3, py + size/2);
+      ctx.lineTo(px + size/2 + 3, py + size/2);
+      ctx.moveTo(px + size/2, py + size/2 - 3);
+      ctx.moveTo(px + size/2, py + size/2 + 3);
+      ctx.stroke();
+    }
+  } else if (tile === TILE.START) {
+    // Start — green
+    ctx.fillStyle = '#00c88a';
+    roundRect(ctx, px, py, size, size, r);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    roundRect(ctx, px + 3, py + 3, size * 0.3, size * 0.12, 2);
+    ctx.fill();
+    // S marker
+    ctx.fillStyle = 'rgba(0,60,40,0.5)';
+    ctx.font = `bold ${size * 0.32}px 'Bebas Neue', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('S', px + size/2, py + size/2 + 1);
+    ctx.strokeStyle = 'rgba(0,229,160,0.4)';
+    ctx.lineWidth = 0.5;
+    roundRect(ctx, px + 0.5, py + 0.5, size - 1, size - 1, r);
+    ctx.stroke();
+  } else if (tile === TILE.END) {
+    // End — orange
+    ctx.fillStyle = '#e55a20';
+    roundRect(ctx, px, py, size, size, r);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    roundRect(ctx, px + 3, py + 3, size * 0.3, size * 0.12, 2);
+    ctx.fill();
+    // Flag-like pattern
+    ctx.fillStyle = 'rgba(255,200,150,0.6)';
+    ctx.font = `bold ${size * 0.45}px 'Bebas Neue', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('END', px + size/2, py + size/2 + 1);
+    ctx.strokeStyle = 'rgba(255,150,80,0.4)';
+    ctx.lineWidth = 0.5;
+    roundRect(ctx, px + 0.5, py + 0.5, size - 1, size - 1, r);
+    ctx.stroke();
+    // Glow
+    ctx.shadowColor = 'rgba(255,107,53,0.4)';
+    ctx.shadowBlur = 8;
+    roundRect(ctx, px, py, size, size, r);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  } else if (isPortal(tile)) {
+    const pairIdx = portalPairIndex(tile);
+    const color = PORTAL_COLORS[pairIdx] || '#c678ff';
+    const label = PORTAL_LABELS[pairIdx] || '?';
+    const isFirst = portalEntry(tile);
+    const cx = px + size / 2, cy = py + size / 2;
+
+    // Background
+    ctx.fillStyle = visited ? 'rgba(40,10,60,0.9)' : 'rgba(20,5,40,0.95)';
+    roundRect(ctx, px, py, size, size, r);
+    ctx.fill();
+
+    // Swirling ring glow
+    const grad = ctx.createRadialGradient(cx, cy, size * 0.1, cx, cy, size * 0.48);
+    grad.addColorStop(0, color + 'cc');
+    grad.addColorStop(0.5, color + '44');
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    roundRect(ctx, px, py, size, size, r);
+    ctx.fill();
+
+    // Spinning arc rings
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, size * 0.38, portalAngle, portalAngle + Math.PI * 1.5);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.globalAlpha = 0.85;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, cy, size * 0.26, portalAngle + Math.PI, portalAngle + Math.PI * 2.5);
+    ctx.strokeStyle = color + 'aa';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+
+    // Label letter
+    ctx.fillStyle = '#fff';
+    ctx.globalAlpha = 1;
+    ctx.font = `bold ${size * 0.36}px 'Bebas Neue', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 10;
+    ctx.fillText(label, cx, cy + 1);
+    ctx.shadowBlur = 0;
+
+    // Small dot indicator: filled = entry side of pair, ring = exit
+    ctx.beginPath();
+    ctx.arc(cx, cy + size * 0.3, 3, 0, Math.PI * 2);
+    if (isFirst) { ctx.fillStyle = color; ctx.fill(); }
+    else { ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.stroke(); }
+
+    // Border
+    ctx.strokeStyle = color + '88';
+    ctx.lineWidth = 1.5;
+    roundRect(ctx, px + 0.5, py + 0.5, size - 1, size - 1, r);
+    ctx.stroke();
+  }
+}
+
+function drawPlayer(ctx, px, py) {
+  const cx = px + CELL_SIZE / 2;
+  const cy = py + CELL_SIZE / 2;
+  const r = CELL_SIZE * 0.28;
+
+  // Glow
+  ctx.shadowColor = 'rgba(74,216,255,0.8)';
+  ctx.shadowBlur = 16;
+
+  // Body
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Inner color
+  ctx.fillStyle = '#4ad8ff';
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 0.6, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(cx - r * 0.2, cy - r * 0.2, r * 0.2, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.shadowBlur = 0;
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+// ─── PARTICLES ────────────────────────────────────────────────────────────────
+function spawnPortalParticles(cx, cy, tileVal) {
+  const color = PORTAL_COLORS[portalPairIndex(tileVal)] || '#c678ff';
+  for (let i = 0; i < 14; i++) {
+    const angle = (i / 14) * Math.PI * 2 + Math.random() * 0.4;
+    const speed = 1.5 + Math.random() * 3;
+    particles.push({
+      x: cx, y: cy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      alpha: 1,
+      size: 2.5 + Math.random() * 3.5,
+      color,
+    });
+  }
+}
+
+function spawnIceParticles(cx, cy) {
+  for (let i = 0; i < 8; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 0.5 + Math.random() * 2;
+    particles.push({
+      x: cx, y: cy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      alpha: 0.8,
+      size: 2 + Math.random() * 3,
+      color: Math.random() > 0.5 ? '#4ad8ff' : '#ffffff',
+    });
+  }
+}
+
+function renderParticles() {
+  const vp = getViewport();
+  pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+  particles = particles.filter(p => p.alpha > 0);
+  particles.forEach(p => {
+    // Convert world coords to viewport coords
+    let vx = p.x, vy = p.y;
+    if (vp.follow) { vx -= camera.x; vy -= camera.y; }
+    else { vx *= vp.scale; vy *= vp.scale; }
+    pCtx.save();
+    pCtx.globalAlpha = p.alpha;
+    pCtx.fillStyle = p.color;
+    pCtx.beginPath();
+    pCtx.arc(vx, vy, p.size * (vp.follow ? 1 : vp.scale), 0, Math.PI * 2);
+    pCtx.fill();
+    pCtx.restore();
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.05;
+    p.alpha -= 0.04;
+    p.size *= 0.96;
+  });
+}
+
+// ─── FLASH ────────────────────────────────────────────────────────────────────
+function triggerFlash(color) {
+  const el = document.getElementById('flash-overlay');
+  el.style.background = color;
+  el.style.opacity = '0.15';
+  clearTimeout(flashTimeout);
+  flashTimeout = setTimeout(() => { el.style.opacity = '0'; }, 200);
+}
+
+function flashKey(dir) {
+  const map = { up: 'key-w', down: 'key-s', left: 'key-a', right: 'key-d' };
+  const el = document.getElementById(map[dir]);
+  if (!el) return;
+  el.classList.add('active-key');
+  setTimeout(() => el.classList.remove('active-key'), 200);
+}
+
+// ─── UI UPDATES ───────────────────────────────────────────────────────────────
+function updateUI() {
+  const visited = state.visited.size;
+  const total = state.totalIce;
+  document.getElementById('obj-sweep-count').textContent = `${visited} / ${total} tiles`;
+  if (visited >= total) document.getElementById('obj-sweep').classList.add('complete');
+  document.getElementById('moves-display').textContent = state.moves;
+}
+
+// ─── EDITOR ───────────────────────────────────────────────────────────────────
+function setMode(m) {
+  state.mode = m;
+  document.getElementById('tab-play').classList.toggle('active', m === 'play');
+  document.getElementById('tab-edit').classList.toggle('active', m === 'edit');
+  if (m === 'play') resetGame();
+  render();
+}
+
+function selectTool(t) {
+  state.tool = t;
+  const allTools = ['ice','wall','start','end','portal-a1','portal-a2','portal-b1','portal-b2','portal-c1','portal-c2'];
+  allTools.forEach(tt => {
+    const el = document.getElementById('tool-' + tt);
+    if (el) el.classList.toggle('active', tt === t);
+  });
+}
+
+const TOOL_MAP = {
+  ice: TILE.ICE, wall: TILE.WALL, start: TILE.START, end: TILE.END,
+  'portal-a1': 4, 'portal-a2': 5,
+  'portal-b1': 6, 'portal-b2': 7,
+  'portal-c1': 8, 'portal-c2': 9,
+};
+
+canvas.addEventListener('mousedown', e => {
+  if (state.mode !== 'edit') return;
+  state.painting = true;
+  state.paintTool = TOOL_MAP[state.tool];
+  paintAt(e);
+});
+canvas.addEventListener('mousemove', e => {
+  if (!state.painting) return;
+  paintAt(e);
+});
+canvas.addEventListener('mouseup', () => { state.painting = false; });
+canvas.addEventListener('mouseleave', () => { state.painting = false; });
+
+function paintAt(e) {
+  const rect = canvas.getBoundingClientRect();
+  const vp = getViewport();
+  let mx = (e.clientX - rect.left) * (canvas.width / rect.width);
+  let my = (e.clientY - rect.top) * (canvas.height / rect.height);
+  // Reverse camera/scale transform to get canvas-space coords
+  if (vp.follow) {
+    mx += camera.x;
+    my += camera.y;
+  } else {
+    mx /= vp.scale;
+    my /= vp.scale;
+  }
+  const gx = Math.floor(mx / CELL_SIZE);
+  const gy = Math.floor(my / CELL_SIZE);
+  if (gx < 0 || gy < 0 || gx >= state.gridW || gy >= state.gridH) return;
+
+  const t = state.paintTool;
+  // If placing start/end, remove existing ones first
+  if (t === TILE.START) {
+    for (let y = 0; y < state.gridH; y++)
+      for (let x = 0; x < state.gridW; x++)
+        if (state.grid[y][x] === TILE.START) state.grid[y][x] = TILE.ICE;
+  }
+  if (t === TILE.END) {
+    for (let y = 0; y < state.gridH; y++)
+      for (let x = 0; x < state.gridW; x++)
+        if (state.grid[y][x] === TILE.END) state.grid[y][x] = TILE.ICE;
+  }
+  state.grid[gy][gx] = t;
+  render();
+}
+
+function resizeGrid() {
+  const w = Math.max(4, parseInt(document.getElementById('grid-w').value) || 10);
+  const h = Math.max(4, parseInt(document.getElementById('grid-h').value) || 10);
+  const newGrid = createGrid(w, h);
+  // Copy old cells
+  for (let y = 0; y < Math.min(h, state.gridH); y++)
+    for (let x = 0; x < Math.min(w, state.gridW); x++)
+      newGrid[y][x] = state.grid[y][x];
+  state.grid = newGrid;
+  state.gridW = w;
+  state.gridH = h;
+  resizeCanvas();
+  render();
+  showToast('Grid resized to ' + w + '×' + h);
+}
+
+function clearGrid() {
+  state.grid = createGrid(state.gridW, state.gridH);
+  render();
+  showToast('Grid cleared');
+}
+
+// ─── MAP IMPORT / EXPORT ──────────────────────────────────────────────────────
+function encodeMap() {
+  const rows = state.grid.map(row => row.join('')).join('|');
+  return `${state.gridW}x${state.gridH}|${rows}`;
+}
+
+function exportMap() {
+  const code = encodeMap();
+  document.getElementById('map-code').value = code;
+  navigator.clipboard?.writeText(code).catch(() => {});
+  showToast('Map code copied!');
+}
+
+function importMap() {
+  const code = document.getElementById('map-code').value.trim();
+  if (!code) return showToast('Paste a map code first');
+  importMapCode(code);
+}
+
+function importMapCode(code) {
+  try {
+    const parts = code.split('|');
+    const [w, h] = parts[0].split('x').map(Number);
+    if (!w || !h || w < 4 || h < 4) throw new Error('Bad dims');
+    const rows = parts.slice(1);
+    if (rows.length !== h) throw new Error('Row mismatch');
+    const grid = rows.map(r => r.split('').map(Number));
+    if (grid.some(r => r.length !== w)) throw new Error('Col mismatch');
+    state.grid = grid;
+    state.gridW = w;
+    state.gridH = h;
+    document.getElementById('grid-w').value = w;
+    document.getElementById('grid-h').value = h;
+    resizeCanvas();
+    initGame();
+    showToast('Map loaded!');
+  } catch(e) {
+    showToast('Invalid map code');
+  }
+}
+
+// ─── KEYBOARD ────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+  switch(e.key.toLowerCase()) {
+    case 'w': case 'arrowup':    e.preventDefault(); move('up');    break;
+    case 's': case 'arrowdown':  e.preventDefault(); move('down');  break;
+    case 'a': case 'arrowleft':  e.preventDefault(); move('left');  break;
+    case 'd': case 'arrowright': e.preventDefault(); move('right'); break;
+    case 'r': resetGame(); break;
+    case 'e': setMode(state.mode === 'play' ? 'edit' : 'play'); break;
+  }
+});
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+let toastTimeout;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+function init() {
+  importMapCode(PRESETS[0]);
+  timerLoop();
+}
+
+// ─── SCREENSHOT IMPORT — pure JS tile segmentation ───────────────────────────
+
+const IMP = {
+  img: null,          // HTMLImageElement
+  srcCanvas: null,    // full-res offscreen canvas of the image
+  tileSize: 16,
+  offsetX: 0,
+  offsetY: 0,
+  cols: 0,
+  rows: 0,
+  clusters: [],       // [{id, canvas(60x60 thumb), fingerprint, label(0-3|null), count}]
+  tileCluster: [],    // flat array [rows*cols] → cluster id
+  currentType: 0,     // selected tile type for labeling
+};
+
+// ── Color fingerprint: average RGB in a 3x3 spatial zones = 27 values ──
+function impFingerprint(srcCtx, tx, ty, tileSize) {
+  const px = tx * tileSize + IMP.offsetX;
+  const py = ty * tileSize + IMP.offsetY;
+  // Clamp to canvas bounds
+  const cw = IMP.srcCanvas.width, ch = IMP.srcCanvas.height;
+  const safeW = Math.min(tileSize, cw - px);
+  const safeH = Math.min(tileSize, ch - py);
+  if (safeW <= 0 || safeH <= 0) return new Array(27).fill(0);
+
+  const imgData = srcCtx.getImageData(px, py, safeW, safeH);
+  const d = imgData.data;
+  const zones = 3;
+  const result = new Array(zones * zones * 3).fill(0);
+  const counts = new Array(zones * zones).fill(0);
+
+  for (let y = 0; y < safeH; y++) {
+    for (let x = 0; x < safeW; x++) {
+      const i = (y * safeW + x) * 4;
+      const zx = Math.min(zones - 1, Math.floor(x * zones / safeW));
+      const zy = Math.min(zones - 1, Math.floor(y * zones / safeH));
+      const zi = zy * zones + zx;
+      result[zi * 3 + 0] += d[i];
+      result[zi * 3 + 1] += d[i + 1];
+      result[zi * 3 + 2] += d[i + 2];
+      counts[zi]++;
+    }
+  }
+  // Normalise each zone to 0-255 average
+  for (let z = 0; z < zones * zones; z++) {
+    if (counts[z] > 0) {
+      result[z * 3 + 0] = Math.round(result[z * 3 + 0] / counts[z]);
+      result[z * 3 + 1] = Math.round(result[z * 3 + 1] / counts[z]);
+      result[z * 3 + 2] = Math.round(result[z * 3 + 2] / counts[z]);
+    }
+  }
+  return result;
+}
+
+function impFingerprintDist(a, b) {
+  let d = 0;
+  for (let i = 0; i < a.length; i++) d += Math.abs(a[i] - b[i]);
+  return d / a.length; // 0–255 scale
+}
+
+// ── Draw tile at (tx,ty) onto a 60x60 canvas ──
+function impTileThumb(srcCtx, tx, ty, tileSize) {
+  const c = document.createElement('canvas');
+  c.width = c.height = 60;
+  const ctx2 = c.getContext('2d');
+  const px = tx * tileSize + IMP.offsetX;
+  const py = ty * tileSize + IMP.offsetY;
+  ctx2.drawImage(srcCtx.canvas, px, py, tileSize, tileSize, 0, 0, 60, 60);
+  return c;
+}
+
+// ── Segment image into clusters ──
+function impSegment() {
+  const srcCtx = IMP.srcCanvas.getContext('2d');
+  const ts = IMP.tileSize;
+  IMP.cols = Math.floor((IMP.srcCanvas.width  - IMP.offsetX) / ts);
+  IMP.rows = Math.floor((IMP.srcCanvas.height - IMP.offsetY) / ts);
+
+  IMP.clusters = [];
+  IMP.tileCluster = new Array(IMP.cols * IMP.rows).fill(-1);
+
+  const threshEl = document.getElementById('imp-threshold');
+  const THRESHOLD = threshEl ? parseInt(threshEl.value) : 20;
+
+  for (let ty = 0; ty < IMP.rows; ty++) {
+    for (let tx = 0; tx < IMP.cols; tx++) {
+      const fp = impFingerprint(srcCtx, tx, ty, ts);
+      let matched = -1;
+      let bestDist = Infinity;
+      for (let ci = 0; ci < IMP.clusters.length; ci++) {
+        const dist = impFingerprintDist(fp, IMP.clusters[ci].fingerprint);
+        if (dist < THRESHOLD && dist < bestDist) {
+          bestDist = dist; matched = ci;
+        }
+      }
+      if (matched === -1) {
+        matched = IMP.clusters.length;
+        IMP.clusters.push({
+          id: matched,
+          thumb: impTileThumb(srcCtx, tx, ty, ts),
+          fingerprint: fp,
+          label: null,
+          count: 0,
+        });
+      }
+      IMP.clusters[matched].count++;
+      IMP.tileCluster[ty * IMP.cols + tx] = matched;
+    }
+  }
+
+  // Auto-guess: use overall brightness of center zone (zone 4 = middle of 3x3)
+  IMP.clusters.forEach(c => {
+    const midR = c.fingerprint[4 * 3 + 0];
+    const midG = c.fingerprint[4 * 3 + 1];
+    const midB = c.fingerprint[4 * 3 + 2];
+    const bright = (midR + midG + midB) / 3;
+    // Ice is light blue (high G+B, moderate R), walls are dark
+    if (bright < 60) c.label = 1;        // dark → wall
+    else if (bright > 140 && midB > midR) c.label = 0; // light blue → ice
+  });
+}
+
+// ── Open modal ──
+function openScreenshotImport() {
+  document.getElementById('screenshot-modal').classList.add('open');
+  impShowStep('upload');
+}
+function closeScreenshotImport() {
+  document.getElementById('screenshot-modal').classList.remove('open');
+}
+function impShowStep(name) {
+  ['upload','crop','label'].forEach(s =>
+    document.getElementById('imp-step-' + s).style.display = s === name ? '' : 'none'
+  );
+}
+
+// ── File handling ──
+function impHandleFile(e) {
+  const file = e.target.files[0];
+  if (file) impLoadFile(file);
+}
+function impLoadFile(file) {
+  if (!file.type.startsWith('image/')) return showToast('Please upload an image file');
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      IMP.img = img;
+      // Draw to offscreen canvas
+      const oc = document.createElement('canvas');
+      oc.width = img.width; oc.height = img.height;
+      oc.getContext('2d').drawImage(img, 0, 0);
+      IMP.srcCanvas = oc;
+      // Auto-detect tile size via autocorrelation on a central stripe
+      IMP.tileSize = impAutoDetectTileSize(oc);
+      IMP.offsetX = 0; IMP.offsetY = 0;
+      impShowStep('crop');
+      impInitCropUI();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// Drag and drop on drop zone
+const impDropZone = document.getElementById('drop-zone');
+impDropZone.addEventListener('dragover',  e => { e.preventDefault(); impDropZone.classList.add('dragover'); });
+impDropZone.addEventListener('dragleave', () => impDropZone.classList.remove('dragover'));
+impDropZone.addEventListener('drop', e => {
+  e.preventDefault(); impDropZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) impLoadFile(file);
+});
+
+// ── Auto-detect tile size via horizontal autocorrelation ──
+function impAutoDetectTileSize(oc) {
+  const ctx = oc.getContext('2d');
+  const midY = Math.floor(oc.height / 2);
+  const row = ctx.getImageData(0, midY, oc.width, 1).data;
+  // Compute brightness array
+  const bright = [];
+  for (let x = 0; x < oc.width; x++) {
+    const i = x * 4;
+    bright.push((row[i] + row[i+1] + row[i+2]) / 3);
+  }
+  // Autocorrelation for periods 8–64
+  let bestPeriod = 16, bestScore = -1;
+  for (let p = 8; p <= 64; p++) {
+    let score = 0;
+    const n = Math.min(bright.length - p, 300);
+    for (let i = 0; i < n; i++) score += 1 - Math.abs(bright[i] - bright[i + p]) / 255;
+    score /= n;
+    if (score > bestScore) { bestScore = score; bestPeriod = p; }
+  }
+  return bestPeriod;
+}
+
+// ── Crop/grid UI ──
+// The canvas is always rendered at a fixed pixel resolution (DISP_W × DISP_H)
+// regardless of the source image size or tile size. Sliders change the grid
+// overlay density, not the display scale.
+const IMP_DISP_W = 440; // internal canvas resolution (CSS width:100% scales it visually)
+let impCropCanvas, impCropCtx;
+
+function impInitCropUI() {
+  impCropCanvas = document.getElementById('imp-crop-canvas');
+  impCropCtx = impCropCanvas.getContext('2d');
+
+  const el_ts = document.getElementById('imp-tile-size');
+  const el_ox = document.getElementById('imp-offset-x');
+  const el_oy = document.getElementById('imp-offset-y');
+  const el_th = document.getElementById('imp-threshold');
+
+  // Slider ranges based on source image
+  const maxDim = Math.max(IMP.srcCanvas.width, IMP.srcCanvas.height);
+  el_ts.max = Math.min(128, Math.floor(Math.min(IMP.srcCanvas.width, IMP.srcCanvas.height) / 3));
+  el_ts.value = IMP.tileSize;
+  el_ox.max = el_ts.max;
+  el_oy.max = el_ts.max;
+  el_ox.value = 0; el_oy.value = 0;
+  if (el_th) el_th.oninput = () => {
+    document.getElementById('imp-threshold-val').textContent = el_th.value;
+  };
+  impUpdateCropPreview();
+}
+
+function impUpdateCropPreview() {
+  IMP.tileSize = parseInt(document.getElementById('imp-tile-size').value);
+  IMP.offsetX  = parseInt(document.getElementById('imp-offset-x').value);
+  IMP.offsetY  = parseInt(document.getElementById('imp-offset-y').value);
+  document.getElementById('imp-tile-size-val').textContent = IMP.tileSize;
+  document.getElementById('imp-offset-x-val').textContent  = IMP.offsetX;
+  document.getElementById('imp-offset-y-val').textContent  = IMP.offsetY;
+
+  const ts   = IMP.tileSize;
+  const cols = Math.floor((IMP.srcCanvas.width  - IMP.offsetX) / ts);
+  const rows = Math.floor((IMP.srcCanvas.height - IMP.offsetY) / ts);
+
+  // Fixed internal resolution — CSS width:100% handles visual scaling
+  const aspect = IMP.srcCanvas.height / IMP.srcCanvas.width;
+  const dw = IMP_DISP_W;
+  const dh = Math.round(dw * aspect);
+  impCropCanvas.width  = dw;
+  impCropCanvas.height = dh;
+
+  // Draw source image scaled to fill the fixed canvas
+  impCropCtx.drawImage(IMP.srcCanvas, 0, 0, dw, dh);
+
+  // Scale factors from source-image coords → display coords
+  const sx = dw / IMP.srcCanvas.width;
+  const sy = dh / IMP.srcCanvas.height;
+
+  // Grid lines: draw thick dark stroke first, then thin white on top
+  const drawLine = (x1, y1, x2, y2) => {
+    impCropCtx.beginPath();
+    impCropCtx.moveTo(x1, y1);
+    impCropCtx.lineTo(x2, y2);
+    impCropCtx.strokeStyle = 'rgba(0,0,0,0.75)';
+    impCropCtx.lineWidth = 2.5;
+    impCropCtx.stroke();
+    impCropCtx.beginPath();
+    impCropCtx.moveTo(x1, y1);
+    impCropCtx.lineTo(x2, y2);
+    impCropCtx.strokeStyle = 'rgba(255,255,255,0.95)';
+    impCropCtx.lineWidth = 1;
+    impCropCtx.stroke();
+  };
+
+  for (let c = 0; c <= cols; c++) {
+    const x = Math.round((IMP.offsetX + c * ts) * sx) + 0.5;
+    drawLine(x, 0, x, dh);
+  }
+  for (let r = 0; r <= rows; r++) {
+    const y = Math.round((IMP.offsetY + r * ts) * sy) + 0.5;
+    drawLine(0, y, dw, y);
+  }
+  document.getElementById('imp-grid-info').textContent = `${cols} × ${rows} tiles`;
+}
+
+function impGoToLabel() {
+  impSegment();
+  // Pre-fill detected size (clamped to game limits)
+  const w = Math.max(4, IMP.cols);
+  const h = Math.max(4, IMP.rows);
+  document.getElementById('imp-out-w').value = w;
+  document.getElementById('imp-out-h').value = h;
+  document.getElementById('imp-detected-size').textContent = `${IMP.cols}×${IMP.rows}`;
+  impBuildLabelUI();
+  impShowStep('label');
+}
+function impGoToCrop() {
+  impShowStep('crop');
+}
+
+// ── Label UI ──
+function impSelectType(t) {
+  IMP.currentType = t;
+  document.querySelectorAll('.imp-type-btn').forEach(b =>
+    b.classList.toggle('active', parseInt(b.dataset.type) === t)
+  );
+}
+
+const TYPE_NAMES  = ['Ice','Wall','Start','End'];
+const TYPE_COLORS = ['#d6f0ff','#1a2a3a','#00e5a0','#ff6b35'];
+
+function impBuildLabelUI() {
+  const grid = document.getElementById('imp-cluster-grid');
+  grid.innerHTML = '';
+  IMP.clusters.forEach((cl, idx) => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:3px;';
+
+    const box = document.createElement('div');
+    box.className = 'imp-cluster' + (cl.label !== null ? ' labeled-' + cl.label : '');
+    box.title = `${cl.count} tiles`;
+
+    const img = document.createElement('img');
+    img.src = cl.thumb.toDataURL();
+    img.style.cssText = 'width:60px;height:60px;image-rendering:pixelated;display:block;';
+    box.appendChild(img);
+
+    const badge = document.createElement('div');
+    badge.className = 'imp-cluster-badge';
+    badge.id = `imp-badge-${idx}`;
+    badge.textContent = cl.label !== null ? TYPE_NAMES[cl.label] : '?';
+    box.appendChild(badge);
+
+    const cnt = document.createElement('div');
+    cnt.className = 'imp-cluster-count';
+    cnt.textContent = `×${cl.count}`;
+    box.appendChild(cnt);
+
+    box.addEventListener('click', () => impLabelCluster(idx));
+    wrap.appendChild(box);
+    wrap.id = `imp-cluster-wrap-${idx}`;
+    grid.appendChild(wrap);
+  });
+  impUpdatePreview();
+}
+
+function impLabelCluster(idx) {
+  IMP.clusters[idx].label = IMP.currentType;
+  const badge = document.getElementById(`imp-badge-${idx}`);
+  if (badge) badge.textContent = TYPE_NAMES[IMP.currentType];
+  const wrap = document.getElementById(`imp-cluster-wrap-${idx}`);
+  if (wrap) wrap.querySelector('.imp-cluster').className = 'imp-cluster labeled-' + IMP.currentType;
+  impUpdatePreview();
+}
+
+// ── Mini preview map — fixed display size ──
+const IMP_PREV_W = 440;
+function impUpdatePreview() {
+  const pc = document.getElementById('imp-preview-canvas');
+  const outW = Math.max(4, parseInt(document.getElementById('imp-out-w')?.value) || IMP.cols);
+  const outH = Math.max(4, parseInt(document.getElementById('imp-out-h')?.value) || IMP.rows);
+  // Internal resolution = fixed width, height proportional to output grid ratio
+  const cellPx = Math.floor(IMP_PREV_W / outW);
+  pc.width  = outW * cellPx;
+  pc.height = outH * cellPx;
+  const ctx2 = pc.getContext('2d');
+  const TILE_COLORS = ['#d6f0ff','#1a2a3a','#00e5a0','#ff6b35','#2a3d4f'];
+  for (let r = 0; r < outH; r++) {
+    for (let c = 0; c < outW; c++) {
+      // Sample from detected grid (clamp if out-size > detected)
+      const sr = Math.min(r, IMP.rows - 1);
+      const sc = Math.min(c, IMP.cols - 1);
+      const cid = (sr >= 0 && sc >= 0) ? IMP.tileCluster[sr * IMP.cols + sc] : -1;
+      const label = (cid >= 0 && IMP.clusters[cid]?.label !== null)
+        ? IMP.clusters[cid].label : 4;
+      ctx2.fillStyle = TILE_COLORS[label];
+      ctx2.fillRect(c * cellPx, r * cellPx, cellPx, cellPx);
+      // Grid lines
+      ctx2.strokeStyle = 'rgba(0,0,0,0.15)';
+      ctx2.lineWidth = 0.5;
+      ctx2.strokeRect(c * cellPx + 0.5, r * cellPx + 0.5, cellPx - 1, cellPx - 1);
+    }
+  }
+}
+
+// Re-render preview when grid size inputs change
+document.getElementById('imp-out-w')?.addEventListener('input', impUpdatePreview);
+document.getElementById('imp-out-h')?.addEventListener('input', impUpdatePreview);
+
+// ── Finish: build map code with output grid size ──
+function impFinish() {
+  const outW = Math.max(4, parseInt(document.getElementById('imp-out-w').value) || IMP.cols);
+  const outH = Math.max(4, parseInt(document.getElementById('imp-out-h').value) || IMP.rows);
+
+  const rows = [];
+  for (let r = 0; r < outH; r++) {
+    let row = '';
+    for (let c = 0; c < outW; c++) {
+      const sr = r < IMP.rows ? r : -1;
+      const sc = c < IMP.cols ? c : -1;
+      let label = 1; // pad with walls if out-of-bounds
+      if (sr >= 0 && sc >= 0) {
+        const cid = IMP.tileCluster[sr * IMP.cols + sc];
+        label = (cid >= 0 && IMP.clusters[cid]?.label !== null) ? IMP.clusters[cid].label : 0;
+      }
+      row += label;
+    }
+    rows.push(row);
+  }
+  const code = `${outW}x${outH}|` + rows.join('|');
+  // Also update the editor grid size inputs
+  document.getElementById('grid-w').value = outW;
+  document.getElementById('grid-h').value = outH;
+  document.getElementById('map-code').value = code;
+  importMapCode(code);
+  closeScreenshotImport();
+  showToast('Map imported from screenshot!');
+}
+
+document.getElementById('screenshot-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('screenshot-modal')) closeScreenshotImport();
+});
+
+init();
+</script>
+</body>
+</html>
