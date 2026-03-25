@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -714,6 +715,18 @@
       <button class="btn" id="camera-mode-btn" onclick="toggleCameraMode()" style="margin-top:2px; font-size:0.7rem;">🎥 Camera: Follow</button>
     </div>
 
+    <div class="panel-section" id="overlay-section" style="display:none">
+      <div class="section-label">Screenshot Overlay</div>
+      <button class="btn" id="overlay-toggle-btn" onclick="toggleOverlay()" style="margin-bottom:6px;">👁 Hide Overlay</button>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+        <span style="font-size:0.68rem; color:var(--text-dim); width:52px">Opacity</span>
+        <input type="range" id="overlay-opacity" min="0" max="100" value="40"
+          style="flex:1" oninput="updateOverlayOpacity()">
+        <span id="overlay-opacity-val" style="font-family:'Space Mono',monospace; font-size:0.68rem; color:var(--accent); width:28px; text-align:right">40%</span>
+      </div>
+      <button class="btn btn-danger" onclick="clearOverlay()" style="margin-top:2px; font-size:0.7rem;">✕ Clear Overlay</button>
+    </div>
+
     <div class="panel-section" style="margin-top:auto">
       <div class="section-label">Presets</div>
       <button class="btn" onclick="loadPreset(0)">Tutorial 1</button>
@@ -733,6 +746,7 @@
 
     <div id="game-container">
       <canvas id="game-canvas"></canvas>
+      <canvas id="overlay-canvas" style="position:absolute;top:0;left:0;pointer-events:none;border-radius:8px;display:none;"></canvas>
       <canvas id="particle-canvas"></canvas>
       <div id="flash-overlay"></div>
       <div id="complete-overlay">
@@ -1041,6 +1055,88 @@ const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
 const pCanvas = document.getElementById('particle-canvas');
 const pCtx = pCanvas.getContext('2d');
+const oCanvas = document.getElementById('overlay-canvas');
+const oCtx = oCanvas.getContext('2d');
+
+// ─── OVERLAY STATE ───────────────────────────────────────────────────────────
+const overlay = {
+  srcCanvas: null,   // the full imported image as an offscreen canvas
+  offsetX: 0,        // pixel offset into the image where the grid starts
+  offsetY: 0,
+  tileSize: 16,      // tile size in image pixels
+  gridW: 0,          // grid dimensions the image covers
+  gridH: 0,
+  visible: true,
+  opacity: 0.4,
+};
+
+function setOverlaySource(srcCanvas, offsetX, offsetY, tileSize, gridW, gridH) {
+  overlay.srcCanvas = srcCanvas;
+  overlay.offsetX = offsetX;
+  overlay.offsetY = offsetY;
+  overlay.tileSize = tileSize;
+  overlay.gridW = gridW;
+  overlay.gridH = gridH;
+  overlay.visible = true;
+  document.getElementById('overlay-section').style.display = '';
+  document.getElementById('overlay-toggle-btn').textContent = '👁 Hide Overlay';
+  renderOverlay();
+}
+
+function clearOverlay() {
+  overlay.srcCanvas = null;
+  oCanvas.style.display = 'none';
+  document.getElementById('overlay-section').style.display = 'none';
+}
+
+function toggleOverlay() {
+  overlay.visible = !overlay.visible;
+  document.getElementById('overlay-toggle-btn').textContent =
+    overlay.visible ? '👁 Hide Overlay' : '👁 Show Overlay';
+  renderOverlay();
+}
+
+function updateOverlayOpacity() {
+  const v = parseInt(document.getElementById('overlay-opacity').value);
+  document.getElementById('overlay-opacity-val').textContent = v + '%';
+  overlay.opacity = v / 100;
+  renderOverlay();
+}
+
+function renderOverlay() {
+  if (!overlay.srcCanvas) { oCanvas.style.display = 'none'; return; }
+
+  const vp = getViewport();
+  oCanvas.width = vp.viewW;
+  oCanvas.height = vp.viewH;
+  oCanvas.style.display = overlay.visible ? 'block' : 'none';
+
+  if (!overlay.visible) return;
+
+  oCtx.clearRect(0, 0, oCanvas.width, oCanvas.height);
+  oCtx.save();
+
+  if (vp.follow) {
+    oCtx.translate(-camera.x, -camera.y);
+  } else {
+    oCtx.scale(vp.scale, vp.scale);
+  }
+
+  oCtx.globalAlpha = overlay.opacity;
+
+  // Draw only the portion of the source image that maps to the game grid,
+  // stretched so each image tile maps exactly to CELL_SIZE × CELL_SIZE.
+  const srcX = overlay.offsetX;
+  const srcY = overlay.offsetY;
+  const srcW = overlay.gridW * overlay.tileSize;
+  const srcH = overlay.gridH * overlay.tileSize;
+  const dstW = overlay.gridW * CELL_SIZE;
+  const dstH = overlay.gridH * CELL_SIZE;
+
+  oCtx.drawImage(overlay.srcCanvas, srcX, srcY, srcW, srcH, 0, 0, dstW, dstH);
+
+  oCtx.restore();
+}
 
 // ─── CAMERA STATE ────────────────────────────────────────────────────────────
 let cameraMode = 'follow'; // 'follow' | 'fit'
@@ -1097,6 +1193,7 @@ function resizeCanvas() {
   canvas.style.borderRadius = '8px';
   pCanvas.style.borderRadius = '8px';
   document.getElementById('flash-overlay').style.borderRadius = '8px';
+  renderOverlay();
   // Show/hide camera toggle based on whether map is larger than screen
   const btn = document.getElementById('camera-mode-btn');
   if (btn) {
@@ -1383,6 +1480,7 @@ function formatTime(ms) {
 // ─── RENDER ───────────────────────────────────────────────────────────────────
 function render() {
   updateCamera();
+  renderOverlay(); // keep overlay in sync with camera
   const vp = getViewport();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -2282,6 +2380,8 @@ function impFinish() {
   document.getElementById('grid-h').value = outH;
   document.getElementById('map-code').value = code;
   importMapCode(code);
+  // Store the imported image as the overlay source
+  setOverlaySource(IMP.srcCanvas, IMP.offsetX, IMP.offsetY, IMP.tileSize, outW, outH);
   closeScreenshotImport();
   showToast('Map imported from screenshot!');
 }
