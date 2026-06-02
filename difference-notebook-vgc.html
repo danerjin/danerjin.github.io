@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Difference Notebook — VGC Match Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --rule: #c8c0b0;
+    --rule-light: #e2ddd5;
+    --accent: #d44000;
+    --accent-light: #f5ede8;
+    --paper: #faf8f3;
+    --paper-warm: #f3efe6;
+    --label: #8a7e6e;
+    --border: #b8b0a0;
+    --input-focus-bg: rgba(214, 64, 0, 0.04);
+    --input-hover-bg: rgba(0, 0, 0, 0.02);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #ddd8cf;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px;
+    gap: 32px;
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    width: 760px;
+    max-width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .toolbar-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 3px;
+    color: #6b6358;
+  }
+
+  .toolbar-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: 3px;
+    border: 1.5px solid;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { background: #bf3800; }
+
+  .btn-ghost {
+    background: transparent;
+    color: #6b6358;
+    border-color: #b8b0a0;
+  }
+  .btn-ghost:hover { background: rgba(0,0,0,0.05); }
+
+  .save-indicator {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: #9e9580;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .save-indicator.show { opacity: 1; }
+
+  /* ── PAGE SHEET ── */
+  .sheet {
+    background: var(--paper);
+    width: 760px;
+    max-width: 100%;
+    border: 1px solid var(--border);
+    box-shadow: 4px 6px 24px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.6) inset;
+    position: relative;
+    padding: 32px 36px 36px;
+  }
+
+  .sheet::before {
+    content: '';
+    position: absolute;
+    left: 58px;
+    top: 0; bottom: 0;
+    border-left: 2px solid #e8b4a0;
+    pointer-events: none;
+  }
+
+  /* ── SHARED INPUT RESET & HIGHLIGHTS ── */
+  input, textarea, select {
+    font-family: 'DM Mono', monospace;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    width: 100%;
+    transition: background-color 0.15s, border-color 0.15s;
+    border-radius: 2px;
+  }
+
+  input[type="text"]:hover, textarea:hover {
+    background-color: var(--input-hover-bg);
+  }
+
+  input[type="text"]:focus, textarea:focus {
+    background-color: var(--input-focus-bg) !important;
+    outline: none;
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: var(--rule);
+    font-style: italic;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--ink);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .brand span { color: var(--accent); }
+
+  .header-meta {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .meta-field {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .meta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--label);
+    white-space: nowrap;
+  }
+
+  .meta-input {
+    border-bottom: 1.5px solid var(--rule) !important;
+    font-size: 11px;
+    padding: 1px 4px;
+    height: 20px;
+  }
+  .meta-input:focus { border-bottom-color: var(--accent) !important; }
+  .meta-input.short { width: 54px; }
+  .meta-input.medium { width: 92px; }
+  .meta-input.long { width: 130px; }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  /* ── TEAM PREVIEW ── */
+  .preview-section { margin-bottom: 16px; }
+
+  .preview-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+  }
+
+  .pokemon-slot {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mon-name-input {
+    border-bottom: 1px solid var(--rule) !important;
+    font-size: 11px;
+    padding: 2px 3px;
+    text-align: center;
+    height: 20px;
+  }
+  .mon-name-input:focus { border-bottom-color: var(--accent) !important; }
+
+  .mon-item-input {
+    border-bottom: 1px dotted var(--rule) !important;
+    font-size: 9px;
+    padding: 1px 3px;
+    text-align: center;
+    height: 16px;
+    color: var(--label);
+  }
+  .mon-item-input:focus { border-bottom-color: var(--accent) !important; }
+
+  .slot-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--rule);
+    text-align: center;
+    padding: 2px 0;
+  }
+
+  /* ── ANALYSIS ── */
+  .analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .analysis-box {
+    border: 1.5px solid var(--rule);
+    background: var(--paper-warm);
+    border-radius: 3px;
+    padding: 7px 8px;
+  }
+
+  .analysis-textarea {
+    font-size: 11px;
+    line-height: 1.6;
+    min-height: 72px;
+    padding: 2px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 25px,
+      var(--rule-light) 25px,
+      var(--rule-light) 26px
+    );
+    background-attachment: local;
+  }
+  .analysis-textarea:focus { background-image: repeating-linear-gradient(
+    to bottom, transparent, transparent 25px, #d4c4b0 25px, #d4c4b0 26px); }
+
+  /* ── DAMAGE CALCS ── */
+  .calcs-section { margin-bottom: 14px; }
+
+  .calcs-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .calcs-table th {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--label);
+    border-bottom: 1.5px solid var(--rule);
+    padding: 4px 6px;
+    text-align: left;
+    font-weight: 400;
+  }
+
+  .calcs-table td {
+    border-bottom: 1px solid var(--rule-light);
+    padding: 0;
+  }
+  .calcs-table td.shade { background: var(--paper-warm); }
+
+  .calcs-table td input {
+    font-size: 10px;
+    padding: 4px 6px;
+    height: 26px;
+  }
+
+  /* ── GAME PANELS ── */
+  .games-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .game-panel {
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .game-header {
+    background: var(--ink);
+    color: white;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 2px;
+    padding: 4px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* NATIVE CSS W/L TOGGLES */
+  .result-btns { display: flex; gap: 5px; }
+
+  .result-btn {
+    width: 24px;
+    height: 18px;
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 2px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .result-btn:hover { border-color: rgba(255,255,255,0.7); color: white; }
+  
+  .result-btns input:checked + .result-btn.btn-w { background: #2d7a2d; border-color: #4aaa4a; color: white; }
+  .result-btns input:checked + .result-btn.btn-l { background: #8b2020; border-color: #c94040; color: white; }
+
+  .game-body {
+    padding: 8px 10px;
+    background: var(--paper-warm);
+  }
+
+  .bring-row { margin-bottom: 7px; }
+
+  .bring-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--label);
+    margin-bottom: 3px;
+  }
+
+  .bring-slots {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3px;
+  }
+
+  .bring-slot-input {
+    border: 1.5px solid var(--rule) !important;
+    background: white !important;
+    border-radius: 3px;
+    height: 26px;
+    font-size: 9px;
+    text-align: center;
+    padding: 2px 3px;
+  }
+  .bring-slot-input:focus { border-color: var(--accent) !important; }
+
+  .lead-slots {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3px;
+  }
+
+  .lead-slot-input {
+    border: 1.5px solid var(--accent) !important;
+    background: var(--accent-light) !important;
+    border-radius: 3px;
+    height: 26px;
+    font-size: 9px;
+    text-align: center;
+    padding: 2px 3px;
+  }
+  .lead-slot-input:focus {
+    background: white !important;
+    border-color: var(--accent) !important;
+  }
+
+  .game-notes {
+    border-top: 1px solid var(--rule);
+    padding-top: 6px;
+    margin-top: 6px;
+  }
+
+  .notes-textarea {
+    font-size: 10px;
+    line-height: 1.55;
+    min-height: 90px;
+    padding: 2px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 22px,
+      var(--rule-light) 22px,
+      var(--rule-light) 23px
+    );
+    background-attachment: local;
+    margin-top: 3px;
+  }
+
+  /* ── POST-GAME ── */
+  .postgame {
+    border-top: 2px solid var(--rule);
+    padding-top: 10px;
+  }
+
+  .postgame-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 12px;
+  }
+
+  .postgame-textarea {
+    font-size: 11px;
+    line-height: 1.6;
+    min-height: 54px;
+    padding: 2px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 25px,
+      var(--rule-light) 25px,
+      var(--rule-light) 26px
+    );
+    background-attachment: local;
+    margin-bottom: 10px;
+  }
+
+  /* NATIVE CSS STARS (Right-to-Left CSS Engine) */
+  .star-rating { 
+    display: flex; 
+    flex-direction: row-reverse; 
+    justify-content: flex-end;
+    gap: 6px; 
+    margin-top: 5px; 
+  }
+
+  .star-label {
+    font-size: 20px;
+    color: var(--rule);
+    cursor: pointer;
+    transition: color 0.1s, transform 0.1s;
+    user-select: none;
+    line-height: 1;
+  }
+  .star-label:hover { transform: scale(1.2); }
+  
+  .star-label::before { content: '☆'; }
+  .star-rating input:checked ~ .star-label::before,
+  .star-rating .star-label:hover::before,
+  .star-rating .star-label:hover ~ .star-label::before {
+    content: '★';
+    color: #d4a017;
+  }
+
+  /* NATIVE CSS CHECKBOX STYLING */
+  .checkbox-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+
+  .cb-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--label);
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.15s;
+  }
+  .cb-item:hover { color: var(--ink); }
+
+  .cb-box {
+    width: 13px;
+    height: 13px;
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.15s;
+  }
+  
+  .cb-item input:checked ~ .cb-box {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .cb-item input:checked ~ .cb-box::after {
+    content: '✓';
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    top: 0; left: 0;
+    font-size: 9px;
+    color: white;
+    font-weight: bold;
+  }
+  .cb-item input:checked ~ .cb-text { color: var(--ink); font-weight: 500; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--rule); }
+  .divider-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+
+  /* ── PAGE FOOTER ── */
+  .page-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    border-top: 1px solid var(--rule-light);
+    padding-top: 8px;
+  }
+
+  .footer-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    color: var(--label);
+    text-transform: uppercase;
+  }
+
+  .page-num-input {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    color: var(--rule);
+    letter-spacing: 2px;
+    border-bottom: 1.5px solid var(--rule-light) !important;
+    width: 40px;
+    text-align: right;
+    padding-right: 4px;
+  }
+  .page-num-input:focus { border-bottom-color: var(--accent) !important; }
+
+  /* ── INSTRUCTIONS ── */
+  .instructions {
+    background: #1e1c18;
+    color: #f0ebe0;
+    width: 760px;
+    max-width: 100%;
+    border: 1px solid #3a3530;
+    box-shadow: 4px 6px 24px rgba(0,0,0,0.4);
+    padding: 36px 40px;
+  }
+
+  .inst-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 5px;
+    color: #f0ebe0;
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 10px;
+    margin-bottom: 24px;
+  }
+  .inst-title span { color: var(--accent); }
+
+  .inst-steps { display: flex; flex-direction: column; gap: 20px; }
+
+  .inst-step {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .step-content h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #f0ebe0;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  .step-content p {
+    font-size: 13px;
+    color: #9e9580;
+    line-height: 1.6;
+  }
+  .step-content p strong { color: #d4c9b0; font-weight: 500; }
+
+  .tip-box {
+    background: #2c2820;
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    margin-top: 20px;
+    border-radius: 0 4px 4px 0;
+  }
+  .tip-box p {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #9e9580;
+    line-height: 1.7;
+  }
+  .tip-box p strong { color: var(--accent); font-weight: 500; }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .toolbar, .instructions { display: none; }
+    .sheet { box-shadow: none; border: none; width: 100%; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="toolbar-title">DIFFERENCE NOTEBOOK · VGC</div>
+  <div class="toolbar-actions">
+    <span class="save-indicator" id="saveIndicator">SAVED ✓</span>
+    <button class="btn btn-ghost" onclick="clearSheet()">New Sheet</button>
+    <button class="btn btn-primary" onclick="window.print()">Print</button>
+  </div>
+</div>
+
+<!-- ═══ MATCH SHEET ═══ -->
+<div class="sheet">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="brand">THE <span>DIFFERENCE</span></div>
+    <div class="header-meta">
+      <div class="meta-field">
+        <span class="meta-label">Event</span>
+        <input class="meta-input long" data-key="event" placeholder="Regionals…">
+      </div>
+      <div class="meta-field">
+        <span class="meta-label">Round</span>
+        <input class="meta-input short" data-key="round" placeholder="R4">
+      </div>
+      <div class="meta-field">
+        <span class="meta-label">Opp.</span>
+        <input class="meta-input medium" data-key="opp" placeholder="Player name">
+      </div>
+      <div class="meta-field">
+        <span class="meta-label">Record</span>
+        <input class="meta-input short" data-key="record" placeholder="3-1">
+      </div>
+    </div>
+  </div>
+
+  <!-- ① TEAM PREVIEW -->
+  <div class="preview-section">
+    <div class="section-label">① Team Preview — Opponent's 6</div>
+    <div class="preview-grid">
+      <div class="pokemon-slot">
+        <div class="slot-num">①</div>
+        <input class="mon-name-input" data-key="mon1" placeholder="Pokémon">
+        <input class="mon-item-input" data-key="item1" placeholder="item…">
+      </div>
+      <div class="pokemon-slot">
+        <div class="slot-num">②</div>
+        <input class="mon-name-input" data-key="mon2" placeholder="Pokémon">
+        <input class="mon-item-input" data-key="item2" placeholder="item…">
+      </div>
+      <div class="pokemon-slot">
+        <div class="slot-num">③</div>
+        <input class="mon-name-input" data-key="mon3" placeholder="Pokémon">
+        <input class="mon-item-input" data-key="item3" placeholder="item…">
+      </div>
+      <div class="pokemon-slot">
+        <div class="slot-num">④</div>
+        <input class="mon-name-input" data-key="mon4" placeholder="Pokémon">
+        <input class="mon-item-input" data-key="item4" placeholder="item…">
+      </div>
+      <div class="pokemon-slot">
+        <div class="slot-num">⑤</div>
+        <input class="mon-name-input" data-key="mon5" placeholder="Pokémon">
+        <input class="mon-item-input" data-key="item5" placeholder="item…">
+      </div>
+      <div class="pokemon-slot">
+        <div class="slot-num">⑥</div>
+        <input class="mon-name-input" data-key="mon6" placeholder="Pokémon">
+        <input class="mon-item-input" data-key="item6" placeholder="item…">
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
+
+  <!-- ② ANALYSIS -->
+  <div class="analysis-grid">
+    <div class="analysis-box">
+      <div class="section-label">② Their Gameplan</div>
+      <textarea class="analysis-textarea" data-key="gameplan" placeholder="Trick Room? Weather? Speed control?&#10;What's their core?"></textarea>
+    </div>
+    <div class="analysis-box">
+      <div class="section-label">Threats to Me</div>
+      <textarea class="analysis-textarea" data-key="threats" placeholder="Which 1–2 mons blow up&#10;my team if unchecked?"></textarea>
+    </div>
+    <div class="analysis-box">
+      <div class="section-label">My Win Condition</div>
+      <textarea class="analysis-textarea" data-key="wincon" placeholder="Which mons + sequence&#10;closes out this match?"></textarea>
+    </div>
+  </div>
+
+  <div class="divider"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
+
+  <!-- ③ HARDCODED DAMAGE CALCS -->
+  <div class="calcs-section">
+    <div class="section-label">③ Key Damage Calcs</div>
+    <table class="calcs-table">
+      <thead>
+        <tr>
+          <th style="width:23%">Attacker → Move</th>
+          <th style="width:22%">Target</th>
+          <th style="width:14%">% Range</th>
+          <th style="width:13%">KOs at</th>
+          <th style="width:28%">Notes / Conditions</th>
+        </tr>
+      </thead>
+      <tbody id="calcsBody">
+        <tr class="shade">
+          <td><input data-key="calc0_atk" placeholder="Urshi → CJ"></td>
+          <td><input data-key="calc0_def" placeholder="Gard -1"></td>
+          <td><input data-key="calc0_pct" placeholder="88–104%"></td>
+          <td><input data-key="calc0_ko" placeholder="after sand"></td>
+          <td><input data-key="calc0_note" placeholder="conditions…"></td>
+        </tr>
+        <tr>
+          <td><input data-key="calc1_atk" placeholder="Urshi → CJ"></td>
+          <td><input data-key="calc1_def" placeholder="Gard -1"></td>
+          <td><input data-key="calc1_pct" placeholder="88–104%"></td>
+          <td><input data-key="calc1_ko" placeholder="after sand"></td>
+          <td><input data-key="calc1_note" placeholder="conditions…"></td>
+        </tr>
+        <tr class="shade">
+          <td><input data-key="calc2_atk" placeholder="Urshi → CJ"></td>
+          <td><input data-key="calc2_def" placeholder="Gard -1"></td>
+          <td><input data-key="calc2_pct" placeholder="88–104%"></td>
+          <td><input data-key="calc2_ko" placeholder="after sand"></td>
+          <td><input data-key="calc2_note" placeholder="conditions…"></td>
+        </tr>
+        <tr>
+          <td><input data-key="calc3_atk" placeholder="Urshi → CJ"></td>
+          <td><input data-key="calc3_def" placeholder="Gard -1"></td>
+          <td><input data-key="calc3_pct" placeholder="88–104%"></td>
+          <td><input data-key="calc3_ko" placeholder="after sand"></td>
+          <td><input data-key="calc3_note" placeholder="conditions…"></td>
+        </tr>
+        <tr class="shade">
+          <td><input data-key="calc4_atk" placeholder="Urshi → CJ"></td>
+          <td><input data-key="calc4_def" placeholder="Gard -1"></td>
+          <td><input data-key="calc4_pct" placeholder="88–104%"></td>
+          <td><input data-key="calc4_ko" placeholder="after sand"></td>
+          <td><input data-key="calc4_note" placeholder="conditions…"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="divider"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
+
+  <!-- ④ HARDCODED GAME PANELS -->
+  <div class="section-label" style="margin-bottom:8px">④ Games — Bring 4 / Lead 2</div>
+  <div class="games-section" id="gamePanels">
+    <!-- GAME 1 -->
+    <div class="game-panel">
+      <div class="game-header">
+        GAME 1
+        <div class="result-btns">
+          <input type="radio" name="g1_result" id="g1_w" value="W" style="display:none;">
+          <label for="g1_w" class="result-btn btn-w">W</label>
+          <input type="radio" name="g1_result" id="g1_l" value="L" style="display:none;">
+          <label for="g1_l" class="result-btn btn-l">L</label>
+        </div>
+      </div>
+      <div class="game-body">
+        <div class="bring-row">
+          <div class="bring-label">Bring (4)</div>
+          <div class="bring-slots">
+            <input class="bring-slot-input" data-key="g1_bring1" placeholder="…">
+            <input class="bring-slot-input" data-key="g1_bring2" placeholder="…">
+            <input class="bring-slot-input" data-key="g1_bring3" placeholder="…">
+            <input class="bring-slot-input" data-key="g1_bring4" placeholder="…">
+          </div>
+        </div>
+        <div class="bring-row">
+          <div class="bring-label">Lead (2)</div>
+          <div class="lead-slots">
+            <input class="lead-slot-input" data-key="g1_lead1" placeholder="lead">
+            <input class="lead-slot-input" data-key="g1_lead2" placeholder="lead">
+          </div>
+        </div>
+        <div class="game-notes">
+          <div class="bring-label">Turns / Reads</div>
+          <textarea class="notes-textarea" data-key="g1_notes" placeholder="Key turns, revealed moves, reads…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME 2 -->
+    <div class="game-panel">
+      <div class="game-header">
+        GAME 2
+        <div class="result-btns">
+          <input type="radio" name="g2_result" id="g2_w" value="W" style="display:none;">
+          <label for="g2_w" class="result-btn btn-w">W</label>
+          <input type="radio" name="g2_result" id="g2_l" value="L" style="display:none;">
+          <label for="g2_l" class="result-btn btn-l">L</label>
+        </div>
+      </div>
+      <div class="game-body">
+        <div class="bring-row">
+          <div class="bring-label">Bring (4)</div>
+          <div class="bring-slots">
+            <input class="bring-slot-input" data-key="g2_bring1" placeholder="…">
+            <input class="bring-slot-input" data-key="g2_bring2" placeholder="…">
+            <input class="bring-slot-input" data-key="g2_bring3" placeholder="…">
+            <input class="bring-slot-input" data-key="g2_bring4" placeholder="…">
+          </div>
+        </div>
+        <div class="bring-row">
+          <div class="bring-label">Lead (2)</div>
+          <div class="lead-slots">
+            <input class="lead-slot-input" data-key="g2_lead1" placeholder="lead">
+            <input class="lead-slot-input" data-key="g2_lead2" placeholder="lead">
+          </div>
+        </div>
+        <div class="game-notes">
+          <div class="bring-label">Turns / Reads</div>
+          <textarea class="notes-textarea" data-key="g2_notes" placeholder="Key turns, revealed moves, reads…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME 3 -->
+    <div class="game-panel">
+      <div class="game-header">
+        GAME 3
+        <div class="result-btns">
+          <input type="radio" name="g3_result" id="g3_w" value="W" style="display:none;">
+          <label for="g3_w" class="result-btn btn-w">W</label>
+          <input type="radio" name="g3_result" id="g3_l" value="L" style="display:none;">
+          <label for="g3_l" class="result-btn btn-l">L</label>
+        </div>
+      </div>
+      <div class="game-body">
+        <div class="bring-row">
+          <div class="bring-label">Bring (4)</div>
+          <div class="bring-slots">
+            <input class="bring-slot-input" data-key="g3_bring1" placeholder="…">
+            <input class="bring-slot-input" data-key="g3_bring2" placeholder="…">
+            <input class="bring-slot-input" data-key="g3_bring3" placeholder="…">
+            <input class="bring-slot-input" data-key="g3_bring4" placeholder="…">
+          </div>
+        </div>
+        <div class="bring-row">
+          <div class="bring-label">Lead (2)</div>
+          <div class="lead-slots">
+            <input class="lead-slot-input" data-key="g3_lead1" placeholder="lead">
+            <input class="lead-slot-input" data-key="g3_lead2" placeholder="lead">
+          </div>
+        </div>
+        <div class="game-notes">
+          <div class="bring-label">Turns / Reads</div>
+          <textarea class="notes-textarea" data-key="g3_notes" placeholder="Key turns, revealed moves, reads…"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
+
+  <!-- ⑤ NATIVE POST-GAME -->
+  <div class="postgame">
+    <div class="postgame-grid">
+      <div>
+        <div class="section-label">⑤ What Did I Learn?</div>
+        <textarea class="postgame-textarea" data-key="learned" placeholder="New sets, items, tendencies revealed…"></textarea>
+        <div class="section-label">Misplays / What I'd Change</div>
+        <textarea class="postgame-textarea" data-key="misplays" placeholder="Honest self-critique…"></textarea>
+      </div>
+      <div>
+        <div class="section-label">Match Result</div>
+        <div class="checkbox-row">
+          <label class="cb-item">
+            <input type="radio" name="match_result" value="win" style="display:none;">
+            <div class="cb-box"></div> <span class="cb-text">WIN</span>
+          </label>
+          <label class="cb-item">
+            <input type="radio" name="match_result" value="loss" style="display:none;">
+            <div class="cb-box"></div> <span class="cb-text">LOSS</span>
+          </label>
+        </div>
+
+        <div style="height:14px"></div>
+        <div class="section-label">Decision Quality</div>
+        <div class="star-rating">
+          <input type="radio" name="decision_stars" id="star5" value="5" style="display:none;"><label for="star5" class="star-label"></label>
+          <input type="radio" name="decision_stars" id="star4" value="4" style="display:none;"><label for="star4" class="star-label"></label>
+          <input type="radio" name="decision_stars" id="star3" value="3" style="display:none;"><label for="star3" class="star-label"></label>
+          <input type="radio" name="decision_stars" id="star2" value="2" style="display:none;"><label for="star2" class="star-label"></label>
+          <input type="radio" name="decision_stars" id="star1" value="1" style="display:none;"><label for="star1" class="star-label"></label>
+        </div>
+
+        <div style="height:14px"></div>
+        <div class="section-label">Energy / Focus</div>
+        <div class="checkbox-row">
+          <label class="cb-item">
+            <input type="radio" name="energy_level" value="sharp" style="display:none;">
+            <div class="cb-box"></div> <span class="cb-text">Sharp</span>
+          </label>
+          <label class="cb-item">
+            <input type="radio" name="energy_level" value="ok" style="display:none;">
+            <div class="cb-box"></div> <span class="cb-text">OK</span>
+          </label>
+          <label class="cb-item">
+            <input type="radio" name="energy_level" value="tired" style="display:none;">
+            <div class="cb-box"></div> <span class="cb-text">Tired</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <div class="footer-text">The Difference VGC · vgcnotebook.com</div>
+    <input class="page-num-input" data-key="pagenum" placeholder="#" maxlength="4">
+  </div>
+
+</div>
+
+<!-- ═══ INSTRUCTIONS ═══ -->
+<div class="instructions">
+  <div class="inst-title">HOW TO USE THE <span>DIFFERENCE</span> SHEET</div>
+  <div class="inst-steps">
+    <div class="inst-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Team Preview — Fill in Your Opponent's 6</h3>
+        <p>The moment you see your opponent's team, type each Pokémon into the six slots. Add the <strong>held item</strong> on the dotted line below each name if you can identify it from the archetype. Speed matters — use abbreviations (Gard, Urshi, Lando-T).</p>
+      </div>
+    </div>
+    <div class="inst-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Analyze the Matchup Before the Timer Runs Out</h3>
+        <p>Fill the three analysis boxes during team preview. <strong>Their Gameplan</strong>: TR? Weather? Speed control? <strong>Threats to Me</strong>: which 1–2 mons blow up my team unchecked? <strong>My Win Condition</strong>: which of my Pokémon and which sequence wins this match?</p>
+      </div>
+    </div>
+    <div class="inst-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Damage Calcs — Write Only What Matters</h3>
+        <p>Two or three calcs that will actually affect your decisions. Focus on <strong>KO thresholds</strong>: "does X KO Y at +1?" Note whether it only works after chip, or under weather. These are your in-battle anchors.</p>
+      </div>
+    </div>
+    <div class="inst-step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>Each Game: Bring 4, Then Lead 2</h3>
+        <p>Fill the <strong>Bring (4)</strong> boxes with your selected four. It's easiest to eliminate the two worst Pokémon in the matchup first. Then lock your <strong>Lead (2)</strong> (orange boxes). Use the notes area to jot key reads, revealed moves, or surprise sets mid-game. Between games, adjust Bring and Lead based on what you now know.</p>
+      </div>
+    </div>
+    <div class="inst-step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h3>Post-Match Review — This Is Where You Improve</h3>
+        <p><strong>What Did I Learn?</strong> captures new info about their team. <strong>Misplays</strong> is honest self-critique. Rate <strong>Decision Quality</strong> separately from the result — you can lose well and win sloppily. Track your energy level; patterns across sheets reveal when your focus drops in long tournament days.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tip-box">
+    <p><strong>The core habit:</strong> Use team preview time to fill sections 1 and 2 — not to deliberate. Your thinking should happen before the tournament, in prep. The sheet captures conclusions, not deliberation. In a best-of-3, your opponent is adapting to you. The player who adapts faster wins.</p>
+  </div>
+</div>
+
+<script>
+// ── ROBUST BACKGROUND LOCAL STORAGE SYSTEM ──
+const STORAGE_KEY = 'vgc_difference_sheet';
+let saveTimer;
+
+function saveState() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try {
+      const data = {};
+      
+      // Save all standard text inputs and textareas
+      document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+        if (el.dataset.key) data[el.dataset.key] = el.value;
+      });
+      
+      // Save all radio button inputs (W/L toggles, Stars, Checkboxes)
+      document.querySelectorAll('input[type="radio"]').forEach(el => {
+        if (el.checked) {
+          data[el.name + '_' + el.value] = true;
+        }
+      });
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      
+      const ind = document.getElementById('saveIndicator');
+      ind.classList.add('show');
+      setTimeout(() => ind.classList.remove('show'), 1800);
+    } catch(e) {}
+  }, 400);
+}
+
+function restoreInputs() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw) || {};
+
+    // Restore text fields
+    document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+      if (el.dataset.key && data[el.dataset.key] !== undefined) {
+        el.value = data[el.dataset.key];
+      }
+    });
+
+    // Restore radios
+    document.querySelectorAll('input[type="radio"]').forEach(el => {
+      if (data[el.name + '_' + el.value] === true) {
+        el.checked = true;
+      }
+    });
+  } catch(e) {}
+}
+
+function bindInputs() {
+  document.querySelectorAll('input, textarea').forEach(el => {
+    el.addEventListener('input', saveState);
+    el.addEventListener('change', saveState);
+  });
+}
+
+function clearSheet() {
+  if (!confirm('Start a new sheet? This will clear all current notes.')) return;
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
+    document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+  } catch(e) {}
+}
+
+// Initialize on load
+restoreInputs();
+bindInputs();
+</script>
+</body>
+</html>
