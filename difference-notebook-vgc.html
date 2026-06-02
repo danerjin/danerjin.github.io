@@ -247,11 +247,11 @@
     padding: 2px 0;
   }
 
-  /* ── ANALYSIS ── */
+  /* ── ANALYSIS (UPDATED TO 2X2 GRID FOR SPEED TIERS) ── */
   .analysis-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
     margin-bottom: 16px;
   }
 
@@ -337,7 +337,6 @@
     align-items: center;
   }
 
-  /* NATIVE CSS W/L TOGGLES */
   .result-btns { display: flex; gap: 5px; }
 
   .result-btn {
@@ -463,7 +462,6 @@
     margin-bottom: 10px;
   }
 
-  /* NATIVE CSS STARS (Right-to-Left CSS Engine) */
   .star-rating { 
     display: flex; 
     flex-direction: row-reverse; 
@@ -490,7 +488,6 @@
     color: #d4a017;
   }
 
-  /* NATIVE CSS CHECKBOX STYLING */
   .checkbox-row {
     display: flex;
     gap: 10px;
@@ -735,7 +732,7 @@
 
   <div class="divider"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
 
-  <!-- ② ANALYSIS -->
+  <!-- ② ANALYSIS (UPDATED TO INCLUDE SPEED TIERS) -->
   <div class="analysis-grid">
     <div class="analysis-box">
       <div class="section-label">② Their Gameplan</div>
@@ -746,6 +743,10 @@
       <textarea class="analysis-textarea" data-key="threats" placeholder="Which 1–2 mons blow up&#10;my team if unchecked?"></textarea>
     </div>
     <div class="analysis-box">
+      <div class="section-label">Speed Tiers</div>
+      <textarea class="analysis-textarea" data-key="speedtiers" placeholder="Who outspeeds whom? Tailwind order?&#10;e.g., Scarf Urshi > Flutter > My Ogerpon"></textarea>
+    </div>
+    <div class="analysis-box">
       <div class="section-label">My Win Condition</div>
       <textarea class="analysis-textarea" data-key="wincon" placeholder="Which mons + sequence&#10;closes out this match?"></textarea>
     </div>
@@ -753,7 +754,7 @@
 
   <div class="divider"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
 
-  <!-- ③ HARDCODED DAMAGE CALCS -->
+  <!-- ③ DAMAGE CALCS -->
   <div class="calcs-section">
     <div class="section-label">③ Key Damage Calcs</div>
     <table class="calcs-table">
@@ -808,7 +809,7 @@
 
   <div class="divider"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
 
-  <!-- ④ HARDCODED GAME PANELS -->
+  <!-- ④ GAME PANELS -->
   <div class="section-label" style="margin-bottom:8px">④ Games — Bring 4 / Lead 2</div>
   <div class="games-section" id="gamePanels">
     <!-- GAME 1 -->
@@ -919,7 +920,7 @@
 
   <div class="divider"><div class="divider-line"></div><div class="divider-dot"></div><div class="divider-line"></div></div>
 
-  <!-- ⑤ NATIVE POST-GAME -->
+  <!-- ⑤ POST-GAME -->
   <div class="postgame">
     <div class="postgame-grid">
       <div>
@@ -993,8 +994,8 @@
     <div class="inst-step">
       <div class="step-num">2</div>
       <div class="step-content">
-        <h3>Analyze the Matchup Before the Timer Runs Out</h3>
-        <p>Fill the three analysis boxes during team preview. <strong>Their Gameplan</strong>: TR? Weather? Speed control? <strong>Threats to Me</strong>: which 1–2 mons blow up my team unchecked? <strong>My Win Condition</strong>: which of my Pokémon and which sequence wins this match?</p>
+        <h3>Analyze Key Anchors Before the Timer Runs Out</h3>
+        <p>Fill the four analysis boxes during team preview. <strong>Their Gameplan</strong>: TR? Weather? Core setup? <strong>Threats to Me</strong>: high impact variables. <strong>Speed Tiers</strong>: note active priority sorting and speed checks (e.g., who handles Scarf or Booster Energy metrics). <strong>My Win Condition</strong>: the core execution paths.</p>
       </div>
     </div>
     <div class="inst-step">
