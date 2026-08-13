@@ -1,0 +1,3374 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portal — a gaze- and gesture-preserving video link</title>
+<style>
+:root{
+  color-scheme: dark;
+  --surface-1:#1a1a19; --plane:#0d0d0d; --raise:#232322;
+  --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,0.10);
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --good:#0ca30c; --warn:#fab219; --serious:#ec835a; --crit:#d03b3b;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+:root[data-theme="light"]{
+  color-scheme: light;
+  --surface-1:#fcfcfb; --plane:#f9f9f7; --raise:#ffffff;
+  --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,0.10);
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --good:#006300;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--plane);color:var(--ink);font-family:var(--sans);
+     font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{display:grid;grid-template-columns:250px minmax(0,1fr);gap:0;max-width:1500px;margin:0 auto}
+nav{position:sticky;top:53px;height:calc(100vh - 53px);overflow-y:auto;padding:22px 14px 60px;
+    border-right:1px solid var(--border);font-size:13px;background:var(--plane);z-index:20}
+nav h4{margin:16px 0 6px;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+nav a{display:block;padding:3px 8px;color:var(--ink-2);text-decoration:none;border-radius:5px;
+      border-left:2px solid transparent;line-height:1.35;margin-bottom:1px}
+nav a:hover{background:var(--raise);color:var(--ink)}
+nav a.on{color:var(--ink);border-left-color:var(--s1);background:var(--raise)}
+main{padding:0 44px 140px;min-width:0}
+section{padding-top:52px;scroll-margin-top:66px}
+h1{font-size:34px;line-height:1.2;margin:44px 0 8px;letter-spacing:-.02em}
+h2{font-size:25px;margin:6px 0 14px;letter-spacing:-.015em;line-height:1.25}
+h3{font-size:17px;margin:26px 0 8px;color:var(--ink)}
+h4{font-size:14px;margin:18px 0 6px;color:var(--ink-2);letter-spacing:.02em}
+p{margin:11px 0;max-width:74ch}
+ul,ol{max-width:74ch;padding-left:22px}li{margin:5px 0}
+code{font-family:var(--mono);font-size:.885em;background:var(--surface-1);
+     padding:1.5px 5px;border-radius:4px;border:1px solid var(--border)}
+pre{background:var(--surface-1);border:1px solid var(--border);border-radius:9px;
+    padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.55}
+pre code{background:none;border:none;padding:0}
+.sub{color:var(--muted);font-size:13.5px;margin-top:-2px}
+.lede{font-size:18px;color:var(--ink-2);max-width:72ch}
+.eli5{border-left:3px solid var(--s1);background:var(--surface-1);padding:12px 18px;
+      border-radius:0 9px 9px 0;margin:18px 0}
+.eli5 > b:first-child{color:var(--s1);font-size:11px;letter-spacing:.13em;text-transform:uppercase;
+        display:block;margin-bottom:3px}
+.eli5 p{margin:5px 0}
+.deep{border-left:3px solid var(--s4);background:var(--surface-1);padding:12px 18px;
+      border-radius:0 9px 9px 0;margin:18px 0}
+.deep > b:first-child{color:var(--s4);font-size:11px;letter-spacing:.13em;text-transform:uppercase;
+        display:block;margin-bottom:3px}
+.warnbox{border-left:3px solid var(--crit);background:var(--surface-1);padding:12px 18px;
+      border-radius:0 9px 9px 0;margin:18px 0}
+.warnbox > b:first-child{color:var(--crit);font-size:11px;letter-spacing:.13em;text-transform:uppercase;
+        display:block;margin-bottom:3px}
+table{border-collapse:collapse;width:100%;max-width:940px;margin:16px 0;font-size:13.5px}
+th,td{text-align:left;padding:7px 11px;border-bottom:1px solid var(--grid)}
+th{color:var(--muted);font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+   border-bottom:1px solid var(--axis)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px}
+tr.hl td{background:color-mix(in srgb,var(--s1) 12%,transparent);font-weight:600}
+.fig{background:var(--surface-1);border:1px solid var(--border);border-radius:12px;
+     padding:16px;margin:22px 0;max-width:940px}
+.fig h5{margin:0 0 3px;font-size:14px;font-weight:600}
+.fig .cap{color:var(--muted);font-size:12.5px;margin:0 0 12px;max-width:70ch}
+.fig .note{color:var(--muted);font-size:12px;margin-top:10px;border-top:1px solid var(--grid);padding-top:9px}
+canvas{display:block;width:100%;border-radius:8px;background:var(--plane);touch-action:none;
+  user-select:none;-webkit-user-select:none;-webkit-user-drag:none}
+.ctl{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin:12px 0 4px;font-size:12.5px}
+.ctl label{display:flex;flex-direction:column;gap:3px;min-width:170px}
+.ctl .lab{color:var(--muted);font-size:11px;letter-spacing:.05em;text-transform:uppercase}
+.ctl .lab b{color:var(--ink);font-family:var(--mono);font-variant-numeric:tabular-nums;
+            text-transform:none;letter-spacing:0;font-size:12.5px}
+input[type=range]{width:100%;accent-color:var(--s1);height:18px}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.seg button{background:transparent;border:0;color:var(--ink-2);padding:6px 13px;
+            font-size:12.5px;cursor:pointer;font-family:var(--sans)}
+.seg button.on{background:var(--s1);color:#fff}
+.seg button+button{border-left:1px solid var(--border)}
+.out{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:9px;margin-top:14px}
+.out div{background:var(--plane);border:1px solid var(--border);border-radius:8px;padding:9px 11px}
+.out .k{color:var(--muted);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;line-height:1.3}
+.out .v{font-family:var(--mono);font-size:17px;font-variant-numeric:tabular-nums;margin-top:2px}
+.pass{color:var(--good)} .fail{color:var(--crit)} .mid{color:var(--warn)}
+.viewbar{margin-top:10px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;margin:10px 0 2px;color:var(--ink-2)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 16px;font-size:13.5px;max-width:640px}
+.kv dt{color:var(--muted);font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.kv dd{margin:0}
+.pill{display:inline-block;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+      padding:2px 8px;border-radius:999px;border:1px solid var(--border);color:var(--muted);
+      vertical-align:2px;margin-left:7px}
+.pill.dead{border-color:var(--crit);color:var(--crit)}
+.pill.live{border-color:var(--good);color:var(--good)}
+.pill.open{border-color:var(--warn);color:var(--warn)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:940px}
+@media(max-width:1050px){
+  .wrap{grid-template-columns:1fr}
+  nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--border)}
+  .topbar{padding:8px 12px}
+  main{padding:0 20px 90px}
+  .two{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  main{padding:0 13px 70px}
+  h1{font-size:27px} h2{font-size:21px} h3{font-size:16px}
+  table{display:block;overflow-x:auto;white-space:nowrap}
+  .ctl label{min-width:130px}
+  .fig{padding:11px}
+  .eli5,.deep,.warnbox{padding:10px 13px}
+}
+.topbar{position:sticky;top:0;z-index:60;background:color-mix(in srgb,var(--plane) 92%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:6px;padding:9px 18px;overflow-x:auto;
+  scrollbar-width:none}
+.topbar::-webkit-scrollbar{display:none}
+.topbar .brand{font-weight:650;font-size:13.5px;letter-spacing:-.01em;margin-right:8px;
+  white-space:nowrap;color:var(--ink)}
+.topbar a{color:var(--ink-2);text-decoration:none;font-size:12.5px;white-space:nowrap;
+  padding:5px 10px;border-radius:7px;border:1px solid transparent}
+.topbar a:hover{background:var(--surface-1);color:var(--ink);border-color:var(--border)}
+.topbar a.on{background:var(--s1);color:#fff}
+.topbar .sp{flex:1}
+.top button{background:var(--surface-1);border:1px solid var(--border);color:var(--ink-2);
+  border-radius:8px;padding:5px 11px;cursor:pointer;font-size:12.5px;font-family:var(--sans);
+  white-space:nowrap}
+hr{border:0;border-top:1px solid var(--grid);margin:36px 0}
+.eq{font-family:var(--mono);font-size:14px;background:var(--surface-1);border:1px solid var(--border);
+    border-radius:9px;padding:12px 16px;margin:14px 0;max-width:940px;overflow-x:auto}
+.eq .c{color:var(--muted)}
+a.ref{color:var(--s1)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <span class="brand">Portal</span>
+  <a href="#whole">The whole system</a>
+  <a href="#problem">The problem</a>
+  <a href="#contract">The window contract</a>
+  <a href="#capture">Where the camera goes</a>
+  <a href="#rig">The rig</a>
+  <a href="#budget">Does it work?</a>
+  <a href="#verify">Verification</a>
+  <a href="#deadends">Dead ends</a>
+  <a href="#risks">Where it might fail</a>
+  <a href="#numbers">Every number</a>
+  <span class="sp"></span>
+  <span class="top"><button id="themeBtn">Light</button></span>
+</div>
+<div class="wrap">
+<nav>
+  <h4>Orientation</h4>
+  <a href="#what">What this is</a>
+  <a href="#whole">The whole system, in one page</a>
+  <a href="#problem">1 · The problem</a>
+  <a href="#wrongfix">2 · Why the obvious fix is wrong</a>
+  <h4>The idea</h4>
+  <a href="#window">3 · The broken window</a>
+  <a href="#contract">4 · The window contract</a>
+  <a href="#pointing">5 · Pointing, and where it stops</a>
+  <a href="#frames">6 · Frames, SWAP, mirroring</a>
+  <h4>The optics</h4>
+  <a href="#capture">7 · Where to put the camera</a>
+  <a href="#warp2d">8 · Why no 2D warp works</a>
+  <a href="#tolerance">9 · The depth tolerance law</a>
+  <a href="#stereo">10 · Stereo closes the loop</a>
+  <h4>The hardware</h4>
+  <a href="#rig">11 · The rig</a>
+  <a href="#five">12 · Why five cameras</a>
+  <a href="#parallax">13 · Motion parallax</a>
+  <h4>Does it work?</h4>
+  <a href="#budget">14 · The error budget</a>
+  <a href="#cancel">15 · The cancellation</a>
+  <h4>Building it</h4>
+  <a href="#pipeline">16 · The pipeline</a>
+  <a href="#nonneg">17 · Non-negotiables</a>
+  <a href="#calib">18 · Calibration</a>
+  <a href="#verify">19 · Verification</a>
+  <h4>Honesty</h4>
+  <a href="#deadends">20 · Dead ends</a>
+  <a href="#limits">21 · Known limits</a>
+  <a href="#risks">22 · Where it might fail</a>
+  <a href="#numbers">23 · Every number</a>
+</nav>
+
+<main>
+
+<section id="what">
+<h1>Portal</h1>
+<p class="lede">A video link where you can tell <em>which eye</em> someone is looking at.
+Five cheap USB cameras per end, about $200, no machine learning anywhere in the
+image path, and every pixel you see came off a real sensor.</p>
+
+<div class="out" style="max-width:940px">
+  <div><div class="k">Target gaze error</div><div class="v">1.00°</div></div>
+  <div><div class="k">Budgeted error</div><div class="v pass">0.55°</div></div>
+  <div><div class="k">Cameras per end</div><div class="v">5</div></div>
+  <div><div class="k">Cost per end</div><div class="v">~$200</div></div>
+  <div><div class="k">Depth margin</div><div class="v pass">4.4×</div></div>
+</div>
+
+<p>The rest of this page explains, from scratch, why an ordinary video call
+cannot do this, why the obvious fixes make it worse, and what geometry gets you
+instead. Every number here is produced by a script and is reproducible.</p>
+
+<div class="eli5"><b>The one-sentence version</b>
+<p>Don't try to <em>correct</em> where someone is looking — rebuild the window
+they're looking through, and their gaze arrives correct on its own, because it
+was never encoded in the first place.</p></div>
+</section>
+
+<hr>
+
+<section id="whole">
+<h2>The whole system, in one page</h2>
+<p class="sub">Everything that follows is this, in more detail and with the
+receipts. If you read only one section, read this one.</p>
+
+<h3>The problem</h3>
+
+<p>Your camera sits above your screen while your friend's face is <em>on</em>
+the screen, so you are never looking where the camera is. A 27-inch monitor at
+arm's length puts that gap at <b>18.4°</b>, and humans read gaze to about
+<b>1°</b>. But the loss that matters isn't eye contact — it's the
+<em>difference</em> between someone looking at your left eye, your right eye, or
+your mouth. That's the channel carrying attention and reference, and it is
+entirely absent from every video call ever made.</p>
+
+<p>Stated properly: a window transmits a <b>4D light field</b> — where a ray
+crosses the glass, and which way it's heading. A camera keeps only the rays
+through one aperture, collapsing direction to a point, and a flat screen then
+re-emits that image the same in all directions. Direction is destroyed at
+capture and never restored at display. A video call doesn't have the camera in
+the wrong place; it transmits the wrong slice of a bigger thing.</p>
+
+<h3>The idea</h3>
+
+<p>Don't detect gaze — <b>rebuild the window</b>. Both ends agree on one
+rectangle <code>W</code> in millimetres. Each screen <em>is</em> that rectangle.
+Then two rules: draw the far person from <b>your tracked eye position</b>,
+through a frustum whose near plane is <code>W</code>; and hold <b>1:1 physical
+scale</b>, never zooming to fill.</p>
+
+<p>Do that and gaze is not corrected, it's <em>never broken</em>. Nothing in the
+pipeline knows what an eye is — which is why pointing, following someone's gaze
+past your shoulder, and leaning to see around something all work without being
+implemented.</p>
+
+<div class="deep"><b>The reduction that makes it affordable</b>
+<p>You can't reproduce a 4D light field on a $200 panel. You don't have to.
+<b>There is one viewer and their eye position is measurable</b>, so you only
+need the single 2D slice converging on that eye. Which slice → head tracking.
+Getting the slice → depth and reprojection. <em>Emitting</em> it → nothing
+special at all, because once you know where the eye is, <b>position on the
+screen encodes direction</b>. Angular emission is only needed when you don't
+know where the viewer is — which is exactly what a $25,000 light-field display
+is buying.</p></div>
+
+<h3>The rig, as it now stands</h3>
+
+<p><b>Nine camera modules per end, in two groups that solve different
+problems.</b> They were five; the extra four are what pointing turned out to
+cost.</p>
+
+<table>
+<tr><th>group</th><th>where</th><th>lens</th><th>aim</th><th>job</th></tr>
+<tr><td><b>face</b> — TL TR BL BR C</td><td>bezel corners, plus one on a 98 mm
+drop blade at the far person's hairline</td><td class="n">75°</td><td>straight
+down the normal</td><td>the face, at 578 mm. <code>alpha</code> = 7°</td></tr>
+<tr><td><b>near</b> — AL AR AU AD</td><td>perimeter corners, ±340 mm</td>
+<td class="n">90°</td><td><b>aimed</b> inward and down, at a point ~250 mm in
+front of the glass</td><td>the pointing volume</td></tr>
+</table>
+
+<p>The face group is the original design and it works. The near group exists
+because a pointing hand is not a small face: it comes within 300 mm of the
+glass, where the bezel modules see it from 40° off-axis, in one or two frames,
+with nothing to cross-check against. The <em>aim</em> is doing most of the work
+— the same four modules unaimed measured 63–385 mm of pointing error; aimed,
+4.8 mm. And they sit on the frame, not on arms: a forward cantilever is the
+worst possible load on a rig whose accuracy is calibration stability, and it
+does not help anyway (§5).</p>
+
+<h3>How a frame actually gets from their face to your eye</h3>
+
+<ol>
+<li><b>Nine fixed cameras</b> watch them. Nothing moves, ever.</li>
+<li>Two independent depth solves — one over the face volume, one over the near
+volume — <b>triangulate depth</b>: every pixel that survives learns its
+distance in millimetres. The ones that don't survive get no depth and stay
+holes.</li>
+<li>Depth turns each pixel from a dot on a grid into a <b>point in space</b> —
+and points in space can be photographed from anywhere.</li>
+<li>Those points are <b>reprojected</b> to the viewpoint your eye occupies.
+Near pixels move further than far ones; that's parallax, falling out of the
+arithmetic.</li>
+<li>Gaps uncovered by the move are <b>filled from whichever camera saw behind
+the edge</b> — real pixels, not invented ones.</li>
+<li>The result is sent with its depth map, and <b>your</b> machine re-renders it
+from your live head position every frame. Network lag becomes conversational
+lag, never geometric error.</li>
+</ol>
+
+<p>Every displayed pixel is a resampled sensor pixel from the current frame. No
+model is fitted, nothing persists between frames, and no machine learning
+touches the image path.</p>
+
+<h3>Why the blade exists</h3>
+
+<p>One number governs the whole design: <code>alpha</code>, the angle at the
+subject between the ray a camera captures and the ray that should have reached
+your eye. It converts one-for-one into gaze error, and depth accuracy has to pay
+for whatever remains.</p>
+
+<table>
+<tr><th>Camera position</th><th class="n">alpha</th><th class="n">Depth accuracy needed</th><th class="n">Disocclusion hole</th></tr>
+<tr><td>Top bezel — a normal webcam</td><td class="n fail">18.4°</td><td class="n fail">0.66 mm</td><td class="n">342 mm</td></tr>
+<tr class="hl"><td><b>Blade, at their hairline</b></td><td class="n mid"><b>7.0°</b></td><td class="n pass"><b>1.71 mm</b></td><td class="n">126 mm</td></tr>
+<tr><td>Same blade, on a 55" TV</td><td class="n pass">3.3°</td><td class="n pass">3.60 mm</td><td class="n">126 mm</td></tr>
+</table>
+
+<p>Shrinking <code>alpha</code> mechanically is cheaper than solving it
+computationally, and it pays twice — looser depth tolerance <em>and</em> smaller
+holes to fill.</p>
+
+<h3>Does it work?</h3>
+
+<p>Every figure here comes from running the <em>actual matcher</em> on rendered
+images, rather than handing the pipeline the depth the simulator already knew.
+That distinction matters: the first version of these numbers was measured with
+perfect depth and was two to five times too optimistic.</p>
+
+<table>
+<tr><th></th><th class="n">measured</th><th class="n">bar</th></tr>
+<tr><td>gaze, error vs a real window</td><td class="n">0.55–0.89°</td><td class="n">1.00°</td></tr>
+<tr><td>gaze, with perfect depth (geometry alone)</td><td class="n">0.22°</td><td class="n">1.00°</td></tr>
+<tr><td>fingertip located in 3D, near group</td><td class="n">4.8 mm</td><td class="n">~30 mm</td></tr>
+<tr><td><code>sigma_d</code></td><td class="n">0.5 px</td><td class="n">0.3 assumed</td></tr>
+<tr><td>design-check margin</td><td class="n">3.3×</td><td class="n">was 5.5×</td></tr>
+<tr><td>an ordinary webcam, for scale</td><td class="n">17.5° gaze<br>750 mm pointing</td><td class="n">—</td></tr>
+</table>
+
+<p><b>It closes, with much less room than the first pass suggested.</b> The gaze
+figure is 1.1–1.8× inside the bar rather than 4–5×, and head tracking's 10 mm
+requirement eats into the same margin — enough that the five-camera face
+composite lands at 1.02° and fails, while the centre camera alone lands at
+0.74° and passes. §22 flaw 3.</p>
+
+<h3>What it deliberately does not do</h3>
+
+<p>Five declared blind spots, listed in full in §21. They are decisions rather
+than bugs, and the right place for them is the product, not a support
+ticket.</p>
+
+<ul>
+<li>Anything within about <b>150 mm of the glass</b> has no depth. A hand thrust
+at the screen reads as a hole, not as a gesture.</li>
+<li><b>One tracked viewer per end.</b> A second person is looking at a picture
+drawn for somebody else's eye.</li>
+<li><b>Head turns past roughly 60°</b> leave usable stereo coverage.</li>
+<li><b>Viewer travel past ±250 mm</b> leaves the camera hull and the overscan
+margin together.</li>
+<li>The render is <b>monoscopic and focused at the screen</b>. Direction is
+exact at every depth; stereopsis and accommodation are absent.</li>
+</ul>
+
+<p>And ten ways it might still fail, in §22 — the first of which is that nobody
+has checked whether the matcher runs at frame rate, and in numpy it is four
+orders of magnitude away.</p>
+
+<p class="sub">Cost is about $310 per end, before whatever the depth stage turns
+out to need. Both ends need a rig for gaze to work in both directions.</p>
+</section>
+
+<hr>
+
+<section id="problem">
+<h2>1 · The problem</h2>
+
+<div class="eli5"><b>ELI5</b>
+<p>Your camera sits above your screen. Your friend's face is <em>on</em> the
+screen. So when you look at your friend, you're looking below the camera — and
+the camera films you looking down. You can never meet eyes. Every video call
+you have ever had, both people are looking slightly past each other, forever.</p></div>
+
+<p>Put a number on it. Sit 600 mm from a 27-inch monitor with a webcam on the
+top bezel. The camera is about 190 mm above the point on the screen where the
+other person's eyes are drawn. That is an angle at your face of</p>
+
+<div class="eq">alpha = 190 mm / 570 mm = <b>18.4°</b></div>
+
+<p>Humans resolve gaze direction to roughly <b>1° horizontally</b>. So 18.4° is
+not a subtle degradation. It is eighteen times the threshold.</p>
+
+<h3>But the real loss is finer than "eye contact"</h3>
+
+<p>The thing that matters is not whether you appear to be looking at the other
+person. It is the <em>difference</em> between looking at their left eye, their
+right eye, their mouth, their hands, or past their shoulder. That is the
+channel that carries attention, turn-taking, and reference.</p>
+
+<p>Two thresholds follow:</p>
+
+<table>
+<tr><th>Level</th><th class="n">Error budget</th><th>What it buys you</th></tr>
+<tr><td><b>Coarse</b></td><td class="n">4°</td><td>face vs hands vs looking away. Easy.</td></tr>
+<tr class="hl"><td><b>Fine</b></td><td class="n">1°</td><td>left eye vs right eye vs mouth. <b>The real bar.</b></td></tr>
+</table>
+
+<div class="deep"><b>Why vertical is cheaper than horizontal</b>
+<p>Gaze sensitivity is asymmetric. A camera offset <em>above</em> the screen reads
+as mildly inattentive; the same offset to the <em>side</em> reads as actively
+avoiding you. This is why every mounting decision later in the design puts the
+offset vertically and never laterally.</p></div>
+</section>
+
+<hr>
+
+<section id="wrongfix">
+<h2>2 · Why the obvious fix is wrong</h2>
+
+<p>Products already exist that "fix" this — NVIDIA Broadcast, FaceTime attention
+correction. They find your iris in the image and rotate it toward the camera.</p>
+
+<div class="eli5"><b>ELI5</b>
+<p>Imagine a filter that redraws your eyes so you're always staring straight
+ahead. Now you have perfect eye contact — <em>all the time</em>. Even when you
+glance at your notes. Even when you look at someone else. Even when you look
+away because you're thinking.</p>
+<p>You didn't fix the channel. You jammed it on maximum and threw away
+everything it was carrying.</p></div>
+
+<p>This is the crucial point and it is worth being precise about: gaze
+redirection is not an imperfect solution to this problem. It is a solution to a
+<em>different</em> problem. It optimises for "appears to be making eye contact",
+which is the one thing you would get for free anyway from the Mona Lisa effect
+(§15). It destroys the differential, which is the only thing that was hard.</p>
+
+<div class="fig">
+  <h5>What each approach preserves</h5>
+  <p class="cap">The far person shifts their gaze between three targets on your
+  face. Drag the slider to move their true gaze; watch what each system shows you.</p>
+  <div class="ctl">
+    <label><span class="lab">Their true gaze target <b id="gzLab">your left eye</b></span>
+      <input type="range" id="gz" min="0" max="100" value="12"></label>
+  </div>
+  <canvas id="gazeCv" height="230"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--s3)"></i>Portal — geometry restored</span>
+    <span><i style="background:var(--s2)"></i>ML gaze correction</span>
+    <span><i style="background:var(--muted)"></i>Plain video call</span>
+  </div>
+  <p class="note">Plain video call: a constant 18.4° error, always downward.
+  ML correction: pinned to zero error regardless of where they actually look —
+  which is exactly the failure. Portal: tracks the truth.</p>
+</div>
+</section>
+
+<hr>
+
+<section id="window">
+<h2>3 · The reframe — a broken window</h2>
+
+<div class="eli5"><b>ELI5</b>
+<p>Stop thinking of the screen as a television showing a picture of a person.
+Think of it as a <em>hole in the wall</em> with a person on the other side.</p>
+<p>Through a real hole in a wall, eye contact is not a feature anyone had to
+implement. It just happens, because light travels in straight lines. If you
+rebuild the hole properly, you don't need to know what an eye is.</p></div>
+
+<p>A video call is a window that has been broken in two specific ways: the
+viewpoint is wrong (it's at the camera, not at your eye), and the scale is wrong
+(the image is zoomed to fill the frame). Fix both and gaze is restored as a
+side effect.</p>
+
+<div class="fig">
+  <h5>The window, in 3D</h5>
+  <p class="cap">The view orbits on its own until you touch it. Drag to take over,
+  or use the preset views below. The green rectangle is the shared window
+  <code>W</code>; toggle between an ordinary video call and the portal.</p>
+  <div class="ctl">
+    <div class="seg" id="winMode">
+      <button data-m="call">Ordinary video call</button>
+      <button data-m="portal" class="on">Portal</button>
+    </div>
+    <label><span class="lab">Viewer position <b id="wxLab">0 mm</b></span>
+      <input type="range" id="wx" min="-250" max="250" value="0"></label>
+  </div>
+  <canvas id="winCv" height="470"></canvas>
+  <p class="note" id="winNote"></p>
+</div>
+
+<h3>What is actually being rebuilt</h3>
+
+<p>Stating this precisely makes everything downstream follow, so it is worth
+doing before anything else.</p>
+
+<p><b>A window is a ray-preserving surface.</b> Light crossing it arrives at a
+point heading in a direction, and leaves that same point still heading that way.
+What it transmits is the <b>4D light field</b>: two dimensions of position on
+the glass, two of direction.</p>
+
+<p><b>A camera destroys three of those four dimensions, and a screen fails to
+restore them.</b> A camera keeps only the rays through one aperture — a 2D slice
+indexed by sensor position, with direction collapsed to a point. A flat panel
+then re-emits that image <em>diffusely</em>: every pixel the same colour in
+every direction. Direction is destroyed at capture and not reproduced at
+display.</p>
+
+<p>So the honest framing is <em>not</em> "the camera is in the wrong place."
+A video call transmits a 2D slice where a window transmits a 4D field, and the
+slice it keeps is the wrong one.</p>
+
+<div class="deep"><b>The asymmetry that makes it tractable</b>
+<p>You do not need the 4D field. <b>There is one viewer, and their eye position
+is measurable.</b> All that eye can receive is the bundle of rays converging on
+it — one 2D slice, chosen by where the eye is.</p>
+<p>Every later decision spends its budget on that reduction: <b>which</b> slice
+is set by head tracking, <b>getting</b> the slice is set by depth and
+reprojection, and <b>emitting</b> it needs no directional display at all —
+because once the eye position is known, <em>position on the screen encodes
+direction</em>. Which pixel a ray leaves from, plus where the eye is, determines
+the ray completely. Angular emission is only necessary when you do
+<em>not</em> know where the viewer is.</p>
+<p>That is why a dumb diffuse panel suffices, and it is the hinge of the whole
+design.</p></div>
+
+<h3>Why a camera is not a window</h3>
+
+<div class="eli5"><b>ELI5</b>
+<p>A window lets a ray of light go <em>straight through</em>. It arrives at some
+point on the glass heading in some direction, and it leaves that same point
+still heading that way.</p>
+<p>A camera does the opposite. It has one tiny hole, and the only light it keeps
+is the light that happens to pass through <em>that hole</em>. Every ray gets
+bent to a single point, and then the screen sprays it back out again from a
+different place. The path from their face to your eye has a <b>kink</b> in it.</p></div>
+
+<p>That kink is the entire problem, and it is worth being exact about where it
+sits. Light leaves the far person's face in every direction. A window would pass
+the particular ray aimed at your eye straight through. A camera instead keeps
+only the ray aimed at <em>its own aperture</em>, and the display then re-emits
+that ray toward you as though it had come from your direction all along.</p>
+
+<p>So the angle to measure is <b>at the subject</b>: between the ray a camera
+actually captures and the ray that should have reached your eye. That angle is
+<code>alpha</code>, and it is the same <code>alpha</code> the rest of this page
+is about.</p>
+
+<div class="fig">
+  <h5>The kink, and where it goes</h5>
+  <p class="cap">Side view of the shared frame. Solid is the path light really
+  takes; dashed is the path it should take. Drag the camera down the window and
+  watch the kink close.</p>
+  <div class="ctl">
+    <div class="seg" id="kinkMode">
+      <button data-k="call" class="on">A video call</button>
+      <button data-k="win">A real window</button>
+      <button data-k="portal">Portal</button>
+    </div>
+    <label><span class="lab">Camera rise <b id="kkLab">190 mm</b></span>
+      <input type="range" id="kk" min="0" max="190" value="190"></label>
+  </div>
+  <canvas id="kinkCv" height="360"></canvas>
+  <div class="out">
+    <div><div class="k">Kink at the subject</div><div class="v" id="kAlpha"></div></div>
+    <div><div class="k">Camera to subject</div><div class="v" id="kNear"></div></div>
+    <div><div class="k">Required viewpoint to subject</div><div class="v" id="kFar"></div></div>
+  </div>
+  <p class="note" id="kinkNote"></p>
+</div>
+
+<h3>What Portal actually does about it</h3>
+
+<p>It does <b>not</b> restore the light field. It cannot: a flat diffuse panel
+emits the same colour in every direction, so the directional information a
+window carries is gone twice over — destroyed once at the aperture, and not
+reproduced at the display. No amount of processing puts it back.</p>
+
+<p>Instead it exploits the fact that <b>there is only one viewer, and we know
+where their eye is</b>. You do not need every ray. You need the single bundle
+of rays converging on that one eye — a 2D slice of the 4D light field. Three
+moves get you that slice:</p>
+
+<ol>
+<li><b>Put the virtual camera where your eye is.</b> Not near the screen — at
+your actual eye position, mapped through the window into their room. A camera
+there captures precisely the image a window would have shown you, because every
+ray it collects is a ray that would have reached your eye.</li>
+<li><b>Synthesise it, since nothing can physically be there.</b> That point is
+behind their screen. Depth tells you where every captured pixel sits in 3D, so
+you can re-project the real camera's pixels to the viewpoint you need. That is
+the warp — and it is why every output pixel must be a resampled input pixel
+rather than a model.</li>
+<li><b>Let position on the screen encode direction.</b> The panel is diffuse,
+but that stops mattering once the viewer's eye is known: which pixel a ray
+leaves from, together with where the eye is, fully determines the ray. Draw the
+correct off-axis perspective at 1:1 and the geometry is exact. Directional
+emission is only needed when you <em>don't</em> know where the viewer is.</li>
+</ol>
+
+<div class="deep"><b>Why the displacement splits so unevenly</b>
+<p>Moving the viewpoint from the real camera to your eye is a 596 mm pull-back
+plus a small sideways step. The pull-back is <b>free</b> — receding along the
+sight line reveals no surfaces that were hidden, so there is nothing to
+invent. The sideways step is the whole cost, because it does reveal new
+surfaces, and its size as an angle at the subject is <code>alpha</code>. This
+is why §7 decomposes the problem the way it does, and why the blade exists: it
+is a mechanical way to make the sideways step small before any processing
+happens.</p></div>
+
+<p>Which also explains why the <b>beamsplitter</b> (§20) is optically superior
+and keeps getting mentioned. It puts a real camera at the conjugate point
+physically. There is no kink to correct, so there is no warp, no depth map, and
+no disocclusion — just raw video that is already right. Portal is what you build
+when you want that geometry without 90 cm of desk.</p>
+</section>
+
+<hr>
+
+<section id="contract">
+<h2>4 · The window contract</h2>
+
+<p>Both endpoints agree on <b>one rectangle <code>W</code></b>, measured in
+millimetres. Each endpoint's display <em>is</em> <code>W</code>. Two rules:</p>
+
+<ol>
+<li>The far person's image is rendered from <b>the near person's tracked eye
+position</b>, through an asymmetric frustum whose <b>near plane is
+<code>W</code></b>.</li>
+<li>Scale is <b>1:1 in physical units</b>. Never zoom to fill.</li>
+</ol>
+
+<h3>The proof, in three lines</h3>
+<p>A fixates the pixel where B's eye appears on A's screen. By construction that
+pixel lies on the line from A's eye to B's virtual eye — that is what rule 1
+means. So A's gaze ray is aimed at B in the shared frame. Render A from B's
+actual eye position, and B sees the ray arriving. The same argument holds for
+<em>any</em> target, which is why pointing works without being implemented.</p>
+
+<div class="deep"><b>The construction is Alberti's window</b>
+<p>A painter stands where your eye is, holds a pane of glass at <code>W</code>,
+and traces what they see onto it. Step aside, put your eye where theirs was, and
+the tracing lines up with what is behind it. The eye-to-glass distance is used
+once — to decide <em>where on the glass</em> each point lands — and that same
+distance is what makes you see the drawn pixel in the right direction. It is not
+traversed twice.</p>
+<p><b>And it is exact, not approximate.</b> For a point P behind the glass, the
+ray from your eye E to P crosses W at S. Light the pixel at S and you see it
+along E→S, which <em>is</em> the ray E→P, because S lies on it. Checked
+numerically at 250 mm, 550 mm and 2000 mm behind the window: the angle between
+the true ray and the drawn pixel is <b>zero to machine precision</b>, and angular
+size matches a real window at every depth. There is no small-angle approximation
+anywhere in the contract.</p></div>
+
+<h3>What falls out of it</h3>
+<ul>
+<li><b>No chair needed.</b> Head tracking replaces it.</li>
+<li><b>Different seating distances are fine and self-consistent.</b> If A sits
+500 mm back and B sits 1300 mm back, they are 1800 mm apart in the shared frame
+and both views agree. It only breaks if you <em>fake</em> a distance to fill
+the frame.</li>
+<li><b>The system is gaze-agnostic.</b> Nothing anywhere in the pipeline knows
+what an eye is.</li>
+</ul>
+
+<h3>Off-axis projection — and the classic bug</h3>
+
+<p>The view matrix is a <b>pure translation</b>. You do <em>not</em> rotate the
+virtual camera to look at the window centre. The shear belongs in the
+projection matrix, not the view matrix.</p>
+
+<div class="eq">
+V = translate(−eye)<br><br>
+s&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= near / eye.z<br>
+left&nbsp;&nbsp;= (−w/2 − eye.x) · s<br>
+right&nbsp;= (+w/2 − eye.x) · s<br>
+bottom = (−h/2 − eye.y) · s<br>
+top&nbsp;&nbsp;&nbsp;= (+h/2 − eye.y) · s<br>
+P&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= glFrustum(left, right, bottom, top, near, far)
+</div>
+
+<div class="warnbox"><b>The single most common way to get this wrong</b>
+<p>Rotating the view camera to "look at" the window centre introduces keystone
+distortion and destroys the window illusion. It looks <em>almost</em> right,
+which is what makes it expensive. §19 shows this fault being caught
+automatically.</p></div>
+
+<div class="fig">
+  <h5>The frustum shears as the eye moves</h5>
+  <p class="cap">Top-down view. The window (green) stays fixed in the world; the
+  frustum's near plane is always exactly the window, no matter where the eye
+  goes. Note the camera never rotates.</p>
+  <div class="ctl">
+    <label><span class="lab">Eye X <b id="fxLab">0 mm</b></span>
+      <input type="range" id="fx" min="-280" max="280" value="-140"></label>
+    <label><span class="lab">Eye Z (distance back) <b id="fzLab">600 mm</b></span>
+      <input type="range" id="fz" min="350" max="900" value="600"></label>
+    <div class="seg" id="fMode">
+      <button data-m="off" class="on">Off-axis (correct)</button>
+      <button data-m="rot">Rotated camera (bug)</button>
+    </div>
+  </div>
+  <canvas id="frusCv" height="330"></canvas>
+  <p class="note" id="frusNote"></p>
+</div>
+
+<h3>Realising the contract</h3>
+
+<p>The contract demands an image taken from a viewpoint <b>no camera can
+occupy</b> — your eye, on the far side of their window. Everything in this
+section is how that image is obtained, because this is the step most easily
+hand-waved and it is where the design either holds or does not.</p>
+
+<h4>The cameras never move</h4>
+
+<p>All five are rigidly bolted and must stay that way; the entire calibration
+assumes it, and §18 treats a bumped camera the way you would treat a bumped
+tripod mid-exposure. No motors, no gimbals, nothing to distract you. The camera
+that moves is <b>virtual</b> — it exists only as a matrix, and moving it costs
+nothing physical.</p>
+
+<h4>What happens to the video</h4>
+
+<p>The depth map is the enabling ingredient. Once every pixel knows how far away
+it is, a pixel is no longer a coloured dot on a grid — it is a coloured point in
+space, and points in space can be photographed from anywhere. The rest is
+arithmetic:</p>
+
+<ol>
+<li>The four bezel cameras produce a <b>metric depth map</b> — every pixel's
+distance, in millimetres (§10).</li>
+<li>Each pixel and its depth <b>back-project to a 3D point</b>,
+<code>X = d · K⁻¹ · x̃</code>.</li>
+<li>That point <b>projects into the virtual camera</b> at the viewpoint the
+contract demands, <code>x' = P_offaxis(e) · T · X</code>.</li>
+<li>Every pixel lands somewhere new, and <b>near pixels move further than far
+ones</b>. That is parallax — not applied as an effect, but falling out of the
+arithmetic.</li>
+<li>A <b>z-buffer</b> settles collisions, so the nearer pixel wins.</li>
+<li>Whatever gaps remain are <b>filled from a camera that saw behind the
+edge</b>.</li>
+</ol>
+
+<p>That is the entire manipulation. Each pixel is moved to where its own depth
+says it belongs from the new viewpoint; nothing is synthesised, only relocated.
+This is what "warp, don't model" means in practice, and it is the reason every
+displayed pixel can still be called photographic.</p>
+
+<h4>Why it cannot be a flat image operation</h4>
+
+<p>It is tempting to imagine this as stretching or shearing the picture. It
+cannot be. A 2D transform — affine, homography, mesh on the image plane — applies
+one rule to a whole image or to planar patches, whereas parallax is
+<em>different pixels moving by different amounts according to their depth</em>.
+That is exactly the quantity a flat transform has no way to express, and §8
+measures the consequence: the best possible single-plane warp recovers 3.4% of
+the error.</p>
+
+<p>The operation is genuinely three-dimensional, but it maps onto graphics
+hardware almost perfectly. Lay a mesh grid over the source image, push each
+vertex along its camera ray by its depth, texture it with the frame, and
+rasterise — one draw call, with the z-buffer and interpolation free.</p>
+
+<div class="warnbox"><b>Cut the mesh at depth discontinuities</b>
+<p>This one detail decides whether the result looks right. Left connected across
+a silhouette, the triangles spanning the depth jump stretch into rubber sheets
+and you get smears where you wanted holes. Threshold on depth gradient, drop
+those triangles, and let the gap be honest — step 6 exists to fill it with real
+pixels.</p></div>
+
+<h4>What the cameras can and cannot show</h4>
+
+<p>A fair objection: if a camera is looking at the top of your arm while you
+point forward, where do the fronts of your fingers come from? Two different
+failures hide inside that question and they behave nothing alike.</p>
+
+<p>A surface facing <em>away</em> from all five cameras genuinely cannot be
+shown. The photons never arrived, and no processing invents them. But <b>a real
+window has precisely the same limitation</b> — point at your own chest and
+someone on the far side of the glass sees the back of your hand, not your
+fingertips. This is not a shortfall against a window; it is the same
+constraint.</p>
+
+<p>That equivalence is load-bearing. The viewpoint the contract asks for is your
+eye, beyond the window — only 7° off the blade camera, and comfortably inside
+the hull of all five (§12). So the surfaces the virtual camera needs are, by
+construction, the surfaces facing the window: exactly the ones photographed.
+Fingers pointed forward face the window and every camera sees them. Fingers
+pointed away are invisible to the far viewer through glass too.</p>
+
+<h4>Where the holes actually come from</h4>
+
+<p>The real gaps are <b>occlusions</b> — something in front hiding something
+behind, uncovered when the viewpoint shifts. This is what the other four cameras
+are for, and the numbers are comfortable:</p>
+
+<table>
+<tr><th class="n">Hand at</th><th class="n">Torso at</th><th class="n">Hole uncovered</th><th class="n">TL's own shadow moves</th><th>Covered?</th></tr>
+<tr><td class="n">250 mm</td><td class="n">700 mm</td><td class="n">126 mm</td><td class="n">309 mm</td><td class="pass">yes — TL sees past it</td></tr>
+<tr><td class="n">400 mm</td><td class="n">700 mm</td><td class="n">52 mm</td><td class="n">129 mm</td><td class="pass">yes — TL sees past it</td></tr>
+<tr><td class="n">550 mm</td><td class="n">700 mm</td><td class="n">19 mm</td><td class="n">47 mm</td><td class="pass">yes — TL sees past it</td></tr>
+</table>
+
+<p>A 126 mm strip of torso is uncovered behind an outstretched hand — but TL
+sits 172 mm from the blade camera, so its view of that strip is displaced
+309 mm. It was never hidden from TL at all. The pixels are fetched, not
+guessed.</p>
+
+<div class="deep"><b>A second, independent reason the blade exists</b>
+<p>Hole size scales directly with how far the camera sits off the required
+viewpoint. A top-bezel webcam opens a <b>342 mm</b> hole in that same scene —
+nearly three times as much. Driving <code>alpha</code> down mechanically does not
+only improve gaze; it shrinks how much of the picture has to be found
+elsewhere.</p></div>
+
+<h4>Why the result holds together</h4>
+
+<p>Nothing here reconstructs a continuous field of rays. It reconstructs
+<b>one slice</b> — the bundle converging on your eye — and its coherence comes
+from the depth map. Because every pixel carries a position in space, pixels
+adjacent on a surface stay adjacent after reprojection. The reconstruction is
+continuous exactly where the depth is continuous and the surface was seen.</p>
+
+<p>Which says precisely where it breaks: <b>silhouette edges</b>, where depth
+jumps and a mis-estimated pixel lands far from where it belongs. That is this
+design's characteristic artefact — never smooth surfaces, always the boundary
+between a hand and the wall behind it.</p>
+
+<h4>How this relates to Gaussian splatting</h4>
+
+<p>Closely, for the rendering step; oppositely, for what is being rendered.</p>
+
+<p>Both take 3D points and splat them into a target view, and this forward warp
+is <b>depth-image-based rendering</b> — the lineage 3DGS descends from, through
+plenoptic modelling, point splatting and surfels. Step 3 above is one isotropic
+splat per pixel.</p>
+
+<p>The divergence is total at the level of representation. <b>Gaussian splatting
+fits a model</b>: gradient descent finds Gaussians whose optimised parameters
+best reproduce the input photos, so a rendered pixel is a blend of fitted values.
+<b>This measures and relocates</b>: depth comes from stereo matching, this
+frame's sensor pixels are moved, and nothing persists to the next frame. 3DGS is
+a 3D reconstruction — an extremely good-looking one, and on the far side of the
+line drawn in §20.</p>
+
+<div class="deep"><b>One idea worth stealing, one gap worth knowing</b>
+<p><b>Steal:</b> replace point splats with <b>oriented elliptical splats</b>
+(surfels), using the local depth gradient to give each a normal and an
+anisotropic footprint so it lands correctly foreshortened. No fitting, no model,
+no ML — and it attacks the silhouette artefact head-on.</p>
+<p><b>Gap:</b> spherical-harmonic colour gives 3DGS <b>view-dependent
+appearance</b>, so speculars shift correctly with viewpoint. This warp carries a
+highlight along with the surface it sits on, leaving it where the <em>source
+camera</em> saw it. The wettest surface in frame is the cornea — exactly where
+the design has least room.</p></div>
+
+<h4>Coordinating five cameras</h4>
+
+<p>Three separate kinds of coordination, failing in three different ways.</p>
+
+<p><b>Geometric</b> is solved by a single bundle adjustment with all five seeing
+the board at once, which fixes their poses relative to each other; the CAD anchor
+then ties that cluster to the window (§18). Afterwards any camera's pixels can be
+reprojected into any other's view, because they share one frame.</p>
+
+<p><b>Temporal</b> is solved adequately rather than well. Cheap UVC modules
+free-run, so the software reads all five in lockstep from one thread, timestamps
+on arrival, and rejects any pair skewed by more than 4 ms. Worst case is a full
+8 ms frame period, which a hand at 1 m/s turns into 8 mm of depth error. The
+proper fix is a <b>hardware trigger</b> — one $2 microcontroller driving a square
+wave into all five pins takes the skew to zero, and it matters more with rolling
+shutter, where free-running rows drift out of correspondence continuously.</p>
+
+<p><b>Photometric</b> is mostly handled by identical modules with locked exposure
+and white balance, with a <b>per-camera 3×3 colour transform</b> fitted off the
+calibration board to catch the residual (§18). Matching assumes a cheek reads the
+same in both views, and hole-filling pastes one camera's pixels into another's
+image, where any mismatch shows as a seam.</p>
+
+<h4>All five cameras carry colour</h4>
+
+<p>An earlier version of this pipeline treated <code>C</code> as "the picture"
+and demoted the bezel four to depth and hole-filling — throwing away four live
+colour images for no reason.</p>
+
+<p>All five should be resampled, weighted by angular proximity to the required
+viewpoint. <code>C</code> still dominates near frame centre, since at 7° off it
+needs the least warping and shows the fewest artefacts. But at a silhouette, or
+inside a disocclusion, a camera that <em>actually saw</em> the surface beats
+stretching <code>C</code>'s edge pixels, and it should win on merit rather than
+be consulted only once a hole has been declared. Weight <b>sharply</b>, close to
+winner-take-all — broad averaging across views with imperfect depth ghosts and
+softens.</p>
+
+<div class="deep"><b>A free diagnostic falls out of it</b>
+<p>Reproject a point using its depth and sample all five cameras. If they
+disagree about its colour, the depth is wrong there. That is a direct measurement
+of the σ_d assumption §22 calls the design's biggest unknown, and it needs no new
+hardware — two webcams and a face would do it today.</p></div>
+
+<h4>Finding the same point in five images</h4>
+
+<p>All of the above assumes a depth map, which assumes knowing which pixel in one
+camera corresponds to which in another. The premise that makes that tractable is
+that <b>the perspectives never change</b>: the cameras are bolted and calibrated
+once, so the correspondence geometry is frozen and precomputed, and only the
+scene moves.</p>
+
+<p>Given that, epipolar geometry collapses the search to a single row, a census
+transform makes the comparison robust to sensor-to-sensor differences, and
+semi-global aggregation resolves what a single patch cannot. <b>§10 works through
+it in full</b> — including why the baselines are crossed, where σ_d actually
+comes from, and why the pairs must be fused in depth rather than in
+disparity.</p>
+</section>
+
+<hr>
+
+<section id="pointing">
+<h2>5 · Pointing, and where it stops</h2>
+
+<p>Every pixel is moved by the same rule:</p>
+
+<div class="eq">
+X_world = T<span class="c">cam→W</span> · ( d(x) · K<sup>−1</sup> x̃ )<br>
+x′&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = P<span class="c">offaxis</span>(e_peer, W) · X_world
+</div>
+
+<p>That expression contains no notion of a face, an eye, or a hand. A pointing
+gesture is a ray from shoulder through fingertip, and rays are preserved by
+construction. Hands land within a few tenths of a degree, because their error
+contribution is <code>alpha · dz</code>, and the design drives
+<code>alpha</code> down to 7°.</p>
+
+<p>Two things still break, and they are named honestly:</p>
+<ul>
+<li>A hand crossing the window plane has no correct answer. Clip at
+<code>z = 0</code>.</li>
+<li>A hand that occludes the face creates a disocclusion the cameras may not
+see behind.</li>
+</ul>
+
+<h3>What the simulation actually measured</h3>
+
+<p>The far person points at one of three marks on your body — left shoulder,
+chest, right shoulder, 200 to 400&nbsp;mm apart. Recover their shoulder and
+fingertip from the rendered <em>pixels</em>, put each back at its depth along
+the line of sight, extend the ray, and see where it lands on you.</p>
+
+<table>
+<tr><th>They point at</th><th class="n">a real window</th><th class="n">Portal</th><th class="n">ordinary webcam</th></tr>
+<tr><td>left shoulder</td><td class="n">reference</td><td class="n">17 mm</td><td class="n">816 mm</td></tr>
+<tr><td>chest</td><td class="n">reference</td><td class="n">23 mm</td><td class="n">750 mm</td></tr>
+<tr><td>right shoulder</td><td class="n">reference</td><td class="n">8 mm</td><td class="n">777 mm</td></tr>
+</table>
+
+<p>Portal tracks a real pane of glass to within 23&nbsp;mm against marks
+200&nbsp;mm apart — unambiguous. The webcam is off by three quarters of a
+metre, and the error is <b>low and nearly constant</b>: it still separates left
+from right, but every gesture reads as aimed at your knees. That is the same
+failure as the 16° downward gaze bias, in the same direction, for the same
+reason — the ray is drawn from the bezel's seat instead of yours.</p>
+
+<p>The webcam number is generous, incidentally. At a realistic downward tilt it
+does not see the fingertip <em>at all</em>: a hand held toward the screen sits
+34° below the camera's axis and a 16:9 frame at 75° reaches only 23°. The
+750&nbsp;mm figures come from tilting it to −28° so it has something to
+measure.</p>
+
+<div class="fig">
+  <h5>The pointing ray, in section</h5>
+  <p class="cap">A side elevation: depth runs left to right, height runs up. B
+  is on the left, the shared window <code>W</code> is the green line in the
+  middle, you are on the right. B extends an arm and points. Each view puts the
+  fingertip somewhere on the glass; you put it back at its depth along your line
+  of sight, and the shoulder-to-fingertip ray carries on to your body. Move the
+  target and watch where each view says the finger is aimed.</p>
+  <div class="ctl">
+    <label><span class="lab">B aims at height <b id="ptTLab">&minus;250 mm</b></span>
+      <input type="range" id="ptT" min="-380" max="80" value="-250"></label>
+    <label><span class="lab">Arm extension <b id="ptRLab">0.25</b></span>
+      <input type="range" id="ptR" min="8" max="45" value="25"></label>
+    <label><span class="lab">Webcam tilt <b id="ptWLab">&minus;28&deg;</b></span>
+      <input type="range" id="ptW" min="-40" max="0" value="-28"></label>
+    <label><span class="lab">Your eye height <b id="ptEYLab">0 mm</b></span>
+      <input type="range" id="ptEY" min="-220" max="260" value="0"></label>
+    <label><span class="lab">How far you sit back <b id="ptEZLab">600 mm</b></span>
+      <input type="range" id="ptEZ" min="380" max="980" value="600"></label>
+  </div>
+  <canvas id="ptCv" height="430"></canvas>
+  <div class="out">
+    <div><div class="k">Window / Portal lands at</div><div class="v" id="ptA"></div></div>
+    <div><div class="k">Webcam lands at</div><div class="v" id="ptB"></div></div>
+    <div><div class="k">Webcam is off by</div><div class="v" id="ptC"></div></div>
+    <div><div class="k">Fingertip in webcam frame</div><div class="v" id="ptD"></div></div>
+    <div><div class="k">Window / Portal shift on moving</div><div class="v" id="ptE"></div></div>
+    <div><div class="k">Webcam shift on moving</div><div class="v" id="ptF"></div></div>
+  </div>
+  <p class="note">Portal is drawn on the window's own line because the
+  simulation puts it there &mdash; 8 to 23&nbsp;mm apart, thinner than the
+  stroke. The webcam line is the one that moves. Raise its tilt toward
+  &minus;14&deg;, which is what a real webcam sits at, and the fingertip leaves
+  the frame altogether: there is then nothing to measure at all.</p>
+  <p class="note"><b>Then move yourself.</b> The last two readouts compare each
+  view's answer against the same gesture judged from the default seat. Portal
+  re-renders through wherever your eye now is, so the gesture keeps landing on
+  the same spot on you and the shift stays at zero &mdash; that is the window
+  contract doing the one thing it promises. The webcam's pixels do not know you
+  moved: they stay where they were while you back-project them through an eye
+  that is somewhere else. Raise your eye by a hand's width and its answer slides
+  down by very nearly the same distance; lower your eye and it climbs. Nothing
+  about the far person changed at all &mdash; you shifted in your chair.</p>
+</div>
+
+<div class="warnbox">
+<b>and the same framing problem bites us</b>
+<p>That 34° is not a webcam quirk. It applies to our bezel cameras too, and
+counting how many of the five carry usable surface near the fingertip gives
+<b>2 of 5, and 1 of 5 for some poses</b>. Two is the minimum for stereo. One
+means the pixels exist but have no depth, so they cannot be reprojected at
+all — the honest output there is a hole.</p>
+<p>It moves with the lens. Pitching all five modules −12° gets 2–3 of 5; a 4:3
+sensor at 95° gets 3 of 5 everywhere, at the cost of 27% of the angular
+resolution, which comes out of the same budget that sets the depth noise. Not
+yet decided.</p>
+<p>Closer than about 250&nbsp;mm from the glass, nothing helps — the hand has
+left the camera hull and no lens recovers a view no camera has. So the earlier
+line about clipping at <code>z = 0</code> understates it: <b>the pointing
+volume ends well before the glass.</b></p>
+<p>Since then that depth has actually been computed. The first
+answer was bad: with depth from the real matcher rather than from the truth,
+the pointing ray landed <b>415 to 719&nbsp;mm</b> from where a window puts it
+&mdash; no better than the webcam it was supposed to beat. With one camera on
+the fingertip there is nothing to cross-check against, so the matcher rejected
+93&ndash;98% of it, and the few pixels that survived were the ones it was least
+able to verify.</p>
+
+<h3>What it takes to fix</h3>
+
+<p>Three changes, measured one at a time.</p>
+
+<p><b>The depth search started too far away.</b> The matcher swept from
+330&nbsp;mm to 1050&nbsp;mm in front of the cameras, sized for a seated head at
+578&nbsp;mm. An extended fingertip is at 270&nbsp;mm. It was not failing to find
+the hand &mdash; it could not represent it. That is a plain bug, and fixing it
+alone changes nothing (450&nbsp;&rarr;&nbsp;441&nbsp;mm), because the binding
+constraint is still that one camera sees the finger.</p>
+
+<p><b>Tilting the cameras down helps, and is not enough.</b> Pitching all five
+by 12&deg; took one pose from 441 to 309&nbsp;mm and made another
+<em>worse</em>: tilting to catch the hand tips the bottom pair off it.</p>
+
+<p><b>Widening the bottom bar is the change that works.</b> Two more modules at
+the outer corners &mdash; &plusmn;280&nbsp;mm instead of &plusmn;125 &mdash;
+puts three cameras on the fingertip instead of one and takes the bottom
+baseline from 250&nbsp;mm to 560&nbsp;mm. Fingertip pixels surviving the matcher
+go from 1.4&ndash;6% to 38&ndash;50%.</p>
+
+<table>
+<tr><th>How far the fingertip is from the bezel</th><th class="n">pixels surviving</th><th class="n">miss vs a real window</th></tr>
+<tr><td>390 mm — pointing at the chest</td><td class="n">45%</td><td class="n">7 mm</td></tr>
+<tr><td>390 mm — pointing across the body</td><td class="n">38%</td><td class="n">216 mm</td></tr>
+<tr><td>354 mm</td><td class="n">50%</td><td class="n">76 mm</td></tr>
+<tr><td>330 mm</td><td class="n">46%</td><td class="n">63 mm</td></tr>
+<tr><td>306 mm</td><td class="n">38%</td><td class="n">257 mm</td></tr>
+<tr><td>270 mm</td><td class="n">6%</td><td class="n">385–448 mm</td></tr>
+</table>
+
+<div class="warnbox"><b>and then there is a wall, at about 330 mm</b>
+<p>A gesture made with the hand a third of a metre or more in front of the
+bezel comes through with tens of millimetres of error. A hand thrust toward the
+glass does not come through at all &mdash; at any lens, any tilt, any camera
+count tried.</p>
+<p>The reason is <code>alpha</code>, the same quantity this entire design is
+built on driving down. For a face at 578&nbsp;mm with the cameras 190&nbsp;mm
+off-axis, <code>alpha</code> is 7&deg;. For a hand at 270&nbsp;mm with the
+bottom bar 226&nbsp;mm off-axis it is <b>40&deg;</b> &mdash; and
+<code>error = alpha &middot; dz</code> does not care that the thing in front of
+it is a hand rather than an eye. <b>The bezel is to a near hand exactly what a
+webcam is to a face:</b> the same law, six times worse. Cameras stuck at the
+edge of the glass cannot have a small <code>alpha</code> for something that
+approaches the glass.</p>
+<p>One thing has not been tried. A pointing ray needs two 3D <em>points</em>,
+not a dense depth map, and a fingertip &mdash; small, fast, low in texture,
+seen at a grazing angle &mdash; is close to the worst case for per-pixel
+matching. Estimating the fingertip and shoulder robustly from whichever cameras
+see them, and discarding the ones that disagree, is a far better conditioned
+problem, and it stays inside the rule this design runs on: it changes where a
+real pixel is placed, not what it is.</p></div>
+</div>
+</section>
+
+<hr>
+
+<section id="frames">
+<h2>6 · Frames, SWAP, and the mirroring trap</h2>
+
+<p>Sign errors are the single biggest implementation risk in this project, so
+the conventions are fixed and written down.</p>
+
+<h3>The window frame — each endpoint uses this for its own side</h3>
+<div class="eq">
+origin = centre of the display's active area<br>
++X&nbsp;&nbsp;&nbsp;&nbsp; = local user's right, as they face the screen<br>
++Y&nbsp;&nbsp;&nbsp;&nbsp; = up<br>
++Z&nbsp;&nbsp;&nbsp;&nbsp; = out of the screen, toward the local user
+</div>
+<p>The local user's eye always has <code>z &gt; 0</code>. The remote person
+lives at <code>z &lt; 0</code>.</p>
+
+<h3>SWAP</h3>
+<div class="eq">SWAP = diag(−1, +1, −1)&nbsp;&nbsp;&nbsp;<span class="c"># = R_y(180°), det = +1</span></div>
+
+<div class="eli5"><b>ELI5</b>
+<p>Both ends run identical code. When data arrives from the other end, you spin
+it 180° about the vertical axis — like turning a chair around to face you.
+Because spinning twice gets you back where you started, there is no argument
+about who is "endpoint A". Both sides apply the same transform.</p></div>
+
+<p>Critically, <code>det(SWAP) = +1</code>. It is a proper rotation, <b>not a
+reflection</b>, so faces do not come out mirrored.</p>
+
+<div class="warnbox"><b>The mirroring trap — budget a day if you hit it</b>
+<p>Raw UVC camera frames are <b>not mirrored</b>. Your right hand appears on the
+<em>left</em> of the raw image. Applications mirror the preview so it looks like
+a bathroom mirror. Feed a mirrored preview into <code>solvePnP</code> and you
+get a <b>left-handed pose</b>, and every downstream sign flips in a way that
+looks almost right.</p></div>
+</section>
+
+<hr>
+
+<section id="capture">
+<h2>7 · Where to put the camera</h2>
+
+<p>The camera you actually need sits at the far person's eye — which is
+<em>behind your screen</em>, and physically unreachable. Your real camera is
+somewhere else. Decompose that displacement, because the two components cost
+wildly different amounts.</p>
+
+<div class="two">
+<div>
+<h4 style="color:var(--s3)">Axial — along the sight line</h4>
+<p>Your camera is 570 mm from you; the virtual one is 1150 mm away. This changes
+perspective compression, so faces look slightly wide-angle.</p>
+<p><b>It costs nothing in gaze.</b> Correcting it is a pull-back along the
+optical axis, which reveals no new surfaces and therefore produces no holes.
+Well-conditioned, and optional.</p>
+</div>
+<div>
+<h4 style="color:var(--s2)">Lateral — across the sight line</h4>
+<p>Expressed as an angle at the subject:</p>
+<div class="eq" style="margin:8px 0">alpha = d_lateral / z_cam</div>
+<p><b>This is the entire problem.</b> <code>alpha</code> converts one-for-one
+into gaze error. Everything else in the design exists to shrink it or to pay
+for it.</p>
+</div>
+</div>
+
+<div class="fig">
+  <h5>Camera placement — the whole trade in one slider</h5>
+  <p class="cap">How high above the far person's rendered eye line does the
+  camera sit? Low is optically better and visually worse.</p>
+  <div class="ctl">
+    <label><span class="lab">Camera rise above their eye line <b id="riseLab">70 mm</b></span>
+      <input type="range" id="rise" min="0" max="190" value="70"></label>
+  </div>
+  <canvas id="riseCv" height="260"></canvas>
+  <div class="out">
+    <div><div class="k">alpha</div><div class="v" id="oAlpha"></div></div>
+    <div><div class="k">Raw gaze error</div><div class="v" id="oRaw"></div></div>
+    <div><div class="k">Corneal depth tolerance</div><div class="v" id="oTol"></div></div>
+    <div><div class="k">Min stereo baseline</div><div class="v" id="oBmin"></div></div>
+    <div><div class="k">Lands on</div><div class="v" id="oLands" style="font-size:13px"></div></div>
+  </div>
+  <p class="note">20 mm is optically ideal and visually unusable — the camera
+  module lands between their eyes. 190 mm is the top bezel and needs 0.66 mm of
+  corneal depth accuracy, which nothing cheap delivers. <b>70 mm is the
+  compromise</b>: on their hairline.<br>
+  <span style="color:var(--muted)">b_min here is computed at the
+  <em>specified</em> hardware — 1080p, 75° lens, f = 1251 px. The table in §9
+  uses the conservative 1280 px / 65° script defaults (f = 1005 px), where the
+  same 70 mm rise gives 57 mm. Both close; the shape of the trade is
+  identical.</span></p>
+</div>
+</section>
+
+<hr>
+
+<section id="warp2d">
+<h2>8 · Why no 2D warp can fix this</h2>
+
+<div class="eli5"><b>ELI5</b>
+<p>Your eyeball is a ball. The coloured iris sits <em>on the surface</em> of
+that ball, sticking out slightly toward whatever you're looking at. The corners
+of your eye are flat on your face.</p>
+<p>When you move the camera, the iris shifts relative to the eye corners —
+because it's at a different depth. A flat image warp slides the whole picture
+around, so it moves the iris and the corners <em>by the same amount</em> and
+the difference between them never changes. That difference is the entire gaze
+signal.</p></div>
+
+<p>Perceived gaze comes from the iris's offset inside the eye opening. The iris
+rides on a sphere of radius <code>r ≈ 12 mm</code>. Rotating the viewpoint by
+<code>alpha</code> moves the iris relative to the eye corners by
+<code>r·sin(alpha)</code>.</p>
+
+<p>A homography is the best possible single-plane warp. It fitted one plane, and
+both the iris and the eye corners sit in that plane, so it moves them together.
+It never touches the differential.</p>
+
+<div class="fig">
+  <h5>The iris differential, measured</h5>
+  <p class="cap">The eyeball is drawn in cross-section. The iris (aqua) sits on
+  the sphere; the eye corners (grey) are flat. Move the camera and watch what
+  each viewpoint reads.</p>
+  <div class="ctl">
+    <label><span class="lab">Camera offset angle <b id="irLab">18.4°</b></span>
+      <input type="range" id="ir" min="0" max="250" value="184"></label>
+  </div>
+  <canvas id="irisCv" height="280"></canvas>
+  <div class="out">
+    <div><div class="k">Raw error</div><div class="v" id="irRaw"></div></div>
+    <div><div class="k">After homography</div><div class="v" id="irHom"></div></div>
+    <div><div class="k">Error recovered</div><div class="v" id="irPct"></div></div>
+  </div>
+  <p class="note"><b>Measured at the top bezel:</b> alpha = 18.4°, raw error
+  18.44°, after homography 17.81°. The best possible flat warp recovers
+  <b>3.4%</b>. This is a structural incapacity, not an accuracy problem —
+  which is why the approach is dead rather than merely imperfect.</p>
+</div>
+
+<p>So exactly two levers exist:</p>
+<ol>
+<li><b>Shrink <code>alpha</code> mechanically</b> — move the camera closer to
+the sight line.</li>
+<li><b>Resolve the cornea's depth</b> relative to the surrounding face — so a
+depth-aware warp can reproduce the differential.</li>
+</ol>
+<p>The design uses both.</p>
+</section>
+
+<hr>
+
+<section id="tolerance">
+<h2>9 · The depth tolerance law</h2>
+
+<div class="eq">dz_tol = theta_tol · r / alpha</div>
+
+<div class="eli5"><b>ELI5</b>
+<p>The less wrong your camera angle is, the more wrong you're allowed to be
+about depth. Halve the camera offset, and you may be twice as sloppy about how
+far away the eyeball surface is.</p></div>
+
+<p>This is the hinge of the whole design. It converts a mechanical decision
+(where to bolt a camera) into a signal-processing budget (how good must depth
+be), and the exchange rate is <code>1/alpha</code>.</p>
+
+<table>
+<tr><th>Camera rise</th><th class="n">alpha</th><th class="n">Depth tolerance</th><th class="n">b_min <span style="text-transform:none;letter-spacing:0">(f=1005 px)</span></th><th>Lands on</th></tr>
+<tr><td>160 mm</td><td class="n">15.7°</td><td class="n">0.77 mm</td><td class="n">127 mm</td><td>background</td></tr>
+<tr><td>130 mm</td><td class="n">12.8°</td><td class="n">0.93 mm</td><td class="n">104 mm</td><td>above the head</td></tr>
+<tr><td>100 mm</td><td class="n">10.0°</td><td class="n">1.21 mm</td><td class="n">80 mm</td><td>top of head</td></tr>
+<tr class="hl"><td><b>70 mm</b></td><td class="n"><b>7.0°</b></td><td class="n"><b>1.71 mm</b></td><td class="n"><b>57 mm</b></td><td><b>hairline — chosen</b></td></tr>
+<tr><td>40 mm</td><td class="n">4.0°</td><td class="n">2.99 mm</td><td class="n">32 mm</td><td>mid forehead</td></tr>
+<tr><td>20 mm</td><td class="n">2.0°</td><td class="n">5.97 mm</td><td class="n">16 mm</td><td>between the eyes</td></tr>
+</table>
+
+<div class="deep"><b>Why the bezel is not an option</b>
+<p>A top-bezel camera needs <b>0.66 mm</b> of corneal depth accuracy. Eyeball
+radius alone varies ±0.5 mm between people. Even if stereo beat that number on
+paper, §21 explains a second, unfixable reason the bezel fails.</p></div>
+</section>
+
+<hr>
+
+<section id="stereo">
+<h2>10 · Stereo closes the loop</h2>
+
+<p>Two cameras a known distance apart triangulate depth. The error is:</p>
+<div class="eq">sigma_z = z² · sigma_d / (f · b)</div>
+<p>Set <code>sigma_z ≤ dz_tol</code> and solve for the baseline, and you get the
+design equation for the entire rig:</p>
+<div class="eq" style="border-color:var(--s1)">b_min = z² · sigma_d · alpha / (f · r · theta_tol)</div>
+
+<div class="fig">
+  <h5>The design calculator</h5>
+  <p class="cap">This is <code>optics.py</code>, live. Change anything; the
+  verdict updates. The design "closes" when depth accuracy beats the tolerance
+  and the chosen baseline exceeds the minimum.</p>
+  <div class="ctl">
+    <label><span class="lab">Camera rise <b id="cRiseL">70 mm</b></span><input type="range" id="cRise" min="10" max="190" value="70"></label>
+    <label><span class="lab">You sit back <b id="cSitL">600 mm</b></span><input type="range" id="cSit" min="400" max="900" value="600"></label>
+    <label><span class="lab">Stereo baseline <b id="cBaseL">250 mm</b></span><input type="range" id="cBase" min="40" max="450" value="250"></label>
+    <label><span class="lab">Sensor width <b id="cSensL">1920 px</b></span><input type="range" id="cSens" min="1280" max="1920" step="640" value="1920"></label>
+    <label><span class="lab">Lens HFOV <b id="cFovL">75°</b></span><input type="range" id="cFov" min="55" max="90" value="75"></label>
+    <label><span class="lab">Match quality σ_d <b id="cSdL">0.30 px</b></span><input type="range" id="cSd" min="10" max="200" value="30"></label>
+  </div>
+  <div class="out">
+    <div><div class="k">alpha</div><div class="v" id="rAlpha"></div></div>
+    <div><div class="k">Focal length</div><div class="v" id="rF"></div></div>
+    <div><div class="k">Depth tolerance</div><div class="v" id="rTol"></div></div>
+    <div><div class="k">Stereo depth σ_z</div><div class="v" id="rSz"></div></div>
+    <div><div class="k">Margin</div><div class="v" id="rMar"></div></div>
+    <div><div class="k">b_min</div><div class="v" id="rBmin"></div></div>
+    <div><div class="k">Verdict</div><div class="v" id="rVerd" style="font-size:14px"></div></div>
+  </div>
+  <p class="note">Defaults are the specified hardware: 1080p, 75° lens,
+  250 mm baseline. That gives σ_z = 0.31 mm against a 1.71 mm tolerance —
+  a 5.5× margin. Drag σ_d rightward to see what happens when stereo matching
+  gets hard, which is the design's real risk (§22).</p>
+</div>
+
+<h3>How it knows which pixel is which</h3>
+
+<div class="eli5"><b>ELI5</b>
+<p>Two eyes see the same face from slightly different places, so everything
+shifts sideways a little between them — and near things shift more than far
+things. Measure the shift and you know the distance.</p>
+<p>The hard part is deciding <em>which speck in the left picture is the same
+speck in the right picture</em>. That's the whole game.</p></div>
+
+<p>The premise that makes it tractable: <b>the perspectives never change.</b>
+The cameras are bolted down and calibrated once, so the correspondence geometry
+is frozen and precomputed. Only the scene moves. That's why rigidity is a
+non-negotiable rather than a nicety.</p>
+
+<p><b>Epipolar geometry turns a 2D search into a 1D one.</b> A point seen at
+some pixel in one camera lies along a single ray in space, and that ray projects
+to a <em>line</em> in the other camera. Rectification warps both images so those
+lines become the same horizontal row — computed once, applied per frame as a
+lookup. Matching is then: scan one row. Disparity <code>d</code> is the shift
+along it, and <code>z = f·b/d</code>.</p>
+
+<p><b>"Best match" is not brightness.</b> That would assume two sensors report
+the same value for the same cheek, which is exactly what auto-exposure and
+sensor scatter destroy. SGBM matches on a <b>census transform</b>: each pixel
+becomes a bit-string encoding "is each neighbour brighter than me?", compared by
+Hamming distance. It depends only on local <em>ordering</em>, so it survives
+gain and tint differences. Census is what makes cheap sensors viable at all.</p>
+
+<p><b>One pixel is never enough.</b> Smooth forehead matches equally well
+everywhere along the row — the aperture problem. Match a small window rather
+than a point, then aggregate cost <b>semi-globally</b> along about eight paths
+across the image with a smoothness penalty, so a confident match at an edge
+propagates into the ambiguous region beside it. The "SG" does most of the
+work.</p>
+
+<div class="deep"><b>Why the baselines are crossed — an information argument</b>
+<p>A horizontal pair searches along horizontal epipolar lines, so a purely
+horizontal edge slides along its own search line at zero cost and is
+<b>unmatchable</b>. Eyelids and shoulders are horizontal edges. A vertical pair
+nails them exactly. This is a stronger reason for the rectangle than viewpoint
+coverage.</p></div>
+
+<p><b>Where σ_d actually comes from.</b> Fit a parabola through the cost at
+<code>d−1, d, d+1</code> and take its minimum. On textured surfaces the trough
+is sharp and you interpolate to 0.1–0.3 px. On a dark iris carrying a specular
+highlight the curve is flat or multi-modal, and σ_d degrades precisely where the
+design has least room. <b>This is why the bias light is mandatory</b> — not for
+exposure, but to put texture on skin.</p>
+
+<div class="warnbox"><b>Fuse the pairs in depth, not in disparity</b>
+<p>With four bezel cameras, build a single cost volume indexed by <em>depth</em>
+and sum across all pairs. A true depth is consistent in every pair
+simultaneously; a false match is consistent only in the pair that produced it,
+so summing suppresses it. Computing three separate disparity maps and averaging
+them discards that entirely.</p></div>
+
+<p><b>Left–right consistency finds occlusions.</b> Match L→R and R→L; where they
+disagree the surface is visible to one camera only. Those become the flagged
+holes, filled from whichever camera saw behind the edge. And what none of it
+fixes: a genuinely textureless region carries no information, so SGBM
+interpolates from the edges around it — a well-behaved guess, but a guess.</p>
+
+<h3>What happened when it was actually built</h3>
+
+<p>All of the above is the design. Writing it and running the whole pipeline on
+what it produced &mdash; rather than on depth handed over by the simulator
+&mdash; turned up four things the design did not anticipate.</p>
+
+<div class="warnbox"><b>census cannot give sub-pixel depth</b>
+<p>A census code is read at a whole pixel, so the matching cost is a
+<em>staircase</em> in sub-pixel shift, and the parabola that is supposed to
+interpolate the trough fits the stairs instead. Measured, that alone costs an
+order of magnitude in <code>sigma_d</code>. The fix is a split: census for the
+coarse search, where its immunity to gain and tint is exactly what five
+mismatched sensors need, and a continuous, locally normalised correlation for
+the final sub-pixel step.</p></div>
+
+<p><b><code>sigma_d</code> is about 0.5&nbsp;px, not the 0.3 assumed
+throughout.</b> Measured against known truth at 1920&times;1080 on skin with 4%
+local contrast. The design-check margin goes from 5.5&times; to about
+3.3&times;. It still closes &mdash; with less room than advertised.</p>
+
+<p><b>The median is not the problem; the tail is.</b> Half a pixel of noise is
+a fifth of a millimetre of depth. But the 99th percentile reaches 9&nbsp;mm on
+the face and 300&nbsp;mm on the outer cameras. Those are blunders, not noise,
+and every local confidence test passes them. Only checking one camera's answer
+against another's removes them, which is why that step is not optional.</p>
+
+<p><b>Depth error at an eye opening is systematic, and the error budget treats
+it as noise.</b> A matcher that correlates a small window biases depth wherever
+that window straddles a step &mdash; and an eye opening is a step. The
+iris-to-corner depth differential comes out a steady 0.4&nbsp;mm. Being steady,
+it does not average away over a thousand iris pixels, and
+<code>alpha&nbsp;&middot;&nbsp;dz</code> converts it straight into a gaze bias.
+Trying to detect and discard the affected pixels throws away 69% of the eye
+region and makes everything worse.</p>
+
+<div class="warnbox"><b>and one that was nearly a disaster</b>
+<p>The rule for combining the five reprojected images let a later camera claim
+a pixel if it was <b>1&nbsp;mm</b> nearer. With perfect depth that is harmless.
+With real depth it is close to the worst rule available: noise is a few tenths
+of a millimetre, so the winner is often just whichever camera erred toward the
+viewer &mdash; and the ones most likely to win are the outer ones, whose
+<code>alpha</code> is largest, which turn that error into the largest sideways
+shift. Occlusions are centimetre-scale. Noise is sub-millimetre. Put the
+threshold between them.</p>
+<table>
+<tr><th>How the five images are combined</th><th class="n">gaze error vs a real window</th></tr>
+<tr><td>perfect depth &mdash; geometry alone</td><td class="n">0.26&deg;</td></tr>
+<tr><td>real depth, 1 mm threshold</td><td class="n">1.38&deg; &nbsp;<span class="fail">fails</span></td></tr>
+<tr><td>real depth, 10 mm threshold</td><td class="n">0.89&deg;</td></tr>
+<tr><td>real depth, centre camera only, holes filled</td><td class="n">0.55&deg;</td></tr>
+</table>
+<p>Which raises a question the design did not ask: over the <em>face</em>, the
+outer four cameras may be costing more in depth noise than they earn in
+coverage. They are still the only thing that sees a hand.</p></div>
+
+<h3>Two problems stereo deletes for free</h3>
+<ul>
+<li><b>Scale ambiguity and per-user IPD calibration both disappear.</b> Depth
+arrives in metres. A monocular design has to guess absolute scale from the
+distance between someone's pupils, and be recalibrated per person.</li>
+<li><b>Nothing in the depth path knows what a face is.</b> Hands, objects, hair
+and glasses all get depth on the same terms as eyes.</li>
+</ul>
+</section>
+
+<hr>
+
+<section id="rig">
+<h2>11 · The rig</h2>
+
+<p>Four cameras on the bezel corners, forming a rectangle. One camera — the
+imager — hanging in front of the screen on a thin blade, landing on the far
+person's hairline.</p>
+
+<div class="fig">
+  <h5>The rig, in 3D</h5>
+  <p class="cap">The view orbits on its own until you touch it. Drag to take over,
+  or use the preset views below. Every position is the real one, derived from
+  <code>config.json</code>.</p>
+  <div class="ctl">
+    <div class="seg" id="rigOpts">
+      <button data-o="rays" class="on">Sight lines</button>
+      <button data-o="base">Baselines</button>
+      <button data-o="none">Rig only</button>
+    </div>
+  </div>
+  <canvas id="rigCv" height="500"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--s1)"></i>Bezel cameras (depth)</span>
+    <span><i style="background:var(--s2)"></i>Blade imager (the picture)</span>
+    <span><i style="background:var(--s3)"></i>Window W</span>
+  </div>
+</div>
+
+<h3>Positions in the window frame</h3>
+<table>
+<tr><th>Camera</th><th class="n">X (mm)</th><th class="n">Y (mm)</th><th class="n">Z (mm)</th><th>Role</th></tr>
+<tr><td>TL</td><td class="n">−125</td><td class="n">+188</td><td class="n">+30</td><td rowspan="4">Depth and viewpoint coverage. Occlude nothing.</td></tr>
+<tr><td>TR</td><td class="n">+125</td><td class="n">+188</td><td class="n">+30</td></tr>
+<tr><td>BL</td><td class="n">−125</td><td class="n">−188</td><td class="n">+30</td></tr>
+<tr><td>BR</td><td class="n">+125</td><td class="n">−188</td><td class="n">+30</td></tr>
+<tr class="hl"><td><b>C</b></td><td class="n"><b>0</b></td><td class="n"><b>+70</b></td><td class="n"><b>+22</b></td><td><b>The imager. Supplies the actual picture at alpha = 7°.</b></td></tr>
+</table>
+
+<h3>What the blade costs you visually</h3>
+<table>
+<tr><th>Mounting</th><th class="n">Subtends</th><th class="n">Fraction of their head width</th></tr>
+<tr><td>Bare 32 mm board</td><td class="n">3.06°</td><td class="n">20.8%</td></tr>
+<tr class="hl"><td>20 mm module behind a printed shroud</td><td class="n">1.91°</td><td class="n">13.0%</td></tr>
+<tr><td>PCB edge-on behind a 12 mm front-surface mirror</td><td class="n">1.15°</td><td class="n">7.8%</td></tr>
+</table>
+<p>The blade itself is 3.2 mm wide and draws a 0.29° vertical line over the top
+of their head. You stop noticing it in about a minute, the same way you stopped
+noticing a phone's punch-hole.</p>
+
+<div class="warnbox"><b>Blade flex is the failure mode of the whole build</b>
+<p>Everything — the 7°, the 1.71 mm tolerance, the 57 mm baseline — is
+conditioned on that camera being where you think it is to within a few
+millimetres, and <b>10 mm of lateral error costs a full degree</b>. Blade length
+is <code>screen_h/2 − 70</code>, so it scales with panel height: 98 mm on a 27″,
+129 mm on a 32″. Cantilever deflection goes as the <em>cube</em> of length —
+that is 2.3× the flex for the same section.</p></div>
+
+<h3>Bill of materials, per endpoint</h3>
+<table>
+<tr><th>Item</th><th>Spec</th><th class="n">Cost</th></tr>
+<tr><td>Monitor</td><td>24–32″, matte, centre at seated eye height</td><td class="n">have it</td></tr>
+<tr><td>5 × USB camera module</td><td><b>Five of one part, ideally one batch.</b> UVC, 1080p60 MJPEG, 75–78° HFOV, lockable focus, ≤32 mm PCB for C. <b>External trigger pin strongly preferred</b></td><td class="n">$125</td></tr>
+<tr><td>Trigger source</td><td>One $2 microcontroller driving a square wave into all five trigger pins. Free-running UVC inherits up to 8 ms of skew at 60 fps — 8 mm of depth error on a hand at 1 m/s. A trigger makes it exactly zero.</td><td class="n">$3</td></tr>
+<tr><td>Printed rig</td><td>Two bezel bars, drop blade, five pads, one shroud (~120 g PLA)</td><td class="n">$3</td></tr>
+<tr><td>Bias light</td><td>LED panel beside the monitor, facing the user</td><td class="n">$25</td></tr>
+<tr><td>2 × powered USB 3 hub</td><td>On <b>separate host controllers</b></td><td class="n">$40</td></tr>
+<tr><td>Fasteners</td><td>20 × M2×6, 4 × M3×12</td><td class="n">$5</td></tr>
+<tr><td>Calibration target</td><td>A3 checkerboard on foam board</td><td class="n">$2</td></tr>
+<tr class="hl"><td colspan="2"><b>Total</b></td><td class="n"><b>~$200</b></td></tr>
+</table>
+
+<div class="deep"><b>"Identical" is not a preference</b>
+<p>Mismatched intrinsics, mismatched rolling-shutter timing, and mismatched
+auto-exposure behaviour each break stereo matching in their own way. Do not buy
+a narrower lens for C on the grounds that it only has to see a face — it
+participates in the same bundle adjustment as the other four.</p></div>
+</section>
+
+<hr>
+
+<section id="five">
+<h2>12 · Why five cameras, not three</h2>
+
+<p class="sub">This section is about the <b>face group</b>. The rig now carries
+nine modules; the other four are the aimed near group, which exists for a
+different volume and is covered in sections 5 and 21.</p>
+
+<div class="eli5"><b>ELI5</b>
+<p>Because the viewer moves, you don't need one virtual camera — you need every
+viewpoint in a whole rectangle of possible head positions. To fill in a
+rectangle by blending real photographs, your real cameras have to
+<em>surround</em> that rectangle.</p>
+<p>Three cameras make a triangle. A triangle narrows toward its bottom corner,
+so diagonal viewpoints fall outside it — and outside means guessing instead of
+blending.</p></div>
+
+<p>Formally: every point in the viewpoint patch should fall <b>inside the
+angular hull of the real cameras</b>, so novel views are interpolated between
+real photographs and disocclusion holes get filled with real pixels rather than
+inpainted.</p>
+
+<div class="fig">
+  <h5>Angular hull vs. viewpoint patch</h5>
+  <p class="cap">Each dot is a camera's bearing as seen from the subject. The
+  shaded region is the hull. The grid is where the far viewer's eye actually
+  goes. Anything outside the hull has to be invented.</p>
+  <div class="ctl">
+    <div class="seg" id="hullMode">
+      <button data-h="3">3 cameras</button>
+      <button data-h="4">4 cameras</button>
+      <button data-h="5" class="on">5 cameras</button>
+    </div>
+    <label><span class="lab">Viewer travel <b id="tvLab">±250 mm</b></span>
+      <input type="range" id="tv" min="50" max="350" step="50" value="250"></label>
+  </div>
+  <canvas id="hullCv" height="360"></canvas>
+  <p class="note" id="hullNote"></p>
+</div>
+
+<table>
+<tr><th>Layout</th><th class="n">±100 mm</th><th class="n">±150 mm</th><th class="n">±250 mm</th></tr>
+<tr><td>3 cameras: top pair + blade</td><td class="n fail">−10.3°</td><td class="n fail">−13.7°</td><td class="n fail">−20.5°</td></tr>
+<tr><td>4 cameras: + bottom centre</td><td class="n pass">ok</td><td class="n fail">−2.9°</td><td class="n fail">−9.0°</td></tr>
+<tr class="hl"><td><b>5 cameras: bezel rectangle + blade</b></td><td class="n pass">ok</td><td class="n pass">ok</td><td class="n pass">ok</td></tr>
+</table>
+
+<h3>The second reason: crossed baselines</h3>
+<p>A horizontal camera pair <b>cannot match horizontal edges</b>. This is the
+aperture problem: slide a horizontal line sideways and it looks identical, so
+there is no way to measure the shift.</p>
+<p><b>Eyelids and shoulders are horizontal edges.</b> Crossed baselines remove
+that blind spot exactly where the design is tightest.</p>
+
+<table>
+<tr><th>Pair</th><th class="n">Baseline</th><th class="n">σ_z</th><th>Fixes</th></tr>
+<tr><td>TL–TR horizontal</td><td class="n">250 mm</td><td class="n">0.26 mm</td><td>vertical edges</td></tr>
+<tr><td>top–bottom vertical</td><td class="n">376 mm</td><td class="n">0.17 mm</td><td><b>eyelids, shoulders</b></td></tr>
+<tr><td>TL–BR diagonal</td><td class="n">452 mm</td><td class="n">0.14 mm</td><td>everything else</td></tr>
+</table>
+</section>
+
+<hr>
+
+<section id="parallax">
+<h2>13 · Motion parallax</h2>
+
+<p>When you move your head sideways by <code>Δ</code>, the correct image is the
+one a camera displaced by <code>Δ</code> would have captured. To first order
+that is a screen-space shift:</p>
+<div class="eq">shift = Δ · (1 − z_screen / z_virtual)</div>
+<p>where <code>z_screen</code> is <b>your</b> distance to <b>your own</b> screen,
+and <code>z_virtual</code> is the distance from your eye to the thing being
+drawn.</p>
+
+<div class="warnbox"><b>The trap: this constant is not the implementation</b>
+<p>For the peer's face at 1.15 m the gain is 0.478. It is tempting to apply
+0.478 to the whole frame. <b>Don't.</b> The gain is a function of
+<em>each pixel's own depth</em>, and the difference lands squarely on
+pointing — which is half the point of the system.</p></div>
+
+<div class="fig">
+  <h5>Parallax gain depends on depth</h5>
+  <p class="cap">Move your head 100 mm. How far should each thing shift on
+  screen? A single-plane approximation gives them all the same answer.</p>
+  <div class="ctl">
+    <label><span class="lab">Object distance from your eye <b id="pvLab">850 mm</b></span>
+      <input type="range" id="pv" min="450" max="1600" value="850"></label>
+  </div>
+  <canvas id="paraCv" height="230"></canvas>
+  <div class="out">
+    <div><div class="k">Correct gain</div><div class="v" id="pG"></div></div>
+    <div><div class="k">Plane approximation</div><div class="v" id="pA">0.478</div></div>
+    <div><div class="k">Misplacement @100 mm</div><div class="v" id="pE"></div></div>
+    <div><div class="k">Angular error</div><div class="v" id="pD"></div></div>
+  </div>
+  <p class="note">A hand extended 300 mm toward you sits at 850 mm. The plane
+  approximation misplaces it by <b>18.4 mm</b> — <b>1.24°</b> at the hand, and
+  it rotates the pointing ray by <b>1.76°</b> over a 600 mm arm. Against a 1°
+  budget, that alone would fail the fine test.</p>
+</div>
+
+<p>The constant <em>is</em> the right thing for the <b>overscan calculation</b>,
+which sizes the capture field of view. You must photograph wider than the window
+so there are real pixels to shift into.</p>
+
+<table>
+<tr><th>Viewer travel</th><th class="n">Image shift</th><th class="n">Overscan per side</th><th class="n">Camera HFOV needed</th></tr>
+<tr><td>±100 mm</td><td class="n">48 mm</td><td class="n">8.0%</td><td class="n">62.6°</td></tr>
+<tr><td>±150 mm</td><td class="n">72 mm</td><td class="n">12.0%</td><td class="n">66.0°</td></tr>
+<tr class="hl"><td><b>±250 mm</b></td><td class="n"><b>120 mm</b></td><td class="n"><b>20.0%</b></td><td class="n"><b>72.5°</b></td></tr>
+<tr><td>±350 mm</td><td class="n">167 mm</td><td class="n">28.0%</td><td class="n">78.5°</td></tr>
+</table>
+
+<div class="deep"><b>This caps your monitor size</b>
+<p>Keeping the full ±250 mm of travel inside a 75–78° lens caps the panel at
+roughly 30″ 16:9. A 32″ needs 79°; a 34″ ultrawide needs 85°, which is where
+distortion becomes hard to calibrate. Bigger panels buy gesture space and pay
+in lens angle and blade rigidity — both of which hit gaze.</p></div>
+</section>
+
+<hr>
+
+<section id="budget">
+<h2>14 · The error budget</h2>
+
+<p>Everything above is theory. This is the part that says whether it works. The
+simulation runs the entire closed loop — A's endpoint estimates A's eye, A's
+screen draws B, A fixates that pixel, A's endpoint measures the direction and
+transmits it, B's endpoint reconstructs the ray — and reports the angular error
+<em>at B</em>.</p>
+
+<table>
+<tr><th>Perturbation</th><th class="n">Magnitude</th><th class="n">Gaze error</th><th>Reading</th></tr>
+<tr><td>Own eye depth wrong</td><td class="n">40 mm</td><td class="n pass">0.28°</td><td>Depth is cheap.</td></tr>
+<tr><td>Own eye lateral wrong</td><td class="n">10 mm</td><td class="n mid">0.95°</td><td rowspan="2"><b>The binding constraint: ~1 cm per 1°.</b></td></tr>
+<tr><td>Own eye lateral wrong</td><td class="n">40 mm</td><td class="n fail">3.8°</td></tr>
+<tr><td>Camera pitch residual</td><td class="n">0.5°</td><td class="n pass">0.03°</td><td rowspan="2">Rotation is nearly free. Rigidity matters; precision doesn't.</td></tr>
+<tr><td>Camera pitch residual</td><td class="n">2.0°</td><td class="n pass">0.11°</td></tr>
+<tr class="hl"><td><b>Peer tracking, estimate used consistently</b></td><td class="n">40 mm</td><td class="n pass"><b>0.00°</b></td><td><b>Distortion only. The wrong-seat cost is 1.99° — see §15.</b></td></tr>
+<tr><td>Peer tracking, transmit and render disagree</td><td class="n">10 mm</td><td class="n mid">0.50°</td><td>The same error, threaded wrong.</td></tr>
+<tr><td>Monocular scale error (IPD)</td><td class="n">5%</td><td class="n mid">0.71°</td><td rowspan="2">Why the design went stereo.</td></tr>
+<tr><td>Monocular scale error (IPD)</td><td class="n">8%</td><td class="n fail">1.12°</td></tr>
+<tr class="hl"><td colspan="2"><b>Pessimistic stack, all at once</b></td><td class="n pass"><b>0.55°</b></td><td><b>Distortion terms only.</b></td></tr>
+<tr class="hl"><td colspan="2"><b>… with the wrong-seat term at 10 mm</b></td><td class="n mid"><b>0.74°</b></td><td><b>Quadrature. 1.05° if the terms add. See §15.</b></td></tr>
+</table>
+
+<div class="deep"><b>The counter-intuitive summary</b>
+<p>Depth errors are cheap. Lateral errors are expensive. Rotation is nearly
+free — because the same rotation corrupts both the reconstructed position and
+the measured gaze direction, and the two mostly cancel.</p>
+<p>This inverted the early plan. Depth was assumed to be the main risk and
+turned out to be the loosest term in the budget.</p></div>
+</section>
+
+<hr>
+
+<section id="cancel">
+<h2>15 · The cancellation — the best result in the design</h2>
+
+<div class="eli5"><b>ELI5</b>
+<p>Your computer guesses where your eyes are. It gets it wrong by a centimetre.
+You'd think that ruins everything.</p>
+<p>It doesn't — <em>as long as it tells the same lie twice.</em> If it uses the
+same wrong guess both to draw your friend on your screen and to tell your
+friend's computer where you are, then: your screen draws them in the wrong
+place, you look at the wrong pixel — and their view was rendered from that
+same wrong place, so your gaze lands exactly right.</p>
+<p>Two wrongs make a right, and they make it <em>exactly</em> right.</p></div>
+
+<p>Measured: <b>0.00° at 40 mm of tracking error.</b> Not "small". Zero.</p>
+
+<h3>But be precise about what that claims</h3>
+
+<p>This page has also said differential gaze degrades as <code>Δ / 1.15 m</code>
+— about 0.5° per centimetre, which is <b>2.0°</b> at that same 40 mm. Both
+numbers are right. They measure different things, and running them together
+understates what head tracking has to achieve.</p>
+
+<table>
+<tr><th class="n">Tracking error</th><th class="n">Geometry distorted?</th><th class="n">Viewed from the wrong seat</th></tr>
+<tr><td class="n">5 mm</td><td class="n pass">0.00°</td><td class="n">0.25°</td></tr>
+<tr><td class="n">10 mm</td><td class="n pass">0.00°</td><td class="n mid">0.50°</td></tr>
+<tr><td class="n">20 mm</td><td class="n pass">0.00°</td><td class="n mid">0.99°</td></tr>
+<tr class="hl"><td class="n"><b>40 mm</b></td><td class="n pass"><b>0.00°</b></td><td class="n fail"><b>1.99°</b></td></tr>
+</table>
+
+<p><b>A consistent estimate is a change of coordinates, not a distortion.</b>
+Feed one value to both the packet and the render and the scene drawn is exactly
+right <em>for that value</em> — no ray bent, no angle corrupted. That is what
+the 0.00° measures, and it is worth protecting.</p>
+
+<p><b>But consistency does not move your head.</b> Your eye is still Δ away from
+the seat the picture was drawn for, and on a flat panel that residual is the
+Mona Lisa case. Eye contact survives it. The left-eye/right-eye differential
+does not, because that is exactly a small angular distinction referenced to
+where your eyes actually are.</p>
+
+<div class="warnbox"><b>The error budget in §14 is missing this term</b>
+<p>Its pessimistic stack scores 10 mm of peer tracking under the first column —
+0.00° — and totals 0.55°. Scored honestly that same 10 mm contributes
+<b>0.50°</b>, pushing the stack to <b>0.74°</b> in quadrature or <b>1.05°</b>
+if the terms add.</p>
+<p>So <b>head tracking accuracy is not free, and the design of record implies
+it is.</b> The real requirement is roughly <b>10 mm absolute</b>. That does not
+break anything — 10 mm from stereo-triangulated landmarks at 600 mm is very
+achievable — but it has to be budgeted rather than assumed away. At 20 mm the
+design fails on any pessimistic combination.</p></div>
+
+<p class="sub"><b>Consistency buys an undistorted scene. It does not buy the
+right seat.</b></p>
+
+<div class="warnbox"><b>The condition, and it is fragile</b>
+<p>This holds if and only if <b>one estimate, stamped once per frame</b>, feeds
+both the outgoing position packet and the local render. It breaks the moment the
+render thread and the network thread read estimates from different frames — and
+then 10 mm costs 0.50°.</p></div>
+
+<h3>The Mona Lisa effect, working for you</h3>
+<p>A flat image of a face gazing into the lens reads as gazing at you from any
+viewing angle. Two consequences, one good and one to respect:</p>
+<ul>
+<li><b>Eye contact survives</b> viewer movement and a wrong declared position.</li>
+<li><b>Differential gaze does not.</b> Whether they are looking at your left eye
+or your right degrades as <code>Δ / 1.15 m</code> — about 0.5° per centimetre
+of drift.</li>
+</ul>
+</section>
+
+<hr>
+
+<section id="pipeline">
+<h2>16 · The software pipeline</h2>
+
+<pre><code>  TL,TR,BL,BR --&gt; rectify --&gt; multi-baseline SGBM --&gt; metric depth D
+                                                          |
+  C           --&gt; undistort ------------------------------+
+                                                          |
+              angular-weighted resample of ALL FIVE -&gt; peer's eye position
+                       z-buffered, mesh cut at depth discontinuities
+                                                          |
+                                  crop to W, scale 1:1
+                                                          |
+                    encode + transmit {frame, D, my eye position, seq, t}
+  ------------------------------------------------------------------------
+  incoming packet --&gt; SWAP into local frame
+                          |
+       local head tracking (from bezel stereo: metric, no IPD calibration)
+                          |
+              STAMPED ONCE PER FRAME, feeding both:
+                 (a) my eye position sent upstream
+                 (b) my local render viewpoint
+                          |
+       offaxis_projection(e_local, W) @ view_matrix(e_local)
+                          |
+       depth-correct re-render, per pixel, drawing from the overscan margin</code></pre>
+
+<p><b>Stack.</b> OpenCV for rectification, SGBM and calibration.
+<code>moderngl</code> for the warp and off-axis render — one draw call over a
+depth-displaced grid. Raw UDP on a LAN for v1. WebRTC later if it needs to leave
+the building, changing nothing geometric.</p>
+
+<h3>Why it warps twice</h3>
+
+<p>Read cold, the pipeline looks like it does the same work at both ends. It
+does not, and the split is deliberate.</p>
+
+<p>The <b>sender</b> performs the large viewpoint change — from the rig to the
+peer's last-known eye position — because that is the only place where five real
+cameras exist to fill the holes it opens. The <b>receiver</b> corrects only for
+however far the head moved during one network round trip.</p>
+
+<table>
+<tr><th></th><th>Viewpoint change</th><th class="n">Hole opened</th><th>Filled by</th></tr>
+<tr><td><b>Sender</b></td><td>70 mm lateral + 596 mm axial</td><td class="n">~126 mm</td><td class="pass">four real cameras</td></tr>
+<tr><td><b>Receiver</b></td><td>head motion over one RTT</td><td class="n">~9 mm</td><td>stretching</td></tr>
+</table>
+
+<p>The big move happens where the pixels exist to fill it; only the small
+RTT-sized residual is ever guessed at. This is also what makes degradation
+graceful — if the network stalls, the sender's warp goes stale but the receiver
+keeps re-rendering from your live head position at full local frame rate.
+Parallax still responds instantly, with slightly more stretching.</p>
+
+<h3>All five cameras are colour sources</h3>
+
+<p>An earlier version of this pipeline treated <code>C</code> as "the picture"
+and demoted the bezel four to depth and hole-filling, which throws away four
+live colour images.</p>
+
+<p>Resample <b>all five</b>, weighted by angular proximity to the required
+viewpoint. <code>C</code> still dominates near frame centre — at 7° off it needs
+the least warping — but at a silhouette or in a disocclusion, a camera that
+<em>actually saw</em> the surface beats stretching <code>C</code>'s edge pixels,
+and it should win on merit rather than be consulted only after a hole is
+declared. Weight <b>sharply</b>, close to winner-take-all: broad averaging
+across views with imperfect depth ghosts and softens.</p>
+
+<div class="deep"><b>A free diagnostic falls out of it</b>
+<p>Reproject a point using its depth and sample all five cameras. If they
+disagree on its colour, the depth is wrong there. That is a direct measurement
+of the σ_d assumption §22 calls the design's biggest unknown, and it needs no
+new hardware.</p></div>
+
+<div class="deep"><b>Head tracking must not ride on the dense depth map</b>
+<p>It sits inside the motion-to-photon loop and the depth solve does not.
+Triangulate a handful of landmarks across the bezel pair and keep that path
+cheap and separate — otherwise you have put the slowest stage inside the
+fastest loop.</p></div>
+</section>
+
+<hr>
+
+<section id="nonneg">
+<h2>17 · Non-negotiables</h2>
+
+<dl class="kv" style="grid-template-columns:1fr;gap:14px">
+<div><dt style="font-family:var(--sans);font-size:14px;color:var(--ink);font-weight:600">Stamp the eye position once per frame</dt>
+<dd>Use that single value for both the outgoing packet and the local render.
+This is what makes tracking error cancel exactly. Separate reads on separate
+threads break it and cost 0.50° per 10 mm.</dd></div>
+
+<div><dt style="font-family:var(--sans);font-size:14px;color:var(--ink);font-weight:600">Warp, do not model</dt>
+<dd>Every output pixel is a resampled input pixel. Depth decides where pixels
+move, nothing more. Do not build a textured face mesh — it substitutes a model
+for the video and looks like a mask.</dd></div>
+
+<div><dt style="font-family:var(--sans);font-size:14px;color:var(--ink);font-weight:600">Render locally</dt>
+<dd>Head tracking is local, so network latency becomes conversational lag with
+zero geometric error. Motion-to-photon under 50 ms.</dd></div>
+
+<div><dt style="font-family:var(--sans);font-size:14px;color:var(--ink);font-weight:600">Never scale to fit</dt>
+<dd>If the two monitors differ, both ends letterbox to the largest rectangle
+that fits in both, in millimetres. Scaling preserves the picture and destroys
+the angles, and the angles are the entire point.</dd></div>
+
+<div><dt style="font-family:var(--sans);font-size:14px;color:var(--ink);font-weight:600">Frame sync</dt>
+<dd>Five unsynchronised UVC streams carry up to 8 ms of skew, which a hand at
+1 m/s turns into 8 mm of depth error. Read all five in lockstep from one thread,
+timestamp on arrival, and reject any pair worse than 4 ms — falling back to the
+previous depth map rather than trusting it.</dd></div>
+
+<div><dt style="font-family:var(--sans);font-size:14px;color:var(--ink);font-weight:600">Split the USB topology</dt>
+<dd>Five 1080p60 MJPEG streams run about 17 MB/s. USB 3 handles the throughput,
+but UVC bandwidth negotiation fails well before the bus limit. Two hubs, on
+separate host controllers.</dd></div>
+
+<div><dt style="font-family:var(--sans);font-size:14px;color:var(--ink);font-weight:600">Degrade gracefully</dt>
+<dd>If tracking drops out, fall back to the <em>last known</em> eye position,
+never to a default. The call degrades to a fixed viewpoint instead of
+lurching.</dd></div>
+</dl>
+</section>
+
+<hr>
+
+<section id="calib">
+<h2>18 · Calibration</h2>
+
+<h3>Prerequisites — skipped more often than any other step</h3>
+<p><b>Identify cameras by physical port path.</b> Cheap modules share one VID/PID
+with no serial, so <code>/dev/video*</code> reshuffles on reboot. Key on
+<code>/dev/v4l/by-path/</code> and label every cable.</p>
+
+<p><b>Lock every camera.</b> Disable autofocus, auto-exposure and auto white
+balance; pin fixed values; use the <b>same</b> exposure and white balance on all
+five.</p>
+
+<div class="deep"><b>Why identical exposure is not fussiness</b>
+<p>Stereo matching assumes a pixel of a cheek has the same brightness in both
+views. Auto-exposure is precisely what destroys that assumption. Autofocus that
+hunts mid-call silently changes your intrinsics and ruins depth with no visible
+symptom until gaze is wrong.</p></div>
+
+<h3>Three stages</h3>
+<ol>
+<li><b>Intrinsics, per camera.</b> Checkerboard, 20 poses, covering the frame
+edges where distortion lives. Expect RMS under 0.4 px.</li>
+<li><b>Relative extrinsics, all five simultaneously.</b> One board where the head
+normally sits, visible to all five at once, 30 poses. Expect a bundle residual
+under 0.5 px.</li>
+<li><b>Anchor to the screen, from CAD.</b> Non-interactive: rig geometry plus
+three ruler measurements.</li>
+</ol>
+
+<h3>Photometric alignment, per camera</h3>
+<p>Identical modules still scatter in sensor gain and tint. Matching assumes a
+cheek reads the same in both views, and hole-filling pastes one camera's pixels
+into another's image, where a mismatch shows as a seam. While the board is up,
+capture one frame per camera of a flat evenly-lit target and fit a <b>3×3 colour
+matrix plus offset</b> against the median of all five. Apply on ingest, before
+rectification. This does not replace locking exposure and white balance — it
+corrects the residual those cannot reach.</p>
+
+<div class="warnbox"><b>You cannot calibrate against the screen surface</b>
+<p>An early version of this design proposed taping the board flat to the monitor
+and treating the screen as the calibration plane. That is invalid for this
+layout: the bezel cameras are mounted <em>in</em> the screen plane and point
+outward, so they see it edge-on and the pose is degenerate. CAD plus three
+ruler measurements is good to about 1 mm against a 10 mm tolerance.</p></div>
+</section>
+
+<hr>
+
+<section id="verify">
+<h2>19 · Verification — how you know it works</h2>
+
+<p>The build's key diagnostic was originally stated as: render a virtual cube in
+the window plane; if it stays welded to the glass, calibration and head tracking
+are both right.</p>
+
+<p>That turns out to be wrong in an interesting way.</p>
+
+<h3>A point at z = 0 is invariant to eye position</h3>
+<p>Work the projection through for a point in the window plane:</p>
+<div class="eq" style="border-color:var(--s3)">ndc_x = 2x / W_w &nbsp;&nbsp;&nbsp;<span class="c"># every eye term cancels — exactly</span></div>
+
+<div class="eli5"><b>ELI5</b>
+<p>A drawing on the glass itself doesn't move when you move your head — because
+it's <em>on the glass</em>. So a test target drawn in the window plane can
+never reveal a head-tracking bug. It literally cannot see it.</p></div>
+
+<p>So the test is blind to one of the two suspects it was supposed to
+distinguish. It has to become two tests.</p>
+
+<div class="fig">
+  <h5>The invariance, and what breaks it</h5>
+  <p class="cap">Top-down view, looking at the desk from above. Move the eye.
+  The green marker sits at z = 0 and never moves on screen. The orange marker
+  floats 300 mm in front of the glass and moves with unity gain.</p>
+  <div class="ctl">
+    <label><span class="lab">Eye position <b id="ivLab">0 mm</b></span>
+      <input type="range" id="iv" min="-250" max="250" value="-150"></label>
+    <label><span class="lab">Tracking error injected <b id="ieLab">0 mm</b></span>
+      <input type="range" id="ie" min="-40" max="40" value="0"></label>
+  </div>
+  <canvas id="invCv" height="330"></canvas>
+  <div class="out">
+    <div><div class="k">z=0 target moved</div><div class="v" id="iZ"></div></div>
+    <div><div class="k">z=+300 target separation</div><div class="v" id="iF"></div></div>
+  </div>
+  <p class="note">Inject a tracking error with the second slider. The z = 0
+  target does not respond at all. The floating target separates from its real
+  counterpart by exactly the tracking error — which is why the fiducial sits at
+  half your seating distance: that depth gives <b>unity gain</b>.</p>
+</div>
+
+<h3>Three observables, catching disjoint faults</h3>
+<table>
+<tr><th>Observable</th><th>What you physically do</th><th>Blind to</th></tr>
+<tr><td><b>null</b></td><td>Watch the z=0 target while the eye position sweeps. It must not move.</td><td>anything static</td></tr>
+<tr><td><b>tape</b></td><td>Tape marks on the glass from a ruler; check registration.</td><td>anything that only shows under motion</td></tr>
+<tr><td><b>float</b></td><td>Pencil tip on a stand at z = +300 mm; the virtual point must stay on it.</td><td>nothing — it is the only one that sees a corrupted <em>eye</em></td></tr>
+</table>
+
+<h3>Bug injection — a null that cannot fail is worthless</h3>
+<p>The test suite deliberately injects seven classic faults and reports which
+observable catches each. All figures are millimetres on the glass.</p>
+
+<table>
+<tr><th>Injected fault</th><th class="n">null</th><th class="n">tape</th><th class="n">float</th><th>Caught by</th></tr>
+<tr><td>correct</td><td class="n">0.00</td><td class="n">0.00</td><td class="n">0.00</td><td class="pass">— is correct</td></tr>
+<tr><td>lookat view matrix</td><td class="n">439.85</td><td class="n">0.00</td><td class="n">432.48</td><td>null + float</td></tr>
+<tr><td>symmetric frustum</td><td class="n">400.00</td><td class="n">0.00</td><td class="n">200.00</td><td>null + float</td></tr>
+<tr><td>symmetric + lookat</td><td class="n">45.04</td><td class="n">0.00</td><td class="n">232.60</td><td>null + float</td></tr>
+<tr><td>mirrored preview</td><td class="n">0.00</td><td class="n">200.00</td><td class="n">800.00</td><td>tape + float</td></tr>
+<tr class="hl"><td><b>eye x sign flipped</b></td><td class="n">0.00</td><td class="n">0.00</td><td class="n">800.00</td><td><b>float only</b></td></tr>
+<tr><td>window 5% too wide</td><td class="n">0.00</td><td class="n">4.76</td><td class="n">19.05</td><td>tape + float</td></tr>
+<tr><td>HiDPI 2× viewport</td><td class="n">0.00</td><td class="n">199.25</td><td class="n">349.25</td><td>tape + float</td></tr>
+</table>
+
+<div class="deep"><b>Two findings the injection produced</b>
+<p><b>A centred rectangle is symmetric under x → −x.</b> The first version of the
+test drew one, so a mirrored frame mapped it exactly onto itself and scored zero
+on every observable — the single most expensive bug in the project, sailing
+straight past. The target now carries a chiral notch. That fix exists only
+because the fault was injected; running the correct code forever would never
+have revealed it.</p>
+<p><b>An eye-position sign error is caught by the float test and nothing else</b>
+— which follows directly from the invariance above, and is the concrete
+justification for splitting the test rather than an argument from principle.</p></div>
+
+<h3>The formal acceptance test</h3>
+<p>Tape a numbered 5×3 grid to the wall behind each monitor and mark the far
+person's left eye, right eye and mouth. Thirty trials each, blind: they fixate a
+called target, you report what you perceived.</p>
+<ul>
+<li><b>Coarse pass, 4°:</b> face vs hands vs away — 90% correct.</li>
+<li><b>Fine pass, 1°:</b> left eye vs right eye vs mouth — 80% correct.</li>
+<li><b>Pointing pass:</b> they point at one of five marks on your torso and
+desk; you identify which — 90% correct.</li>
+</ul>
+<p>Run the same protocol over an ordinary video call as a control. <b>Have the
+number, not the impression.</b></p>
+</section>
+
+<hr>
+
+<section id="deadends">
+<h2>20 · Dead ends, and why each died</h2>
+
+<p>Each of these was seriously considered. They are recorded so nobody re-derives
+them.</p>
+
+<h3>ML gaze redirection <span class="pill dead">dead</span></h3>
+<p>Snaps gaze toward the camera. Manufactures constant eye contact and destroys
+the differential signal. <b>Wrong tool for this goal, not merely imperfect.</b></p>
+
+<h3>Textured face-mesh proxy <span class="pill dead">dead</span></h3>
+<p>Replaces the video with a model: looks like a video-game character wearing
+your friend's face, and hands leaving the head-and-shoulders box smear. Killed
+by the requirement "I want to see the person I'm calling."</p>
+
+<h3>Generic monocular depth <span class="pill dead">dead</span></h3>
+<p>Scale-ambiguous, temporally flickery, and weakest exactly on the eye region.
+Superseded by stereo. Note the irony: depth turned out to be the <em>most</em>
+forgiving term in the budget, so monocular's headline weakness was never the
+real problem.</p>
+
+<h3>Pure 2D homography <span class="pill dead">dead</span></h3>
+<p>Recovers 3.4% of the gaze error. Structurally incapable, not just inaccurate.</p>
+
+<h3>Bezel-only camera placement <span class="pill dead">dead</span></h3>
+<p>Needs 0.66 mm corneal depth accuracy — eyeball radius alone varies ±0.5 mm
+between people. And even with stereo beating that on paper, the <b>eyelid
+occlusion bias</b> at 18° remains: viewed from above, the upper lid covers more
+of the iris than it does head-on. That is an <em>occlusion</em>, not a
+displacement, and a depth-driven warp has no pixels to put there.</p>
+<div class="deep"><b>This is why the blade exists</b>
+<p>Stereo depth is good enough on paper for a bezel-only rig. The blade is there
+because at alpha = 7° the eyelid difference is negligible, and at 18° it is a
+systematic bias no depth map can fix.</p></div>
+
+<h3>Beamsplitter / teleprompter fold <span class="pill open">back pocket</span></h3>
+<p><b>Optically the best answer.</b> Camera at the conjugate point, raw video,
+zero warping, exact gaze and pointing. Genuinely commodity — teleprompter glass
+is $40–90. The "glassy" look is fixable with proper wedged glass plus matte
+black flocking.</p>
+<p><b>Rejected on bulk:</b> about 90 cm of desk depth for a 27″ panel, or 40 cm
+plus a folded side-arm using a mirror. Also costs ~50% of screen brightness.</p>
+<p>Worth keeping in mind for a reason separate from the one it was rejected on:
+it removes the entire depth pipeline, so it is also the cheapest possible way to
+<em>test whether the premise is worth building</em> before committing to the
+compact version.</p>
+
+<h3>Pinhole in a rear-projection screen <span class="pill open">if requirements change</span></h3>
+<p>Same optical trick with no glass in the sight line: UST projector, screen with
+a 6 mm hole, camera 550 mm behind it. Full body at 80–100″. About $800 and needs
+a dim room. The best option if standing and full-body gesture ever become
+requirements.</p>
+
+<h3>Light-field displays, shape-matched displays, eyeball actuators <span class="pill dead">out of budget</span></h3>
+<p>All correct, all far outside budget. One notable piece of theory: a
+<em>diffuse</em> display can never serve multiple viewers, but a display surface
+that <em>coincides with the subject's true surface</em> needs no angular emission
+at all, because skin is roughly Lambertian. Head tracking and angular bandwidth
+are both compensations for a display surface sitting in the wrong place.</p>
+
+<h3>Three- and four-camera layouts <span class="pill dead">dead</span></h3>
+<p>Coverage fails. See §12.</p>
+
+<h3>Screen surface as the calibration plane <span class="pill dead">dead</span></h3>
+<p>Proposed early, invalid for the final layout: cameras mounted in the screen
+plane pointing outward see that plane edge-on.</p>
+
+<h3>A fixed chair <span class="pill dead">superseded</span></h3>
+<p>Replaced by head tracking. The residual is much weaker: drop tracking entirely
+and you need a <em>measured</em> seating position with about ±2 cm of slack,
+constraining only the viewer and requiring no alignment to the camera.</p>
+</section>
+
+<hr>
+
+<section id="limits">
+<h2>21 · Known limits</h2>
+
+<h3>The declared blind spots</h3>
+
+<p>These five are <em>decisions</em>, not bugs. Each is a volume or a case the
+design does not serve, chosen because the alternatives cost more than the case
+is worth. The right thing to do with them is put them in the product, not
+discover them mid-call.</p>
+
+<table>
+<tr><th>Blind spot</th><th>Why it cannot be cheaply removed</th></tr>
+<tr><td><b>Anything within ~150 mm of the glass</b></td><td>A pointing finger
+points <em>at the screen</em>, so its front face is visible only from the screen
+side of it — and the screen plane is already the frontmost place a camera can
+sit without standing in the picture. Measured: a fingertip 270 mm out is located
+to 4.8 mm; at 90 mm out, 212 mm wrong. The pipeline should show a hole there,
+which still reads as "he is reaching toward me".</td></tr>
+<tr><td><b>A second person at either end</b></td><td>The screen emits one image,
+drawn for one tracked eye. Anyone else is looking at a picture made for somebody
+else's seat, wrong by about 0.5° of gaze discrimination per centimetre of
+offset. Detect them and say so.</td></tr>
+<tr><td><b>Head turns past ~60°</b></td><td>The face leaves the stereo overlap,
+and the near cheek occludes the eye carrying the cue.</td></tr>
+<tr><td><b>Viewer travel past ±250 mm</b></td><td>Leaves the camera hull and the
+20% overscan margin at the same time — they were sized together, so they fail
+together.</td></tr>
+<tr><td><b>Stereopsis and focus</b></td><td>The render is monoscopic and the
+light leaves the glass at 600 mm whatever depth it represents. Direction and
+angular size are exact; depth <em>felt</em> is not delivered at all.</td></tr>
+</table>
+
+<h3>And the rest</h3>
+<ul>
+<li><b>The pointing volume ends about 150 mm from the glass</b> — see the blind-spot table above. With the five bezel modules alone an extended fingertip was framed by one or two of them and could not be reprojected at all; the four aimed near-group modules fix that down to about 150 mm and no further. A hand crossing the window plane is undefined outright, so clip at <code>z = 0</code>.</li>
+<li><b>Pointing does not survive a real matcher.</b> With depth actually computed from the pixels rather than handed over by the simulator, the pointing ray lands 415–719 mm off — because 93–98% of the fingertip is rejected for want of a second camera that can see it. Gaze survives at 0.55–0.89° against a 1.00° bar. Pointing does not survive at all, and the fix is optical, not algorithmic.</li>
+<li><b><code>sigma_d</code> is 0.5 px measured, against 0.3 px assumed.</b> Design-check margin 3.3× rather than 5.5×. And the depth error near an eye opening is systematic rather than random, which the budget adds in quadrature as though it averaged out.</li>
+<li>The matcher keeps 44–72% of the face and 39–41% of an extended hand. Everything else is a hole, to be filled from a neighbouring camera or inpainted.</li>
+<li>Fast hand movement shows sync artefacts. Faces do not.</li>
+<li>Head turns past roughly 60° leave usable stereo coverage.</li>
+<li>Viewer travel beyond ±250 mm leaves the camera hull and the overscan margin
+at once.</li>
+<li>1:1 scale makes the far face <b>smaller than video calls have trained people
+to expect</b>. Anyone judging on picture size will call it a downgrade.</li>
+<li>Both ends need a rig for reciprocal gaze. One-sided installs still give
+one-directional gaze and are worth testing.</li>
+<li>Glasses shift the apparent iris by a prescription-dependent amount. Not
+corrected — measure it during acceptance testing instead of guessing.</li>
+<li><b>Two people at one end breaks it.</b> The render serves one tracked
+viewer.</li>
+<li><b>The render is monoscopic, and focus sits at the screen.</b> One image is
+drawn from one tracked eye, so both of your eyes see the same picture.
+Direction and angular size are exact at every depth — verified to machine
+precision — but the light physically leaves the panel at 600 mm while the far
+person is meant to be at 1150 mm. Accommodation and vergence therefore sit at
+the screen while parallax says otherwise, and binocular disparity is absent.
+Gaze survives (the iris cue is monocular) and so does pointing; what it costs
+is presence. This is a <em>display</em> limit, not a capture one — the
+beamsplitter does not fix it either.</li>
+<li>20% overscan leaves about 1370 px across the window, or 2.3 arcmin per pixel
+at 600 mm. Adequate, not sharp.</li>
+<li>Depth is weakest on the eye region, which is where the design is tightest.
+Mitigated by low alpha, not solved.</li>
+</ul>
+</section>
+
+<hr>
+
+<section id="risks">
+<h2>22 · Where this might actually fail</h2>
+
+<p>The limits above are the ones the design admits. These are the ones worth
+watching, ranked by what would most likely kill the project rather than by how
+embarrassing it is. Everything here is <em>untested</em>.</p>
+
+<div class="warnbox"><b>1 · the matcher may not run at frame rate, and nobody has checked</b>
+<p>The largest unexamined risk in the design, and it is not an optical one. The
+plane sweep evaluates, per reference camera per frame, 1920×1080 pixels × 96
+depth planes × up to eight partners. In numpy on two cores that took about
+<b>ten minutes per frame</b>. Frame rate needs 16 ms. That is four orders of
+magnitude, and the honest reductions — three reference cameras instead of nine,
+720p, 64 planes — buy maybe two of them.</p>
+<p>Two consequences the bill of materials does not carry. The "$200, runs on a
+cheap single-board computer" framing is almost certainly dead; this wants a
+discrete GPU. And every accuracy figure above was measured at settings that may
+not survive the cut, because resolution and plane count are exactly what
+<code>sigma_d</code> is made of.</p></div>
+
+<h3>2 · Everything is measured on a synthetic head</h3>
+<p>Spheres with a procedural albedo. No hair, no eyebrows, no stubble, no
+glasses, no clothing, no specular highlights, no motion, no rolling shutter, no
+compression. The texture is smoother than a real face in some places, which is
+pessimistic, and cleaner in others, which is not. <code>sigma_d = 0.5 px</code>
+is a synthetic number, and the eye region — dark irises, low texture, and
+speculars that move with viewpoint and violate brightness constancy outright —
+is exactly where a synthetic model is least trustworthy. It is measurable in an
+afternoon with two webcams and a face.</p>
+
+<div class="warnbox"><b>3 · the gaze budget probably does not close once head tracking is counted</b>
+<p>The measured 0.55–0.89° was taken with the viewer's eye position known
+exactly. Head tracking's wrong-seat term at the stated 10 mm requirement is
+0.50°, and it is a <em>different</em> error from the ones already inside that
+figure. In quadrature:</p>
+<table>
+<tr><th>face composite</th><th class="n">measured</th><th class="n">+ 10 mm tracking</th><th>vs 1.00° bar</th></tr>
+<tr><td>five cameras, 10 mm z-margin</td><td class="n">0.89°</td><td class="n">1.02°</td><td class="fail">fails</td></tr>
+<tr><td>centre camera only, holes filled</td><td class="n">0.55°</td><td class="n">0.74°</td><td class="pass">passes</td></tr>
+</table>
+<p>So the five-camera composite fails and the centre camera alone passes —
+the opposite of what "more cameras is better" suggests. Either head tracking has
+to beat 10 mm, or the face composite has to be centre-dominant. That is a
+decision to make deliberately, not one to let the first code written settle.</p></div>
+
+<h3>4 · Two subsystems meet at a seam nobody has rendered</h3>
+<p>The face group and the near group overlap on the torso and upper arm. They
+are independent solves, they will disagree at the millimetre level, and the
+compositing rule picks a winner per pixel per frame. That is a recipe for
+temporal shimmer along the seam even when both answers are individually fine.
+Cheap to test, and untested.</p>
+
+<h3>5 · Nine free-running camera streams</h3>
+<p>The sync analysis was written for five. Nine 1080p60 MJPEG streams are about
+30 MB/s across two hubs, and the 8 ms worst-case skew now applies to more pairs.
+The $3 trigger microcontroller has gone from a nicety to nearly mandatory.</p>
+
+<h3>6 · Calibration got materially harder</h3>
+<p>Nine cameras, two lens types, full per-camera rotation rather than position
+on a plane — and the awkward part, the near group is aimed at a volume the face
+group barely sees, so one checkerboard sequence may not pin down the relative
+pose <em>between</em> the groups. That inter-group extrinsic is exactly what
+makes a pointing ray land in the same frame as the shoulder it starts from.</p>
+
+<h3>7 · Rigidity, over a bigger frame</h3>
+<p>The <code>L³</code> stiffness analysis covered a bezel bar. The rig is now a
+perimeter frame with 42 mm of overhang each side on a 27-inch, carrying nine
+modules, quite possibly screwed to a television's flexing plastic. More modules
+is more drift paths, and drift is extrinsic error is exactly what the
+calibration chain exists to prevent.</p>
+
+<h3>8 · The blunder tail</h3>
+<p>Median depth error is 0.2 mm; the 99th percentile reaches 300 mm on the outer
+cameras. The cross-check removes most. What survives is a fragment of surface
+placed somewhere it isn't — a speckle in a still frame, a flicker in motion, and
+the eye is very good at noticing flicker.</p>
+
+<h3>9 · There is a rigorous error budget and no latency budget</h3>
+<p>"Motion-to-photon under 50 ms" appears as an assertion. Head-tracking latency
+produces the <em>same visible failure</em> as a calibration error, and flaw 1
+says the depth stage is nowhere near a 50 ms operation. A design this careful
+about angles should have a budget for milliseconds.</p>
+
+<h3>10 · The gaze measurement is a proxy</h3>
+<p>Iris centroid minus corner centroid, in millimetres on the glass, converted
+to degrees. A reasonable stand-in for what a human reads gaze from, and not a
+human. The blind trial in §19 is what settles it, and no simulation replaces
+it.</p>
+
+<h3>11 · You learn nothing until nearly everything is built</h3>
+<p>The design makes two independent claims — that restoring geometry restores
+gaze, and that a 1:1 head-tracked window creates presence and readable
+pointing. The build order validates neither until nine cameras, a calibration
+chain, a depth pipeline and a warp shader all exist.</p>
+<p>Both are separately testable for under $100. The window-contract claim needs
+one ordinary webcam: accept the 18° gaze error, build the off-axis render and
+head tracking, and find out whether 1:1 scale reads as an aperture or as a small
+picture — which §21 already flags as a real risk to the entire premise.</p>
+</section>
+
+<hr>
+
+<section id="numbers">
+<h2>23 · Every number, and the equations behind them</h2>
+
+<h3>The design equations</h3>
+<pre><code>alpha    = d_lateral / z_cam                            lateral offset as an angle
+err_raw  ≈ alpha                                        uncorrected gaze error
+dz_tol   = theta_tol · r_eye / alpha                    corneal depth accuracy needed
+sigma_z  = z² · sigma_d / (f · b)                       stereo depth error
+b_min    = z² · sigma_d · alpha / (f · r · theta_tol)   the design equation
+gain     = 1 − z_screen / z_virtual                     parallax shift (overscan only)
+overscan = gain · travel / screen_width                 per side
+theta    ≈ Δ / distance                                 1 cm ≈ 1° at 600 mm
+
+r_eye = 12 mm      theta_tol = 1°      sigma_d ≈ 0.3 px</code></pre>
+
+<h3>Rules of thumb worth memorising</h3>
+<ul>
+<li>1 cm of lateral position error ≈ 1° of gaze error.</li>
+<li>Depth tolerance scales as <code>1/alpha</code>. Halve the offset, double the
+slack.</li>
+<li>Depth errors are cheap; lateral errors are expensive; rotation is nearly
+free.</li>
+<li>Peer tracking error cancels <em>exactly</em>, if and only if stamped once
+per frame.</li>
+</ul>
+
+<h3>The configuration of record</h3>
+<table>
+<tr><th>Quantity</th><th class="n">Value</th></tr>
+<tr><td>Window (27″ 16:9 active area)</td><td class="n">597 × 336 mm</td></tr>
+<tr><td>You / peer setback</td><td class="n">600 / 550 mm</td></tr>
+<tr><td>Camera to subject</td><td class="n">570 mm</td></tr>
+<tr><td>Virtual camera to subject (axial mismatch, cosmetic)</td><td class="n">1150 mm</td></tr>
+<tr><td>Camera focal length @ 1080p / 75°</td><td class="n">1251 px</td></tr>
+<tr class="hl"><td><b>alpha</b></td><td class="n"><b>7.00°</b></td></tr>
+<tr><td>Uncorrected gaze error</td><td class="n">7.00°</td></tr>
+<tr><td>Corneal depth tolerance</td><td class="n">1.71 mm</td></tr>
+<tr><td>Stereo depth sigma</td><td class="n">0.31 mm</td></tr>
+<tr class="hl"><td><b>Margin</b></td><td class="n pass"><b>5.5×</b></td></tr>
+<tr><td>Minimum stereo baseline</td><td class="n">45 mm</td></tr>
+<tr><td>Chosen stereo baseline</td><td class="n">250 mm</td></tr>
+<tr><td>Vertical baseline</td><td class="n">376 mm</td></tr>
+<tr><td>Diagonal baseline</td><td class="n">452 mm</td></tr>
+<tr><td>Camera HFOV needed (window only)</td><td class="n">55.3°</td></tr>
+<tr><td>Camera HFOV needed (with ±250 mm overscan)</td><td class="n">72.5°</td></tr>
+<tr><td>Window as the peer sees it</td><td class="n">57.0°</td></tr>
+<tr><td>Parallax shift gain (face)</td><td class="n">0.478</td></tr>
+<tr><td>Overscan per side @ ±250 mm</td><td class="n">20.0%</td></tr>
+<tr><td>Imager blob</td><td class="n">1.91° = 13.0% of head width</td></tr>
+<tr><td>Blade line width</td><td class="n">0.29°</td></tr>
+</table>
+
+<h3>Camera bearings from the subject</h3>
+<table>
+<tr><th>Camera</th><th class="n">Azimuth</th><th class="n">Elevation</th></tr>
+<tr><td>TL</td><td class="n">−12.4°</td><td class="n">+13.6°</td></tr>
+<tr><td>TR</td><td class="n">+12.4°</td><td class="n">+13.6°</td></tr>
+<tr><td>C (blade)</td><td class="n">0.0°</td><td class="n">+2.0°</td></tr>
+<tr><td>BL</td><td class="n">−12.4°</td><td class="n">−22.7°</td></tr>
+<tr><td>BR</td><td class="n">+12.4°</td><td class="n">−22.7°</td></tr>
+</table>
+
+<h3>Where the numbers come from</h3>
+<dl class="kv">
+<dt>geometry.py</dt><dd>Window frame, SWAP, off-axis projection, camera extrinsics, gaze ray maths</dd>
+<dt>sensitivity.py</dt><dd>Closed-loop error propagation — the §14 table</dd>
+<dt>eyegeom.py</dt><dd>Iris-on-sphere model, homography failure, depth tolerance vs placement</dd>
+<dt>optics.py</dt><dd>Design calculator, the b_min equation, the §10 calculator</dd>
+<dt>coverage.py</dt><dd>Angular hull, viewpoint coverage, overscan, multi-baseline depth</dd>
+<dt>portalconf.py</dt><dd>config.json loader; derives all rig geometry from measurements</dd>
+<dt>verify.py</dt><dd>selftest, ruler, cube --plane, cube --float; the §19 bug-injection table</dd>
+</dl>
+
+<p class="sub" style="margin-top:34px">Every figure on this page is reproducible
+by running those scripts. Nothing here is an estimate presented as a
+measurement.</p>
+</section>
+
+</main>
+</div>
+
+<script>
+/* ============================ shared helpers ============================ */
+const DEG = Math.PI/180;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const $ = id => document.getElementById(id);
+let PAL = {};
+function readPal(){
+  PAL = {s1:css('--s1'),s2:css('--s2'),s3:css('--s3'),s4:css('--s4'),
+    ink:css('--ink'),ink2:css('--ink-2'),muted:css('--muted'),grid:css('--grid'),
+    axis:css('--axis'),surf:css('--surface-1'),plane:css('--plane'),
+    good:css('--good'),crit:css('--crit'),warn:css('--warn')};
+}
+readPal();
+
+function fit(cv){
+  /* cv.height IS the height attribute. The previous version read
+     getAttribute('height') and then wrote cv.height = h*devicePixelRatio, so on
+     any display with DPR > 1 each draw multiplied the height by the DPR again.
+     At DPR 2 that doubles every frame -- the auto-orbiting canvases reached
+     120,000 px tall within seconds and buried the main thread, which made every
+     control on the page unresponsive. DPR 1 hid it completely.
+     Cache the authored height, and only touch the backing store when the size
+     actually changes. */
+  if(cv._h === undefined){
+    cv._h = parseInt(cv.getAttribute('height')) || 300;
+    cv._g = cv.getContext('2d');
+  }
+  const h = cv._h;
+  const r = Math.min(2, window.devicePixelRatio || 1);
+  const w = Math.max(1, Math.round(cv.clientWidth) || 300);
+  const W = Math.round(w*r), H = Math.round(h*r);
+  if(cv.width !== W || cv.height !== H){
+    cv.width = W; cv.height = H;
+    cv.style.height = h+'px';          // explicit, so layout never derives it
+  }
+  const g = cv._g;
+  g.setTransform(r,0,0,r,0,0);
+  g.clearRect(0,0,w,h);
+  return {g,w,h};
+}
+function txt(g,s,x,y,col,size,align){
+  g.fillStyle=col||PAL.ink2; g.font=(size||12)+'px '+
+    'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace';
+  g.textAlign=align||'left'; g.fillText(s,x,y);
+}
+function line(g,x1,y1,x2,y2,col,w,dash){
+  g.beginPath(); g.setLineDash(dash||[]); g.strokeStyle=col; g.lineWidth=w||2;
+  g.moveTo(x1,y1); g.lineTo(x2,y2); g.stroke(); g.setLineDash([]);
+}
+function dot(g,x,y,r,col){g.beginPath();g.fillStyle=col;g.arc(x,y,r,0,7);g.fill();}
+
+const REDRAW=[];
+function onResize(){ readPal(); REDRAW.forEach(f=>f()); }
+window.addEventListener('resize',onResize);
+
+/* ===================== minimal 3D renderer =====================
+   Self-contained on purpose: no CDN, works offline. Painter's algorithm with
+   depth cueing, filled faces, auto-orbit, and preset views so the scenes are
+   usable without ever dragging (touch, narrow panels, embedded frames). */
+function hex2rgb(h){h=h.trim();
+  if(h[0]!=='#')return [128,128,128];
+  if(h.length===4)h='#'+h[1]+h[1]+h[2]+h[2]+h[3]+h[3];
+  return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+function mixc(a,b,t){const A=hex2rgb(a),B=hex2rgb(b);
+  return 'rgb('+Math.round(A[0]+(B[0]-A[0])*t)+','+Math.round(A[1]+(B[1]-A[1])*t)+','
+    +Math.round(A[2]+(B[2]-A[2])*t)+')';}
+function rgba(h,a){const c=hex2rgb(h);return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')';}
+
+function Cam(yaw,pitch,dist,target){return {yaw,pitch,dist,t:target||[0,0,0],base:yaw};}
+function proj3(p,c,w,h,fs){
+  let x=p[0]-c.t[0], y=p[1]-c.t[1], z=p[2]-c.t[2];
+  const cy=Math.cos(-c.yaw), sy=Math.sin(-c.yaw);
+  const x1=x*cy+z*sy, z1=-x*sy+z*cy;
+  const cp=Math.cos(-c.pitch), sp=Math.sin(-c.pitch);
+  const y1=y*cp-z1*sp, z2=y*sp+z1*cp;
+  const d=c.dist-z2;
+  if(d<=0.02) return null;
+  return {x:w/2+x1*fs/d, y:h/2-y1*fs/d, z:d};
+}
+function camSpace(p,c){
+  let x=p[0]-c.t[0], y=p[1]-c.t[1], z=p[2]-c.t[2];
+  const cy=Math.cos(-c.yaw), sy=Math.sin(-c.yaw);
+  const x1=x*cy+z*sy, z1=-x*sy+z*cy;
+  const cp=Math.cos(-c.pitch), sp=Math.sin(-c.pitch);
+  return [x1, y*cp-z1*sp, y*sp+z1*cp];
+}
+/* Distance at which the whole scene fits the canvas from this orientation.
+   Exact rather than tuned, so every preset frames correctly at any width. */
+function fitDist(items,c,w,h,fs,pad){
+  pad=pad||0.40; let d=0;
+  const push=p=>{const q=camSpace(p,c);
+    d=Math.max(d, q[2]+Math.abs(q[0])*fs/(pad*w), q[2]+Math.abs(q[1])*fs/(pad*h));};
+  items.forEach(it=>{ if(it.t==='f') it.pts.forEach(push);
+    else if(it.t==='l'){push(it.a);push(it.b);} else push(it.a); });
+  return Math.max(d,0.15);
+}
+function L3(out,a,b,col,wd,dash){out.push({t:'l',a,b,col,wd:wd||1.5,dash:dash||null});}
+function P3(out,a,col,r,label){out.push({t:'p',a,col,r:r||4,label:label||null});}
+function F3(out,pts,fill,alpha){out.push({t:'f',pts,fill,alpha:alpha==null?0.16:alpha});}
+function poly3(out,pts,col,wd,close){
+  for(let i=0;i<pts.length-(close?0:1);i++) L3(out,pts[i],pts[(i+1)%pts.length],col,wd);
+}
+function box3(out,c,s,col,wd){
+  const [x,y,z]=c,[a,b,d]=s;
+  const v=[[x-a,y-b,z-d],[x+a,y-b,z-d],[x+a,y+b,z-d],[x-a,y+b,z-d],
+           [x-a,y-b,z+d],[x+a,y-b,z+d],[x+a,y+b,z+d],[x-a,y+b,z+d]];
+  [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]]
+    .forEach(e=>L3(out,v[e[0]],v[e[1]],col,wd||1.3));
+  F3(out,[v[4],v[5],v[6],v[7]],col,0.55);
+}
+function sphere3(out,c,r,col,wd,seg){
+  seg=seg||8; const N=20;
+  for(let i=1;i<seg;i++){
+    const th=Math.PI*i/seg, rr=r*Math.sin(th), yy=c[1]+r*Math.cos(th), ring=[];
+    for(let j=0;j<N;j++){const a=2*Math.PI*j/N;
+      ring.push([c[0]+rr*Math.cos(a),yy,c[2]+rr*Math.sin(a)]);}
+    poly3(out,ring,col,wd||0.8,true);
+  }
+  for(let k=0;k<6;k++){
+    const a=Math.PI*k/6, arc=[];
+    for(let i=0;i<=N;i++){const th=Math.PI*i/N;
+      arc.push([c[0]+r*Math.sin(th)*Math.cos(a),c[1]+r*Math.cos(th),
+                c[2]+r*Math.sin(th)*Math.sin(a)]);}
+    poly3(out,arc,col,wd||0.8,false);
+  }
+}
+function render3(g,items,c,w,h,fs){
+  const bg=PAL.plane, prep=[];
+  let dmin=1e9,dmax=-1e9;
+  items.forEach(it=>{
+    if(it.t==='f'){
+      const P=it.pts.map(p=>proj3(p,c,w,h,fs));
+      if(P.some(x=>!x))return;
+      const z=P.reduce((a,b)=>a+b.z,0)/P.length;
+      dmin=Math.min(dmin,z);dmax=Math.max(dmax,z);
+      prep.push({z,f:()=>{g.beginPath();P.forEach((q,i)=>i?g.lineTo(q.x,q.y):g.moveTo(q.x,q.y));
+        g.closePath();g.fillStyle=rgba(it.fill,it.alpha);g.fill();}});
+    } else if(it.t==='l'){
+      const A=proj3(it.a,c,w,h,fs),B=proj3(it.b,c,w,h,fs);
+      if(!A||!B)return;
+      const z=(A.z+B.z)/2; dmin=Math.min(dmin,z);dmax=Math.max(dmax,z);
+      prep.push({z,depth:true,f:t=>{
+        g.beginPath(); g.setLineDash(it.dash||[]);
+        g.strokeStyle=mixc(it.col,bg,t*0.62); g.lineWidth=it.wd*(1-t*0.35);
+        g.moveTo(A.x,A.y); g.lineTo(B.x,B.y); g.stroke(); g.setLineDash([]);}});
+    } else {
+      const A=proj3(it.a,c,w,h,fs); if(!A)return;
+      dmin=Math.min(dmin,A.z);dmax=Math.max(dmax,A.z);
+      prep.push({z:A.z,f:()=>{dot(g,A.x,A.y,it.r,it.col);
+        if(it.label){g.save();g.strokeStyle=bg;g.lineWidth=3;g.font='11px '+
+          'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace';g.textAlign='left';
+          g.strokeText(it.label,A.x+it.r+5,A.y+4);g.restore();
+          txt(g,it.label,A.x+it.r+5,A.y+4,it.col,11);}}});
+    }
+  });
+  const span=Math.max(1e-6,dmax-dmin);
+  prep.sort((a,b)=>b.z-a.z).forEach(d=>d.f(d.depth?(d.z-dmin)/span:0));
+}
+
+/* attach interaction: drag-orbit, pinch, preset views, gentle auto-orbit.
+   Wheel does NOT zoom unless shift is held -- otherwise a trackpad scroll over
+   a large canvas hijacks the page and the whole figure reads as broken. */
+function attach3(cv,cam,draw,opt){
+  opt=opt||{}; let drag=false,lx=0,ly=0,spin=true,pts=new Map(),pd=0;
+  const t0=performance.now(), amp=opt.amp==null?0.42:opt.amp;
+  function stop(){ if(spin){spin=false; cv.parentNode.querySelectorAll('.spinhint')
+    .forEach(e=>e.remove());} }
+  let last=0;
+  function tick(now){
+    if(!spin) return;
+    const el=(now||performance.now())-t0;
+    if(el>14000){ spin=false; draw(); return; }      // settle after one sweep
+    if(el-last>33){ last=el;                          // ~30fps is plenty
+      cam.yaw = cam.base + amp*Math.sin(el/4200); draw(); }
+    requestAnimationFrame(tick);
+  }
+  cv.addEventListener('pointerdown',e=>{
+    e.preventDefault();            // stop Chrome starting a native page drag
+    stop(); pts.set(e.pointerId,[e.clientX,e.clientY]);
+    if(pts.size===1){drag=true;lx=e.clientX;ly=e.clientY;}
+    if(pts.size===2){const v=[...pts.values()];pd=Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1]);}
+    try{cv.setPointerCapture(e.pointerId);}catch(_){}
+    cv.style.cursor='grabbing';
+  });
+  const up=e=>{pts.delete(e.pointerId); if(pts.size<2)pd=0;
+    if(pts.size===0){drag=false;cv.style.cursor='grab';}};
+  cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
+  cv.addEventListener('pointermove',e=>{
+    if(!pts.has(e.pointerId))return;
+    pts.set(e.pointerId,[e.clientX,e.clientY]);
+    if(pts.size===2){
+      const v=[...pts.values()], d=Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1]);
+      if(pd){cam.dist=Math.max(opt.min||0.6,Math.min(opt.max||12,cam.dist*pd/d));draw();}
+      pd=d; return;
+    }
+    if(!drag)return;
+    cam.yaw-=(e.clientX-lx)*0.009;
+    cam.pitch=Math.max(-1.25,Math.min(1.25,cam.pitch+(e.clientY-ly)*0.007));
+    lx=e.clientX; ly=e.clientY; draw();
+  });
+  cv.addEventListener('wheel',e=>{
+    if(!e.shiftKey) return;              // let the page scroll normally
+    e.preventDefault(); stop();
+    cam.dist=Math.max(opt.min||0.6,Math.min(opt.max||12,cam.dist*(1+e.deltaY*0.0015)));
+    draw();},{passive:false});
+  cv.style.cursor='grab';
+  requestAnimationFrame(tick);
+  return {stop,
+    zoom:f=>{stop();cam.autofit=false;
+      cam.dist=Math.max(opt.min||0.6,Math.min(opt.max||12,cam.dist*f));draw();},
+    view:(y,p)=>{stop();cam.base=cam.yaw=y;cam.pitch=p;cam.autofit=true;draw();}};
+}
+/* build the preset-view / zoom bar under a 3D canvas */
+function view3bar(cv,ctl,views){
+  const bar=document.createElement('div'); bar.className='ctl viewbar';
+  const seg=document.createElement('div'); seg.className='seg';
+  views.forEach((v,i)=>{const b=document.createElement('button');
+    b.textContent=v.n; if(i===0)b.classList.add('on');
+    b.onclick=()=>{seg.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on'); ctl.view(v.y,v.p);};
+    seg.appendChild(b);});
+  bar.appendChild(seg);
+  const z=document.createElement('div'); z.className='seg';
+  [['−','out',1.25],['+','in',0.8]].forEach(k=>{const b=document.createElement('button');
+    b.textContent=k[0]; b.title='zoom '+k[1]; b.style.minWidth='34px';
+    b.onclick=()=>ctl.zoom(k[2]); z.appendChild(b);});
+  bar.appendChild(z);
+  const hint=document.createElement('span');
+  hint.style.cssText='color:var(--muted);font-size:11.5px';
+  hint.textContent='drag to rotate · pinch or shift+scroll to zoom';
+  bar.appendChild(hint);
+  cv.parentNode.insertBefore(bar,cv.nextSibling);
+}
+
+/* ============================ theme toggle ============================ */
+$('themeBtn').onclick = ()=>{
+  const cur = document.documentElement.getAttribute('data-theme');
+  const nx = cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',nx);
+  $('themeBtn').textContent = nx==='dark'?'Light':'Dark';
+  setTimeout(onResize,30);
+};
+
+/* =================== file:// drag-and-drop guard ===================
+   Dragging on a canvas can make the browser begin a NATIVE drag of the
+   document, and dropping it back on the page makes Chrome try to navigate to
+   the dragged URL. On a file:// page that is reported as
+     "Unsafe attempt to load URL <self> from frame with URL <self>.
+      'file:' URLs are treated as unique security origins."
+   -- source and target being the same URL is the tell. Nothing is fetched and
+   nothing is broken, but it spams the console during every drag. Suppressing
+   the drag at the source and refusing the drop at the document kills it, and
+   keeps the file working by double-click with no web server. */
+document.querySelectorAll('canvas').forEach(c=>{
+  c.setAttribute('draggable','false');
+  c.addEventListener('dragstart',e=>e.preventDefault());
+});
+['dragover','drop','dragenter'].forEach(t=>
+  document.addEventListener(t,e=>{e.preventDefault();e.stopPropagation();},false));
+
+/* ======================= nav: scrollspy + scrolling =======================
+   Anchors keep their href for semantics and middle-click, but we never let the
+   browser perform the fragment navigation. On a file:// page WebKit treats every
+   file URL as its own unique origin, so a #hash navigation is reported as
+   "Unsafe attempt to load URL ... from frame with URL ..." even though the
+   target is the same document and nothing is fetched. Scrolling the element
+   ourselves sidesteps it, and keeps the file openable straight from disk with
+   no web server. */
+const secs=[...document.querySelectorAll('section')];
+const links=[...document.querySelectorAll('nav a, .topbar a')];
+function spy(){
+  let cur=secs[0];
+  for(const s of secs) if(s.getBoundingClientRect().top<160) cur=s;
+  links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+cur.id));
+}
+window.addEventListener('scroll',spy,{passive:true}); spy();
+
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const el=document.getElementById(a.getAttribute('href').slice(1));
+    if(!el) return;
+    e.preventDefault();
+    const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});
+    links.forEach(x=>x.classList.remove('on'));
+    if(a.closest('nav') || a.closest('.topbar')) a.classList.add('on');
+  });
+});
+
+/* ==================== §2 gaze comparison ==================== */
+(function(){
+  const cv=$('gazeCv'), sl=$('gz');
+  const targets=[{n:'your left eye',x:0.30},{n:'your right eye',x:0.70},
+                 {n:'your mouth',x:0.50},{n:'past your shoulder',x:0.95}];
+  function draw(){
+    const {g,w,h}=fit(cv); g.clearRect(0,0,w,h);
+    const t=+sl.value/100;
+    const px=0.12+t*0.76;
+    let near=targets[0],best=9;
+    targets.forEach(o=>{const d=Math.abs(o.x-px); if(d<best){best=d;near=o;}});
+    $('gzLab').textContent=near.n;
+
+    const faceY=h*0.34, R=52;
+    // your face schematic
+    g.beginPath(); g.strokeStyle=PAL.axis; g.lineWidth=2;
+    g.ellipse(w*0.5,faceY,R*0.78,R,0,0,7); g.stroke();
+    dot(g,w*0.5-20,faceY-12,5,PAL.muted); dot(g,w*0.5+20,faceY-12,5,PAL.muted);
+    g.beginPath(); g.strokeStyle=PAL.muted;g.lineWidth=2;
+    g.arc(w*0.5,faceY+14,14,0.2,Math.PI-0.2); g.stroke();
+    txt(g,'your face (what they are looking at)',w*0.5,faceY+R+18,PAL.muted,11,'center');
+
+    // true gaze marker
+    const gx=w*0.12+ (w*0.76)*t;
+    line(g,gx,h*0.60,gx,h*0.66,PAL.ink,2);
+    txt(g,'their TRUE gaze',gx,h*0.59,PAL.ink,11,'center');
+
+    // three readings
+    const rows=[['Portal',PAL.s3,gx],['ML correction',PAL.s2,w*0.5],
+                ['Plain call',PAL.muted,gx-w*0.155]];
+    rows.forEach((r,i)=>{
+      const y=h*0.72+i*20;
+      line(g,w*0.12,y,w*0.88,y,PAL.grid,1);
+      dot(g,Math.max(w*0.10,Math.min(w*0.90,r[2])),y,5.5,r[1]);
+      txt(g,r[0],w*0.10,y+4,r[1],11,'right');
+    });
+    txt(g,'what you perceive →',w*0.12,h*0.70,PAL.muted,10.5);
+  }
+  sl.oninput=draw; REDRAW.push(draw); requestAnimationFrame(draw);
+})();
+
+/* ==================== §3 window 3D ==================== */
+(function(){
+  const cv=$('winCv'); let mode='portal', vx=0;
+  const cam=Cam(0.66,0.22,2.9,[0,-0.02,0]);
+  const W=1.194, H=0.672;
+  function person(out,z,col,flip,ex){
+    sphere3(out,[ex,0.10,z],0.11,col,0.75,7);
+    const r0=0.13,r1=0.21,N=16,top=[],bot=[];
+    for(let i=0;i<N;i++){const a=2*Math.PI*i/N;
+      top.push([ex+r0*Math.cos(a),-0.03,z+r0*Math.sin(a)]);
+      bot.push([ex+r1*Math.cos(a),-0.38,z+r1*Math.sin(a)]);}
+    poly3(out,top,col,1.0,true); poly3(out,bot,col,1.0,true);
+    for(let i=0;i<N;i+=2) L3(out,top[i],bot[i],col,0.8);
+    const ez=flip?-0.098:0.098;
+    P3(out,[ex-0.042,0.125,z+ez],col,4.5);
+    P3(out,[ex+0.042,0.125,z+ez],col,4.5);
+  }
+  function scene(){
+    const out=[], ex=vx/1000*2;
+    const c=[[-W/2,-H/2,0],[W/2,-H/2,0],[W/2,H/2,0],[-W/2,H/2,0]];
+    F3(out,c,PAL.s3,0.13);
+    poly3(out,c,PAL.s3,2.6,true);
+    for(let i=1;i<5;i++){const t=i/5;
+      L3(out,[-W/2+W*t,-H/2,0],[-W/2+W*t,H/2,0],PAL.grid,0.8);}
+    for(let i=1;i<3;i++){const t=i/3;
+      L3(out,[-W/2,-H/2+H*t,0],[W/2,-H/2+H*t,0],PAL.grid,0.8);}
+    person(out,1.25,PAL.s1,false,ex);
+    person(out,-1.25,PAL.s2,true,0);
+    const eye=[ex,0.125,1.25+0.098];
+    const theirEye=[-0.042,0.125,-1.25-0.098];
+    if(mode==='portal'){
+      c.forEach(p=>L3(out,eye,p,PAL.s1,1.5));
+      F3(out,[eye,c[0],c[1]],PAL.s1,0.07);
+      F3(out,[eye,c[2],c[3]],PAL.s1,0.07);
+      L3(out,eye,theirEye,PAL.s3,2.4);
+      P3(out,eye,PAL.s1,5.5,'your eye');
+      P3(out,theirEye,PAL.s2,5,'their eye');
+    } else {
+      const cp=[0,H/2+0.11,0.05];
+      box3(out,cp,[0.038,0.026,0.026],PAL.crit,1.7);
+      L3(out,eye,cp,PAL.crit,2,[6,4]);
+      L3(out,eye,[ex*0.35,0,0],PAL.s3,2.2);
+      P3(out,cp,PAL.crit,4,'camera');
+      P3(out,eye,PAL.s1,5.5,'your eye');
+    }
+    return out;
+  }
+  function draw(){
+    const {g,w,h}=fit(cv); g.clearRect(0,0,w,h);
+    const items=scene(), fs=w*0.80;
+    if(cam.autofit){cam.dist=fitDist(items,cam,w,h,fs); cam.autofit=false;}
+    render3(g,items,cam,w,h,fs);
+  }
+  cam.autofit=true;
+  document.querySelectorAll('#winMode button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#winMode button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); mode=b.dataset.m; note(); draw();});
+  $('wx').oninput=e=>{vx=+e.target.value;$('wxLab').textContent=vx+' mm';draw();};
+  function note(){
+    $('winNote').innerHTML = mode==='portal'
+      ? 'Blue lines are the frustum, rebuilt from the viewer’s eye every frame — its near plane is always exactly the window. The green line is the sight line to the far person’s eye: it passes through the window and arrives correctly. Slide the viewer sideways and watch the frustum <em>shear</em> rather than rotate.'
+      : 'The red box above the screen is where the far person’s view actually comes from. The green sight line goes to the <em>screen</em>, not to the camera — and that gap is the 18.4° error. No amount of image processing recovers a viewpoint that was never recorded.';
+  }
+  const ctl=attach3(cv,cam,draw,{min:1.5,max:9});
+  view3bar(cv,ctl,[{n:'¾ view',y:0.66,p:0.22},{n:'Top',y:0.0,p:1.15},
+                   {n:'Side',y:1.57,p:0.05},{n:'Front',y:0.0,p:0.05}]);
+  note(); REDRAW.push(()=>{cam.autofit=true;draw();}); requestAnimationFrame(draw);
+})();
+
+/* ==================== §3 the kink ==================== */
+(function(){
+  const cv=$('kinkCv'); let mode='call';
+  const A=[-600,0], B=[550,0], HALF=168;
+  function draw(){
+    let rise=+$('kk').value;
+    if(mode==='win') rise=0;
+    $('kkLab').textContent=rise+' mm';
+    const vr=[0-B[0],rise-B[1]], vw=[A[0]-B[0],A[1]-B[1]];
+    const ang=Math.acos((vr[0]*vw[0]+vr[1]*vw[1])/Math.hypot(...vr)/Math.hypot(...vw))/DEG;
+    const dNear=Math.hypot(...vr), dFar=Math.hypot(...vw);
+    $('kAlpha').textContent=ang.toFixed(2)+'°';
+    $('kAlpha').className='v '+(ang<1?'pass':ang<8?'mid':'fail');
+    $('kNear').textContent=dNear.toFixed(0)+' mm';
+    $('kFar').textContent=dFar.toFixed(0)+' mm';
+
+    const {g,w,h}=fit(cv); g.clearRect(0,0,w,h);
+    const S=(w*0.76)/1150, x0=w*0.12, yc=h*0.60;
+    const X=mm=>x0+(mm+600)*S, Y=mm=>yc-mm*S;
+
+    // window
+    line(g,X(0),Y(HALF),X(0),Y(-HALF),PAL.s3,4);
+    txt(g,'the window',X(0)-10,Y(-HALF)+20,PAL.s3,11.5,'right');
+    // people
+    dot(g,X(A[0]),Y(A[1]),7,PAL.s1);
+    txt(g,'A — your eye',X(A[0]),Y(A[1])+24,PAL.s1,11.5,'center');
+    g.beginPath();g.strokeStyle=PAL.s2;g.lineWidth=2;
+    g.ellipse(X(B[0]),Y(B[1]),22*S*4,29*S*4,0,0,7);g.stroke();
+    dot(g,X(B[0]),Y(B[1]),5,PAL.s2);
+    txt(g,'B — their face',X(B[0]),Y(B[1])+29*S*4+20,PAL.s2,11.5,'center');
+
+    // the ray that SHOULD travel: B straight through the window to A
+    line(g,X(B[0]),Y(B[1]),X(A[0]),Y(A[1]),PAL.s3,2.5,mode==='win'?[]:[7,5]);
+    dot(g,X(0),Y(0),4.5,PAL.s3);
+
+    if(mode!=='win'){
+      // the ray a camera actually keeps, and the leg the display then sends
+      g.fillStyle=PAL.crit; g.fillRect(X(0)-7,Y(rise)-5,14,10);
+      txt(g,'camera',X(0)+12,Y(rise)-8,PAL.crit,11);
+      line(g,X(B[0]),Y(B[1]),X(0),Y(rise),PAL.crit,2.5);
+      line(g,X(0),Y(rise),X(A[0]),Y(A[1]),PAL.crit,2.5);
+      // the kink angle, drawn at the subject
+      const a1=Math.atan2(Y(rise)-Y(B[1]),X(0)-X(B[0]));
+      const a2=Math.atan2(Y(A[1])-Y(B[1]),X(A[0])-X(B[0]));
+      g.beginPath();g.strokeStyle=PAL.s4;g.lineWidth=2.5;
+      g.arc(X(B[0]),Y(B[1]),86,Math.min(a1,a2),Math.max(a1,a2));g.stroke();
+      txt(g,'alpha = '+ang.toFixed(1)+'°',X(B[0])-96,Y(B[1])-16,PAL.s4,12.5,'right');
+    }
+    if(mode==='portal'){
+      g.beginPath();g.setLineDash([3,4]);g.strokeStyle=PAL.s1;g.lineWidth=1.6;
+      g.moveTo(X(0),Y(rise));
+      g.quadraticCurveTo(X(-300),Y(rise+150),X(A[0]),Y(A[1]));
+      g.stroke();g.setLineDash([]);
+      txt(g,'depth re-projects the captured pixels to here',
+          X(-300),Y(rise+150)-8,PAL.s1,11.5,'center');
+      txt(g,'required viewpoint = A’s eye',X(A[0]),Y(A[1])-18,PAL.s1,11,'center');
+    }
+    txt(g, mode==='win' ? 'one straight ray — nothing to correct'
+        : 'solid = the path light really takes   ·   dashed = the path it should take',
+        w/2,h-12,PAL.ink2,11.5,'center');
+  }
+  document.querySelectorAll('#kinkMode button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#kinkMode button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); mode=b.dataset.k;
+    if(mode==='call') $('kk').value=190;
+    if(mode==='portal') $('kk').value=70;
+    note(); draw();});
+  $('kk').oninput=()=>{ if(mode==='win'){mode='call';
+    document.querySelectorAll('#kinkMode button').forEach(x=>
+      x.classList.toggle('on',x.dataset.k==='call'));} note(); draw();};
+  function note(){
+    $('kinkNote').innerHTML = mode==='win'
+      ? 'A real window bends nothing. The ray leaving their face toward your eye passes through the glass and keeps going, so gaze, pointing and parallax all survive for free. This is the thing being rebuilt.'
+      : mode==='portal'
+      ? 'The blade puts the camera 70 mm off the sight line instead of 190 mm, shrinking the kink from 19° to 7° <em>mechanically</em>, before any processing. Depth then re-projects those real pixels to the viewpoint your eye actually occupies — a 596 mm pull-back, which is free, plus a small sideways step, which is what the depth budget pays for.'
+      : 'A normal webcam. Light from their face is captured 19° off the ray that should have reached you, and the screen then emits it as if it had come from the right direction. Nothing in a 2D image can undo that: the ray that carried the information was never collected.';
+  }
+  note(); REDRAW.push(draw); requestAnimationFrame(draw);
+})();
+
+/* ==================== §4 frustum shear ==================== */
+(function(){
+  const cv=$('frusCv'); let fm='off';
+  function draw(){
+    const {g,w,h}=fit(cv); g.clearRect(0,0,w,h);
+    const ex=+$('fx').value, ez=+$('fz').value;
+    $('fxLab').textContent=ex+' mm'; $('fzLab').textContent=ez+' mm';
+    const cx=w/2, sy=h*0.30, S=Math.min(w/1500,(h*0.62)/950);
+    const X=mm=>cx+mm*S, Y=mm=>sy+mm*S;
+    // window (top-down: a horizontal segment)
+    line(g,X(-298.5),Y(0),X(298.5),Y(0),PAL.s3,4);
+    txt(g,'window W (597 mm)',X(0),Y(0)-10,PAL.s3,11,'center');
+    // eye
+    const ey=Y(ez), exx=X(ex);
+    dot(g,exx,ey,6,PAL.s1); txt(g,'eye',exx,ey+20,PAL.s1,11,'center');
+    // frustum
+    if(fm==='off'){
+      line(g,exx,ey,X(-298.5),Y(0),PAL.s1,2);
+      line(g,exx,ey,X(298.5),Y(0),PAL.s1,2);
+      // optical axis: parallel to -Z always
+      line(g,exx,ey,exx,Y(-260),PAL.s4,2,[5,5]);
+      txt(g,'optical axis (never rotates)',exx+8,Y(-240),PAL.s4,11);
+      // extend beyond window
+      line(g,X(-298.5),Y(0),X(-298.5+(-298.5-ex)*0.7),Y(-260),PAL.s1,1,[3,4]);
+      line(g,X(298.5),Y(0),X(298.5+(298.5-ex)*0.7),Y(-260),PAL.s1,1,[3,4]);
+      txt(g,'near plane IS the window — shear lives in the projection matrix',
+          cx,h-16,PAL.ink2,11.5,'center');
+    } else {
+      const ang=Math.atan2(ex,ez);
+      const half=Math.atan2(298.5,ez);
+      for(const s of [-1,1]){
+        const a=-ang+s*half;
+        line(g,exx,ey,exx+Math.sin(a)*ez*1.7*1,ey-Math.cos(a)*ez*1.7,PAL.crit,2);
+      }
+      line(g,exx,ey,X(0),Y(0),PAL.s4,2,[5,5]);
+      txt(g,'camera rotated to look at centre',exx+8,ey-24,PAL.crit,11);
+      txt(g,'frustum no longer aligns with the window — keystone distortion',
+          cx,h-16,PAL.crit,11.5,'center');
+    }
+    // person behind
+    dot(g,X(0),Y(-550),7,PAL.s2);
+    txt(g,'far person',X(0),Y(-550)-12,PAL.s2,11,'center');
+  }
+  ['fx','fz'].forEach(i=>$(i).oninput=draw);
+  document.querySelectorAll('#fMode button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#fMode button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); fm=b.dataset.m;
+    $('frusNote').textContent = fm==='off'
+      ? 'Correct. The view matrix is a pure translation — the optical axis stays parallel to −Z no matter where the eye goes. The asymmetry is entirely in the projection matrix.'
+      : 'The bug. Rotating the view camera introduces keystone distortion: straight lines in the window plane stop being straight on screen, and the window illusion collapses. It looks almost right, which is what makes it expensive.';
+    draw();
+  });
+  $('frusNote').textContent='Correct. The view matrix is a pure translation — the optical axis stays parallel to −Z no matter where the eye goes. The asymmetry is entirely in the projection matrix.';
+  REDRAW.push(draw); requestAnimationFrame(draw);
+})();
+
+/* ==================== §7 camera rise ==================== */
+(function(){
+  const sl=$('rise'), cv=$('riseCv');
+  const lands=[[0,'on their eyes'],[20,'between the eyes'],[40,'mid forehead'],
+    [70,'hairline'],[100,'top of head'],[130,'above the head'],[160,'background'],
+    [190,'top bezel']];
+  function draw(){
+    const rise=+sl.value; $('riseLab').textContent=rise+' mm';
+    const zc=0.570, alpha=Math.atan2(rise/1000,zc);
+    const tol=(1*DEG)*0.012/Math.max(alpha,1e-6);
+    const f=(1920/2)/Math.tan(75*DEG/2);
+    const bmin=zc*zc*0.30*alpha/(f*0.012*1*DEG);
+    $('oAlpha').textContent=(alpha/DEG).toFixed(2)+'°';
+    $('oRaw').textContent=(alpha/DEG).toFixed(2)+'°';
+    $('oTol').textContent= alpha<0.005?'—':tol.toFixed(4).slice(0,5)*1000>0?(tol*1000).toFixed(2)+' mm':'';
+    $('oTol').textContent= (alpha/DEG)<0.3?'no limit':(tol*1000).toFixed(2)+' mm';
+    $('oBmin').textContent=(bmin*1000).toFixed(0)+' mm';
+    let L=lands[0][1]; lands.forEach(l=>{if(rise>=l[0]-10)L=l[1];});
+    $('oLands').textContent=L;
+    const el=$('oTol'); el.className='v '+((alpha/DEG)>12?'fail':(alpha/DEG)>9?'mid':'pass');
+
+    const {g,w,h}=fit(cv); g.clearRect(0,0,w,h);
+    const S=Math.min((w*0.62)/700,(h*0.80)/430);
+    const ox=w*0.68, oy=h*0.80;
+    const X=mm=>ox-mm*S*0.001*1000*0, Y=mm=>oy-mm*S;
+    const scr=ox-570*S; // screen x position (side view: screen at left, subject right)
+    const PX=zmm=>ox-zmm*S;
+    // head
+    const hy=oy-90*S;
+    g.beginPath(); g.strokeStyle=PAL.axis; g.lineWidth=2;
+    g.ellipse(ox,hy,52*S,68*S,0,0,7); g.stroke();
+    dot(g,ox-16*S,hy-8*S,4.5,PAL.muted);
+    txt(g,'you',ox,oy+16,PAL.muted,11,'center');
+    // screen plane
+    line(g,scr,oy-360*S,scr,oy+30*S,PAL.s3,3);
+    txt(g,'screen',scr,oy+46,PAL.s3,11,'center');
+    // their rendered eye line
+    const eyeY=hy-8*S;
+    line(g,scr,eyeY,ox,eyeY,PAL.grid,1,[4,4]);
+    txt(g,'their rendered eye line',scr+8,eyeY-6,PAL.muted,10.5);
+    // camera
+    const camY=eyeY-rise*S;
+    g.fillStyle=PAL.s2; g.fillRect(scr-6,camY-5,12,10);
+    txt(g,'camera',scr-12,camY+4,PAL.s2,11,'right');
+    line(g,scr,camY,ox-16*S,hy-8*S,PAL.s2,2);
+    // alpha arc
+    g.beginPath(); g.strokeStyle=PAL.s4; g.lineWidth=2;
+    const a1=Math.atan2(eyeY-(hy-8*S),scr-ox), a2=Math.atan2(camY-(hy-8*S),scr-ox);
+    g.arc(ox-16*S,hy-8*S,64,Math.min(a1,a2),Math.max(a1,a2)); g.stroke();
+    txt(g,'alpha = '+(alpha/DEG).toFixed(1)+'°',ox-100*S-8,hy-8*S-26,PAL.s4,12,'right');
+  }
+  sl.oninput=draw; REDRAW.push(draw); requestAnimationFrame(draw);
+})();
+
+/* ==================== §8 iris ==================== */
+(function(){
+  const sl=$('ir'), cv=$('irisCv');
+  function draw(){
+    const a=(+sl.value)/10; $('irLab').textContent=a.toFixed(1)+'°';
+    const raw=a;
+    // homography recovers ~3.4% at 18.4deg, scaling roughly linearly in the model
+    const hom=a*0.9658;
+    $('irRaw').textContent=raw.toFixed(2)+'°';
+    $('irHom').textContent=hom.toFixed(2)+'°';
+    const pct=raw>0.01?100*(raw-hom)/raw:0;
+    $('irPct').textContent=pct.toFixed(1)+'%';
+    $('irPct').className='v '+(pct<10?'fail':'pass');
+
+    const {g,w,h}=fit(cv); g.clearRect(0,0,w,h);
+    const cx=w*0.5, cy=h*0.62, R=Math.min(h*0.30,110);
+    // eyeball
+    g.beginPath(); g.strokeStyle=PAL.axis; g.lineWidth=2; g.arc(cx,cy,R,0,7); g.stroke();
+    txt(g,'eyeball, r = 12 mm',cx,cy+R+22,PAL.muted,11,'center');
+    // eye corners: flat plane
+    line(g,cx-R*1.5,cy-R*0.55,cx+R*1.5,cy-R*0.55,PAL.muted,2,[5,4]);
+    txt(g,'eye corners (flat on the face)',cx-R*1.5,cy-R*0.55-8,PAL.muted,10.5);
+    // iris: on sphere, pointing up-ish toward the true viewer
+    const ia=-Math.PI/2;
+    const ix=cx+R*Math.cos(ia), iy=cy+R*Math.sin(ia);
+    dot(g,ix,iy,9,PAL.s3);
+    txt(g,'iris (on the sphere)',ix+14,iy-4,PAL.s3,11);
+    // camera direction
+    const ca=-Math.PI/2 - a*DEG*2.4;
+    const cxp=cx+R*3.0*Math.cos(ca), cyp=cy+R*3.0*Math.sin(ca);
+    g.fillStyle=PAL.s2; g.fillRect(cxp-7,cyp-5,14,10);
+    txt(g,'camera',cxp+12,cyp+4,PAL.s2,11);
+    line(g,cxp,cyp,cx,cy,PAL.s2,1.5,[4,4]);
+    // true viewpoint
+    dot(g,cx,cy-R*3.0,6,PAL.s1);
+    txt(g,'where their eye needs to be',cx-14,cy-R*3.0+4,PAL.s1,11,'right');
+    line(g,cx,cy-R*3.0,cx,cy,PAL.s1,1.5,[4,4]);
+    // the differential
+    const off=R*Math.sin(a*DEG*2.4);
+    line(g,ix,iy-16,ix-off,iy-16,PAL.s4,3);
+    txt(g,'r·sin(alpha) — the entire gaze signal',ix-off-10,iy-22,PAL.s4,11,'right');
+  }
+  sl.oninput=draw; REDRAW.push(draw); requestAnimationFrame(draw);
+})();
+
+/* ==================== §10 design calculator ==================== */
+(function(){
+  const ids=['cRise','cSit','cBase','cSens','cFov','cSd'];
+  function calc(){
+    const rise=+$('cRise').value/1000, sit=+$('cSit').value/1000,
+          b=+$('cBase').value/1000, sw=+$('cSens').value, fov=+$('cFov').value,
+          sd=+$('cSd').value/100;
+    $('cRiseL').textContent=(rise*1000).toFixed(0)+' mm';
+    $('cSitL').textContent=(sit*1000).toFixed(0)+' mm';
+    $('cBaseL').textContent=(b*1000).toFixed(0)+' mm';
+    $('cSensL').textContent=sw+' px';
+    $('cFovL').textContent=fov+'°';
+    $('cSdL').textContent=sd.toFixed(2)+' px';
+    const zc=sit-0.030, f=(sw/2)/Math.tan(fov*DEG/2);
+    const alpha=Math.atan2(rise,zc);
+    const tol=(1*DEG)*0.012/alpha;
+    const sz=zc*zc*sd/(f*b);
+    const bmin=zc*zc*sd*alpha/(f*0.012*1*DEG);
+    const mar=tol/sz;
+    $('rAlpha').textContent=(alpha/DEG).toFixed(2)+'°';
+    $('rF').textContent=f.toFixed(0)+' px';
+    $('rTol').textContent=(tol*1000).toFixed(2)+' mm';
+    $('rSz').textContent=(sz*1000).toFixed(2)+' mm';
+    $('rMar').textContent=mar.toFixed(1)+'×';
+    $('rMar').className='v '+(mar>=1.5?'pass':mar>=1?'mid':'fail');
+    $('rBmin').textContent=(bmin*1000).toFixed(0)+' mm';
+    const ok=mar>=1.5 && b>=bmin;
+    $('rVerd').textContent=ok?'design closes':'DOES NOT CLOSE';
+    $('rVerd').className='v '+(ok?'pass':'fail');
+  }
+  ids.forEach(i=>$(i).oninput=calc); calc();
+})();
+
+/* ==================== §11 rig 3D ==================== */
+(function(){
+  const cv=$('rigCv'); let opt='rays';
+  const cam=Cam(0.68,0.26,1.05,[0,0.02,0.26]);
+  const W=0.597,H=0.336;
+  const CAMS=[['TL',-0.125,0.188,0.030],['TR',0.125,0.188,0.030],
+              ['BL',-0.125,-0.188,0.030],['BR',0.125,-0.188,0.030],
+              ['C',0,0.070,0.022]];
+  const SUB=[0,0.05,0.60];
+  function scene(){
+    const out=[];
+    const c=[[-W/2,-H/2,0],[W/2,-H/2,0],[W/2,H/2,0],[-W/2,H/2,0]];
+    F3(out,c,PAL.s3,0.12); poly3(out,c,PAL.s3,2.6,true);
+    for(let i=1;i<8;i++){const t=i/8;
+      L3(out,[-W/2+W*t,-H/2,0],[-W/2+W*t,H/2,0],PAL.grid,0.7);}
+    for(let i=1;i<5;i++){const t=i/5;
+      L3(out,[-W/2,-H/2+H*t,0],[W/2,-H/2+H*t,0],PAL.grid,0.7);}
+    const bz=[[-W/2-0.022,-H/2-0.022,0],[W/2+0.022,-H/2-0.022,0],
+              [W/2+0.022,H/2+0.022,0],[-W/2-0.022,H/2+0.022,0]];
+    poly3(out,bz,PAL.muted,1.5,true);
+    L3(out,[-0.21,H/2+0.020,0.026],[0.21,H/2+0.020,0.026],PAL.muted,3.4);
+    L3(out,[-0.21,-H/2-0.020,0.026],[0.21,-H/2-0.020,0.026],PAL.muted,3.4);
+    L3(out,[0,H/2+0.020,0.026],[0,0.070,0.024],PAL.muted,2.6);
+    if(opt==='rays') CAMS.forEach(k=>{
+      L3(out,[k[1],k[2],k[3]],SUB,k[0]==='C'?PAL.s2:PAL.s1,1.2,[5,4]);});
+    if(opt==='base'){
+      [[0,1,PAL.s1],[0,2,PAL.s4],[0,3,PAL.s3],[1,2,PAL.s3]].forEach(pr=>
+        L3(out,[CAMS[pr[0]][1],CAMS[pr[0]][2],CAMS[pr[0]][3]],
+               [CAMS[pr[1]][1],CAMS[pr[1]][2],CAMS[pr[1]][3]],pr[2],2.4));
+    }
+    sphere3(out,SUB,0.095,PAL.muted,0.7,7);
+    CAMS.forEach(k=>{
+      const col=k[0]==='C'?PAL.s2:PAL.s1;
+      box3(out,[k[1],k[2],k[3]],[0.014,0.014,0.009],col,1.6);
+      P3(out,[k[1],k[2],k[3]],col,3.5,k[0]);
+    });
+    return out;
+  }
+  function draw(){
+    const {g,w,h}=fit(cv); g.clearRect(0,0,w,h);
+    const items=scene(), fs=w*0.88;
+    if(cam.autofit){cam.dist=fitDist(items,cam,w,h,fs); cam.autofit=false;}
+    render3(g,items,cam,w,h,fs);
+    if(opt==='base') txt(g,'TL–TR 250 mm  ·  TL–BL 376 mm  ·  diagonals 452 mm',
+      10,h-12,PAL.ink2,11.5);
+  }
+  cam.autofit=true;
+  document.querySelectorAll('#rigOpts button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#rigOpts button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); opt=b.dataset.o; draw();});
+  const ctl=attach3(cv,cam,draw,{min:0.5,max:5,amp:0.30});
+  view3bar(cv,ctl,[{n:'¾ view',y:0.68,p:0.26},{n:'Top',y:0.0,p:1.2},
+                   {n:'Side',y:1.57,p:0.06},{n:'Front',y:0.0,p:0.04}]);
+  REDRAW.push(()=>{cam.autofit=true;draw();}); requestAnimationFrame(draw);
+})();
+
+/* ==================== §12 hull ==================== */
+(function(){
+  const cv=$('hullCv'); let n=5;
+  const SUB=[0,0.05,0.60];
+  const SETS={
+    3:[['TL',-0.125,0.188,0.03],['TR',0.125,0.188,0.03],['C',0,0.070,0.022]],
+    4:[['TL',-0.125,0.188,0.03],['TR',0.125,0.188,0.03],['C',0,0.070,0.022],
+       ['B',0,-0.188,0.03]],
+    5:[['TL',-0.125,0.188,0.03],['TR',0.125,0.188,0.03],['BL',-0.125,-0.188,0.03],
+       ['BR',0.125,-0.188,0.03],['C',0,0.070,0.022]]
+  };
+  const bear=p=>{const v=[p[0]-SUB[0],p[1]-SUB[1],p[2]-SUB[2]];
+    return [Math.atan2(v[0],-v[2])/DEG,Math.atan2(v[1],-v[2])/DEG];};
+  function hull(pts){
+    const P=pts.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+    const half=s=>{const o=[];for(const p of s){
+      while(o.length>=2){const[a,b]=[o[o.length-2],o[o.length-1]];
+        if((b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0])>0)break;o.pop();}
+      o.push(p);}return o.slice(0,-1);};
+    return half(P).concat(half(P.slice().reverse()));
+  }
+  function inside(poly,q){
+    let best=1e9;
+    for(let i=0;i<poly.length;i++){
+      const a=poly[i],b=poly[(i+1)%poly.length];
+      const e=[b[0]-a[0],b[1]-a[1]];
+      const cr=e[0]*(q[1]-a[1])-e[1]*(q[0]-a[0]);
+      best=Math.min(best,cr/Math.hypot(e[0],e[1]));
+    }
+    return best;
+  }
+  function draw(){
+    const t=+$('tv').value; $('tvLab').textContent='±'+t+' mm';
+    const {g,w,h}=fit(cv); g.clearRect(0,0,w,h);
+    const cams=SETS[n].map(c=>({n:c[0],b:bear([c[1],c[2],c[3]])}));
+    const hp=hull(cams.map(c=>c.b));
+    const cx=w/2, cy=h/2, S=Math.min(w/64,h/64);
+    const X=a=>cx+a*S, Y=e=>cy-e*S;
+    // grid
+    for(let a=-30;a<=30;a+=10){line(g,X(a),0,X(a),h,PAL.grid,1);line(g,0,Y(a),w,Y(a),PAL.grid,1);
+      if(a!==0){txt(g,a+'°',X(a)+3,Y(0)-5,PAL.muted,9.5);txt(g,a+'°',X(0)+4,Y(a)-4,PAL.muted,9.5);}}
+    line(g,X(0),0,X(0),h,PAL.axis,1); line(g,0,Y(0),w,Y(0),PAL.axis,1);
+    txt(g,'azimuth →',w-10,Y(0)-8,PAL.muted,10.5,'right');
+    txt(g,'elevation ↑',X(0)+8,14,PAL.muted,10.5);
+    // hull
+    g.beginPath(); hp.forEach((p,i)=>i?g.lineTo(X(p[0]),Y(p[1])):g.moveTo(X(p[0]),Y(p[1])));
+    g.closePath(); g.fillStyle='rgba(57,135,229,0.14)'; g.fill();
+    g.strokeStyle=PAL.s1; g.lineWidth=2; g.stroke();
+    // viewpoint patch
+    let worst=1e9;
+    for(let i=0;i<9;i++)for(let j=0;j<9;j++){
+      const dx=-t/1000+(2*t/1000)*i/8, dy=-t/1000+(2*t/1000)*j/8;
+      const b=bear([dx,dy,-0.55]); const m=inside(hp,b);
+      worst=Math.min(worst,m);
+      dot(g,X(b[0]),Y(b[1]),2.6,m<0?PAL.crit:PAL.s3);
+    }
+    // cameras
+    cams.forEach(c=>{dot(g,X(c.b[0]),Y(c.b[1]),6,c.n==='C'?PAL.s2:PAL.s1);
+      txt(g,c.n,X(c.b[0])+9,Y(c.b[1])+4,PAL.ink2,11);});
+    $('hullNote').innerHTML = worst<0
+      ? '<b style="color:'+PAL.crit+'">'+worst.toFixed(1)+'° outside the hull.</b> Red points are viewpoints that must be <em>extrapolated</em> — the cameras never saw that angle, so disocclusion holes have to be inpainted rather than filled with real pixels.'
+      : '<b style="color:'+PAL.good+'">Fully covered.</b> Every viewpoint the far viewer’s eye reaches falls inside the angular hull, so novel views are interpolated between real photographs.';
+  }
+  $('tv').oninput=draw;
+  document.querySelectorAll('#hullMode button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#hullMode button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); n=+b.dataset.h; draw();});
+  REDRAW.push(draw); requestAnimationFrame(draw);
+})();
+
+/* ==================== §13 parallax ==================== */
+(function(){
+  const sl=$('pv'), cv=$('paraCv');
+  function draw(){
+    const zv=+sl.value/1000; $('pvLab').textContent=(zv*1000).toFixed(0)+' mm';
+    const gain=1-0.60/zv, plane=0.478;
+    const err=Math.abs(gain-plane)*0.100;
+    $('pG').textContent=gain.toFixed(3);
+    $('pE').textContent=(err*1000).toFixed(1)+' mm';
+    const ang=Math.atan(err/zv)/DEG;
+    $('pD').textContent=ang.toFixed(2)+'°';
+    $('pD').className='v '+(ang>1?'fail':ang>0.5?'mid':'pass');
+
+    const {g,w,h}=fit(cv); g.clearRect(0,0,w,h);
+    const y0=h*0.72, L=w*0.80, x0=w*0.10;
+    line(g,x0,y0,x0+L,y0,PAL.axis,1);
+    for(let i=0;i<=10;i++){const x=x0+L*i/10; line(g,x,y0-4,x,y0+4,PAL.grid,1);}
+    txt(g,'screen-space shift for 100 mm of head movement',x0,h*0.16,PAL.ink2,12);
+    const scale=L/0.060;
+    const bars=[['correct, this depth',gain*0.100,PAL.s3],
+                ['plane approximation (0.478)',plane*0.100,PAL.s2]];
+    bars.forEach((b,i)=>{
+      const yy=h*0.28+i*38;
+      g.fillStyle=b[2]; const bw=Math.max(2,b[1]*scale);
+      g.beginPath();
+      if(g.roundRect) g.roundRect(x0,yy,bw,18,[0,4,4,0]); else g.rect(x0,yy,bw,18);
+      g.fill();
+      txt(g,b[0],x0+bw+10,yy+13,PAL.ink2,11.5);
+      txt(g,(b[1]*1000).toFixed(1)+' mm',x0+4,yy+13,'#fff',11.5);
+    });
+    // error bracket
+    const ya=h*0.28, x1=x0+gain*0.100*scale, x2=x0+plane*0.100*scale;
+    line(g,x1,ya-10,x2,ya-10,PAL.crit,2);
+    txt(g,'gap = '+(err*1000).toFixed(1)+' mm',(x1+x2)/2,ya-16,PAL.crit,11,'center');
+    txt(g,'0',x0,y0+18,PAL.muted,10.5,'center');
+    txt(g,'60 mm',x0+L,y0+18,PAL.muted,10.5,'center');
+  }
+  sl.oninput=draw; REDRAW.push(draw); requestAnimationFrame(draw);
+})();
+
+/* ==================== §19 invariance ==================== */
+(function(){
+  const cv=$('invCv');
+  function draw(){
+    const ex=+$('iv').value/1000, er=+$('ie').value/1000;
+    $('ivLab').textContent=(ex*1000).toFixed(0)+' mm';
+    $('ieLab').textContent=(er*1000).toFixed(0)+' mm';
+    const ez=0.600, zt=0.300;
+    // screen x for a target at depth z, from eye at ex
+    const proj=(tx,tz,eyex)=>{ const t=ez/(ez-tz); return eyex+t*(tx-eyex); };
+    const z0=proj(0,0,ex+er);           // z=0 target, rendered with belief
+    const zf=proj(0,zt,ex+er);          // floating target rendered with belief
+    const zfTrue=proj(0,zt,ex);         // where the real pencil actually appears
+    $('iZ').textContent=(Math.abs(z0-0)*1000).toFixed(2)+' mm';
+    $('iZ').className='v pass';
+    const sep=Math.abs(zf-zfTrue)*1000;
+    $('iF').textContent=sep.toFixed(1)+' mm';
+    $('iF').className='v '+(sep>5?'fail':sep>1?'mid':'pass');
+
+    const {g,w,h}=fit(cv); g.clearRect(0,0,w,h);
+    const S=Math.min(w/1.15,(h*0.62)/0.70);
+    const cx=w*0.5, sy=h*0.20;
+    const X=m=>cx+m*S, Y=m=>sy+m*S;
+    // screen plane
+    line(g,X(-0.30),Y(0),X(0.30),Y(0),PAL.s3,4);
+    txt(g,'the glass (z = 0)',X(-0.30),Y(0)-9,PAL.s3,11);
+    // eye
+    dot(g,X(ex),Y(ez),7,PAL.s1); txt(g,'your eye',X(ex),Y(ez)+22,PAL.s1,11,'center');
+    if(Math.abs(er)>1e-9){
+      dot(g,X(ex+er),Y(ez),6,PAL.crit);
+      txt(g,'tracker believes',X(ex+er),Y(ez)+38,PAL.crit,10.5,'center');
+    }
+    // z=0 target
+    dot(g,X(0),Y(0),7,PAL.s3);
+    line(g,X(ex),Y(ez),X(0),Y(0),PAL.s3,1.5,[4,4]);
+    txt(g,'target ON the glass',X(0)+12,Y(0)+16,PAL.s3,11);
+    // floating target
+    dot(g,X(0),Y(zt),7,PAL.s2);
+    txt(g,'pencil tip, 300 mm out',X(0)+12,Y(zt)+4,PAL.s2,11);
+    // true sight line through pencil
+    line(g,X(ex),Y(ez),X(zfTrue),Y(0),PAL.s2,1.5);
+    dot(g,X(zfTrue),Y(0),5,PAL.s2);
+    // rendered position
+    if(Math.abs(zf-zfTrue)>1e-6){
+      dot(g,X(zf),Y(0),5,PAL.crit);
+      line(g,X(zfTrue),Y(0)-14,X(zf),Y(0)-14,PAL.crit,2);
+      txt(g,'separation '+sep.toFixed(0)+' mm',(X(zf)+X(zfTrue))/2,Y(0)-20,PAL.crit,11,'center');
+    }
+    txt(g,'the green marker never moves — that is the null',cx,h-14,PAL.ink2,11.5,'center');
+  }
+  ['iv','ie'].forEach(i=>$(i).oninput=draw);
+  REDRAW.push(draw); requestAnimationFrame(draw);
+})();
+
+/* ============ pointing ray, side elevation ============
+   Closed-form geometry, the same expressions portalsim.py evaluates: put each
+   view's glass position back at the true depth along the viewer's line of
+   sight, then extend shoulder->fingertip to the viewer's own body plane.
+   Everything is a function of the eye position, which is the whole point --
+   evaluate it twice, at the seat you are in and at the default seat, and the
+   difference is what moving costs each view. */
+(function(){
+  const cv=document.getElementById('ptCv'); if(!cv) return;
+  const W_MM=597, H_MM=336, HFOV=75*Math.PI/180;
+  const SHO={x:0,y:-110,z:-600}, WCAM={x:0,y:190,z:-30};
+  const Z0=-760, Z1=1060, Y0=-1180, Y1=330;
+
+  function glassWindow(P,EYE){                 // what a real pane of glass shows
+    const t=(0-EYE.z)/(P.z-EYE.z);
+    return {x:EYE.x+(P.x-EYE.x)*t, y:EYE.y+(P.y-EYE.y)*t};
+  }
+  function glassWebcam(P,pitch){               // one image, scaled to fill W.
+    const vx=P.x-WCAM.x, vy=P.y-WCAM.y, vz=P.z-WCAM.z;   // no EYE term at all:
+    const a=-pitch*Math.PI/180, c=Math.cos(a), s=Math.sin(a);  // that IS the bug
+    const ry=c*vy-s*vz, rz=s*vy+c*vz;
+    if(rz>=-1) return null;
+    const f=1/Math.tan(HFOV/2);
+    const U=vx/(-rz)*f, V=ry/(-rz)*f*(W_MM/H_MM);
+    if(Math.abs(U)>1||Math.abs(V)>1) return null;         // out of frame
+    return {x:U*W_MM/2, y:V*H_MM/2};
+  }
+  function back(g,z,EYE){
+    const t=(z-EYE.z)/(0-EYE.z);
+    return {x:EYE.x+(g.x-EYE.x)*t, y:EYE.y+(g.y-EYE.y)*t, z:z};
+  }
+  function landing(gS,gF,zS,zF,EYE){
+    if(!gS||!gF) return null;
+    const S=back(gS,zS,EYE), F=back(gF,zF,EYE);
+    if(Math.abs(F.z-S.z)<1e-6) return null;
+    const t=(EYE.z-S.z)/(F.z-S.z);             // land on YOUR body plane
+    return {x:S.x+(F.x-S.x)*t, y:S.y+(F.y-S.y)*t, S:S, F:F};
+  }
+
+  /* One complete scenario. The mark B aims at is a spot on your body, so it
+     travels with your seat; B keeps pointing at the same spot on the same
+     person however you sit. */
+  function solve(ey,ez,ty,reach,tilt){
+    const EYE={x:0,y:ey,z:ez};
+    const TGT={x:0,y:ty,z:ez};
+    const TIP={x:SHO.x+reach*(TGT.x-SHO.x), y:SHO.y+reach*(TGT.y-SHO.y),
+               z:SHO.z+reach*(TGT.z-SHO.z)};
+    const lw=landing(glassWindow(SHO,EYE),glassWindow(TIP,EYE),SHO.z,TIP.z,EYE);
+    const lc=landing(glassWebcam(SHO,tilt),glassWebcam(TIP,tilt),SHO.z,TIP.z,EYE);
+    const off=L=>L?{x:L.x-TGT.x, y:L.y-TGT.y}:null;   // error against the mark
+    return {EYE:EYE, TGT:TGT, TIP:TIP, lw:lw, lc:lc,
+            ow:off(lw), oc:off(lc), seen:!!glassWebcam(TIP,tilt)};
+  }
+
+  function draw(){
+    const o=fit(cv), g=o.g, w=o.w, h=o.h, pad=40;
+    const X=z=>pad+(z-Z0)/(Z1-Z0)*(w-2*pad);
+    const Y=y=>h-pad-(y-Y0)/(Y1-Y0)*(h-2*pad);
+    const V=(id,t)=>document.getElementById(id).textContent=t;
+    const num=(id,v,u)=>document.getElementById(id).innerHTML=
+      (v<0?'&minus;':'')+Math.abs(v)+(u||'');
+
+    const ty=+document.getElementById('ptT').value;
+    const reach=(+document.getElementById('ptR').value)/100;
+    const tilt=+document.getElementById('ptW').value;
+    const ey=+document.getElementById('ptEY').value;
+    const ez=+document.getElementById('ptEZ').value;
+    num('ptTLab',ty,' mm'); V('ptRLab',reach.toFixed(2));
+    num('ptWLab',tilt,'&deg;'); num('ptEYLab',ey,' mm'); V('ptEZLab',ez+' mm');
+
+    const S=solve(ey,ez,ty,reach,tilt);        // where you are
+    const R=solve(0,600,ty,reach,tilt);        // the default seat, same gesture
+    const EYE=S.EYE, TIP=S.TIP;
+
+    line(g,X(Z0),Y(0),X(Z1),Y(0),PAL.grid,1,[2,4]);
+    line(g,X(0),Y(-H_MM/2),X(0),Y(H_MM/2),PAL.s3,3);
+    txt(g,'W',X(0)-4,Y(H_MM/2)-9,PAL.s3,11);
+    if(ez!==600||ey!==0){
+      g.save(); g.globalAlpha=.5;
+      line(g,X(600),Y(Y0+30),X(600),Y(Y1-30),PAL.grid,1,[1,5]);
+      dot(g,X(600),Y(0),3,PAL.grid);
+      txt(g,'default seat',X(600)+8,Y(Y1-54),PAL.grid,9);
+      g.restore();
+    }
+    line(g,X(EYE.z),Y(Y0+30),X(EYE.z),Y(Y1-30),PAL.axis,1,[4,4]);
+    txt(g,'you',X(EYE.z)+9,Y(Y1-34),PAL.muted,11);
+    for(let yy=0; yy>=-1000; yy-=250){
+      line(g,X(EYE.z)-5,Y(yy),X(EYE.z)+5,Y(yy),PAL.axis,1);
+      txt(g,''+yy,X(EYE.z)-9,Y(yy)+4,PAL.grid,9,'right');
+    }
+    dot(g,X(EYE.z),Y(S.TGT.y),4,PAL.s3);
+    txt(g,'the mark',X(EYE.z)-9,Y(S.TGT.y)-9,PAL.s3,9,'right');
+
+    g.save(); g.globalAlpha=.30;
+    g.strokeStyle=PAL.ink; g.lineWidth=10; g.lineCap='round';
+    g.beginPath(); g.moveTo(X(SHO.z),Y(SHO.y)); g.lineTo(X(TIP.z),Y(TIP.y)); g.stroke();
+    g.restore();
+    dot(g,X(SHO.z),Y(SHO.y),4,PAL.ink); dot(g,X(TIP.z),Y(TIP.y),4,PAL.ink);
+    txt(g,'B shoulder',X(SHO.z)-14,Y(SHO.y)+22,PAL.muted,11);
+    txt(g,'fingertip',X(TIP.z)-14,Y(TIP.y)-13,PAL.muted,11);
+    dot(g,X(EYE.z),Y(EYE.y),4,PAL.ink);
+    txt(g,'your eye',X(EYE.z)-9,Y(EYE.y)+4,PAL.muted,11,'right');
+    dot(g,X(WCAM.z),Y(WCAM.y),3,PAL.crit);
+    txt(g,'webcam',X(WCAM.z)-8,Y(WCAM.y)+4,PAL.crit,10,'right');
+
+    function ray(L,col,lab){
+      if(!L) return;
+      line(g,X(L.S.z),Y(L.S.y),X(EYE.z),Y(L.y),col,2);
+      dot(g,X(EYE.z),Y(L.y),5,col);
+      txt(g,lab,X(EYE.z)+10,Y(L.y)+4,col,11);
+    }
+    ray(S.lw,PAL.s3,'window / Portal');
+    ray(S.lc,PAL.crit,'webcam');
+
+    const shift=(a,b)=>(a&&b)?Math.hypot(a.x-b.x,a.y-b.y):null;
+    const mm=v=>v===null?'no reading':(v<0.5?'0 mm':Math.round(v)+' mm');
+    V('ptA', S.lw? Math.round(S.lw.y)+' mm' : '—');
+    V('ptB', S.lc? Math.round(S.lc.y)+' mm' : 'no reading');
+    V('ptC', (S.lw&&S.lc)? Math.round(Math.hypot(S.lc.x-S.lw.x,S.lc.y-S.lw.y))+' mm' : '—');
+    V('ptD', S.seen? 'in frame' : 'out of frame');
+    V('ptE', mm(shift(S.ow,R.ow)));
+    V('ptF', mm(shift(S.oc,R.oc)));
+  }
+  ['ptT','ptR','ptW','ptEY','ptEZ'].forEach(
+    id=>document.getElementById(id).oninput=draw);
+  REDRAW.push(draw); requestAnimationFrame(draw);
+})();
+
+</script>
+</body>
+</html>
