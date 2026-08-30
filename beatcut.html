@@ -21,7 +21,7 @@ body{
   font-size:13px;display:flex;flex-direction:column;overflow:hidden;
   -webkit-font-smoothing:antialiased;
 }
-button,input,select{font-family:inherit;color:inherit}
+button,input,select,textarea{font-family:inherit;color:inherit}
 .lbl{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);font-weight:700;display:block;margin:0 0 6px}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
@@ -103,7 +103,8 @@ input[type=color]{background:var(--ink);border:1px solid var(--line2);border-rad
 .chk input:checked{background:var(--amber);border-color:var(--amber)}
 .chk input:checked::after{content:"";position:absolute;left:4.5px;top:1px;width:4px;height:8px;border:solid #0B0D14;border-width:0 2px 2px 0;transform:rotate(45deg)}
 .chk.v input:checked{background:var(--violet);border-color:var(--violet)}
-textarea{background:var(--ink);border:1px solid var(--line2);border-radius:4px;padding:6px 7px;font-family:var(--sans);font-size:12px;width:100%;resize:vertical;min-height:46px;line-height:1.35}
+textarea{background:var(--ink);color:var(--tx);caret-color:var(--cool);border:1px solid var(--line2);border-radius:4px;padding:6px 7px;font-family:var(--sans);font-size:12px;width:100%;resize:vertical;min-height:46px;line-height:1.35}
+textarea::placeholder{color:var(--faint)}
 .tchip{padding:5px 8px;font-size:10px;border-radius:4px;background:var(--panel2);border:1px solid var(--line);cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono)}
 .tchip.sel{background:var(--violet);border-color:var(--violet);color:#0B0D14;font-weight:700}
 .empty{font-size:11px;color:var(--faint);line-height:1.6;padding:2px 0}
@@ -355,7 +356,7 @@ const state = {
   duration: 16,
   audioIn: 0, audioOut: 0, srcDuration: 0,
   markers: [], clips: [], beats: [],
-  bpm: 0, gridOffset: 0,
+  bpm: 0, gridOffset: 0, gridK: 0, beatK: [],
   selMarker: -1, selClip: 0,
   snap: true, playing: false,
   showGrid: true, showOnsets: true, autoRebuild: true,
@@ -519,7 +520,7 @@ async function analyze(buf, t0, t1){
 
 /* ---------------- beat grid + cut generation ---------------- */
 function buildBeats(){
-  state.beats=[];
+  state.beats=[]; state.beatK=[];
   if(!state.bpm) return;
   const per=60/state.bpm;
   const inT = audioBuffer ? state.audioIn : 0;
@@ -527,10 +528,14 @@ function buildBeats(){
   for(let i=k;;i++){
     const t = state.gridOffset + i*per - inT;
     if(t>state.duration+0.001) break;
-    if(t>=-0.001) state.beats.push(Math.max(0,t));
+    // beatK is the absolute beat number, so bars stay put while the grid is
+    // dragged, wrapped or trimmed instead of renumbering from the left edge
+    if(t>=-0.001){ state.beats.push(Math.max(0,t)); state.beatK.push(i+state.gridK); }
     if(state.beats.length>40000) break;
   }
 }
+const isDownbeat=i=>((((state.beatK[i]||0)%4)+4)%4)===0;
+const barNumber=i=>Math.floor((state.beatK[i]||0)/4)+1;
 function nearestBeat(t){
   if(!state.beats.length) return null;
   let lo=0,hi=state.beats.length-1,best=state.beats[0];
@@ -1121,7 +1126,7 @@ function drawTimeline(t){
     for(let i=0;i<state.beats.length;i++){
       const x=Math.round(state.beats[i]*pps)+.5;
       if(x<-2||x>W+2) continue;
-      const down=(i%4===0);
+      const down=isDownbeat(i);
       if(!down && !showAll) continue;
       g.strokeStyle=down?"rgba(53,224,200,.60)":"rgba(53,224,200,.20)";
       g.lineWidth=down?1.4:1;
@@ -1172,14 +1177,14 @@ function drawTimeline(t){
     for(let i=0;i<state.beats.length;i++){
       const x=Math.round(state.beats[i]*pps)+.5;
       if(x<-30||x>W+30) continue;
-      const down=(i%4===0);
+      const down=isDownbeat(i);
       if(!down && !showAll) continue;
       g.strokeStyle=down?"#35E0C8":"rgba(53,224,200,.45)";
       g.lineWidth=down?1.5:1;
       g.beginPath(); g.moveTo(x,laneY+(down?3:9)); g.lineTo(x,H-2); g.stroke();
       if(down && spacing*4>46){
         g.fillStyle="rgba(53,224,200,.8)"; g.font="8px "+font;
-        g.fillText(String(i/4+1), x+3, laneY+9);
+        g.fillText(String(barNumber(i)), x+3, laneY+9);
       }
     }
   }
@@ -1210,7 +1215,7 @@ tl.addEventListener("mousedown",e=>{
     const per=60/(state.bpm||120);
     const n=Math.round((t+state.audioIn-state.gridOffset)/per);
     pushUndo();
-    gridDrag={x0:x, off0:state.gridOffset, n, stretch:false};
+    gridDrag={x0:x, off0:state.gridOffset, bpm0:state.bpm, n, stretch:false};
     drawTimeline(currentTime());
     e.preventDefault();
     return;
@@ -1232,15 +1237,17 @@ window.addEventListener("mousemove",e=>{
   if(gridDrag){
     const rect=tl.getBoundingClientRect();
     const x=e.clientX-rect.left, t=x/state.pps;
-    gridDrag.stretch=e.shiftKey;
-    if(e.shiftKey && gridDrag.n!==0){
+    gridDrag.stretch=e.shiftKey && gridDrag.n!==0;
+    if(gridDrag.stretch){
       let per=(t+state.audioIn-gridDrag.off0)/gridDrag.n;
       per=clamp(per,60/300,60/40);
       state.bpm=60/per;
+      state.gridOffset=gridDrag.off0;   // anchor stays exactly under the cursor
     }else{
+      state.bpm=gridDrag.bpm0;
       state.gridOffset=gridDrag.off0+(x-gridDrag.x0)/state.pps;
     }
-    buildBeats(); syncTempoControls(); drawTimeline(currentTime());
+    buildBeats(); tempoReadout(); drawTimeline(currentTime());
     return;
   }
   if(!drag) return;
@@ -1259,8 +1266,13 @@ window.addEventListener("mousemove",e=>{
   }
 });
 window.addEventListener("mouseup",()=>{
-  if(gridDrag){ gridDrag=null; drawTimeline(currentTime()); scheduleRebuild(); }
+  if(gridDrag){ gridDrag=null; syncTempoControls(); drawTimeline(currentTime()); scheduleRebuild(); }
   if(drag){ state.scrubbing=false; drag=null; renderStrip(); }
+});
+tl.addEventListener("mousemove",e=>{
+  if(gridDrag||drag) return;
+  const y=e.clientY-tl.getBoundingClientRect().top;
+  tl.style.cursor = y>=TL_H-TL_LANE ? "ew-resize" : (y<TL_WAVE_TOP ? "grab" : "crosshair");
 });
 tl.addEventListener("dblclick",e=>{
   const rect=tl.getBoundingClientRect();
@@ -2065,7 +2077,7 @@ function snapshot(){
     clips: state.clips.map(c=>({...c})),
     texts: state.texts.map(x=>({...x})), selText: state.selText,
     audioIn:state.audioIn, audioOut:state.audioOut, duration:state.duration,
-    bpm:state.bpm, gridOffset:state.gridOffset,
+    bpm:state.bpm, gridOffset:state.gridOffset, gridK:state.gridK,
     selMarker:state.selMarker, selClip:state.selClip,
     fx:{...state.fx},
   };
@@ -2075,7 +2087,7 @@ function restoreSnap(s){
   state.clips=s.clips.map(c=>({...c}));
   state.texts=(s.texts||[]).map(x=>({...x})); state.selText=s.selText==null?-1:s.selText;
   state.audioIn=s.audioIn; state.audioOut=s.audioOut; state.duration=s.duration;
-  state.bpm=s.bpm; state.gridOffset=s.gridOffset;
+  state.bpm=s.bpm; state.gridOffset=s.gridOffset; state.gridK=s.gridK||0;
   state.selMarker=s.selMarker; state.selClip=s.selClip;
   state.fx={...s.fx};
   buildBeats();
@@ -2108,18 +2120,27 @@ function updateHistoryUI(){
   u.textContent="↶ Undo"+(undoStack.length?" ("+undoStack.length+")":"");
   r.textContent="↷ Redo"+(redoStack.length?" ("+redoStack.length+")":"");
 }
-function syncTempoControls(){
+// Updates the tempo readouts only. Never touches state, so it is safe to call
+// on every mousemove of a drag.
+function tempoReadout(){
   const per=60/(state.bpm||120);
-  let o=((state.gridOffset%per)+per)%per;
-  if(o>per/2) o-=per;
-  state.gridOffset=o;
   $("bpmIn").value=state.bpm.toFixed(2);
   const sl=$("bpmSl"); sl.value=clamp(state.bpm,+sl.min,+sl.max);
   $("bpmSlV").textContent=state.bpm.toFixed(2);
+  let o=state.gridOffset%per;
+  if(o>per/2) o-=per; else if(o<-per/2) o+=per;
   const off=$("offIn");
   off.min=(-per/2).toFixed(4); off.max=(per/2).toFixed(4); off.value=o;
   $("offV").textContent=(o*1000).toFixed(0)+"ms";
   $("bpmOut").innerHTML="BPM <b>"+state.bpm.toFixed(1)+"</b>";
+}
+// Folds the offset back into a single beat. Shifting it by a whole period
+// renumbers every beat, so gridK absorbs the shift and the bars stay put.
+function syncTempoControls(){
+  const per=60/(state.bpm||120);
+  const m=Math.round(state.gridOffset/per);
+  if(m!==0){ state.gridOffset-=m*per; state.gridK-=m; buildBeats(); }
+  tempoReadout();
 }
 function syncFxControls(){
   const f=state.fx;
