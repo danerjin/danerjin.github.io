@@ -98,6 +98,14 @@ input[type=color]{background:var(--ink);border:1px solid var(--line2);border-rad
 .chip.drop{grid-column:1/-1;border-color:var(--hot);color:var(--hot)}
 .chip.drop.sel{background:var(--hot);color:#fff}
 .hint{font-size:10px;color:var(--faint);line-height:1.55;margin:9px 0 0}
+.chk{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--dim);margin-bottom:8px;cursor:pointer;user-select:none}
+.chk input{appearance:none;-webkit-appearance:none;width:15px;height:15px;border:1px solid var(--line2);border-radius:4px;background:var(--ink);cursor:pointer;flex:0 0 15px;position:relative;margin:0}
+.chk input:checked{background:var(--amber);border-color:var(--amber)}
+.chk input:checked::after{content:"";position:absolute;left:4.5px;top:1px;width:4px;height:8px;border:solid #0B0D14;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.chk.v input:checked{background:var(--violet);border-color:var(--violet)}
+textarea{background:var(--ink);border:1px solid var(--line2);border-radius:4px;padding:6px 7px;font-family:var(--sans);font-size:12px;width:100%;resize:vertical;min-height:46px;line-height:1.35}
+.tchip{padding:5px 8px;font-size:10px;border-radius:4px;background:var(--panel2);border:1px solid var(--line);cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono)}
+.tchip.sel{background:var(--violet);border-color:var(--violet);color:#0B0D14;font-weight:700}
 .empty{font-size:11px;color:var(--faint);line-height:1.6;padding:2px 0}
 
 .tlarea{flex:0 0 auto;background:var(--panel);border-top:1px solid var(--line)}
@@ -228,7 +236,18 @@ input[type=color]{background:var(--ink);border:1px solid var(--line2);border-rad
         <button class="btn sm grow on" id="punchOn">Beat punch: on</button>
         <button class="btn sm grow on" id="shakeOn">Shake: on</button>
       </div>
-      <p class="hint">The look fades in over the ramp time starting at the drop, and stays for the rest of the edit.</p>
+      <label class="chk"><input type="checkbox" id="pumpOn" checked> Pump: zoom pulse on every beat</label>
+      <label class="chk"><input type="checkbox" id="pumpBrightOn"> Pump: brightness flicker on every beat</label>
+      <div class="sl"><span class="n">Pump amount</span><input type="range" id="pumpAmt" min="0" max="0.2" step="0.005" value="0.05"><span class="v" id="pumpAmtV">0.050</span></div>
+      <div class="sl"><span class="n">Pump every</span><input type="range" id="pumpRate" min="0" max="9" step="1" value="4"><span class="v" id="pumpRateV">1 beat</span></div>
+      <p class="hint">The look fades in over the ramp time starting at the drop, and stays for the rest of the edit. Pumps sit on the beat grid at whatever subdivision you pick — below one beat they double or triple up, above it they hit on the bar.</p>
+    </div>
+
+    <div class="panel violet">
+      <h3>Text overlay</h3>
+      <div class="row" id="textList"></div>
+      <div class="row"><button class="btn sm grow" id="addText">Add text at playhead</button></div>
+      <div id="textBody"></div>
     </div>
 
     <div class="panel amber">
@@ -317,9 +336,20 @@ const TYPES = [
   {id:"slide",    name:"Slide",     dur:0.22},
   {id:"zoomin",   name:"Zoom in",   dur:0.18},
   {id:"zoomout",  name:"Zoom out",  dur:0.18},
+  {id:"rollcw",   name:"Roll CW",   dur:0.20},
+  {id:"rollccw",  name:"Roll CCW",  dur:0.20},
+  {id:"mask",     name:"Mask wipe", dur:0.28},
 ];
 const TYPE = Object.fromEntries(TYPES.map(t=>[t.id,t]));
 const DROP_DUR = 0.38;
+// pump interval measured in beats, so it can subdivide or straddle the grid
+const PUMP_RATES  = [0.25, 1/3, 0.5, 2/3, 1, 1.5, 2, 3, 4, 8];
+const PUMP_LABELS = ["1/4","1/3","1/2","2/3","1","1.5","2","3","4","8"];
+const pumpRateLabel = r => {
+  const i=PUMP_RATES.findIndex(x=>Math.abs(x-r)<1e-6);
+  const l=i>=0?PUMP_LABELS[i]:String(r);
+  return l+(l==="1"?" beat":" beats");
+};
 
 const state = {
   duration: 16,
@@ -329,9 +359,11 @@ const state = {
   selMarker: -1, selClip: 0,
   snap: true, playing: false,
   showGrid: true, showOnsets: true, autoRebuild: true,
+  texts: [], selText: -1,
   onsetEnv: null, onsetFps: 0, onsetT0: 0,
   pps: 60, zoom: 1,
-  fx:{look:true, contrast:1.25, sat:1.40, bright:0.92, ramp:0.35, punch:true, shake:true},
+  fx:{look:true, contrast:1.25, sat:1.40, bright:0.92, ramp:0.35, punch:true, shake:true,
+      pump:true, pumpBright:false, pumpAmt:0.05, pumpRate:1},
   exporting:false, cancelExport:false, scrubbing:false,
 };
 
@@ -531,7 +563,7 @@ function generateCuts(dropT, noUndo){
     const step = afterDrop?postN:preN;
     if(((rel%step)+step)%step !== 0) continue;
     if(afterDrop){
-      const seq=["whip","zoomin","whip","zoomout","slide","whip"];
+      const seq=["whip","zoomin","rollcw","whip","mask","zoomout","rollccw","slide"];
       M.push(mk(t, seq[postCycle++ % seq.length], false));
     }else{
       M.push(mk(t, (preCycle++ %4===3) ? "flash" : "dissolve", false));
@@ -669,6 +701,7 @@ function drawClip(idx, t, o){
 
   ctx.save();
   ctx.globalAlpha=alpha;
+  if(o.rot){ ctx.translate(W/2,H/2); ctx.rotate(o.rot); ctx.translate(-W/2,-H/2); }
   if(o.backdrop && scale<1.02){
     ctx.filter=buildFilter(o.look||0,34);
     paint(2.0,0,0);
@@ -708,6 +741,11 @@ const easeInOutQuint=p=>p<0.5?16*p*p*p*p*p:1-Math.pow(-2*p+2,5)/2;
 const easeInOutCubic=p=>p<0.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
 const easeOutCubic=p=>1-Math.pow(1-p,3);
 const easeInCubic=p=>p*p*p;
+// how much extra scale a rotated frame needs before its corners show
+function coverFactor(rot,W,H){
+  const c=Math.abs(Math.cos(rot)), s=Math.abs(Math.sin(rot));
+  return Math.max((W*c+H*s)/W,(W*s+H*c)/H);
+}
 
 function resolveAt(t){
   const M=state.markers;
@@ -762,6 +800,38 @@ function renderTransition(t,r,look){
       flash=clamp(Math.pow(1-Math.abs((p-cutAt)/(p<cutAt?cutAt:(1-cutAt))),1.1),0,1)*0.98;
       break;
     }
+    case "rollcw": case "rollccw":{
+      const H=cv.height, sgn=type==="rollcw"?1:-1, maxA=Math.PI*0.40;
+      if(p<0.5){
+        const u=p/0.5, e=easeInCubic(u), rot=sgn*maxA*e;
+        drawClip(r.a,t,{look,rot,scale:(1+0.35*e)*coverFactor(rot,W,H),blur:22*K*e});
+      }else{
+        const u=(p-0.5)/0.5, e=easeOutCubic(u), rot=-sgn*maxA*(1-e);
+        drawClip(r.b,t,{look,rot,scale:(1+0.35*(1-e))*coverFactor(rot,W,H),blur:22*K*(1-e)});
+      }
+      break;
+    }
+    case "mask":{
+      const H=cv.height, e=easeInOutCubic(p), round=(dir>0);
+      drawClip(r.a,t,{look,scale:1+0.05*e});
+      const maxR=Math.hypot(W,H)/2*1.05;
+      const shape=()=>{
+        if(round) ctx.arc(W/2,H/2,Math.max(0.001,maxR*e),0,Math.PI*2);
+        else{ const w=W*1.3*e,h=H*1.3*e; ctx.rect(W/2-w/2,H/2-h/2,w,h); }
+      };
+      ctx.save();
+      ctx.beginPath(); shape(); ctx.clip();
+      drawClip(r.b,t,{look,scale:1+0.14*(1-e)});
+      ctx.restore();
+      if(e>0.02&&e<0.99){
+        ctx.save(); ctx.filter="none";
+        ctx.globalAlpha=0.5*(1-e);
+        ctx.strokeStyle="#fff"; ctx.lineWidth=Math.max(2,3*K);
+        ctx.beginPath(); shape(); ctx.stroke();
+        ctx.restore();
+      }
+      break;
+    }
     default: drawClip(p<0.5?r.a:r.b,t,{look});
   }
   return flash;
@@ -789,6 +859,18 @@ function drawFrame(t){
       }
     }
   }
+  // pump: pulses on its own subdivision of the beat grid, not only on cuts
+  let beatPulse=1;
+  if(isFinite(d) && t>=d && state.bpm && (state.fx.pump||state.fx.pumpBright)){
+    const per=60/state.bpm;
+    const pp=per*(state.fx.pumpRate||1);
+    const phase0=state.gridOffset-(audioBuffer?state.audioIn:0);
+    const dt=(((t-phase0)%pp)+pp)%pp;
+    const dec=Math.min(pp,per*0.9);        // keep the hit snappy when the rate is slow
+    if(dt<dec) beatPulse=1+state.fx.pumpAmt*Math.pow(1-dt/dec,2.6);
+  }
+  if(state.fx.pump) punch*=beatPulse;
+
   ctx.save();
   ctx.translate(W/2+shx,H/2+shy); ctx.scale(punch,punch); ctx.translate(-W/2,-H/2);
   let flash=0;
@@ -800,6 +882,63 @@ function drawFrame(t){
     ctx.fillStyle="#fff"; ctx.fillRect(0,0,W,H);
     ctx.globalAlpha=1;
   }
+  if(state.fx.pumpBright && beatPulse>1.0005){
+    ctx.globalAlpha=clamp((beatPulse-1)*2.2,0,0.4);
+    ctx.fillStyle="#fff"; ctx.fillRect(0,0,W,H);
+    ctx.globalAlpha=1;
+  }
+  drawTexts(t,beatPulse);
+}
+
+const TXFONT={
+  sans:'"Helvetica Neue",Inter,system-ui,-apple-system,sans-serif',
+  mono:'ui-monospace,"SF Mono",Menlo,Consolas,monospace',
+  serif:'Georgia,"Times New Roman",serif',
+};
+function drawTexts(t,beatPulse){
+  if(!state.texts.length) return;
+  const W=cv.width,H=cv.height;
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.filter="none";
+  for(const tx of state.texts){
+    if(t<tx.start||t>tx.end) continue;
+    const fade=Math.max(0.001,tx.fade);
+    const a=Math.min(clamp((t-tx.start)/fade,0,1),clamp((tx.end-t)/fade,0,1))*(tx.opacity==null?1:tx.opacity);
+    if(a<=0.004) continue;
+    const size=tx.size*(H/1280)*(tx.pulse?beatPulse:1);
+    const lines=String(tx.text||"").split("\n");
+    const lh=size*1.14;
+    ctx.save();
+    ctx.globalAlpha=a;
+    ctx.translate(tx.x*W,tx.y*H);
+    if(tx.rot) ctx.rotate(tx.rot);
+    ctx.font=tx.weight+" "+size.toFixed(1)+"px "+(TXFONT[tx.font]||TXFONT.sans);
+    ctx.textAlign=tx.align||"center";
+    ctx.textBaseline="middle";
+    lines.forEach((ln,i)=>{
+      const yy=(i-(lines.length-1)/2)*lh;
+      if(tx.style==="box"){
+        const w=ctx.measureText(ln).width, padX=size*0.22, padY=size*0.1;
+        let bx=-w/2;
+        if(ctx.textAlign==="left") bx=0; else if(ctx.textAlign==="right") bx=-w;
+        ctx.fillStyle=tx.boxColor||"#000000";
+        ctx.globalAlpha=a*0.72;
+        ctx.fillRect(bx-padX,yy-size*0.62,w+padX*2,size*1.24+padY);
+        ctx.globalAlpha=a;
+      }
+      if(tx.style==="shadow"){
+        ctx.shadowColor="rgba(0,0,0,.65)"; ctx.shadowBlur=size*0.28; ctx.shadowOffsetY=size*0.05;
+      }else{ ctx.shadowColor="transparent"; ctx.shadowBlur=0; ctx.shadowOffsetY=0; }
+      if(tx.style==="outline"){
+        ctx.lineJoin="round"; ctx.lineWidth=size*0.11; ctx.strokeStyle="#000";
+        ctx.strokeText(ln,0,yy);
+      }
+      ctx.fillStyle=tx.color||"#fff";
+      ctx.fillText(ln,0,yy);
+    });
+    ctx.restore();
+  }
+  ctx.shadowColor="transparent"; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
 }
 
 /* video position sync (live playback) */
@@ -919,8 +1058,10 @@ function computePeaks(w){
 }
 const TL_H=170, TL_RULER=20, TL_BAND=20, TL_LANE=18;
 const TL_WAVE_TOP=TL_RULER+TL_BAND, TL_WAVE_H=TL_H-TL_WAVE_TOP-TL_LANE;
-const TCOL={cut:"#8B95AB",dissolve:"#35E0C8",flash:"#FFC542",whip:"#8B7BFF",slide:"#3FA9F5",zoomin:"#4ED97B",zoomout:"#FF7A45"};
-const TLETTER={cut:"C",dissolve:"X",flash:"F",whip:"W",slide:"S",zoomin:"Z+",zoomout:"Z-"};
+const TCOL={cut:"#8B95AB",dissolve:"#35E0C8",flash:"#FFC542",whip:"#8B7BFF",slide:"#3FA9F5",
+  zoomin:"#4ED97B",zoomout:"#FF7A45",rollcw:"#FF5EA8",rollccw:"#C77DFF",mask:"#5AD1FF"};
+const TLETTER={cut:"C",dissolve:"X",flash:"F",whip:"W",slide:"S",zoomin:"Z+",zoomout:"Z-",
+  rollcw:"R\u21bb",rollccw:"R\u21ba",mask:"M"};
 
 function drawTimeline(t){
   const W=parseFloat(tl.style.width)||tl.width, H=TL_H, g=tlx, pps=state.pps;
@@ -1015,6 +1156,13 @@ function drawTimeline(t){
     g.font="700 9px "+font; g.textAlign="center";
     g.fillText(m.drop?"DROP":TLETTER[m.type]||"?",x,RULER+14);
     g.textAlign="left";
+  });
+
+  // text overlay spans
+  state.texts.forEach((tx,i)=>{
+    const x0=tx.start*pps, x1=tx.end*pps;
+    g.fillStyle=(i===state.selText)?"#8B7BFF":"rgba(139,123,255,.55)";
+    g.fillRect(x0,WAVE_TOP+2,Math.max(2,x1-x0),3);
   });
 
   // grid lane — drag to shift the phase, shift-drag to stretch the tempo
@@ -1345,6 +1493,96 @@ function renderClipPanel(){
   $("cNext").onclick=()=>{ state.selClip=clamp(i+1,0,state.clips.length-1); renderStrip(); renderClipPanel(); drawTimeline(currentTime()); };
   $("cGo").onclick=()=>{ seek(segStart(i)+Math.min(0.15,(segEnd(i)-segStart(i))/2)); };
 }
+function escHtml(x){ return String(x==null?"":x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function addTextOverlay(){
+  pushUndo();
+  const st=clamp(currentTime(),0,Math.max(0,state.duration-0.4));
+  state.texts.push({
+    text:"YOUR TEXT", start:st, end:Math.min(state.duration,st+2.5),
+    x:0.5, y:0.5, size:96, rot:0, color:"#FFFFFF", boxColor:"#000000",
+    font:"sans", weight:800, style:"shadow", align:"center",
+    pulse:true, fade:0.12, opacity:1,
+  });
+  state.selText=state.texts.length-1;
+  renderTextPanel(); draw();
+}
+function renderTextPanel(){
+  const list=$("textList"), body=$("textBody");
+  list.innerHTML="";
+  state.texts.forEach((tx,i)=>{
+    const c=document.createElement("div");
+    c.className="tchip"+(i===state.selText?" sel":"");
+    c.textContent=(String(tx.text||"").split("\n")[0].slice(0,16))||"(empty)";
+    c.onclick=()=>{ state.selText=i; renderTextPanel(); drawTimeline(currentTime()); };
+    list.appendChild(c);
+  });
+  if(!state.texts.length){
+    const e=document.createElement("span"); e.className="empty";
+    e.textContent="No text yet.";
+    list.appendChild(e);
+  }
+  const tx=state.texts[state.selText];
+  if(!tx){ body.innerHTML=""; return; }
+  body.innerHTML=`
+    <textarea id="txContent" rows="2">${escHtml(tx.text)}</textarea>
+    <div class="sl" style="margin-top:8px"><span class="n">Start</span><input type="range" id="txStart" min="0" max="${state.duration}" step="0.01" value="${tx.start}"><span class="v">${tx.start.toFixed(2)}</span></div>
+    <div class="sl"><span class="n">End</span><input type="range" id="txEnd" min="0" max="${state.duration}" step="0.01" value="${tx.end}"><span class="v">${tx.end.toFixed(2)}</span></div>
+    <div class="row"><button class="btn sm grow" id="txStartHere">Start here</button><button class="btn sm grow" id="txEndHere">End here</button></div>
+    <div class="sl"><span class="n">X</span><input type="range" id="txX" min="0" max="1" step="0.005" value="${tx.x}"><span class="v">${tx.x.toFixed(2)}</span></div>
+    <div class="sl"><span class="n">Y</span><input type="range" id="txY" min="0" max="1" step="0.005" value="${tx.y}"><span class="v">${tx.y.toFixed(2)}</span></div>
+    <div class="sl"><span class="n">Size</span><input type="range" id="txSize" min="18" max="320" step="1" value="${tx.size}"><span class="v">${tx.size.toFixed(0)}</span></div>
+    <div class="sl"><span class="n">Rotate</span><input type="range" id="txRot" min="-0.6" max="0.6" step="0.005" value="${tx.rot}"><span class="v">${(tx.rot*57.3).toFixed(0)}\u00b0</span></div>
+    <div class="sl"><span class="n">Fade</span><input type="range" id="txFade" min="0.01" max="1.2" step="0.01" value="${tx.fade}"><span class="v">${tx.fade.toFixed(2)}</span></div>
+    <div class="sl"><span class="n">Opacity</span><input type="range" id="txOpacity" min="0.05" max="1" step="0.01" value="${tx.opacity}"><span class="v">${tx.opacity.toFixed(2)}</span></div>
+    <div class="row">
+      <input type="color" id="txColor" value="${tx.color}" title="Text colour">
+      <select id="txFont" style="flex:1">
+        <option value="sans"${tx.font==="sans"?" selected":""}>Sans</option>
+        <option value="mono"${tx.font==="mono"?" selected":""}>Mono</option>
+        <option value="serif"${tx.font==="serif"?" selected":""}>Serif</option>
+      </select>
+      <select id="txWeight" style="flex:1">
+        <option value="400"${tx.weight==400?" selected":""}>Regular</option>
+        <option value="700"${tx.weight==700?" selected":""}>Bold</option>
+        <option value="900"${tx.weight==900?" selected":""}>Black</option>
+      </select>
+    </div>
+    <div class="row">
+      <select id="txStyle" style="flex:1">
+        <option value="none"${tx.style==="none"?" selected":""}>Plain</option>
+        <option value="shadow"${tx.style==="shadow"?" selected":""}>Drop shadow</option>
+        <option value="outline"${tx.style==="outline"?" selected":""}>Outline</option>
+        <option value="box"${tx.style==="box"?" selected":""}>Boxed</option>
+      </select>
+      <select id="txAlign" style="flex:1">
+        <option value="center"${tx.align==="center"?" selected":""}>Centre</option>
+        <option value="left"${tx.align==="left"?" selected":""}>Left</option>
+        <option value="right"${tx.align==="right"?" selected":""}>Right</option>
+      </select>
+    </div>
+    <label class="chk v"><input type="checkbox" id="txPulse"${tx.pulse?" checked":""}> Pulse with the beat</label>
+    <div class="row"><button class="btn sm grow" id="txDel">Delete this text</button></div>`;
+  const num=(id,key,post)=>{ const el=$(id); if(!el) return;
+    el.oninput=e=>{ pushUndo("tx"+key); tx[key]=+e.target.value;
+      if(key==="start") tx.end=Math.max(tx.end,tx.start+0.1);
+      if(key==="end") tx.start=Math.min(tx.start,tx.end-0.1);
+      el.nextElementSibling.textContent=post?post(tx[key]):tx[key].toFixed(2);
+      draw(); }; };
+  $("txContent").oninput=e=>{ pushUndo("txtext"); tx.text=e.target.value; draw(); };
+  num("txStart","start"); num("txEnd","end"); num("txX","x"); num("txY","y");
+  num("txSize","size",v=>v.toFixed(0)); num("txRot","rot",v=>(v*57.3).toFixed(0)+"\u00b0");
+  num("txFade","fade"); num("txOpacity","opacity");
+  $("txStartHere").onclick=()=>{ pushUndo(); tx.start=Math.min(currentTime(),tx.end-0.1); renderTextPanel(); draw(); };
+  $("txEndHere").onclick=()=>{ pushUndo(); tx.end=Math.max(currentTime(),tx.start+0.1); renderTextPanel(); draw(); };
+  $("txColor").oninput=e=>{ pushUndo("txcol"); tx.color=e.target.value; draw(); };
+  $("txFont").onchange=e=>{ pushUndo(); tx.font=e.target.value; draw(); };
+  $("txWeight").onchange=e=>{ pushUndo(); tx.weight=+e.target.value; draw(); };
+  $("txStyle").onchange=e=>{ pushUndo(); tx.style=e.target.value; draw(); };
+  $("txAlign").onchange=e=>{ pushUndo(); tx.align=e.target.value; draw(); };
+  $("txPulse").onchange=e=>{ pushUndo(); tx.pulse=e.target.checked; draw(); };
+  $("txDel").onclick=()=>{ pushUndo(); state.texts.splice(state.selText,1);
+    state.selText=Math.min(state.selText,state.texts.length-1); renderTextPanel(); draw(); };
+}
 function renderStrip(){
   const s=$("strip"); s.innerHTML="";
   state.clips.forEach((c,i)=>{
@@ -1366,7 +1604,7 @@ function renderStrip(){
 }
 function refreshAll(){
   ensureClips();
-  renderTransitionPanel(); renderClipPanel(); renderStrip();
+  renderTransitionPanel(); renderClipPanel(); renderTextPanel(); renderStrip();
   layoutTimeline(); draw();
 }
 
@@ -1462,6 +1700,13 @@ fxBind("fContrast","contrast",v=>v.toFixed(2));
 fxBind("fSat","sat",v=>v.toFixed(2));
 fxBind("fBright","bright",v=>v.toFixed(2));
 fxBind("fRamp","ramp",v=>v.toFixed(2)+"s");
+$("addText").onclick=addTextOverlay;
+$("pumpOn").onchange=e=>{ pushUndo(); state.fx.pump=e.target.checked; draw(); };
+$("pumpBrightOn").onchange=e=>{ pushUndo(); state.fx.pumpBright=e.target.checked; draw(); };
+fxBind("pumpAmt","pumpAmt",v=>v.toFixed(3));
+$("pumpRate").oninput=e=>{ pushUndo("fxpumpRate");
+  state.fx.pumpRate=PUMP_RATES[clamp(+e.target.value|0,0,PUMP_RATES.length-1)];
+  $("pumpRateV").textContent=pumpRateLabel(state.fx.pumpRate); draw(); };
 $("lookOn").onclick=e=>{ pushUndo(); state.fx.look=!state.fx.look; e.target.textContent="Filter after drop: "+(state.fx.look?"on":"off"); e.target.classList.toggle("on",state.fx.look); draw(); };
 $("punchOn").onclick=e=>{ pushUndo(); state.fx.punch=!state.fx.punch; e.target.textContent="Beat punch: "+(state.fx.punch?"on":"off"); e.target.classList.toggle("on",state.fx.punch); draw(); };
 $("shakeOn").onclick=e=>{ pushUndo(); state.fx.shake=!state.fx.shake; e.target.textContent="Shake: "+(state.fx.shake?"on":"off"); e.target.classList.toggle("on",state.fx.shake); draw(); };
@@ -1818,6 +2063,7 @@ function snapshot(){
   return {
     markers: state.markers.map(m=>({...m})),
     clips: state.clips.map(c=>({...c})),
+    texts: state.texts.map(x=>({...x})), selText: state.selText,
     audioIn:state.audioIn, audioOut:state.audioOut, duration:state.duration,
     bpm:state.bpm, gridOffset:state.gridOffset,
     selMarker:state.selMarker, selClip:state.selClip,
@@ -1827,6 +2073,7 @@ function snapshot(){
 function restoreSnap(s){
   state.markers=s.markers.map(m=>({...m}));
   state.clips=s.clips.map(c=>({...c}));
+  state.texts=(s.texts||[]).map(x=>({...x})); state.selText=s.selText==null?-1:s.selText;
   state.audioIn=s.audioIn; state.audioOut=s.audioOut; state.duration=s.duration;
   state.bpm=s.bpm; state.gridOffset=s.gridOffset;
   state.selMarker=s.selMarker; state.selClip=s.selClip;
@@ -1883,6 +2130,11 @@ function syncFxControls(){
   $("lookOn").textContent="Filter after drop: "+(f.look?"on":"off"); $("lookOn").classList.toggle("on",f.look);
   $("punchOn").textContent="Beat punch: "+(f.punch?"on":"off"); $("punchOn").classList.toggle("on",f.punch);
   $("shakeOn").textContent="Shake: "+(f.shake?"on":"off"); $("shakeOn").classList.toggle("on",f.shake);
+  $("pumpOn").checked=!!f.pump; $("pumpBrightOn").checked=!!f.pumpBright;
+  $("pumpAmt").value=f.pumpAmt; $("pumpAmtV").textContent=f.pumpAmt.toFixed(3);
+  let ri=PUMP_RATES.findIndex(x=>Math.abs(x-(f.pumpRate||1))<1e-6);
+  if(ri<0) ri=4;
+  $("pumpRate").value=ri; $("pumpRateV").textContent=pumpRateLabel(PUMP_RATES[ri]);
 }
 $("undoBtn").onclick=()=>undo();
 $("redoBtn").onclick=()=>redo();
