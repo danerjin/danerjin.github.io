@@ -138,7 +138,12 @@ textarea::placeholder{color:var(--faint)}
 .overlay{position:fixed;inset:0;background:rgba(5,7,12,.86);display:none;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(3px)}
 .overlay.on{display:flex}
 .dlg{background:var(--panel);border:1px solid var(--line2);border-radius:10px;padding:22px 24px;width:360px;box-shadow:0 30px 80px -20px #000}
+.dlg.wide{width:min(580px,95vw)}
 .dlg h4{margin:0 0 4px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--tx)}
+.maskwrap{display:flex;justify-content:center;align-items:center;background:#05070C;border:1px solid var(--line);border-radius:6px;padding:6px;margin-bottom:10px}
+#maskCv{max-height:44vh;max-width:100%;cursor:crosshair;touch-action:none;border-radius:3px}
+.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:9px}
+.tools .btn.on{background:var(--cool);border-color:var(--cool);color:#062420}
 .dlg p{margin:0 0 14px;font-size:11px;color:var(--dim);line-height:1.6;min-height:32px}
 .bar{height:4px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:14px}
 .bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--hot),var(--amber));transition:width .15s}
@@ -308,6 +313,34 @@ textarea::placeholder{color:var(--faint)}
   </div>
 </div>
 
+<div class="overlay" id="maskOvl">
+  <div class="dlg wide">
+    <h4>Cut out the subject</h4>
+    <p id="maskMsg">Wand away the background, then tidy the edges with the brush. The kept area is what leaps out of the incoming clip.</p>
+    <div class="maskwrap"><canvas id="maskCv"></canvas></div>
+    <div class="tools">
+      <button class="btn sm on" data-tool="wand-">Wand away</button>
+      <button class="btn sm" data-tool="wand+">Wand keep</button>
+      <button class="btn sm" data-tool="brush+">Brush</button>
+      <button class="btn sm" data-tool="brush-">Erase</button>
+    </div>
+    <div class="sl"><span class="n">Brush size</span><input type="range" id="mkSize" min="6" max="180" step="1" value="42"><span class="v" id="mkSizeV">42</span></div>
+    <div class="sl"><span class="n">Tolerance</span><input type="range" id="mkTol" min="4" max="120" step="1" value="34"><span class="v" id="mkTolV">34</span></div>
+    <div class="sl"><span class="n">Feather</span><input type="range" id="mkFeather" min="0" max="16" step="0.5" value="3"><span class="v" id="mkFeatherV">3.0</span></div>
+    <div class="row">
+      <button class="btn sm grow" id="mkAuto">Auto subject</button>
+      <button class="btn sm grow" id="mkEllipse">Ellipse</button>
+      <button class="btn sm grow" id="mkInvert">Invert</button>
+      <button class="btn sm grow" id="mkClearM">Clear</button>
+      <button class="btn sm" id="mkUndo">Undo</button>
+    </div>
+    <div class="row" style="justify-content:flex-end;margin-top:12px">
+      <button class="btn" id="mkCancel">Cancel</button>
+      <button class="btn pri" id="mkSave">Use this cutout</button>
+    </div>
+  </div>
+</div>
+
 <div id="videoHost"></div>
 <div class="toast" id="toast"></div>
 <audio id="audioEl" style="display:none"></audio>
@@ -339,10 +372,10 @@ const TYPES = [
   {id:"zoomout",  name:"Zoom out",  dur:0.18},
   {id:"rollcw",   name:"Roll CW",   dur:0.20},
   {id:"rollccw",  name:"Roll CCW",  dur:0.20},
-  {id:"mask",     name:"Mask wipe", dur:0.28},
+  {id:"mask",     name:"Cutout",    dur:0.70},
+  {id:"impact",   name:"Impact",    dur:0.38},
 ];
 const TYPE = Object.fromEntries(TYPES.map(t=>[t.id,t]));
-const DROP_DUR = 0.38;
 // pump interval measured in beats, so it can subdivide or straddle the grid
 const PUMP_RATES  = [0.25, 1/3, 0.5, 2/3, 1, 1.5, 2, 3, 4, 8];
 const PUMP_LABELS = ["1/4","1/3","1/2","2/3","1","1.5","2","3","4","8"];
@@ -368,7 +401,11 @@ const state = {
   exporting:false, cancelExport:false, scrubbing:false,
 };
 
-const cv = $("stageCv"), ctx = cv.getContext("2d");
+const cv = $("stageCv");
+let ctx = cv.getContext("2d");                       // swappable so clips can be drawn offscreen
+const offCv = document.createElement("canvas");
+const offCtx = offCv.getContext("2d");
+function withCtx(c,fn){ const prev=ctx; ctx=c; try{ fn(); } finally { ctx=prev; } }
 const tl = $("tlCv"), tlx = tl.getContext("2d");
 const trimCv = $("trimCv"), trimX = trimCv.getContext("2d");
 const audioEl = $("audioEl");
@@ -562,7 +599,7 @@ function generateCuts(dropT, noUndo){
   for(let i=0;i<beats.length;i++){
     const t=beats[i];
     if(t<0.25 || t>state.duration-0.25) continue;
-    if(dropIdx>=0 && i===dropIdx){ M.push(mk(t,"zoomin",true)); continue; }
+    if(dropIdx>=0 && i===dropIdx){ M.push(mk(t,"impact",true)); continue; }
     const afterDrop = dropIdx>=0 && i>dropIdx;
     const rel = dropIdx>=0 ? i-dropIdx : i;
     const step = afterDrop?postN:preN;
@@ -595,19 +632,32 @@ function scheduleRebuild(){
 let dirFlip=1;
 function mk(t,type,drop){
   dirFlip*=-1;
-  return {t, type, drop:!!drop, dur: drop?DROP_DUR:TYPE[type].dur, dir:dirFlip};
+  return {t, type, drop:!!drop, dur: TYPE[type].dur, dir:dirFlip};
+}
+// A transition is centred on its marker, so its half-length is what has to fit.
+// The ceiling is therefore twice the smaller neighbouring gap.
+function maxDurFor(i){
+  const M=state.markers;
+  if(!M[i]) return 0.04;
+  const prevT = i>0 ? M[i-1].t : 0;
+  const nextT = i<M.length-1 ? M[i+1].t : state.duration;
+  return Math.max(0.04, 2*Math.min(M[i].t-prevT, nextT-M[i].t));
 }
 function normalizeMarkers(){
   state.markers.sort((a,b)=>a.t-b.t);
   let seen=false;
   state.markers.forEach(m=>{ if(m.drop){ if(seen) m.drop=false; else seen=true; } });
-  for(let i=0;i<state.markers.length;i++){
-    const m=state.markers[i];
-    const prevT = i>0 ? state.markers[i-1].t : 0;
-    const nextT = i<state.markers.length-1 ? state.markers[i+1].t : state.duration;
-    const room = Math.min(m.t-prevT, nextT-m.t)*1.6;
-    m.dur = clamp(m.dur, 0.02, Math.max(0.04, room));
+  const M=state.markers;
+  for(let i=0;i<M.length;i++) M[i].dur=clamp(M[i].dur,0.02,maxDurFor(i));
+  // two adjacent windows must not overlap or resolveAt jumps between them
+  for(let i=0;i<M.length-1;i++){
+    const gap=M[i+1].t-M[i].t, half=M[i].dur/2+M[i+1].dur/2;
+    if(half>gap && half>0){
+      const k=gap/half;
+      M[i].dur*=k; M[i+1].dur*=k;
+    }
   }
+  M.forEach(m=>m.dur=Math.max(0.02,m.dur));
 }
 function dropTime(){ const m=state.markers.find(x=>x.drop); return m?m.t:Infinity; }
 
@@ -752,6 +802,53 @@ function coverFactor(rot,W,H){
   return Math.max((W*c+H*s)/W,(W*s+H*c)/H);
 }
 
+// deterministic jitter, so the hops look identical in preview and in export
+function hashRand(a,b){ const x=Math.sin(a*127.1+b*311.7)*43758.5453; return x-Math.floor(x); }
+
+let ellipseMaskCv=null;
+function ellipseMask(){
+  if(ellipseMaskCv) return ellipseMaskCv;
+  const c=document.createElement("canvas"); c.width=256; c.height=256;
+  const g=c.getContext("2d");
+  g.fillStyle="#fff"; g.beginPath();
+  g.ellipse(128,124,78,94,0,0,Math.PI*2); g.fill();
+  ellipseMaskCv=c; return c;
+}
+// Draws one clip through its cutout matte, transformed as a whole.
+function drawCutout(idx,t,o){
+  const W=cv.width,H=cv.height;
+  const cut=o.m&&o.m.cutout;
+  const maskImg=(cut&&cut.canvas)||ellipseMask();
+  if(offCv.width!==W||offCv.height!==H){ offCv.width=W; offCv.height=H; }
+  offCtx.setTransform(1,0,0,1,0,0);
+  offCtx.globalCompositeOperation="source-over";
+  offCtx.globalAlpha=1; offCtx.filter="none";
+  offCtx.clearRect(0,0,W,H);
+  withCtx(offCtx,()=>drawClip(idx,t,{look:o.look}));
+  const feather=(cut?(cut.feather==null?3:cut.feather):3)*(W/((cut&&cut.w)||W));
+  offCtx.globalCompositeOperation="destination-in";
+  offCtx.filter=feather>0.2?("blur("+feather.toFixed(1)+"px)"):"none";
+  offCtx.drawImage(maskImg,0,0,W,H);
+  offCtx.filter="none";
+  offCtx.globalCompositeOperation="source-over";
+
+  ctx.save();
+  ctx.translate(W/2+(o.dx||0),H/2+(o.dy||0));
+  if(o.rot) ctx.rotate(o.rot);
+  ctx.scale(o.scale||1,o.scale||1);
+  ctx.translate(-W/2,-H/2);
+  if(o.m&&o.m.outline!==false){
+    const grow=1+(Math.max(W,H)*0.008)/Math.max(W,H)*2.2;
+    ctx.save();
+    ctx.globalAlpha=0.92; ctx.filter="none";
+    ctx.translate(W/2,H/2); ctx.scale(grow,grow); ctx.translate(-W/2,-H/2);
+    ctx.drawImage(maskImg,0,0,W,H);
+    ctx.restore();
+  }
+  ctx.drawImage(offCv,0,0);
+  ctx.restore();
+}
+
 function resolveAt(t){
   const M=state.markers;
   for(let i=0;i<M.length;i++){
@@ -765,7 +862,7 @@ function renderTransition(t,r,look){
   const W=cv.width, p=clamp(r.p,0,1), m=r.m;
   const dir=m.dir||1, K=W/720;
   let flash=0;
-  const type = m.drop ? "drop" : m.type;
+  const type = m.type;
   switch(type){
     case "cut": drawClip(p<0.5?r.a:r.b,t,{look}); break;
     case "dissolve":
@@ -798,7 +895,7 @@ function renderTransition(t,r,look){
       else{ const u=(p-0.5)/0.5,e=easeOutCubic(u); drawClip(r.b,t,{look,scale:1-0.45*(1-e),blur:14*K*(1-e),backdrop:true}); }
       break;
     }
-    case "drop":{
+    case "impact":{
       const cutAt=0.42;
       if(p<cutAt){ const u=p/cutAt,e=easeInCubic(u); drawClip(r.a,t,{look,scale:1+1.5*e,blur:34*K*e}); }
       else{ const u=(p-cutAt)/(1-cutAt),e=easeOutCubic(u); drawClip(r.b,t,{look:lookAmount(t),scale:1+1.3*(1-e),blur:26*K*(1-e)}); }
@@ -817,23 +914,30 @@ function renderTransition(t,r,look){
       break;
     }
     case "mask":{
-      const H=cv.height, e=easeInOutCubic(p), round=(dir>0);
-      drawClip(r.a,t,{look,scale:1+0.05*e});
-      const maxR=Math.hypot(W,H)/2*1.05;
-      const shape=()=>{
-        if(round) ctx.arc(W/2,H/2,Math.max(0.001,maxR*e),0,Math.PI*2);
-        else{ const w=W*1.3*e,h=H*1.3*e; ctx.rect(W/2-w/2,H/2-h/2,w,h); }
-      };
-      ctx.save();
-      ctx.beginPath(); shape(); ctx.clip();
-      drawClip(r.b,t,{look,scale:1+0.14*(1-e)});
-      ctx.restore();
-      if(e>0.02&&e<0.99){
-        ctx.save(); ctx.filter="none";
-        ctx.globalAlpha=0.5*(1-e);
-        ctx.strokeStyle="#fff"; ctx.lineWidth=Math.max(2,3*K);
-        ctx.beginPath(); shape(); ctx.stroke();
-        ctx.restore();
+      // Cutout: the subject of the incoming clip hops into place in stepped
+      // fragments over the outgoing clip, then its whole frame lands behind it.
+      const H=cv.height;
+      const steps=Math.max(2,m.steps||5);
+      const hold=clamp(m.hold==null?0.78:m.hold,0.25,0.96);
+      const travel=m.travel==null?0.5:m.travel;
+      if(p<hold){
+        drawClip(r.a,t,{look});
+        const k=Math.min(steps-1,Math.floor((p/hold)*steps));
+        const u=steps>1?k/(steps-1):1;
+        const rem=1-easeOutCubic(u);
+        const sd=r.idx*17+3;
+        const j1=hashRand(sd,k)-0.5, j2=hashRand(sd+1,k)-0.5, j3=hashRand(sd+2,k)-0.5;
+        drawCutout(r.b,t,{
+          look, m,
+          dx: dir*W*travel*rem + j1*W*0.06*rem,
+          dy: -H*0.10*rem + j2*H*0.06*rem,
+          scale: 1+0.38*rem,
+          rot: dir*0.20*rem + j3*0.12*rem,
+        });
+      }else{
+        const u=(p-hold)/(1-hold), e=easeOutCubic(u);
+        drawClip(r.b,t,{look,scale:1+0.06*(1-e)});
+        flash=0.32*(1-u);
       }
       break;
     }
@@ -1064,9 +1168,9 @@ function computePeaks(w){
 const TL_H=170, TL_RULER=20, TL_BAND=20, TL_LANE=18;
 const TL_WAVE_TOP=TL_RULER+TL_BAND, TL_WAVE_H=TL_H-TL_WAVE_TOP-TL_LANE;
 const TCOL={cut:"#8B95AB",dissolve:"#35E0C8",flash:"#FFC542",whip:"#8B7BFF",slide:"#3FA9F5",
-  zoomin:"#4ED97B",zoomout:"#FF7A45",rollcw:"#FF5EA8",rollccw:"#C77DFF",mask:"#5AD1FF"};
+  zoomin:"#4ED97B",zoomout:"#FF7A45",rollcw:"#FF5EA8",rollccw:"#C77DFF",mask:"#5AD1FF",impact:"#FF2E63"};
 const TLETTER={cut:"C",dissolve:"X",flash:"F",whip:"W",slide:"S",zoomin:"Z+",zoomout:"Z-",
-  rollcw:"R\u21bb",rollccw:"R\u21ba",mask:"M"};
+  rollcw:"R\u21bb",rollccw:"R\u21ba",mask:"K",impact:"!"};
 
 function drawTimeline(t){
   const W=parseFloat(tl.style.width)||tl.width, H=TL_H, g=tlx, pps=state.pps;
@@ -1159,7 +1263,7 @@ function drawTimeline(t){
     if(i===state.selMarker){ g.strokeStyle="#fff"; g.lineWidth=1.5; g.strokeRect(x-hw/2-1.5,RULER-0.5,hw+3,BAND+1); }
     g.fillStyle=m.drop?"#fff":"#0B0D14";
     g.font="700 9px "+font; g.textAlign="center";
-    g.fillText(m.drop?"DROP":TLETTER[m.type]||"?",x,RULER+14);
+    g.fillText((m.drop?"\u25bc":"")+(TLETTER[m.type]||"?"),x,RULER+14);
     g.textAlign="left";
   });
 
@@ -1432,10 +1536,12 @@ function renderTransitionPanel(){
     <div class="row"><span class="stat">CUT ${i+1} / ${state.markers.length}</span><div style="flex:1"></div>
       <span class="stat num">${m.t.toFixed(3)}s</span></div>
     <div class="chips" style="margin-bottom:10px">
-      ${TYPES.map(ty=>`<div class="chip ${(!m.drop&&m.type===ty.id)?'sel':''}" data-ty="${ty.id}">${ty.name}</div>`).join("")}
-      <div class="chip drop ${m.drop?'sel':''}" data-drop="1">${m.drop?"★ This is the drop":"Make this the drop"}</div>
+      ${TYPES.map(ty=>`<div class="chip ${m.type===ty.id?'sel':''}" data-ty="${ty.id}">${ty.name}</div>`).join("")}
+      <div class="chip drop ${m.drop?'sel':''}" data-drop="1">${m.drop?"★ Drop is here":"Mark the drop here"}</div>
     </div>
-    <div class="sl"><span class="n">Length</span><input type="range" id="mDur" min="0.02" max="0.9" step="0.01" value="${m.dur}"><span class="v">${(m.dur*1000).toFixed(0)}ms</span></div>
+    ${m.drop?'<p class="hint" style="margin:0 0 9px">The drop marker only says where the track lands \u2014 pick any transition above for it.</p>':""}
+    <div class="sl"><span class="n">Length</span><input type="range" id="mDur" min="0.02" max="${Math.max(1,Math.min(3,maxDurFor(i))).toFixed(2)}" step="0.01" value="${m.dur}"><span class="v">${(m.dur*1000).toFixed(0)}ms</span></div>
+    <div class="stat" style="margin:-3px 0 9px">ceiling ${(maxDurFor(i)*1000).toFixed(0)}ms \u2014 widen the gap to the next cut for more</div>
     <div class="sl"><span class="n">Position</span><input type="range" id="mPos" min="0" max="${state.duration}" step="0.001" value="${m.t}"><span class="v">${m.t.toFixed(2)}</span></div>
     <div class="row">
       <button class="btn sm" id="mNudgeL">◀ 10ms</button>
@@ -1443,15 +1549,27 @@ function renderTransitionPanel(){
       <button class="btn sm" id="mFlip">Flip direction</button>
       <button class="btn sm" id="mSnap">Snap to beat</button>
     </div>
+    ${(m.type==="mask")?`
+      <div class="row">
+        <button class="btn sm grow" id="mkEdit">${m.cutout?"Edit cutout\u2026":"Cut out the subject\u2026"}</button>
+        ${m.cutout?'<button class="btn sm" id="mkDrop">Clear</button>':''}
+      </div>
+      <div class="stat" style="margin:0 0 8px">${m.cutout?"Custom matte ready":"No matte yet \u2014 using a centred ellipse"}</div>
+      <div class="sl"><span class="n">Hops</span><input type="range" id="mSteps" min="2" max="10" step="1" value="${m.steps||5}"><span class="v">${m.steps||5}</span></div>
+      <div class="sl"><span class="n">Travel</span><input type="range" id="mTravel" min="0" max="1" step="0.01" value="${m.travel==null?0.5:m.travel}"><span class="v">${(m.travel==null?0.5:m.travel).toFixed(2)}</span></div>
+      <div class="sl"><span class="n">Lands at</span><input type="range" id="mHold" min="0.25" max="0.96" step="0.01" value="${m.hold==null?0.78:m.hold}"><span class="v">${(m.hold==null?0.78:m.hold).toFixed(2)}</span></div>
+      <label class="chk v"><input type="checkbox" id="mOutline"${m.outline!==false?" checked":""}> Sticker outline</label>
+    `:""}
     <div class="row"><button class="btn sm grow" id="mDel">Delete this cut</button></div>`;
   box.querySelectorAll("[data-ty]").forEach(el=>el.onclick=()=>{
     pushUndo();
-    m.type=el.dataset.ty; m.drop=false; m.dur=TYPE[m.type].dur; normalizeMarkers(); refreshAll();
+    m.type=el.dataset.ty; m.dur=TYPE[m.type].dur;   // the drop flag is left alone
+    normalizeMarkers(); refreshAll();
   });
   box.querySelector("[data-drop]").onclick=()=>{
     pushUndo();
-    if(m.drop){ m.drop=false; m.dur=TYPE[m.type].dur; }
-    else{ state.markers.forEach(x=>x.drop=false); m.drop=true; m.dur=DROP_DUR; }
+    if(m.drop) m.drop=false;
+    else{ state.markers.forEach(x=>x.drop=false); m.drop=true; }
     normalizeMarkers(); refreshAll();
   };
   $("mDur").oninput=e=>{ pushUndo("mdur"); m.dur=+e.target.value; normalizeMarkers();
@@ -1462,6 +1580,14 @@ function renderTransitionPanel(){
   $("mNudgeR").onclick=()=>{ pushUndo("mnudge"); m.t=Math.min(state.duration-0.02,m.t+0.01); normalizeMarkers(); refreshAll(); };
   $("mFlip").onclick=()=>{ pushUndo(); m.dir=-(m.dir||1); draw(); };
   $("mSnap").onclick=()=>{ const b=nearestBeat(m.t); if(b!=null){ pushUndo(); m.t=b; normalizeMarkers(); state.selMarker=state.markers.indexOf(m); refreshAll(); } };
+  if(m.type==="mask"){
+    $("mkEdit").onclick=()=>openMaskEditor(m);
+    if($("mkDrop")) $("mkDrop").onclick=()=>{ pushUndo(); m.cutout=null; renderTransitionPanel(); draw(); };
+    const mb=(id,key,post)=>{ const el=$(id); el.oninput=e=>{ pushUndo("cut"+key); m[key]=+e.target.value;
+      el.nextElementSibling.textContent=post?post(m[key]):(+e.target.value).toFixed(2); draw(); }; };
+    mb("mSteps","steps",v=>String(v)); mb("mTravel","travel"); mb("mHold","hold");
+    $("mOutline").onchange=e=>{ pushUndo(); m.outline=e.target.checked; draw(); };
+  }
   $("mDel").onclick=()=>deleteMarker(i);
 }
 function renderClipPanel(){
@@ -1762,7 +1888,7 @@ document.addEventListener("keydown",e=>{
   else if(e.key==="t"||e.key==="T") addMarkerAt(currentTime());
   else if(e.key==="d"||e.key==="D"){
     const m=state.markers[state.selMarker];
-    if(m){ state.markers.forEach(x=>x.drop=false); m.drop=true; m.dur=DROP_DUR; normalizeMarkers(); refreshAll(); }
+    if(m){ const on=!m.drop; state.markers.forEach(x=>x.drop=false); m.drop=on; normalizeMarkers(); refreshAll(); }
   }
   else if(e.key==="Backspace"||e.key==="Delete"){ e.preventDefault(); deleteMarker(state.selMarker); }
   else if(e.key==="ArrowLeft"){ e.preventDefault(); seek(currentTime()-(e.shiftKey?1:1/30)); }
@@ -2065,6 +2191,243 @@ $("exportMp4").onclick=exportMP4;
 $("exportMp4b").onclick=exportMP4;
 $("exportBtn").onclick=exportWebM;
 $("exportWebmB").onclick=exportWebM;
+
+/* =========================================================================
+   Cutout matte editor. No ML: a colour-distance flood fill (wand), a brush,
+   and an "auto" pass that models the background from the border ring, keeps
+   the blob nearest the centre, then fills holes and closes the edge.
+   ========================================================================= */
+const ME={m:null,w:0,h:0,base:null,mask:null,baseCanvas:null,view:null,vctx:null,
+  tool:"wand-",size:42,tol:34,feather:3,painting:false,undo:[]};
+
+async function openMaskEditor(m){
+  pause();
+  const b=state.markers.indexOf(m)+1;
+  const clip=state.clips[b];
+  if(!clip){ toast("Nothing to cut out on that side of the cut."); return; }
+  const W=cv.width,H=cv.height;
+  const t=segStart(b)+Math.min(0.08,Math.max(0.01,(segEnd(b)-segStart(b))/2));
+  $("maskMsg").textContent="Rendering the incoming frame\u2026";
+  $("maskOvl").classList.add("on");
+  await offlineSync(t);
+  if(offCv.width!==W||offCv.height!==H){ offCv.width=W; offCv.height=H; }
+  offCtx.setTransform(1,0,0,1,0,0);
+  offCtx.globalCompositeOperation="source-over"; offCtx.globalAlpha=1; offCtx.filter="none";
+  offCtx.fillStyle="#000"; offCtx.fillRect(0,0,W,H);
+  withCtx(offCtx,()=>drawClip(b,t,{look:0}));
+
+  const sc=Math.min(1,460/Math.max(W,H));
+  const w=Math.max(8,Math.round(W*sc)), h=Math.max(8,Math.round(H*sc));
+  const view=$("maskCv"); view.width=w; view.height=h;
+  ME.m=m; ME.w=w; ME.h=h; ME.view=view; ME.vctx=view.getContext("2d");
+  const bc=document.createElement("canvas"); bc.width=w; bc.height=h;
+  const bg=bc.getContext("2d"); bg.drawImage(offCv,0,0,w,h);
+  ME.baseCanvas=bc; ME.base=bg.getImageData(0,0,w,h).data;
+  ME.mask=new Uint8Array(w*h);
+  ME.undo=[];
+  if(m.cutout&&m.cutout.canvas){
+    const tc=document.createElement("canvas"); tc.width=w; tc.height=h;
+    const tg=tc.getContext("2d"); tg.drawImage(m.cutout.canvas,0,0,w,h);
+    const d=tg.getImageData(0,0,w,h).data;
+    for(let i=0;i<w*h;i++) ME.mask[i]=d[i*4+3]>127?255:0;
+    ME.feather=m.cutout.feather==null?3:m.cutout.feather;
+    $("mkFeather").value=ME.feather; $("mkFeatherV").textContent=ME.feather.toFixed(1);
+  }else meAuto();
+  $("maskMsg").textContent="Wand away the background, then tidy the edges with the brush.";
+  meRedraw();
+}
+function closeMaskEditor(){ $("maskOvl").classList.remove("on"); ME.m=null; ME.base=null; ME.mask=null; }
+
+function meSnapshot(){ if(ME.mask){ ME.undo.push(ME.mask.slice()); if(ME.undo.length>24) ME.undo.shift(); } }
+function meRedraw(){
+  const {w,h,mask,vctx}=ME;
+  if(!mask) return;
+  vctx.clearRect(0,0,w,h);
+  vctx.drawImage(ME.baseCanvas,0,0);
+  const img=vctx.getImageData(0,0,w,h), d=img.data;
+  for(let i=0,q=0;i<w*h;i++,q+=4){
+    if(mask[i]<128){                       // knocked-out area: dimmed and cooled
+      d[q]=d[q]*0.26+14; d[q+1]=d[q+1]*0.26+8; d[q+2]=d[q+2]*0.26+30;
+    }
+  }
+  for(let y=0;y<h;y++){                    // magenta edge on the matte boundary
+    for(let x=0;x<w;x++){
+      const i=y*w+x, a=mask[i]>127;
+      const rgt=x+1<w?(mask[i+1]>127):a, dn=y+1<h?(mask[i+w]>127):a;
+      if(a!==rgt||a!==dn){ const q=i*4; d[q]=255; d[q+1]=46; d[q+2]=111; }
+    }
+  }
+  vctx.putImageData(img,0,0);
+}
+function mePaint(x,y,val){
+  const {w,h,mask}=ME, r=ME.size/2;
+  const x0=Math.max(0,Math.floor(x-r)), x1=Math.min(w-1,Math.ceil(x+r));
+  const y0=Math.max(0,Math.floor(y-r)), y1=Math.min(h-1,Math.ceil(y+r));
+  for(let yy=y0;yy<=y1;yy++) for(let xx=x0;xx<=x1;xx++){
+    const dx=xx-x, dy=yy-y;
+    if(dx*dx+dy*dy<=r*r) mask[yy*w+xx]=val;
+  }
+}
+function meWand(sx,sy,val){
+  const {w,h,base,mask}=ME;
+  sx=clamp(Math.round(sx),0,w-1); sy=clamp(Math.round(sy),0,h-1);
+  const si=sy*w+sx, th=ME.tol*ME.tol*3;
+  const r0=base[si*4], g0=base[si*4+1], b0=base[si*4+2];
+  const seen=new Uint8Array(w*h), q=new Int32Array(w*h);
+  let qs=0,qe=0; q[qe++]=si; seen[si]=1;
+  while(qs<qe){
+    const i=q[qs++]; mask[i]=val;
+    const x=i%w, y=(i/w)|0;
+    for(let k=0;k<4;k++){
+      const nx=x+(k===0?1:k===1?-1:0), ny=y+(k===2?1:k===3?-1:0);
+      if(nx<0||ny<0||nx>=w||ny>=h) continue;
+      const j=ny*w+nx; if(seen[j]) continue;
+      const dr=base[j*4]-r0, dg=base[j*4+1]-g0, db=base[j*4+2]-b0;
+      if(dr*dr+dg*dg+db*db<=th){ seen[j]=1; q[qe++]=j; }
+    }
+  }
+}
+function meFillHoles(){
+  const {w,h,mask}=ME;
+  const seen=new Uint8Array(w*h), q=new Int32Array(w*h);
+  let qs=0,qe=0;
+  const push=i=>{ if(!seen[i]&&mask[i]<128){ seen[i]=1; q[qe++]=i; } };
+  for(let x=0;x<w;x++){ push(x); push((h-1)*w+x); }
+  for(let y=0;y<h;y++){ push(y*w); push(y*w+w-1); }
+  while(qs<qe){
+    const i=q[qs++], x=i%w, y=(i/w)|0;
+    for(let k=0;k<4;k++){
+      const nx=x+(k===0?1:k===1?-1:0), ny=y+(k===2?1:k===3?-1:0);
+      if(nx<0||ny<0||nx>=w||ny>=h) continue;
+      push(ny*w+nx);
+    }
+  }
+  for(let i=0;i<w*h;i++) if(mask[i]<128&&!seen[i]) mask[i]=255;
+}
+function meMorph(grow){
+  const {w,h,mask}=ME, out=mask.slice(), on=grow?255:0, test=grow?255:0;
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++){
+    const i=y*w+x;
+    if((mask[i]>127)===(grow?false:true)){
+      let hit=false;
+      for(let k=0;k<4&&!hit;k++){
+        const nx=x+(k===0?1:k===1?-1:0), ny=y+(k===2?1:k===3?-1:0);
+        if(nx<0||ny<0||nx>=w||ny>=h){ if(!grow) hit=true; continue; }
+        if((mask[ny*w+nx]>127)===(grow?true:false)) hit=true;
+      }
+      if(hit) out[i]=grow?255:0;
+    }
+  }
+  ME.mask=out;
+}
+function meEllipse(){
+  const {w,h,mask}=ME;
+  const cx=w/2, cy=h*0.46, rx=w*0.30, ry=h*0.36;
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++){
+    const dx=(x-cx)/rx, dy=(y-cy)/ry;
+    mask[y*w+x]=(dx*dx+dy*dy<=1)?255:0;
+  }
+}
+function meAuto(){
+  const {w,h,base,mask}=ME;
+  let r=0,g=0,b=0,n=0;
+  const step=Math.max(1,Math.floor(Math.min(w,h)/140));
+  for(let x=0;x<w;x+=step){ for(const y of [0,1,h-2,h-1]){ const i=(y*w+x)*4; r+=base[i];g+=base[i+1];b+=base[i+2];n++; } }
+  for(let y=0;y<h;y+=step){ for(const x of [0,1,w-2,w-1]){ const i=(y*w+x)*4; r+=base[i];g+=base[i+1];b+=base[i+2];n++; } }
+  if(!n){ meEllipse(); return; }
+  r/=n; g/=n; b/=n;
+  const th=ME.tol*ME.tol*3;
+  const fg=new Uint8Array(w*h);
+  for(let i=0;i<w*h;i++){
+    const dr=base[i*4]-r, dg=base[i*4+1]-g, db=base[i*4+2]-b;
+    fg[i]=(dr*dr+dg*dg+db*db>th)?1:0;
+  }
+  mask.fill(0);
+  const cx=w/2, cy=h*0.48;
+  let best=-1,bd=Infinity;
+  for(let i=0;i<w*h;i++) if(fg[i]===1){
+    const x=i%w, y=(i/w)|0, dd=(x-cx)*(x-cx)+(y-cy)*(y-cy);
+    if(dd<bd){ bd=dd; best=i; }
+  }
+  if(best<0){ meEllipse(); return; }
+  const q=new Int32Array(w*h); let qs=0,qe=0;
+  q[qe++]=best; fg[best]=2;
+  while(qs<qe){
+    const i=q[qs++]; mask[i]=255;
+    const x=i%w, y=(i/w)|0;
+    for(let k=0;k<4;k++){
+      const nx=x+(k===0?1:k===1?-1:0), ny=y+(k===2?1:k===3?-1:0);
+      if(nx<0||ny<0||nx>=w||ny>=h) continue;
+      const j=ny*w+nx;
+      if(fg[j]===1){ fg[j]=2; q[qe++]=j; }
+    }
+  }
+  let cnt=0; for(let i=0;i<w*h;i++) if(mask[i]>127) cnt++;
+  const frac=cnt/(w*h);
+  if(frac<0.004||frac>0.92){ meEllipse(); return; }
+  meFillHoles();
+  meMorph(true); meMorph(false);
+}
+function mePos(e){
+  const r=ME.view.getBoundingClientRect();
+  const pt=e.touches?e.touches[0]:e;
+  return {x:(pt.clientX-r.left)*ME.w/r.width, y:(pt.clientY-r.top)*ME.h/r.height};
+}
+function meDown(e){
+  if(!ME.mask) return;
+  e.preventDefault();
+  const {x,y}=mePos(e);
+  meSnapshot();
+  if(ME.tool==="wand-") meWand(x,y,0);
+  else if(ME.tool==="wand+") meWand(x,y,255);
+  else{ ME.painting=true; mePaint(x,y,ME.tool==="brush+"?255:0); }
+  meRedraw();
+}
+function meMove(e){
+  if(!ME.painting||!ME.mask) return;
+  e.preventDefault();
+  const {x,y}=mePos(e);
+  mePaint(x,y,ME.tool==="brush+"?255:0);
+  meRedraw();
+}
+$("maskCv").addEventListener("mousedown",meDown);
+$("maskCv").addEventListener("mousemove",meMove);
+$("maskCv").addEventListener("touchstart",meDown,{passive:false});
+$("maskCv").addEventListener("touchmove",meMove,{passive:false});
+window.addEventListener("mouseup",()=>{ ME.painting=false; });
+window.addEventListener("touchend",()=>{ ME.painting=false; });
+document.querySelectorAll(".tools [data-tool]").forEach(btn=>{
+  btn.onclick=()=>{
+    ME.tool=btn.dataset.tool;
+    document.querySelectorAll(".tools [data-tool]").forEach(o=>o.classList.toggle("on",o===btn));
+  };
+});
+$("mkSize").oninput=e=>{ ME.size=+e.target.value; $("mkSizeV").textContent=e.target.value; };
+$("mkTol").oninput=e=>{ ME.tol=+e.target.value; $("mkTolV").textContent=e.target.value; };
+$("mkFeather").oninput=e=>{ ME.feather=+e.target.value; $("mkFeatherV").textContent=ME.feather.toFixed(1); };
+$("mkAuto").onclick=()=>{ if(!ME.mask) return; meSnapshot(); meAuto(); meRedraw(); };
+$("mkEllipse").onclick=()=>{ if(!ME.mask) return; meSnapshot(); meEllipse(); meRedraw(); };
+$("mkInvert").onclick=()=>{ if(!ME.mask) return; meSnapshot(); for(let i=0;i<ME.mask.length;i++) ME.mask[i]=255-ME.mask[i]; meRedraw(); };
+$("mkClearM").onclick=()=>{ if(!ME.mask) return; meSnapshot(); ME.mask.fill(0); meRedraw(); };
+$("mkUndo").onclick=()=>{ if(ME.undo.length){ ME.mask=ME.undo.pop(); meRedraw(); } };
+$("mkCancel").onclick=closeMaskEditor;
+$("mkSave").onclick=()=>{
+  if(!ME.mask||!ME.m){ closeMaskEditor(); return; }
+  const {w,h,mask}=ME;
+  let cnt=0; for(let i=0;i<w*h;i++) if(mask[i]>127) cnt++;
+  if(!cnt){ toast("The matte is empty \u2014 keep something first."); return; }
+  const c=document.createElement("canvas"); c.width=w; c.height=h;
+  const g=c.getContext("2d");
+  const img=g.createImageData(w,h), d=img.data;
+  for(let i=0;i<w*h;i++){ d[i*4]=255; d[i*4+1]=255; d[i*4+2]=255; d[i*4+3]=mask[i]; }
+  g.putImageData(img,0,0);
+  pushUndo();
+  ME.m.cutout={canvas:c,w,h,feather:ME.feather};
+  const m=ME.m;
+  closeMaskEditor();
+  renderTransitionPanel(); draw();
+  toast("Cutout saved \u2014 "+((cnt/(w*h))*100).toFixed(1)+"% of the frame kept");
+};
 
 /* =========================================================================
    Undo / redo. Snapshots are shallow clones of the arrangement; media
